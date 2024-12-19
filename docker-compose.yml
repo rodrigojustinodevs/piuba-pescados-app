@@ -1,0 +1,70 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: api-piuba-pescados-app
+    image: api-piuba-pescados
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    environment:
+      - DB_HOST=mysql
+      - REDIS_HOST=redis
+      - QUEUE_CONNECTION=redis
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - api-piuba-pescados
+
+  nginx:
+    container_name: api-piuba-pescados-nginx
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8004:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - api-piuba-pescados
+
+  mysql:
+    container_name: piuba-pescados-mysql
+    platform: linux/amd64
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    volumes:
+      - ./.docker/mysql/dbdata:/var/lib/mysql
+    ports:
+      - "3308:3306"
+    networks:
+      - api-piuba-pescados
+
+  queue:
+    container_name: api-piuba-pescados-queue
+    image: api-piuba-pescados
+    restart: unless-stopped
+    command: "php artisan queue:work"
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - redis
+    networks:
+      - api-piuba-pescados
+
+  redis:
+    container_name: api-piuba-pescados-redis
+    image: redis:latest
+    networks:
+      - api-piuba-pescados
+
+networks:
+  api-piuba-pescados:
+    driver: bridge

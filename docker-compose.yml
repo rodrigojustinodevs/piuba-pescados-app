@@ -2,19 +2,18 @@ version: '3.7'
 
 services:
   app:
-    container_name: api-piuba-pescados-app
-    image: api-piuba-pescados
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
     restart: unless-stopped
-    working_dir: /var/www/
+    working_dir: /var/www
     volumes:
-      - ./:/var/www
-    environment:
-      - DB_HOST=mysql
-      - REDIS_HOST=redis
-      - QUEUE_CONNECTION=redis
+      - .:/var/www
     depends_on:
-      - mysql
+      - db
       - redis
+      - mqtt
     networks:
       - api-piuba-pescados
 
@@ -29,7 +28,6 @@ services:
       - ./docker/nginx/:/etc/nginx/conf.d/
     networks:
       - api-piuba-pescados
-
   mysql:
     container_name: piuba-pescados-mysql
     platform: linux/amd64
@@ -62,6 +60,19 @@ services:
   redis:
     container_name: api-piuba-pescados-redis
     image: redis:latest
+    networks:
+      - api-piuba-pescados
+  mqtt:
+    image: eclipse-mosquitto:latest
+    container_name: laravel_mqtt
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
     networks:
       - api-piuba-pescados
 

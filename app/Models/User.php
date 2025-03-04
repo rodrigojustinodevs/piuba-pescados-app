@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Models;
 
@@ -52,7 +52,6 @@ class User extends Authenticatable implements Auditable
         /** @var BelongsToMany<Permission, static> $relation */
         $relation = $this->belongsToMany(Permission::class);
         return $relation;
-
     }
 
     /**

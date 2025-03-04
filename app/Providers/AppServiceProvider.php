@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Providers;
 
@@ -118,14 +118,20 @@ class AppServiceProvider extends ServiceProvider
         foreach (Can::cases() as $permission) {
             Gate::define(
                 $permission->value,
-                function (User $user) use ($permission) {  // Tipando o $user explicitamente como User
+                function (User $user) use ($permission) {
                     /** @var User $user */
                     $check = $user
                         ->permissions()
                         ->whereName($permission->value)
                         ->exists();
 
-                    Log::info('Checking permission: ' . $permission->value, ['user' => $user->id, 'check' => $check ? 'true' : 'false']);
+                    Log::info(
+                        'Checking permission: ' . $permission->value,
+                        [
+                            'user' => $user->id,
+                             'check' => $check ? 'true' : 'false'
+                        ]
+                    );
 
                     return $check;
                 }

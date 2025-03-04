@@ -1,24 +1,32 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Role extends Model
+class Role extends BaseModel
 {
-    use HasFactory;
-
+    /**
+     * @return BelongsToMany<Permission, Role>
+     */
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(Permission::class);
+        /** @var BelongsToMany<Permission, Role> $relation */
+        $relation = $this->belongsToMany(Permission::class);
+
+        return $relation;
     }
 
+    /**
+     * @return BelongsToMany<User, Role>
+     */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        /** @var BelongsToMany<User, Role> $relation */
+        $relation = $this->belongsToMany(User::class);
+
+        return $relation;
     }
 }

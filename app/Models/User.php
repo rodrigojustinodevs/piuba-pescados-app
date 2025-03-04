@@ -1,16 +1,16 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements Auditable
 {
@@ -43,13 +43,24 @@ class User extends Authenticatable implements Auditable
         ];
     }
 
+
+    /**
+     * @return BelongsToMany<Permission, static>
+     */
     public function permissions(): BelongsToMany
     {
-        return $this->belongsToMany(Permission::class);
+        /** @var BelongsToMany<Permission, static> $relation */
+        $relation = $this->belongsToMany(Permission::class);
+        return $relation;
     }
 
+    /**
+     * @return BelongsToMany<Role, static>
+     */
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class);
+        /** @var BelongsToMany<Role, static> $relation */
+        $relation = $this->belongsToMany(Role::class);
+        return $relation;
     }
 }

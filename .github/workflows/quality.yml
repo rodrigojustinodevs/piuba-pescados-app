@@ -29,9 +29,9 @@ jobs:
         run: |
           vendor/bin/phpcs --standard=PSR12 app/
 
-      - name: Run PHPUnit tests
+      - name: Run Pest tests
         run: |
-          vendor/bin/phpunit --configuration phpunit.xml
+          vendor/bin/pest --configuration phpunit.xml
 
       - name: Check for Composer security issues
         run: |

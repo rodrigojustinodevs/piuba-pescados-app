@@ -4,30 +4,31 @@ declare(strict_types = 1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-/**
- * @extends Model<Permission>
- */
-class Permission extends Model
+class Permission extends BaseModel
 {
-    use HasFactory;
-
     /**
-     * @return BelongsToMany<Role>
+     *
+     * @return BelongsToMany<Role, static>
      */
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(Role::class);
+        /** @var BelongsToMany<Role, static> $relation */
+        $relation = $this->belongsToMany(Role::class);
+
+        return $relation;
     }
 
     /**
-     * @return BelongsToMany<User>
+     *
+     * @return BelongsToMany<User, static>
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        /** @var BelongsToMany<User, static> $relation */
+        $relation = $this->belongsToMany(User::class);
+
+        return $relation;
     }
 }

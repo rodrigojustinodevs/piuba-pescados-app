@@ -1,4 +1,3 @@
-# Usa uma imagem oficial do PHP com FPM e extensões necessárias
 FROM php:8.3-fpm
 
 ENV ACCEPT_EULA=Y

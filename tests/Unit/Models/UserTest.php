@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Tests\Models;
 
@@ -18,5 +18,6 @@ test('cast', function (): void {
     expect($casts)->toBe([
         'email_verified_at' => 'datetime',
         'password'          => 'hashed',
+        'is_admin'          => 'boolean',
     ]);
 });

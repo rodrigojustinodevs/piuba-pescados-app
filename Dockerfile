@@ -60,9 +60,9 @@ RUN mkdir -p /var/www/storage/temp/ \
     && chmod 774 -R /var/www/
 
 # Copy nginx/php/supervisor configs
-RUN cp docker/supervisor.conf /etc/supervisord.conf \
-    && cp docker/php.ini /usr/local/etc/php/conf.d/app.ini \
-    && cp docker/nginx.conf /etc/nginx/sites-enabled/default
+RUN cp docker/nginx/supervisor.conf /etc/supervisord.conf \
+    && cp docker/nginx/php.ini /usr/local/etc/php/conf.d/app.ini \
+    && cp docker/nginx/nginx.conf /etc/nginx/sites-enabled/default
 
 # PHP Error Log Files
 # RUN mkdir /var/log/php
@@ -70,10 +70,10 @@ RUN cp docker/supervisor.conf /etc/supervisord.conf \
 
 # Deployment steps
 RUN composer update && composer install --optimize-autoloader --no-dev
-RUN chmod +x /var/www/docker/run.sh
+RUN chmod +x /var/www/docker/nginx/run.sh
 
 # Expose port 80
 EXPOSE 80
 
 # Start supervisord
-CMD ["/var/www/docker/run.sh"]
+CMD ["/var/www/docker/nginx/run.sh"]

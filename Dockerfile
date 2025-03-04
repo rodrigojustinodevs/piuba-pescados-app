@@ -1,4 +1,5 @@
-FROM php:8.1-fpm
+# Usa uma imagem oficial do PHP com FPM e extensões necessárias
+FROM php:8.3-fpm
 
 ENV ACCEPT_EULA=Y
 
@@ -41,7 +42,7 @@ RUN apt-get update \
     && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install intl sodium pdo_pgsql pdo zip exif pcntl bcmath  # Added pdo_pgsql for PostgreSQL
+    && docker-php-ext-install intl sodium pdo_mysql zip exif pcntl bcmath
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -60,9 +61,9 @@ RUN mkdir -p /var/www/storage/temp/ \
     && chmod 774 -R /var/www/
 
 # Copy nginx/php/supervisor configs
-# RUN cp docker/supervisor.conf /etc/supervisord.conf \
-#    && cp docker/php.ini /usr/local/etc/php/conf.d/app.ini \
-#    && cp docker/nginx.conf /etc/nginx/sites-enabled/default
+RUN cp docker/supervisor.conf /etc/supervisord.conf \
+    && cp docker/php.ini /usr/local/etc/php/conf.d/app.ini \
+    && cp docker/nginx.conf /etc/nginx/sites-enabled/default
 
 # PHP Error Log Files
 # RUN mkdir /var/log/php
@@ -70,9 +71,10 @@ RUN mkdir -p /var/www/storage/temp/ \
 
 # Deployment steps
 RUN composer update && composer install --optimize-autoloader --no-dev
-# RUN chmod +x /var/www/docker/run.sh
+RUN chmod +x /var/www/docker/run.sh
 
 # Expose port 80
 EXPOSE 80
 
-CMD ["php-fpm"]
+# Start supervisord
+CMD ["/var/www/docker/run.sh"]

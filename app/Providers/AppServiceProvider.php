@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
+use App\Models\User;
+use Illuminate\Http\Request;
 use Override;
 
 class AppServiceProvider extends ServiceProvider
@@ -43,16 +45,24 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Sets up the LogViewer authentication to restrict access
      * based on whether the authenticated user is an admin.
+     *
+     * @return void
      */
     private function setupLogViewer(): void
     {
-        LogViewer::auth(fn ($request) => $request->user()?->is_admin);
+        LogViewer::auth(function (Request $request): bool {
+            /** @var User|null $user */
+            $user = $request->user();
+            return $user !== null && $user->is_admin;
+        });
     }
 
     /**
      * Configures Eloquent models by disabling the requirement for defining
      * the fillable property and enforcing strict checking to ensure that
      * all accessed properties exist within the model.
+     *
+     * @return void
      */
     private function configModels(): void
     {
@@ -68,6 +78,8 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Configures database commands to prohibit execution of destructive statements
      * when the application is running in a production environment.
+     *
+     * @return void
      */
     private function configCommands(): void
     {
@@ -78,6 +90,8 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Configures the application URLs to enforce HTTPS protocol for all routes.
+     *
+     * @return void
      */
     private function configUrls(): void
     {
@@ -86,18 +100,26 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Configures the application to use CarbonImmutable for date and time handling.
+     *
+     * @return void
      */
     private function configDate(): void
     {
         Date::use(CarbonImmutable::class);
     }
 
+    /**
+     * Configure Gates based on Can enum permissions.
+     *
+     * @return void
+     */
     private function configGates(): void
     {
         foreach (Can::cases() as $permission) {
             Gate::define(
                 $permission->value,
-                function ($user) use ($permission) {
+                function (User $user) use ($permission) {  // Tipando o $user explicitamente como User
+                    /** @var User $user */
                     $check = $user
                         ->permissions()
                         ->whereName($permission->value)

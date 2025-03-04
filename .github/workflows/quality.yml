@@ -42,4 +42,4 @@ jobs:
 
       - name: Check for Composer security issues
         run: |
-          ./vendor/bin/composer audit
+          composer audit

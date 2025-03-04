@@ -21,6 +21,9 @@ jobs:
         run: |
           composer install
 
+      - name: Generate application key
+        run: php artisan key:generate
+
       - name: Run PHPStan
         run: |
           vendor/bin/phpstan analyse --level=max

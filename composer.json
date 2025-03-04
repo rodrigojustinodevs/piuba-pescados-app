@@ -1,27 +1,33 @@
 {
+    "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "The skeleton application for the Laravel framework.",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
-        "php": "^7.3|^8.0",
-        "darkaonline/l5-swagger": "^8.6",
-        "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.0.1",
-        "laravel/framework": "^8.75",
-        "laravel/sanctum": "^2.11",
-        "laravel/tinker": "^2.5"
+        "php": "^8.3",
+        "laravel/framework": "^12",
+        "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^2.9",
+        "opcodesio/log-viewer": "^3.14",
+        "owen-it/laravel-auditing": "^14"
     },
     "require-dev": {
-        "facade/ignition": "^2.5",
-        "fakerphp/faker": "^1.9.1",
-        "laravel/sail": "^1.0.1",
-        "mockery/mockery": "^1.4.4",
-        "nunomaduro/collision": "^5.10",
-        "phpstan/phpstan": "^2.0",
-        "phpunit/phpunit": "^9.6",
-        "squizlabs/php_codesniffer": "^3.11"
+        "fakerphp/faker": "^1.23",
+        "laradumps/laradumps": "4.x-dev",
+        "larastan/larastan": "^3.0",
+        "laravel/pail": "^1.1",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.26",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.1",
+        "pestphp/pest": "^3.7",
+        "pestphp/pest-plugin-laravel": "^3.1",
+        "rector/rector": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -47,12 +53,13 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php artisan key:generate --ansi"
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
         ],
-        "quality": [
-            "phpstan analyse --level=max",
-            "phpcs --standard=PSR12 app/",
-            "phpunit"
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
         ]
     },
     "extra": {
@@ -63,7 +70,11 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

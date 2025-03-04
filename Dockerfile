@@ -41,7 +41,7 @@ RUN apt-get update \
     && apt-get install -y libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install intl sodium pdo_mysql zip exif pcntl bcmath
+    && docker-php-ext-install intl sodium pdo_pgsql pdo zip exif pcntl bcmath  # Added pdo_pgsql for PostgreSQL
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -68,7 +68,7 @@ RUN mkdir -p /var/www/storage/temp/ \
 # RUN mkdir /var/log/php
 # RUN touch /var/log/php/errors.log && chmod 777 /var/log/php/errors.log
 
-# Deployment stepsap
+# Deployment steps
 RUN composer update && composer install --optimize-autoloader --no-dev
 # RUN chmod +x /var/www/docker/run.sh
 

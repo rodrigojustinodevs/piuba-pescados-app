@@ -48,7 +48,7 @@
             "spacing": "one"
         },
         "declare_equal_normalize": {
-            "space": "single"
+            "space": "none"
         },
         "elseif": false,
         "encoding": true,

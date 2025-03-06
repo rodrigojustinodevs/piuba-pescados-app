@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Providers;
+namespace App\Infrastructure\Providers;
 
-use App\Enums\Can;
+use App\Domain\Enums\Can;
+use App\Domain\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -14,8 +16,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Override;
 
 class AppServiceProvider extends ServiceProvider
@@ -45,14 +45,13 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Sets up the LogViewer authentication to restrict access
      * based on whether the authenticated user is an admin.
-     *
-     * @return void
      */
     private function setupLogViewer(): void
     {
         LogViewer::auth(function (Request $request): bool {
             /** @var User|null $user */
             $user = $request->user();
+
             return $user !== null && $user->is_admin;
         });
     }
@@ -61,8 +60,6 @@ class AppServiceProvider extends ServiceProvider
      * Configures Eloquent models by disabling the requirement for defining
      * the fillable property and enforcing strict checking to ensure that
      * all accessed properties exist within the model.
-     *
-     * @return void
      */
     private function configModels(): void
     {
@@ -78,8 +75,6 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Configures database commands to prohibit execution of destructive statements
      * when the application is running in a production environment.
-     *
-     * @return void
      */
     private function configCommands(): void
     {
@@ -90,8 +85,6 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Configures the application URLs to enforce HTTPS protocol for all routes.
-     *
-     * @return void
      */
     private function configUrls(): void
     {
@@ -100,8 +93,6 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Configures the application to use CarbonImmutable for date and time handling.
-     *
-     * @return void
      */
     private function configDate(): void
     {
@@ -110,8 +101,6 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Configure Gates based on Can enum permissions.
-     *
-     * @return void
      */
     private function configGates(): void
     {
@@ -128,8 +117,8 @@ class AppServiceProvider extends ServiceProvider
                     Log::info(
                         'Checking permission: ' . $permission->value,
                         [
-                            'user' => $user->id,
-                             'check' => $check ? 'true' : 'false'
+                            'user'  => $user->id,
+                            'check' => $check ? 'true' : 'false',
                         ]
                     );
 

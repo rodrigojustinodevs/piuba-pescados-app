@@ -18,7 +18,6 @@ class Company extends BaseModel
         /** @var BelongsToMany<User, static> $relation */
         $relation = $this->belongsToMany(User::class, 'company_user');
         return $relation;
-
     }
 
     /**
@@ -29,7 +28,6 @@ class Company extends BaseModel
         /** @var BelongsToMany<Role, static> $relation */
         $relation = $this->belongsToMany(Role::class, 'company_role');
         return $relation;
-
     }
 
     /**
@@ -40,6 +38,5 @@ class Company extends BaseModel
         /** @var BelongsToMany<Permission, static> $relation */
         $relation = $this->belongsToMany(Permission::class, 'company_user_permission');
         return $relation;
-
     }
 }

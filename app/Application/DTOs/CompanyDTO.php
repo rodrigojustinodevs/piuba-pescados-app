@@ -49,7 +49,7 @@ class CompanyDTO
             return $value;
         }
 
-        return strval($value); // or just return '' if you prefer to handle non-string values differently
+        return self::toString($value);
     }
 
     /**

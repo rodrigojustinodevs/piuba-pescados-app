@@ -6,6 +6,8 @@ namespace App\Infrastructure\Providers;
 
 use App\Domain\Enums\Can;
 use App\Domain\Models\User;
+use App\Domain\Repositories\CompanyRepositoryInterface;
+use App\Infrastructure\Persistence\CompanyRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -26,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     #[Override]
     public function register(): void
     {
-        //
+        $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
     }
 
     /**

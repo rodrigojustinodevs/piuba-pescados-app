@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class User extends Authenticatable implements Auditable
@@ -29,6 +30,8 @@ class User extends Authenticatable implements Auditable
         'remember_token',
     ];
 
+    public string $id;
+
     /**
      * Get the attributes that should be cast.
      *
@@ -41,6 +44,20 @@ class User extends Authenticatable implements Auditable
             'password'          => 'hashed',
             'is_admin'          => 'boolean',
         ];
+    }
+
+    #[\Override]
+    protected static function booted()
+    {
+        static::creating(function (User $user): void {
+            $user->id = (string) Str::uuid();
+        });
+    }
+
+    /** @return Factory<User> */
+    protected static function newFactory(): Factory
+    {
+        return UserFactory::new();
     }
 
     /**

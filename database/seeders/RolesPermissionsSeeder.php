@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\Can;
-use App\Models\Permission;
-use App\Models\Role;
+use App\Domain\Enums\Can;
+use App\Domain\Models\Permission;
+use App\Domain\Models\Role;
 use Illuminate\Database\Seeder;
 
 class RolesPermissionsSeeder extends Seeder

@@ -1,28 +1,31 @@
-version: '3.7'
+version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
     container_name: api_piuba_pescados_app
+    image: api-piuba-pescados
     restart: unless-stopped
-    working_dir: /var/www
+    working_dir: /var/www/
     volumes:
-      - .:/var/www
+      - ./:/var/www
+    environment:
+      - DB_HOST=mysql
+      - REDIS_HOST=redis
+      - QUEUE_CONNECTION=redis
     depends_on:
       - mysql
       - redis
       - mqtt
+    build:
+      context: .
     networks:
       - api-piuba-pescados
-
   nginx:
     container_name: api-piuba-pescados-nginx
     image: nginx:alpine
     restart: unless-stopped
     ports:
-      - "8004:80"
+      - "8005:80"
     volumes:
       - ./:/var/www
       - ./docker/nginx/:/etc/nginx/conf.d/
@@ -44,7 +47,6 @@ services:
       - "3308:3306"
     networks:
       - api-piuba-pescados
-
   queue:
     container_name: api-piuba-pescados-queue
     image: api-piuba-pescados
@@ -56,7 +58,6 @@ services:
       - redis
     networks:
       - api-piuba-pescados
-
   redis:
     container_name: api-piuba-pescados-redis
     image: redis:latest

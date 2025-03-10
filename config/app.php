@@ -125,4 +125,5 @@ return [
         'store'  => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'exception_handler' => App\Presentation\Exceptions\Handler::class,
 ];

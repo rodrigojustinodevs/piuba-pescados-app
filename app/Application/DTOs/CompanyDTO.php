@@ -45,11 +45,16 @@ class CompanyDTO
      */
     private static function toString($value): string
     {
+        if (is_null($value)) {
+            return '';
+        }
+
         if (is_string($value)) {
             return $value;
         }
 
-        return self::toString($value);
+        // Handle other cases like int, bool, float
+        return (string) $value;
     }
 
     /**

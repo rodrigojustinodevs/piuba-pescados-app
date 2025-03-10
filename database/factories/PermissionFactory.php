@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Permission;
+use App\Domain\Models\Permission as ModelsPermission;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
 class PermissionFactory extends Factory
 {
-    protected $model = Permission::class;
+    protected $model = ModelsPermission::class;
 
     public function definition(): array
     {

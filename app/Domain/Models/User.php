@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable;
+use Illuminate\Support\Str;
+
 
 class User extends Authenticatable implements Auditable
 {
@@ -41,6 +43,18 @@ class User extends Authenticatable implements Auditable
             'password'          => 'hashed',
             'is_admin'          => 'boolean',
         ];
+    }
+
+    protected static function booted()
+    {
+        static::creating(function (User $user): void {
+            $user->id = (string) Str::uuid();
+        });
+    }
+
+    protected static function newFactory()
+    {
+        return UserFactory::new();
     }
 
     /**

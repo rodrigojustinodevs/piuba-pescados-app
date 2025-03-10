@@ -5,10 +5,29 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Str;
 
 class Company extends BaseModel
 {
-    protected $fillable = ['name', 'cnpj', 'address', 'phone'];
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    protected $fillable = ['name', 'cnpj', 'address', 'phone', 'status'];
+
+    /** @var array<string> */
+    protected $dates = [
+        'created_at',
+        'updated_at',
+    ];
+
+    #[\Override]
+    protected static function booted()
+    {
+        static::creating(function (Company $company): void {
+            $company->id = (string) Str::uuid();
+        });
+    }
 
     /**
      * @phpstan-return BelongsToMany<User, static>
@@ -17,6 +36,7 @@ class Company extends BaseModel
     {
         /** @var BelongsToMany<User, static> $relation */
         $relation = $this->belongsToMany(User::class, 'company_user');
+
         return $relation;
     }
 
@@ -27,6 +47,7 @@ class Company extends BaseModel
     {
         /** @var BelongsToMany<Role, static> $relation */
         $relation = $this->belongsToMany(Role::class, 'company_role');
+
         return $relation;
     }
 
@@ -37,6 +58,7 @@ class Company extends BaseModel
     {
         /** @var BelongsToMany<Permission, static> $relation */
         $relation = $this->belongsToMany(Permission::class, 'company_user_permission');
+
         return $relation;
     }
 }

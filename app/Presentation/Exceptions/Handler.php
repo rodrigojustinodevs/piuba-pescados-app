@@ -83,8 +83,11 @@ class Handler extends ExceptionHandler
      */
     private function handleValidationException(ValidationException $exception): JsonResponse
     {
-        $errors     = $exception->errors();
-        $firstError = reset($errors)[0] ?? 'Validation error';
+        $errors = $exception->errors();
+
+        $firstError = $errors ? reset($errors) : ['Validation error'];
+
+        $firstErrorMessage = is_array($firstError) && isset($firstError[0]) ? (string) $firstError[0] : 'Validation error';
 
         return ApiResponse::error(
             [
@@ -93,8 +96,8 @@ class Handler extends ExceptionHandler
                 'file'    => $exception->getFile(),
                 'line'    => $exception->getLine(),
             ],
-            $firstError,
-            JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            $firstErrorMessage,
+            JsonResponse::HTTP_UNPROCESSABLE_ENTITY,  // Código de erro de validação
             true
         );
     }

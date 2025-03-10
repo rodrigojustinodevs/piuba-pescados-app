@@ -61,13 +61,17 @@ class CompanyRepository implements CompanyRepositoryInterface
      */
     public function showCompany(string $field, string|int $value): ?Company
     {
-        return Company::find($value);
+        return Company::where($field,$value)->first();
     }
 
     public function delete(string $id): bool
     {
         $company = Company::find($id);
 
-        return $company->delete();
+        if (!$company) {
+            return false;
+        }
+
+        return (bool) $company->delete();
     }
 }

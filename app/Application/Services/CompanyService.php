@@ -49,12 +49,17 @@ class CompanyService
     /**
      * Returns the details of a company.
      */
-    public function showCompany(string $id): CompanyDTO
+    public function showCompany(string $id): ?CompanyDTO
     {
         $company = $this->companyRepository->showCompany('id', $id);
 
+        if (!$company) {
+            return null;
+        }
+
         return $this->mapToDTO($company);
     }
+
 
     /**
      * @param array<string, mixed> $data
@@ -77,8 +82,13 @@ class CompanyService
         return DB::transaction(fn (): bool => $this->companyRepository->delete($id));
     }
 
-    private function mapToDTO(Company $company): CompanyDTO
+    private function mapToDTO(?Company $company): ?CompanyDTO
     {
+
+        if (!$company) {
+            return null;
+        }
+
         return new CompanyDTO(
             id: $company->id,
             name: $company->name,
@@ -86,8 +96,9 @@ class CompanyService
             address: $company->address,
             phone: $company->phone,
             status: Status::from($company->status),
-            createdAt: $company->created_at ? $company->created_at->toDateTimeString() : null,
-            updatedAt: $company->updated_at ? $company->updated_at->toDateTimeString() : null
+            createdAt: $company->created_at?->toDateTimeString(),
+            updatedAt: $company->updated_at?->toDateTimeString()
         );
     }
+
 }

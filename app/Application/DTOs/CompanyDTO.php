@@ -26,15 +26,30 @@ class CompanyDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            id: strval($data['id']),
-            name: strval($data['name']),
-            cnpj: strval($data['cnpj']),
-            address: strval($data['address']),
-            phone: strval($data['phone']),
-            status: Status::from(strval($data['status'])),
-            createdAt: isset($data['created_at']) ? strval($data['created_at']) : null,
-            updatedAt: isset($data['updated_at']) ? strval($data['updated_at']) : null
+            id: self::toString($data['id']),
+            name: self::toString($data['name']),
+            cnpj: self::toString($data['cnpj']),
+            address: self::toString($data['address']),
+            phone: self::toString($data['phone']),
+            status: Status::from(self::toString($data['status'])),
+            createdAt: isset($data['created_at']) ? self::toString($data['created_at']) : null,
+            updatedAt: isset($data['updated_at']) ? self::toString($data['updated_at']) : null
         );
+    }
+
+    /**
+     * Convert a mixed value to string safely.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    private static function toString($value): string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        return strval($value); // or just return '' if you prefer to handle non-string values differently
     }
 
     /**
@@ -55,7 +70,6 @@ class CompanyDTO
     }
 
     /**
-     *
      * @return bool
      */
     public function isEmpty(): bool

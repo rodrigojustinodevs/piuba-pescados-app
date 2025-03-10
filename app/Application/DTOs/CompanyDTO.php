@@ -26,14 +26,14 @@ class CompanyDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            id: (string) $data['id'],  // Garantir que seja string
-            name: (string) $data['name'],
-            cnpj: (string) $data['cnpj'],
-            address: (string) $data['address'],
-            phone: (string) $data['phone'],
-            status: Status::from((string) $data['status']), // Converter para string antes de passar ao Enum
-            createdAt: isset($data['created_at']) ? (string) $data['created_at'] : null,
-            updatedAt: isset($data['updated_at']) ? (string) $data['updated_at'] : null
+            id: strval($data['id']),
+            name: strval($data['name']),
+            cnpj: strval($data['cnpj']),
+            address: strval($data['address']),
+            phone: strval($data['phone']),
+            status: Status::from(strval($data['status'])),
+            createdAt: isset($data['created_at']) ? strval($data['created_at']) : null,
+            updatedAt: isset($data['updated_at']) ? strval($data['updated_at']) : null
         );
     }
 

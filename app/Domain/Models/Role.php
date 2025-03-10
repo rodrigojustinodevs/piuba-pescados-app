@@ -9,8 +9,9 @@ use Illuminate\Support\Str;
 
 class Role extends BaseModel
 {
+    public string $id;
 
-
+    #[\Override]
     protected static function booted()
     {
         static::creating(function (Role $role): void {

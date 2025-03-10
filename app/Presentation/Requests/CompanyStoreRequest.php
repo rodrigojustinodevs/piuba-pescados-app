@@ -25,8 +25,7 @@ class CompanyStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'    => ['required', 'string'],
-            'status'  => ['sometimes', Rule::in(['active'])],
+            'name'    => ['required', 'string', 'max:255'],
             'cnpj'    => ['required', 'string'],
             'address' => ['required', 'string'],
             'phone'   => ['required', 'string'],

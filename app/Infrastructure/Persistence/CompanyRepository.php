@@ -5,45 +5,69 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Domain\Models\Company;
-use App\Domain\Repositories\AbstractRepository;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
 
-class CompanyRepository extends AbstractRepository implements CompanyRepositoryInterface
+class CompanyRepository implements CompanyRepositoryInterface
 {
-    public function __construct()
-    {
-        parent::__construct(new Company());
-    }
-
+    /**
+     * Create a new company.
+     *
+     * @param array<string, mixed> $data
+     * @return Company
+     */
     public function create(array $data): Company
     {
         return Company::create($data);
     }
 
+    /**
+     * Update an existing company.
+     *
+     * @param string $id
+     * @param array<string, mixed> $data
+     * @return Company|null
+     */
     public function update(string $id, array $data): ?Company
     {
         $company = Company::find($id);
+
         if ($company) {
             $company->update($data);
+
             return $company;
         }
+
         return null;
     }
 
-    public function findAll(): array
-    {
-        return $this->getModel()->query()->get()->toArray();
-    }
-
+    /**
+     * Get paginated companies.
+     *
+     * @param int $page
+     * @return PaginationInterface
+     */
     public function paginate(int $page = 25): PaginationInterface
     {
-        return new PaginationPresentr($this->getModel()::paginate($page));
+        return new PaginationPresentr(Company::paginate($page));
     }
 
+    /**
+     * Show company by field and value.
+     *
+     * @param string $field
+     * @param string|int $value
+     * @return Company|null
+     */
     public function showCompany(string $field, string|int $value): ?Company
     {
-        $result = $this->getModel()->query()->where($field, $value)->first();
-        return $result;
+        return Company::find($value);
+    }
+
+    public function delete(string $id): bool
+    {
+        $company = Company::find($id);
+
+        return $company->delete();
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Presentation\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CompanyUpdateRequest extends FormRequest
 {
@@ -25,9 +24,9 @@ class CompanyUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'               => 'sometimes|string',
-            'cnpj'               => 'sometimes|string',
-            'cell_phone'         => 'string',
+            'name'       => 'sometimes|string',
+            'cnpj'       => 'sometimes|string',
+            'cell_phone' => 'string',
         ];
     }
 }

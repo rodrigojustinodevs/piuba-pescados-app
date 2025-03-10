@@ -10,7 +10,8 @@ use App\Presentation\Requests\CompanyUpdateRequest;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-    use Throwable;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CompanyController
 {
@@ -25,8 +26,8 @@ class CompanyController
     public function index(): JsonResponse
     {
         try {
-            $companies = $this->companyService->showAllCompanies();
-            $data = $companies->toArray(request());
+            $companies  = $this->companyService->showAllCompanies();
+            $data       = $companies->toArray(request());
             $pagination = $companies->additional['pagination'] ?? null;
 
             return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
@@ -43,7 +44,7 @@ class CompanyController
         try {
             $company = $this->companyService->showCompany($id);
 
-            if (!$company) {
+            if ($company->isEmpty()) {
                 return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -52,6 +53,7 @@ class CompanyController
             return $this->handleException($exception, 'Company not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     /**
      * Store a newly created company.
@@ -89,7 +91,7 @@ class CompanyController
         try {
             $deleted = $this->companyService->deleteCompany($id);
 
-            if (!$deleted) {
+            if (! $deleted) {
                 return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -107,15 +109,23 @@ class CompanyController
         string $userMessage = 'An error occurred',
         int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
     ): JsonResponse {
+        Log::error('Error in CompanyController', [
+            'message' => $exception->getMessage(),
+            'code' => $exception->getCode(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+        ]);
+
         return ApiResponse::error(
             [
                 'message' => $exception->getMessage(),
-                'code'    => $exception->getCode(),
-                'file'    => $exception->getFile(),
-                'line'    => $exception->getLine(),
+                'code' => $exception->getCode(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
             ],
             $userMessage,
             $statusCode
         );
     }
+
 }

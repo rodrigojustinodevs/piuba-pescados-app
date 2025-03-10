@@ -53,4 +53,13 @@ class CompanyDTO
             'updated_at' => $this->updatedAt,
         ];
     }
+
+    /**
+     *
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return empty($this->id) && empty($this->name) && empty($this->cnpj) && empty($this->address) && empty($this->phone);
+    }
 }

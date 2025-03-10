@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain\Repositories;
 
 use App\Exceptions\NotFoundException;
@@ -7,34 +9,47 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
 
+/**
+ * Abstract Repository providing common database operations.
+ *
+ * @template TModel of Model
+ */
 abstract class AbstractRepository
 {
-    protected Model $model;
-
-    public function __construct(Model $model)
+    /**
+     * @param TModel $model
+     */
+    public function __construct(protected Model $model)
     {
-        $this->model = $model;
     }
 
-    public function __call($method, $attributes)
+    /**
+     * Dynamically handle method calls to the model.
+     *
+     * @param string $method
+     * @param array<int|string, mixed> $attributes
+     * @return mixed
+     */
+    public function __call(string $method, array $attributes): mixed
     {
         return $this->model->$method(...$attributes);
     }
 
     /**
-     * @return Model
+     * Get the repository model instance.
+     *
+     * @return TModel
      */
     public function getModel(): Model
     {
         return $this->model;
     }
 
-
     /**
-     * Undocumented function
+     * Insert multiple records into the database.
      *
-     * @param array $attributes
-     * @return boolean
+     * @param array<int, array<string, mixed>> $attributes
+     * @return bool
      */
     public function createMany(array $attributes): bool
     {
@@ -42,17 +57,18 @@ abstract class AbstractRepository
     }
 
     /**
-     * Undocumented function
+     * Find a record by its primary key.
      *
-     * @param integer|string $id
-     * @param array $columns
-     * @return Model|null
+     * @param int|string $id
+     * @param array<int, string> $columns
+     * @return TModel
+     * @throws NotFoundException
      */
-    public function find(int|string $id, array $columns = ['*']): ?Model
+    public function find(int|string $id, array $columns = ['*']): Model
     {
         $record = $this->model->find($id, $columns);
 
-        if (!$record) {
+        if (! $record) {
             throw new NotFoundException('Not Found', Response::HTTP_NOT_FOUND);
         }
 
@@ -60,17 +76,18 @@ abstract class AbstractRepository
     }
 
     /**
-     * Undocumented function
+     * Find the first record matching attributes or throw an exception.
      *
-     * @param array $attributes
-     * @param array $columns
-     * @return object
+     * @param array<string, mixed> $attributes
+     * @param array<int, string> $columns
+     * @return TModel
+     * @throws NotFoundException
      */
-    public function firstOrFailByColumn(array $attributes, array $columns = ['*']): object
+    public function firstOrFailByColumn(array $attributes, array $columns = ['*']): Model
     {
         $record = $this->model->where($attributes)->first($columns);
 
-        if (!$record) {
+        if (! $record) {
             throw new NotFoundException("Record not found", Response::HTTP_NOT_FOUND);
         }
 
@@ -78,51 +95,55 @@ abstract class AbstractRepository
     }
 
     /**
-     * Undocumented function
+     * Delete a record matching the given attributes.
      *
-     * @param array $attributes
-     * @return boolean
+     * @param array<string, mixed> $attributes
+     * @return bool
+     * @throws NotFoundException
      */
     public function delete(array $attributes): bool
     {
         $record = $this->firstOrFailByColumn($attributes);
+
         return $record->delete();
     }
 
     /**
-     * Undocumented function
+     * Increment a column value for a specific record.
      *
-     * @param integer $id
+     * @param int $id
      * @param string $column
-     * @param integer $amount
-     * @param array $extra
-     * @return integer
+     * @param int $amount
+     * @param array<string, mixed> $extra
+     * @return int
      */
     public function increment(int $id, string $column, int $amount = 1, array $extra = []): int
     {
         $record = $this->find($id);
+
         return $record->increment($column, $amount, $extra);
     }
 
     /**
-     * Undocumented function
+     * Decrement a column value for a specific record.
      *
-     * @param integer $id
+     * @param int $id
      * @param string $column
-     * @param integer $amount
-     * @param array $extra
-     * @return integer
+     * @param int $amount
+     * @param array<string, mixed> $extra
+     * @return int
      */
     public function decrement(int $id, string $column, int $amount = 1, array $extra = []): int
     {
         $record = $this->find($id);
+
         return $record->decrement($column, $amount, $extra);
     }
 
     /**
-     * Undocumented function
+     * Retrieve all records.
      *
-     * @return Collection
+     * @return Collection<int, TModel>
      */
     public function all(): Collection
     {
@@ -130,10 +151,10 @@ abstract class AbstractRepository
     }
 
     /**
-     * Undocumented function
+     * Save the given model instance.
      *
-     * @param Model $model
-     * @return boolean
+     * @param TModel $model
+     * @return bool
      */
     public function save(Model $model): bool
     {
@@ -141,11 +162,11 @@ abstract class AbstractRepository
     }
 
     /**
-     * Undocumented function
+     * Find the first record matching attributes or create a new one.
      *
-     * @param array $attributes
-     * @param array $values
-     * @return Model
+     * @param array<string, mixed> $attributes
+     * @param array<string, mixed> $values
+     * @return TModel
      */
     public function firstOrCreate(array $attributes, array $values): Model
     {
@@ -153,21 +174,22 @@ abstract class AbstractRepository
     }
 
     /**
-     * Undocumented function
+     * Update a record by its primary key.
      *
-     * @param integer $id
-     * @param array $values
+     * @param int $id
+     * @param array<string, mixed> $values
      * @param string $primaryKey
-     * @return integer
+     * @return int
+     * @throws NotFoundException
      */
     public function updateById(int $id, array $values, string $primaryKey = 'id'): int
     {
         $record = $this->model->where($primaryKey, $id)->first();
 
-        if (!$record) {
+        if (! $record) {
             throw new NotFoundException("Record not found", Response::HTTP_NOT_FOUND);
         }
 
-        return $record->update($values);
+        return $record->update($values) ? 1 : 0;
     }
 }

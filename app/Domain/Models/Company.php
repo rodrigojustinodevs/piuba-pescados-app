@@ -21,6 +21,11 @@ class Company extends BaseModel
         'updated_at',
     ];
 
+    /** @var array<string, mixed> */
+    protected $attributes = [
+        'status' => 'active',
+    ];
+
     #[\Override]
     protected static function booted()
     {

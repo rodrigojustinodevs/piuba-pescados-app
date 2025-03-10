@@ -9,8 +9,8 @@ use App\Domain\Enums\Status;
 use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Presentation\Resources\Company\CompanyResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class CompanyService
 {
@@ -30,7 +30,7 @@ class CompanyService
         });
     }
 
-    public function showAllCompanies()
+    public function showAllCompanies(): AnonymousResourceCollection
     {
         $response = $this->companyRepository->paginate();
 
@@ -42,7 +42,7 @@ class CompanyService
                     'last_page'    => $response->lastPage(),
                     'first_page'   => $response->firstPage(),
                     'per_page'     => $response->perPage(),
-                ]
+                ],
             ]);
     }
 
@@ -64,7 +64,7 @@ class CompanyService
         return DB::transaction(function () use ($id, $data): CompanyDTO {
             $company = $this->companyRepository->update($id, $data);
 
-            if (!$company) {
+            if (! $company instanceof Company) {
                 throw new \Exception('Company not found');
             }
 
@@ -74,9 +74,7 @@ class CompanyService
 
     public function deleteCompany(string $id): bool
     {
-        return DB::transaction(function () use ($id): bool {
-            return $this->companyRepository->delete(['id' => $id]);
-        });
+        return DB::transaction(fn (): bool => $this->companyRepository->delete($id));
     }
 
     private function mapToDTO(Company $company): CompanyDTO

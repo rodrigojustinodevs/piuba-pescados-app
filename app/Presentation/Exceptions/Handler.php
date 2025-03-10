@@ -5,63 +5,58 @@ declare(strict_types=1);
 namespace App\Presentation\Exceptions;
 
 use App\Presentation\Response\ApiResponse;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\AuthenticationException;
-use Symfony\Component\HttpKernel\Exception\{
-    AccessDeniedHttpException,
-    MethodNotAllowedHttpException,
-    NotFoundHttpException
-};
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
-    protected array $levels = [];
-    protected array $dontReport = [];
-    protected array $dontFlash = [
+    protected $levels = [];
+
+    protected $dontReport = [];
+
+    protected $dontFlash = [
         'current_password',
         'password',
         'password_confirmation',
     ];
 
+    #[\Override]
     public function register(): void
     {
-        $this->renderable(fn (NotFoundHttpException $exception) =>
-            $this->handleException($exception, 'Route not found', JsonResponse::HTTP_NOT_FOUND)
+        $this->renderable(
+            fn (NotFoundHttpException $exception): JsonResponse => $this->handleException($exception, 'Route not found', JsonResponse::HTTP_NOT_FOUND)
         );
 
-        $this->renderable(fn (MethodNotAllowedHttpException $exception) =>
-            $this->handleException($exception, 'Method not allowed', JsonResponse::HTTP_METHOD_NOT_ALLOWED)
+        $this->renderable(
+            fn (MethodNotAllowedHttpException $exception): JsonResponse => $this->handleException($exception, 'Method not allowed', JsonResponse::HTTP_METHOD_NOT_ALLOWED)
         );
 
-        $this->renderable(fn (AuthenticationException $exception) =>
-            $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED)
+        $this->renderable(
+            fn (AuthenticationException $exception): JsonResponse => $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED)
         );
 
-        $this->renderable(fn (AccessDeniedHttpException $exception) =>
-            $this->handleException($exception, 'Access denied', JsonResponse::HTTP_FORBIDDEN)
+        $this->renderable(
+            fn (AccessDeniedHttpException $exception): JsonResponse => $this->handleException($exception, 'Access denied', JsonResponse::HTTP_FORBIDDEN)
         );
 
-        $this->renderable(fn (ValidationException $exception) =>
-            $this->handleValidationException($exception)
+        $this->renderable(
+            fn (ValidationException $exception): JsonResponse => $this->handleValidationException($exception)
         );
 
-        $this->renderable(fn (Throwable $exception, Request $request) =>
-            $this->handleException($exception, 'Internal server error', JsonResponse::HTTP_INTERNAL_SERVER_ERROR, $request)
+        $this->renderable(
+            fn (Throwable $exception, Request $request): JsonResponse => $this->handleException($exception, 'Internal server error', JsonResponse::HTTP_INTERNAL_SERVER_ERROR, $request)
         );
     }
 
     /**
      * Método genérico para tratamento de exceções
-     *
-     * @param Throwable $exception
-     * @param string $defaultMessage
-     * @param int $statusCode
-     * @param Request|null $request
-     * @return JsonResponse
      */
     private function handleException(Throwable $exception, string $defaultMessage, int $statusCode, ?Request $request = null): JsonResponse
     {
@@ -85,13 +80,10 @@ class Handler extends ExceptionHandler
 
     /**
      * Tratamento específico para erros de validação
-     *
-     * @param ValidationException $exception
-     * @return JsonResponse
      */
     private function handleValidationException(ValidationException $exception): JsonResponse
     {
-        $errors = $exception->errors();
+        $errors     = $exception->errors();
         $firstError = reset($errors)[0] ?? 'Validation error';
 
         return ApiResponse::error(

@@ -3,13 +3,13 @@
 declare(strict_types=1);
 
 use App\Domain\Models\Company;
-use App\Infrastructure\Persistence\CompanyRepositoryImpl;
+use App\Infrastructure\Persistence\CompanyRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 test('pode criar uma empresa', function (): void {
-    $repository = new CompanyRepositoryImpl();
+    $repository = new CompanyRepository();
 
     $data = [
         'name'    => 'Empresa Teste',

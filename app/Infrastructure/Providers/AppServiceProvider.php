@@ -6,6 +6,8 @@ namespace App\Infrastructure\Providers;
 
 use App\Domain\Enums\Can;
 use App\Domain\Models\User;
+use App\Domain\Repositories\CompanyRepositoryInterface;
+use App\Infrastructure\Persistence\CompanyRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -17,8 +19,6 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Override;
-use App\Domain\Repositories\CompanyRepositoryInterface;
-use App\Infrastructure\Persistence\CompanyRepository;
 
 class AppServiceProvider extends ServiceProvider
 {

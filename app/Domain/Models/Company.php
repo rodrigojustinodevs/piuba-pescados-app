@@ -21,16 +21,12 @@ class Company extends BaseModel
         'updated_at',
     ];
 
-    /** @var array<string, mixed> */
-    protected $attributes = [
-        'status' => 'active',
-    ];
-
     #[\Override]
     protected static function booted()
     {
         static::creating(function (Company $company): void {
             $company->id = (string) Str::uuid();
+            $company->status = (string) 'active';
         });
     }
 

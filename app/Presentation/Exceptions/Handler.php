@@ -27,39 +27,50 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    #[\Override]
     public function register(): void
     {
         $this->renderable(
-            fn (NotFoundHttpException $exception): JsonResponse => $this->handleException($exception, 'Route not found', JsonResponse::HTTP_NOT_FOUND)
+            fn (NotFoundHttpException $exception): JsonResponse =>
+            $this->handleException($exception, 'Route not found', JsonResponse::HTTP_NOT_FOUND)
         );
 
         $this->renderable(
-            fn (MethodNotAllowedHttpException $exception): JsonResponse => $this->handleException($exception, 'Method not allowed', JsonResponse::HTTP_METHOD_NOT_ALLOWED)
+            fn (MethodNotAllowedHttpException $exception): JsonResponse =>
+            $this->handleException($exception, 'Method not allowed', JsonResponse::HTTP_METHOD_NOT_ALLOWED)
         );
 
         $this->renderable(
-            fn (AuthenticationException $exception): JsonResponse => $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED)
+            fn (AuthenticationException $exception): JsonResponse =>
+            $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED)
         );
 
         $this->renderable(
-            fn (AccessDeniedHttpException $exception): JsonResponse => $this->handleException($exception, 'Access denied', JsonResponse::HTTP_FORBIDDEN)
+            fn (AccessDeniedHttpException $exception): JsonResponse =>
+            $this->handleException($exception, 'Access denied', JsonResponse::HTTP_FORBIDDEN)
         );
 
         $this->renderable(
-            fn (ValidationException $exception): JsonResponse => $this->handleValidationException($exception)
+            fn (ValidationException $exception): JsonResponse =>
+            $this->handleValidationException($exception)
         );
 
         $this->renderable(
-            fn (Throwable $exception, Request $request): JsonResponse => $this->handleException($exception, 'Internal server error', JsonResponse::HTTP_INTERNAL_SERVER_ERROR, $request)
+            fn (Throwable $exception, Request $request): JsonResponse =>
+            $this->handleException(
+                $exception,
+                'Internal server error',
+                JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+                $request
+            )
         );
     }
 
-    /**
-     * Método genérico para tratamento de exceções
-     */
-    private function handleException(Throwable $exception, string $defaultMessage, int $statusCode, ?Request $request = null): JsonResponse
-    {
+    private function handleException(
+        Throwable $exception,
+        string $defaultMessage,
+        int $statusCode,
+        ?Request $request = null
+    ): JsonResponse {
         $debug = config('app.debug') ? [
             'message' => $exception->getMessage(),
             'line'    => $exception->getLine(),
@@ -78,16 +89,14 @@ class Handler extends ExceptionHandler
         );
     }
 
-    /**
-     * Tratamento específico para erros de validação
-     */
     private function handleValidationException(ValidationException $exception): JsonResponse
     {
         $errors = $exception->errors();
 
         $firstError = $errors ? reset($errors) : ['Validation error'];
 
-        $firstErrorMessage = is_array($firstError) && isset($firstError[0]) ? (string) $firstError[0] : 'Validation error';
+        $firstErrorMessage = is_array($firstError) && isset($firstError[0]) ?
+                                (string) $firstError[0] : 'Validation error';
 
         return ApiResponse::error(
             [

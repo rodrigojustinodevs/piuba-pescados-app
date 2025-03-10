@@ -43,8 +43,7 @@ class CompanyController
     {
         try {
             $company = $this->companyService->showCompany($id);
-
-            if (!$company) {
+            if (!$company || $company->isEmpty()) {
                 return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -127,5 +126,4 @@ class CompanyController
             $statusCode
         );
     }
-
 }

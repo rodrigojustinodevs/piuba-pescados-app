@@ -60,6 +60,10 @@ class CompanyDTO
      */
     public function isEmpty(): bool
     {
-        return empty($this->id) && empty($this->name) && empty($this->cnpj) && empty($this->address) && empty($this->phone);
+        return empty($this->id) &&
+               empty($this->name) &&
+               empty($this->cnpj) &&
+               empty($this->address) &&
+               empty($this->phone);
     }
 }

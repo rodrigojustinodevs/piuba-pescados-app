@@ -100,5 +100,4 @@ class CompanyService
             updatedAt: $company->updated_at?->toDateTimeString()
         );
     }
-
 }

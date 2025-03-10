@@ -17,8 +17,7 @@ use Ramsey\Uuid\Uuid;
 use Mockery;
 use Pest\Laravel\{get, post, put, delete};
 
-it('returns a successful response for index', function (): void {
-    // Arrange: Simula duas empresas
+test('returns a successful response for index', function (): void {
     $companyData = [
         [
             'id'         => Uuid::uuid4()->toString(),
@@ -56,7 +55,6 @@ it('returns a successful response for index', function (): void {
         );
     }
 
-    // Simula o paginator retornado pelo repository
     $collection = new AnonymousResourceCollection(collect($items), null);
     $collection->additional = [
         'pagination' => [
@@ -76,21 +74,18 @@ it('returns a successful response for index', function (): void {
 
     $controller = new CompanyController($companyService);
 
-    // Act
     $response = $controller->index();
 
-    // Assert
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
 
     $content = json_decode($response->getContent());
-    // Ajustado para acessar a chave "data"
+
     expect(count($content->response))->toBe(count($items));
     expect($content->pagination->total)->toBe(count($items));
 });
 
 test('returns a company for show when found', function (): void {
-    // Arrange
     $companyId = Uuid::uuid4()->toString();
     $companyDTO = new CompanyDTO(
         $companyId,
@@ -111,10 +106,8 @@ test('returns a company for show when found', function (): void {
 
     $controller = new CompanyController($companyService);
 
-    // Act
     $response = $controller->show($companyId);
 
-    // Assert
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
 
@@ -122,8 +115,7 @@ test('returns a company for show when found', function (): void {
     expect($content->response->id)->toBe($companyId);
 });
 
-it('returns 404 when show company is empty', function (): void {
-    // Arrange: Simula um CompanyDTO vazio (ou inválido)
+test('returns 404 when show company is empty', function (): void {
     $companyId = Uuid::uuid4()->toString();
     $emptyCompany = new CompanyDTO('', '', '', '', '', Status::ACTIVE, null, null);
 
@@ -135,10 +127,8 @@ it('returns 404 when show company is empty', function (): void {
 
     $controller = new CompanyController($companyService);
 
-    // Act
     $response = $controller->show($companyId);
 
-    // Assert
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_NOT_FOUND);
 
@@ -146,8 +136,7 @@ it('returns 404 when show company is empty', function (): void {
     expect($content->message)->toBe('Company not found');
 });
 
-it('creates a company via store', function (): void {
-    // Arrange
+test('creates a company via store', function (): void {
     $companyId = Uuid::uuid4()->toString();
     $companyDTO = new CompanyDTO(
         $companyId,
@@ -173,10 +162,8 @@ it('creates a company via store', function (): void {
 
     $controller = new CompanyController($companyService);
 
-    // Act
     $response = $controller->store($request);
 
-    // Assert
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_CREATED);
 
@@ -185,8 +172,7 @@ it('creates a company via store', function (): void {
     expect($content->response->name)->toBe('New Company');
 });
 
-it('updates a company via update', function (): void {
-    // Arrange
+test('updates a company via update', function (): void {
     $companyId = Uuid::uuid4()->toString();
     $companyDTO = new CompanyDTO(
         $companyId,
@@ -212,10 +198,8 @@ it('updates a company via update', function (): void {
 
     $controller = new CompanyController($companyService);
 
-    // Act
     $response = $controller->update($request, $companyId);
 
-    // Assert
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
 
@@ -224,8 +208,7 @@ it('updates a company via update', function (): void {
     expect($content->response->name)->toBe('Updated Company');
 });
 
-it('deletes a company via destroy', function (): void {
-    // Arrange
+test('deletes a company via destroy', function (): void {
     $companyId = Uuid::uuid4()->toString();
 
     $companyService = Mockery::mock(CompanyService::class);
@@ -236,10 +219,8 @@ it('deletes a company via destroy', function (): void {
 
     $controller = new CompanyController($companyService);
 
-    // Act
     $response = $controller->destroy($companyId);
 
-    // Assert
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
 
@@ -247,8 +228,7 @@ it('deletes a company via destroy', function (): void {
     expect($content->message)->toBe('Company successfully deleted');
 });
 
-it('returns 404 when company deletion fails', function (): void {
-    // Arrange
+test('returns 404 when company deletion fails', function (): void {
     $companyId = Uuid::uuid4()->toString();
 
     $companyService = Mockery::mock(CompanyService::class);
@@ -259,10 +239,8 @@ it('returns 404 when company deletion fails', function (): void {
 
     $controller = new CompanyController($companyService);
 
-    // Act
     $response = $controller->destroy($companyId);
 
-    // Assert
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_NOT_FOUND);
 

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Presentation\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\QueryException;
 
 class CompanyStoreRequest extends FormRequest
 {
@@ -25,10 +26,10 @@ class CompanyStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'    => ['required', 'string', 'max:255'],
-            'cnpj'    => ['required', 'string'],
-            'address' => ['required', 'string'],
-            'phone'   => ['required', 'string'],
+            'name' => 'required|string|max:255',
+            'cnpj' => 'required|string|unique:companies,cnpj',
+            'address' => 'required|string',
+            'phone' => 'required|string',
         ];
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -102,7 +103,7 @@ class Handler extends ExceptionHandler
             [
                 'message' => $exception->getMessage(),
                 'code'    => $exception->getCode(),
-                'file'    => $exception->getFile(),
+                'errors'    => $errors,
                 'line'    => $exception->getLine(),
             ],
             $firstErrorMessage,

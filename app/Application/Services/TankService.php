@@ -98,11 +98,11 @@ class TankService
             status: Status::from($tank->status),
             cultivation: Cultivation::from($tank->cultivation),
             tankType: [
-                'id'   => $tank->tankType?->id ?? '',
-                'name' => $tank->tankType?->name ?? ''
+                'id'   => $tank->tankType->id ?? '',
+                'name' => $tank->tankType->name ?? ''
             ],
             company: [
-                'name' => $tank->company?->name ?? ''
+                'name' => $tank->company->name ?? ''
             ],
             createdAt: $tank->created_at?->toDateTimeString(),
             updatedAt: $tank->updated_at?->toDateTimeString()

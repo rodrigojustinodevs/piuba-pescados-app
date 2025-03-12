@@ -7,6 +7,7 @@ namespace App\Infrastructure\Persistence;
 use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CompanyRepository implements CompanyRepositoryInterface
 {
@@ -49,9 +50,10 @@ class CompanyRepository implements CompanyRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        return new PaginationPresentr(Company::paginate($page));
+        /** @var LengthAwarePaginator<Company> $paginator */
+        $paginator = Company::paginate($page);
+        return new PaginationPresentr($paginator);
     }
-
     /**
      * Show company by field and value.
      *

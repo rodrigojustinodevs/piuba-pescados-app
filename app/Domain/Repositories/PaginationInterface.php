@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use Illuminate\Database\Eloquent\Model;
+
 interface PaginationInterface
 {
     /**

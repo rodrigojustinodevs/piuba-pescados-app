@@ -6,6 +6,12 @@ namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property string $id
+ * @property string $name
+ *
+ * @property-read Tank[] $tanks
+ */
 class TankType extends BaseModel
 {
     protected $table = 'tank_types';
@@ -24,14 +30,13 @@ class TankType extends BaseModel
         return false;
     }
 
-
     /**
-     * @phpstan-return BelongsToMany<Tank, static>
+     * @phpstan-return HasMany<Tank, static>
      */
     public function tanks(): HasMany
     {
         /** @var HasMany<Tank, static> $relation */
-        $relation = $this->hasMany(Tank::class, 'tank_types_id');
+        $relation = $this->hasMany(Tank::class, 'tank_type_id'); // Correção do nome da chave
 
         return $relation;
     }

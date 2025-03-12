@@ -9,6 +9,10 @@ use App\Domain\Enums\Status;
 
 class TankDTO
 {
+    /**
+     * @param array{id?: string|null, name?: string|null}|null $tankType
+     * @param array{name?: string|null}|null $company
+     */
     public function __construct(
         public string $id,
         public string $name,
@@ -24,8 +28,6 @@ class TankDTO
     }
 
     /**
-     * Cria um DTO a partir de um array de dados.
-     *
      * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
@@ -50,8 +52,6 @@ class TankDTO
     }
 
     /**
-     * Converte o DTO para um array.
-     *
      * @return array<string, mixed>
      */
     public function toArray(): array
@@ -64,15 +64,13 @@ class TankDTO
             'status'          => $this->status->value,
             'cultivation'     => $this->cultivation->value,
             'tank_type'       => $this->tankType,
-            'company'       => $this->company,
+            'company'         => $this->company,
             'created_at'      => $this->createdAt,
             'updated_at'      => $this->updatedAt,
         ];
     }
 
     /**
-     * Verifica se o DTO está vazio.
-     *
      * @return bool
      */
     public function isEmpty(): bool

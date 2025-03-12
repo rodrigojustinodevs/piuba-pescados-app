@@ -30,8 +30,8 @@ class TankStoreRequest extends FormRequest
             'name'          => ['required', 'string', 'max:255'],
             'capacity_liters' => ['required', 'integer', 'min:1'],
             'location'      => ['required', 'string'],
-            'status'        => ['required', Rule::in(['active', 'inactive'])],
-            'cultivation'   => ['required', Rule::in(['daycare', 'nursery'])],
+            'status' => ['required', Rule::in(['active', 'inactive'])->__toString()],
+            'cultivation' => ['required', Rule::in(['daycare', 'nursery'])->__toString()],
         ];
     }
 }

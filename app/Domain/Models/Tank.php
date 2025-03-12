@@ -5,9 +5,22 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property string $id
+ * @property string $name
+ * @property int $capacity_liters
+ * @property string $location
+ * @property string $status
+ * @property string $cultivation
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ *
+ * @property-read TankType|null $tankType
+ * @property-read Company|null $company
+ */
 class Tank extends BaseModel
 {
     protected $keyType = 'string';
@@ -16,13 +29,13 @@ class Tank extends BaseModel
 
     protected $fillable = [
         'id',
-        'company_id',
-        'tank_types_id',
         'name',
         'capacity_liters',
         'location',
         'status',
-        'cultivation'
+        'cultivation',
+        'tank_type_id',
+        'company_id',
     ];
 
     /** @var array<string> */
@@ -36,13 +49,13 @@ class Tank extends BaseModel
     {
         static::creating(function (Tank $tank): void {
             $tank->id = (string) Str::uuid();
-            $tank->status = (string) 'active';
-            $tank->cultivation = (string) 'nursery';
+            $tank->status = 'active';
+            $tank->cultivation = 'nursery';
         });
     }
 
     /**
-     * @phpstan-return BelongsToMany<Company, static>
+     * @phpstan-return BelongsTo<Company, static>
      */
     public function company(): BelongsTo
     {
@@ -53,12 +66,12 @@ class Tank extends BaseModel
     }
 
     /**
-     * @phpstan-return BelongsToMany<TankType, static>
+     * @phpstan-return BelongsTo<TankType, static>
      */
     public function tankType(): BelongsTo
     {
         /** @var BelongsTo<TankType, static> $relation */
-        $relation = $this->belongsTo(TankType::class, 'tank_types_id');
+        $relation = $this->belongsTo(TankType::class, 'tank_type_id'); // Correção do nome da chave
 
         return $relation;
     }

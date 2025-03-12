@@ -6,21 +6,25 @@ namespace App\Infrastructure\Persistence;
 
 use App\Domain\Repositories\PaginationInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Domain\Models\Company;
+use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @template T of \Illuminate\Database\Eloquent\Model
+ */
 class PaginationPresentr implements PaginationInterface
 {
+    /** @var \Illuminate\Pagination\LengthAwarePaginator<T> */
+    protected \Illuminate\Pagination\LengthAwarePaginator $paginator;
+
     /**
-     * Constructor accepts a paginator with specified value type.
-     * @param LengthAwarePaginator<Company> $paginator
+     * @param \Illuminate\Pagination\LengthAwarePaginator<T> $paginator
      */
-    public function __construct(protected LengthAwarePaginator $paginator)
+    public function __construct(\Illuminate\Pagination\LengthAwarePaginator $paginator)
     {
+        $this->paginator = $paginator;
     }
 
     /**
-     * Get the total number of items.
-     *
      * @return int
      */
     public function total(): int
@@ -29,9 +33,7 @@ class PaginationPresentr implements PaginationInterface
     }
 
     /**
-     * Get the items of the current page.
-     *
-     * @return array<Company>
+     * @return array<T>
      */
     public function items(): array
     {
@@ -39,8 +41,6 @@ class PaginationPresentr implements PaginationInterface
     }
 
     /**
-     * Get the current page number.
-     *
      * @return int
      */
     public function currentPage(): int
@@ -49,8 +49,6 @@ class PaginationPresentr implements PaginationInterface
     }
 
     /**
-     * Get the number of items per page.
-     *
      * @return int
      */
     public function perPage(): int
@@ -59,18 +57,14 @@ class PaginationPresentr implements PaginationInterface
     }
 
     /**
-     * Get the first item index of the current page.
-     *
      * @return int
      */
     public function firstPage(): int
     {
-        return (int) $this->paginator->firstItem();
+        return $this->paginator->firstItem();
     }
 
     /**
-     * Get the last page number.
-     *
      * @return int
      */
     public function lastPage(): int

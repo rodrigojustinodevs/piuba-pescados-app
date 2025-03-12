@@ -51,7 +51,8 @@ class Handler extends ExceptionHandler
         );
 
         $this->renderable(
-            fn (ValidationException $exception): JsonResponse => $this->handleValidationException($exception)
+            fn (ValidationException $exception): JsonResponse =>
+            $this->handleValidationException($exception)
         );
 
         $this->renderable(

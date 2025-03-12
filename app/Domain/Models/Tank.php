@@ -35,7 +35,6 @@ class Tank extends BaseModel
         'location',
         'volume',
         'status',
-        'cultivation',
         'tank_type_id',
         'company_id',
     ];
@@ -50,9 +49,8 @@ class Tank extends BaseModel
     protected static function booted()
     {
         static::creating(function (Tank $tank): void {
-            $tank->id          = (string) Str::uuid();
-            $tank->status      = 'active';
-            $tank->cultivation = 'nursery';
+            $tank->id     = (string) Str::uuid();
+            $tank->status = 'active';
         });
     }
 

@@ -43,14 +43,14 @@ class CompanyDTO
     public function toArray(): array
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'cnpj'       => $this->cnpj,
-            'address'    => $this->address,
-            'phone'      => $this->phone,
-            'status'     => $this->status->value,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt,
+            'id'        => $this->id,
+            'name'      => $this->name,
+            'cnpj'      => $this->cnpj,
+            'address'   => $this->address,
+            'phone'     => $this->phone,
+            'status'    => $this->status->value,
+            'createdAt' => $this->createdAt,
+            'updatedAt' => $this->updatedAt,
         ];
     }
 

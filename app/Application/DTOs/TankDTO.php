@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-use App\Domain\Enums\Cultivation;
 use App\Domain\Enums\Status;
 
 class TankDTO
@@ -20,7 +19,6 @@ class TankDTO
         public int $volume,
         public string $location,
         public Status $status,
-        public Cultivation $cultivation,
         public ?array $tankType = null,
         public ?array $company = null,
         public ?string $createdAt = null,
@@ -40,7 +38,6 @@ class TankDTO
             volume: (int) $data['volume'],
             location: $data['location'],
             status: Status::from($data['status']),
-            cultivation: Cultivation::from($data['cultivation']),
             tankType: isset($data['tank_type']) ? [
                 'id'   => $data['tank_type']['id'] ?? null,
                 'name' => $data['tank_type']['name'] ?? null,
@@ -59,17 +56,16 @@ class TankDTO
     public function toArray(): array
     {
         return [
-            'id'              => $this->id,
-            'name'            => $this->name,
-            'capacity_liters' => $this->capacityLiters,
-            'volume'          => $this->volume,
-            'location'        => $this->location,
-            'status'          => $this->status->value,
-            'cultivation'     => $this->cultivation->value,
-            'tank_type'       => $this->tankType,
-            'company'         => $this->company,
-            'created_at'      => $this->createdAt,
-            'updated_at'      => $this->updatedAt,
+            'id'             => $this->id,
+            'name'           => $this->name,
+            'capacityLiters' => $this->capacityLiters,
+            'volume'         => $this->volume,
+            'location'       => $this->location,
+            'status'         => $this->status->value,
+            'tankType'       => $this->tankType,
+            'company'        => $this->company,
+            'createdAt'      => $this->createdAt,
+            'updatedAt'      => $this->updatedAt,
         ];
     }
 

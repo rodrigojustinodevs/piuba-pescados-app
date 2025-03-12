@@ -93,6 +93,7 @@ class TankService
             id: $tank->id,
             name: $tank->name,
             capacityLiters: $tank->capacity_liters,
+            volume: $tank->volume,
             location: $tank->location,
             status: Status::from($tank->status),
             cultivation: Cultivation::from($tank->cultivation),

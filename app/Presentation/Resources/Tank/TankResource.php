@@ -33,6 +33,7 @@ class TankResource extends JsonResource
             'id'              => $this->id,
             'name'            => $this->name,
             'capacity_liters' => $this->capacity_liters,
+            'volume'          => $this->volume,
             'location'        => $this->location,
             'status'          => $this->status,
             'cultivation'     => $this->cultivation,

@@ -32,6 +32,7 @@ class Tank extends BaseModel
         'name',
         'capacity_liters',
         'location',
+        'volume',
         'status',
         'cultivation',
         'tank_type_id',

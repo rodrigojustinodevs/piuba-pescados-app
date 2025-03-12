@@ -29,6 +29,7 @@ class TankStoreRequest extends FormRequest
             'tank_types_id'   => ['required', 'uuid', 'exists:tank_types,id'],
             'name'            => ['required', 'string', 'max:255'],
             'capacity_liters' => ['required', 'integer', 'min:1'],
+            'volume'          => ['required', 'integer', 'min:1'],
             'location'        => ['required', 'string'],
             'status'          => ['required', Rule::in(['active', 'inactive'])->__toString()],
             'cultivation'     => ['required', Rule::in(['daycare', 'nursery'])->__toString()],

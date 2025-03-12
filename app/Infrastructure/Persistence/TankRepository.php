@@ -15,7 +15,6 @@ class TankRepository implements TankRepositoryInterface
      * Create a new tank.
      *
      * @param array<string, mixed> $data
-     * @return Tank
      */
     public function create(array $data): Tank
     {
@@ -25,9 +24,7 @@ class TankRepository implements TankRepositoryInterface
     /**
      * Update an existing tank.
      *
-     * @param string $id
      * @param array<string, mixed> $data
-     * @return Tank|null
      */
     public function update(string $id, array $data): ?Tank
     {
@@ -44,9 +41,6 @@ class TankRepository implements TankRepositoryInterface
 
     /**
      * Get paginated companies.
-     *
-     * @param int $page
-     * @return PaginationInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
@@ -61,10 +55,6 @@ class TankRepository implements TankRepositoryInterface
 
     /**
      * Show tank by field and value.
-     *
-     * @param string $field
-     * @param string|int $value
-     * @return Tank|null
      */
     public function showTank(string $field, string | int $value): ?Tank
     {

@@ -15,7 +15,6 @@ class CompanyRepository implements CompanyRepositoryInterface
      * Create a new company.
      *
      * @param array<string, mixed> $data
-     * @return Company
      */
     public function create(array $data): Company
     {
@@ -25,9 +24,7 @@ class CompanyRepository implements CompanyRepositoryInterface
     /**
      * Update an existing company.
      *
-     * @param string $id
      * @param array<string, mixed> $data
-     * @return Company|null
      */
     public function update(string $id, array $data): ?Company
     {
@@ -44,9 +41,6 @@ class CompanyRepository implements CompanyRepositoryInterface
 
     /**
      * Get paginated companies.
-     *
-     * @param int $page
-     * @return PaginationInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
@@ -58,10 +52,6 @@ class CompanyRepository implements CompanyRepositoryInterface
 
     /**
      * Show company by field and value.
-     *
-     * @param string $field
-     * @param string|int $value
-     * @return Company|null
      */
     public function showCompany(string $field, string | int $value): ?Company
     {

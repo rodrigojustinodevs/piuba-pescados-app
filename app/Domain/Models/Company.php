@@ -26,7 +26,7 @@ class Company extends BaseModel
     {
         static::creating(function (Company $company): void {
             $company->id     = (string) Str::uuid();
-            $company->status = (string) 'active';
+            $company->status = 'active';
         });
     }
 

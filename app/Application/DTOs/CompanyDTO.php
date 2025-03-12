@@ -54,16 +54,12 @@ class CompanyDTO
         ];
     }
 
-    /**
-     *
-     * @return bool
-     */
     public function isEmpty(): bool
     {
-        return empty($this->id) &&
-               empty($this->name) &&
-               empty($this->cnpj) &&
-               empty($this->address) &&
-               empty($this->phone);
+        return ($this->id === '' || $this->id === '0') &&
+               ($this->name === '' || $this->name === '0') &&
+               ($this->cnpj === '' || $this->cnpj === '0') &&
+               ($this->address === '' || $this->address === '0') &&
+               ($this->phone === '' || $this->phone === '0');
     }
 }

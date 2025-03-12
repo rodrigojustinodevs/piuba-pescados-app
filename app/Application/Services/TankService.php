@@ -55,7 +55,7 @@ class TankService
     {
         $tank = $this->tankRepository->showTank('id', $id);
 
-        if (! $tank) {
+        if (! $tank instanceof Tank) {
             return null;
         }
 
@@ -85,7 +85,7 @@ class TankService
 
     private function mapToDTO(?Tank $tank): ?TankDTO
     {
-        if (! $tank) {
+        if (! $tank instanceof Tank) {
             return null;
         }
 

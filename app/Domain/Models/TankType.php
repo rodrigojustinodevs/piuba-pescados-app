@@ -24,11 +24,13 @@ class TankType extends BaseModel
 
     protected $fillable = ['id', 'name'];
 
+    #[\Override]
     public function save(array $options = [])
     {
         return false;
     }
 
+    #[\Override]
     public function delete()
     {
         return false;

@@ -70,14 +70,11 @@ class TankDTO
         ];
     }
 
-    /**
-     * @return bool
-     */
     public function isEmpty(): bool
     {
-        return empty($this->id) &&
-               empty($this->name) &&
-               empty($this->capacityLiters) &&
-               empty($this->location);
+        return ($this->id === '' || $this->id === '0') &&
+               ($this->name === '' || $this->name === '0') &&
+               $this->capacityLiters === 0 &&
+               ($this->location === '' || $this->location === '0');
     }
 }

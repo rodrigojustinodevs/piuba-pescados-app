@@ -54,7 +54,7 @@ class CompanyService
     {
         $company = $this->companyRepository->showCompany('id', $id);
 
-        if (! $company) {
+        if (! $company instanceof Company) {
             return null;
         }
 
@@ -84,7 +84,7 @@ class CompanyService
 
     private function mapToDTO(?Company $company): ?CompanyDTO
     {
-        if (! $company) {
+        if (! $company instanceof Company) {
             return null;
         }
 

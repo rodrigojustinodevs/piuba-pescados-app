@@ -43,7 +43,7 @@ class TankController
         try {
             $tank = $this->tankService->showTank($id);
 
-            if (! $tank || $tank->isEmpty()) {
+            if (! $tank instanceof \App\Application\DTOs\TankDTO || $tank->isEmpty()) {
                 return ApiResponse::error(null, 'Tank not found', Response::HTTP_NOT_FOUND);
             }
 

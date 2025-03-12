@@ -13,7 +13,7 @@ return new class () extends Migration
      */
     public function up(): void
     {
-        Schema::table('tanks', function (Blueprint $table) {
+        Schema::table('tanks', function (Blueprint $table): void {
             $table->enum('cultivation', ['daycare', 'nursery'])->after('status')->default('nursery');
         });
     }
@@ -23,7 +23,7 @@ return new class () extends Migration
      */
     public function down(): void
     {
-        Schema::table('tanks', function (Blueprint $table) {
+        Schema::table('tanks', function (Blueprint $table): void {
             $table->dropColumn('cultivation');
         });
     }

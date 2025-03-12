@@ -27,6 +27,7 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    #[\Override]
     public function register(): void
     {
         $this->renderable(

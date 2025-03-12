@@ -33,7 +33,6 @@ class TankUpdateRequest extends FormRequest
             'volume'          => ['sometimes', 'integer', 'min:1'],
             'location'        => ['sometimes', 'string'],
             'status'          => ['sometimes', Rule::in(['active', 'inactive'])],
-            'cultivation'     => ['sometimes', Rule::in(['daycare', 'nursery'])],
         ];
     }
 }

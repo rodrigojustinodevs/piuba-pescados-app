@@ -49,8 +49,8 @@ class CompanyDTO
             'address'    => $this->address,
             'phone'      => $this->phone,
             'status'     => $this->status->value,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt,
+            'createdAt' => $this->createdAt,
+            'updatedAt' => $this->updatedAt,
         ];
     }
 

@@ -26,7 +26,6 @@ test('returns a successful response for index', function (): void {
             'volume' => 1000,
             "location" => "Location A",
             'status' => Status::ACTIVE,
-            'cultivation' => Cultivation::DAYCARE,
             'tank_type'=> [
 				'id' => '2fad96ea-2da6-491b-82e6-8d832f3dac41',
 				'name' => 'Tanques Flutuantes'
@@ -44,7 +43,6 @@ test('returns a successful response for index', function (): void {
             'volume' => 1000,
             "location" => "Location A",
             'status' => Status::ACTIVE,
-            'cultivation' => Cultivation::NURSERY,
             'tank_type'=> [
 				'id' => '2fad96ea-2da6-491b-82e6-8d832f3dac41',
 				'name' => 'Tanques Flutuantes'
@@ -67,7 +65,6 @@ test('returns a successful response for index', function (): void {
             $data['volume'],
             $data['location'],
             $data['status'],
-            $data['cultivation'],
             $data['tank_type'],
             $data['company'],
             $data['createdAt'],
@@ -111,8 +108,6 @@ test('returns a tank for show when found', function (): void {
         1500,
         'Location A',
         Status::ACTIVE,
-        Cultivation::DAYCARE,
-
     );
 
     $tankService = Mockery::mock(TankService::class);
@@ -147,7 +142,6 @@ test('creates a tank via store', function (): void {
         1500,
         'Location A',
         Status::ACTIVE,
-        Cultivation::DAYCARE,
 
     );
 
@@ -173,7 +167,6 @@ test('updates a tank via update', function (): void {
         1500,
         'Location A',
         Status::ACTIVE,
-        Cultivation::DAYCARE,
 
     );
 

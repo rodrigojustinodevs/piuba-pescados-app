@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('initial_quantity');
             $table->string('species', 100);
             $table->enum('status', ['active', 'finished']);
-            $table->enum('cultivation', ['nursery', 'grow-out']);
+            $table->enum('cultivation', ['nursery', 'daycare']);
             $table->foreign('tank_id')->references('id')->on('tanks')->onDelete('cascade');
             $table->timestamps();
         });

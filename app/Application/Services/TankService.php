@@ -96,7 +96,6 @@ class TankService
             volume: $tank->volume,
             location: $tank->location,
             status: Status::from($tank->status),
-            cultivation: Cultivation::from($tank->cultivation),
             tankType: [
                 'id'   => $tank->tankType->id ?? '',
                 'name' => $tank->tankType->name ?? '',

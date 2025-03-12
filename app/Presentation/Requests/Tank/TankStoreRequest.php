@@ -25,13 +25,13 @@ class TankStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'company_id'    => ['required', 'uuid', 'exists:companies,id'],
-            'tank_types_id' => ['required', 'uuid', 'exists:tank_types,id'],
-            'name'          => ['required', 'string', 'max:255'],
+            'company_id'      => ['required', 'uuid', 'exists:companies,id'],
+            'tank_types_id'   => ['required', 'uuid', 'exists:tank_types,id'],
+            'name'            => ['required', 'string', 'max:255'],
             'capacity_liters' => ['required', 'integer', 'min:1'],
-            'location'      => ['required', 'string'],
-            'status' => ['required', Rule::in(['active', 'inactive'])->__toString()],
-            'cultivation' => ['required', Rule::in(['daycare', 'nursery'])->__toString()],
+            'location'        => ['required', 'string'],
+            'status'          => ['required', Rule::in(['active', 'inactive'])->__toString()],
+            'cultivation'     => ['required', Rule::in(['daycare', 'nursery'])->__toString()],
         ];
     }
 }

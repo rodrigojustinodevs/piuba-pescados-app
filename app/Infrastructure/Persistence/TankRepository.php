@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Domain\Models\Tank;
-use App\Domain\Repositories\TankRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
+use App\Domain\Repositories\TankRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class TankRepository implements TankRepositoryInterface
@@ -49,15 +49,16 @@ class TankRepository implements TankRepositoryInterface
      * @return PaginationInterface
      */
     public function paginate(int $page = 25): PaginationInterface
-{
+    {
         /** @var LengthAwarePaginator<Tank> $paginator */
         $paginator = Tank::with([
             'tankType:id,name',
-            'company:id,name'
+            'company:id,name',
         ])->paginate($page);
 
         return new PaginationPresentr($paginator);
     }
+
     /**
      * Show tank by field and value.
      *
@@ -65,7 +66,7 @@ class TankRepository implements TankRepositoryInterface
      * @param string|int $value
      * @return Tank|null
      */
-    public function showTank(string $field, string|int $value): ?Tank
+    public function showTank(string $field, string | int $value): ?Tank
     {
         return Tank::where($field, $value)->first();
     }
@@ -74,7 +75,7 @@ class TankRepository implements TankRepositoryInterface
     {
         $tank = Tank::find($id);
 
-        if (!$tank) {
+        if (! $tank) {
             return false;
         }
 

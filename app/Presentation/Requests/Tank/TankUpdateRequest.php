@@ -26,13 +26,13 @@ class TankUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'company_id'    => ['sometimes', 'uuid', 'exists:companies,id'],
-            'tank_types_id' => ['sometimes', 'uuid', 'exists:tank_types,id'],
-            'name'          => ['sometimes', 'string', 'max:255'],
+            'company_id'      => ['sometimes', 'uuid', 'exists:companies,id'],
+            'tank_types_id'   => ['sometimes', 'uuid', 'exists:tank_types,id'],
+            'name'            => ['sometimes', 'string', 'max:255'],
             'capacity_liters' => ['sometimes', 'integer', 'min:1'],
-            'location'      => ['sometimes', 'string'],
-            'status'        => ['sometimes', Rule::in(['active', 'inactive'])],
-            'cultivation'   => ['sometimes', Rule::in(['daycare', 'nursery'])],
+            'location'        => ['sometimes', 'string'],
+            'status'          => ['sometimes', Rule::in(['active', 'inactive'])],
+            'cultivation'     => ['sometimes', Rule::in(['daycare', 'nursery'])],
         ];
     }
 }

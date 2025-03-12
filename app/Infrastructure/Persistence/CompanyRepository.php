@@ -52,8 +52,10 @@ class CompanyRepository implements CompanyRepositoryInterface
     {
         /** @var LengthAwarePaginator<Company> $paginator */
         $paginator = Company::paginate($page);
+
         return new PaginationPresentr($paginator);
     }
+
     /**
      * Show company by field and value.
      *
@@ -61,7 +63,7 @@ class CompanyRepository implements CompanyRepositoryInterface
      * @param string|int $value
      * @return Company|null
      */
-    public function showCompany(string $field, string|int $value): ?Company
+    public function showCompany(string $field, string | int $value): ?Company
     {
         return Company::where($field, $value)->first();
     }
@@ -70,7 +72,7 @@ class CompanyRepository implements CompanyRepositoryInterface
     {
         $company = Company::find($id);
 
-        if (!$company) {
+        if (! $company) {
             return false;
         }
 

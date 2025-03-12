@@ -40,11 +40,11 @@ class TankResource extends JsonResource
                 'id'   => $this->tankType->id,
                 'name' => $this->tankType->name,
             ]),
-            'company'       => $this->whenLoaded('company', fn () => [
+            'company' => $this->whenLoaded('company', fn () => [
                 'name' => $this->company->name,
             ]),
-            'created_at'      => $this->created_at?->toDateTimeString(),
-            'updated_at'      => $this->updated_at?->toDateTimeString(),
+            'created_at' => $this->created_at?->toDateTimeString(),
+            'updated_at' => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

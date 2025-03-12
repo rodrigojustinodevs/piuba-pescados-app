@@ -6,6 +6,6 @@ namespace App\Domain\Enums;
 
 enum Cultivation: string
 {
-    case DAYCARE   = 'daycare';
+    case DAYCARE = 'daycare';
     case NURSERY = 'nursery';
 }

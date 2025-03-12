@@ -43,7 +43,8 @@ class CompanyController
     {
         try {
             $company = $this->companyService->showCompany($id);
-            if (!$company || $company->isEmpty()) {
+
+            if (! $company || $company->isEmpty()) {
                 return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -52,7 +53,6 @@ class CompanyController
             return $this->handleException($exception, 'Company not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     /**
      * Store a newly created company.
@@ -110,17 +110,17 @@ class CompanyController
     ): JsonResponse {
         Log::error('Error in CompanyController', [
             'message' => $exception->getMessage(),
-            'code' => $exception->getCode(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
+            'code'    => $exception->getCode(),
+            'file'    => $exception->getFile(),
+            'line'    => $exception->getLine(),
         ]);
 
         return ApiResponse::error(
             [
                 'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
+                'code'    => $exception->getCode(),
+                'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
             ],
             $userMessage,
             $statusCode

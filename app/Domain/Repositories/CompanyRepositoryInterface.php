@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Repositories;
 
 use App\Domain\Models\Company;
-use Illuminate\Support\Collection;
 
 interface CompanyRepositoryInterface
 {
@@ -49,5 +48,5 @@ interface CompanyRepositoryInterface
      * @param string|int $value
      * @return Company|null
      */
-    public function showCompany(string $field, string|int $value): ?Company;
+    public function showCompany(string $field, string | int $value): ?Company;
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Repositories;
 
 use App\Domain\Models\Tank;
-use Illuminate\Support\Collection;
 
 interface TankRepositoryInterface
 {
@@ -49,5 +48,5 @@ interface TankRepositoryInterface
      * @param string|int $value
      * @return Tank|null
      */
-    public function showTank(string $field, string|int $value): ?Tank;
+    public function showTank(string $field, string | int $value): ?Tank;
 }

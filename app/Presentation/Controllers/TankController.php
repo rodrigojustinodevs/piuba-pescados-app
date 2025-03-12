@@ -25,7 +25,7 @@ class TankController
     public function index(): JsonResponse
     {
         try {
-            $tanks  = $this->tankService->showAllTanks();
+            $tanks      = $this->tankService->showAllTanks();
             $data       = $tanks->toArray(request());
             $pagination = $tanks->additional['pagination'] ?? null;
 
@@ -42,7 +42,8 @@ class TankController
     {
         try {
             $tank = $this->tankService->showTank($id);
-            if (!$tank || $tank->isEmpty()) {
+
+            if (! $tank || $tank->isEmpty()) {
                 return ApiResponse::error(null, 'Tank not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -51,7 +52,6 @@ class TankController
             return $this->handleException($exception, 'Tank not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     /**
      * Store a newly created tank.
@@ -107,13 +107,12 @@ class TankController
         string $userMessage = 'An error occurred',
         int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
     ): JsonResponse {
-
         return ApiResponse::error(
             [
                 'message' => $exception->getMessage(),
-                'code' => $exception->getCode(),
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
+                'code'    => $exception->getCode(),
+                'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
             ],
             $userMessage,
             $statusCode

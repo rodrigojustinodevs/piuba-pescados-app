@@ -24,10 +24,10 @@ class CompanyStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'cnpj' => 'required|string|unique:companies,cnpj',
+            'name'    => 'required|string|max:255',
+            'cnpj'    => 'required|string|unique:companies,cnpj',
             'address' => 'required|string',
-            'phone' => 'required|string',
+            'phone'   => 'required|string',
         ];
     }
 }

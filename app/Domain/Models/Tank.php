@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property string $id
@@ -48,8 +48,8 @@ class Tank extends BaseModel
     protected static function booted()
     {
         static::creating(function (Tank $tank): void {
-            $tank->id = (string) Str::uuid();
-            $tank->status = 'active';
+            $tank->id          = (string) Str::uuid();
+            $tank->status      = 'active';
             $tank->cultivation = 'nursery';
         });
     }

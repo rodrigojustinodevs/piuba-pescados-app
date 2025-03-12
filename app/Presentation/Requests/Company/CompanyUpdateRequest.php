@@ -25,8 +25,8 @@ class CompanyUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'       => 'sometimes|string',
-            'cnpj'    => [
+            'name' => 'sometimes|string',
+            'cnpj' => [
                 'sometimes',
                 'string',
                 'unique:companies,cnpj,' . $this->route('company'), // Ignora o valor do próprio CNPJ ao atualizar

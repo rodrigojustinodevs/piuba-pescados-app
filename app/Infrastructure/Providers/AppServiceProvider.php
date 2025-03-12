@@ -10,7 +10,9 @@ use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
 use App\Infrastructure\Persistence\CompanyRepository;
 use App\Infrastructure\Persistence\TankRepository;
+use App\Presentation\Exceptions\Handler as CustomHandler;
 use Carbon\CarbonImmutable;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
@@ -20,8 +22,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
-use App\Presentation\Exceptions\Handler as CustomHandler;
-use Illuminate\Contracts\Debug\ExceptionHandler;
 use Override;
 
 class AppServiceProvider extends ServiceProvider

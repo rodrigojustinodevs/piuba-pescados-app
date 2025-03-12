@@ -18,4 +18,3 @@ Route::get('tanks', [TankController::class, 'index']);
 Route::get('tank/{id}', [TankController::class, 'show']);
 Route::put('tank/{id}', [TankController::class, 'update']);
 Route::delete('tank/{id}', [TankController::class, 'destroy']);
-

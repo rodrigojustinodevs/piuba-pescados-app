@@ -15,9 +15,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class TankType extends BaseModel
 {
     protected $table = 'tank_types';
+
     public $timestamps = false;
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $fillable = ['id', 'name'];
 
     public function save(array $options = [])

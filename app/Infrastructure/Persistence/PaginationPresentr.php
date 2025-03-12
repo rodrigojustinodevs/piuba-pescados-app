@@ -6,20 +6,19 @@ namespace App\Infrastructure\Persistence;
 
 use App\Domain\Repositories\PaginationInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * @template T of \Illuminate\Database\Eloquent\Model
  */
 class PaginationPresentr implements PaginationInterface
 {
-    /** @var \Illuminate\Pagination\LengthAwarePaginator<T> */
-    protected \Illuminate\Pagination\LengthAwarePaginator $paginator;
+    /** @var LengthAwarePaginator<T> */
+    protected LengthAwarePaginator $paginator;
 
     /**
-     * @param \Illuminate\Pagination\LengthAwarePaginator<T> $paginator
+     * @param LengthAwarePaginator<T> $paginator
      */
-    public function __construct(\Illuminate\Pagination\LengthAwarePaginator $paginator)
+    public function __construct(LengthAwarePaginator $paginator)
     {
         $this->paginator = $paginator;
     }

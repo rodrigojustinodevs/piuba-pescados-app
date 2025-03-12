@@ -9,7 +9,6 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -31,33 +30,27 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->renderable(
-            fn (NotFoundHttpException $exception): JsonResponse =>
-            $this->handleException($exception, 'Route not found', JsonResponse::HTTP_NOT_FOUND)
+            fn (NotFoundHttpException $exception): JsonResponse => $this->handleException($exception, 'Route not found', JsonResponse::HTTP_NOT_FOUND)
         );
 
         $this->renderable(
-            fn (MethodNotAllowedHttpException $exception): JsonResponse =>
-            $this->handleException($exception, 'Method not allowed', JsonResponse::HTTP_METHOD_NOT_ALLOWED)
+            fn (MethodNotAllowedHttpException $exception): JsonResponse => $this->handleException($exception, 'Method not allowed', JsonResponse::HTTP_METHOD_NOT_ALLOWED)
         );
 
         $this->renderable(
-            fn (AuthenticationException $exception): JsonResponse =>
-            $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED)
+            fn (AuthenticationException $exception): JsonResponse => $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED)
         );
 
         $this->renderable(
-            fn (AccessDeniedHttpException $exception): JsonResponse =>
-            $this->handleException($exception, 'Access denied', JsonResponse::HTTP_FORBIDDEN)
+            fn (AccessDeniedHttpException $exception): JsonResponse => $this->handleException($exception, 'Access denied', JsonResponse::HTTP_FORBIDDEN)
         );
 
         $this->renderable(
-            fn (ValidationException $exception): JsonResponse =>
-            $this->handleValidationException($exception)
+            fn (ValidationException $exception): JsonResponse => $this->handleValidationException($exception)
         );
 
         $this->renderable(
-            fn (Throwable $exception, Request $request): JsonResponse =>
-            $this->handleException(
+            fn (Throwable $exception, Request $request): JsonResponse => $this->handleException(
                 $exception,
                 'Internal server error',
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
@@ -103,7 +96,7 @@ class Handler extends ExceptionHandler
             [
                 'message' => $exception->getMessage(),
                 'code'    => $exception->getCode(),
-                'errors'    => $errors,
+                'errors'  => $errors,
                 'line'    => $exception->getLine(),
             ],
             $firstErrorMessage,

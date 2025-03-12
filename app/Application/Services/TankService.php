@@ -27,6 +27,7 @@ class TankService
     {
         return DB::transaction(function () use ($data): TankDTO {
             $tank = $this->tankRepository->create($data);
+
             return $this->mapToDTO($tank);
         });
     }
@@ -54,13 +55,12 @@ class TankService
     {
         $tank = $this->tankRepository->showTank('id', $id);
 
-        if (!$tank) {
+        if (! $tank) {
             return null;
         }
 
         return $this->mapToDTO($tank);
     }
-
 
     /**
      * @param array<string, mixed> $data
@@ -85,8 +85,7 @@ class TankService
 
     private function mapToDTO(?Tank $tank): ?TankDTO
     {
-
-        if (!$tank) {
+        if (! $tank) {
             return null;
         }
 
@@ -99,10 +98,10 @@ class TankService
             cultivation: Cultivation::from($tank->cultivation),
             tankType: [
                 'id'   => $tank->tankType->id ?? '',
-                'name' => $tank->tankType->name ?? ''
+                'name' => $tank->tankType->name ?? '',
             ],
             company: [
-                'name' => $tank->company->name ?? ''
+                'name' => $tank->company->name ?? '',
             ],
             createdAt: $tank->created_at?->toDateTimeString(),
             updatedAt: $tank->updated_at?->toDateTimeString()

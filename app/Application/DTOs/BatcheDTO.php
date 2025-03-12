@@ -59,8 +59,8 @@ class BatcheDTO
             'status'          => $this->status->value,
             'cultivation'     => $this->cultivation->value,
             'tank'            => $this->tank,
-            'createdAt'      => $this->createdAt,
-            'updatedAt'      => $this->updatedAt,
+            'createdAt'       => $this->createdAt,
+            'updatedAt'       => $this->updatedAt,
         ];
     }
 

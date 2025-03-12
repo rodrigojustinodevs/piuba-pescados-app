@@ -49,8 +49,8 @@ class Tank extends BaseModel
     protected static function booted()
     {
         static::creating(function (Tank $tank): void {
-            $tank->id          = (string) Str::uuid();
-            $tank->status      = 'active';
+            $tank->id     = (string) Str::uuid();
+            $tank->status = 'active';
         });
     }
 

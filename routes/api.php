@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Presentation\Controllers\BatcheController;
 use App\Presentation\Controllers\CompanyController;
 use App\Presentation\Controllers\TankController;
-use App\Presentation\Controllers\BatcheController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', fn (): string => 'pong');
@@ -19,7 +19,6 @@ Route::get('tanks', [TankController::class, 'index']);
 Route::get('tank/{id}', [TankController::class, 'show']);
 Route::put('tank/{id}', [TankController::class, 'update']);
 Route::delete('tank/{id}', [TankController::class, 'destroy']);
-
 
 Route::post('batche', [BatcheController::class, 'store']);
 Route::get('batches', [BatcheController::class, 'index']);

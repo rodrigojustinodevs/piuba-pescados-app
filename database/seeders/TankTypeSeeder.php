@@ -8,10 +8,9 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-
 class TankTypeSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         DB::table('tank_types')->insert([
             ['id' => (string) Str::uuid(), 'name' => 'Tanques de Terra', 'description' => 'Construídos no solo com impermeabilização para evitar vazamentos.'],
@@ -21,7 +20,7 @@ class TankTypeSeeder extends Seeder
             ['id' => (string) Str::uuid(), 'name' => 'Tanques de Membrana', 'description' => 'Utilizam lonas de PVC ou materiais similares, fáceis de instalar.'],
             ['id' => (string) Str::uuid(), 'name' => 'Tanques de Recirculação', 'description' => 'Sistemas tecnológicos que reutilizam a água com filtragem avançada.'],
             ['id' => (string) Str::uuid(), 'name' => 'Tanques Flutuantes', 'description' => 'Estruturas flutuantes utilizadas em lagos, rios ou oceanos.'],
-            ['id' => (string) Str::uuid(), 'name' => 'Sistemas de Tanques Interligados', 'description' => 'Conjunto de tanques conectados por canais para controle da movimentação da água.']
+            ['id' => (string) Str::uuid(), 'name' => 'Sistemas de Tanques Interligados', 'description' => 'Conjunto de tanques conectados por canais para controle da movimentação da água.'],
         ]);
     }
 }

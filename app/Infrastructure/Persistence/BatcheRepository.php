@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Domain\Models\Batche;
-use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\BatcheRepositoryInterface;
+use App\Domain\Repositories\PaginationInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class BatcheRepository implements BatcheRepositoryInterface

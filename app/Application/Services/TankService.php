@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Services;
 
 use App\Application\DTOs\TankDTO;
-use App\Domain\Enums\Cultivation;
 use App\Domain\Enums\Status;
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;

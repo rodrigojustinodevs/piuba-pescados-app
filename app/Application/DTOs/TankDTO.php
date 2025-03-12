@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-use App\Domain\Enums\Cultivation;
 use App\Domain\Enums\Status;
 
 class TankDTO
@@ -57,14 +56,14 @@ class TankDTO
     public function toArray(): array
     {
         return [
-            'id'              => $this->id,
-            'name'            => $this->name,
+            'id'             => $this->id,
+            'name'           => $this->name,
             'capacityLiters' => $this->capacityLiters,
-            'volume'          => $this->volume,
-            'location'        => $this->location,
-            'status'          => $this->status->value,
+            'volume'         => $this->volume,
+            'location'       => $this->location,
+            'status'         => $this->status->value,
             'tankType'       => $this->tankType,
-            'company'         => $this->company,
+            'company'        => $this->company,
             'createdAt'      => $this->createdAt,
             'updatedAt'      => $this->updatedAt,
         ];

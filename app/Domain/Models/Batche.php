@@ -47,8 +47,8 @@ class Batche extends BaseModel
     protected static function booted()
     {
         static::creating(function (Batche $batche): void {
-            $batche->id          = (string) Str::uuid();
-            $batche->status      = 'active';
+            $batche->id     = (string) Str::uuid();
+            $batche->status = 'active';
         });
     }
 

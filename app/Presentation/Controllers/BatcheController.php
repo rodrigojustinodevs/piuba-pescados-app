@@ -25,7 +25,7 @@ class BatcheController
     public function index(): JsonResponse
     {
         try {
-            $batches      = $this->batcheService->showAllBatches();
+            $batches    = $this->batcheService->showAllBatches();
             $data       = $batches->toArray(request());
             $pagination = $batches->additional['pagination'] ?? null;
 

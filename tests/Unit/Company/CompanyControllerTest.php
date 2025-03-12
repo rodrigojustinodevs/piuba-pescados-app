@@ -4,44 +4,44 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Company;
 
-use App\Presentation\Controllers\CompanyController;
-use App\Application\Services\CompanyService;
-use App\Presentation\Requests\CompanyStoreRequest;
-use App\Presentation\Requests\CompanyUpdateRequest;
 use App\Application\DTOs\CompanyDTO;
+use App\Application\Services\CompanyService;
 use App\Domain\Enums\Status;
+use App\Presentation\Controllers\CompanyController;
+use App\Presentation\Requests\Company\CompanyStoreRequest;
+use App\Presentation\Requests\Company\CompanyUpdateRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Ramsey\Uuid\Uuid;
+use Illuminate\Http\Response;
 use Mockery;
-use Pest\Laravel\{get, post, put, delete};
+use Ramsey\Uuid\Uuid;
 
 test('returns a successful response for index', function (): void {
     $companyData = [
         [
-            'id'         => Uuid::uuid4()->toString(),
-            'name'       => 'Company 1',
-            'cnpj'       => '12345678000195',
-            'address'    => '123 Main St',
-            'phone'      => '1234567890',
-            'status'     => Status::ACTIVE,
-            'createdAt'  => '2025-03-10 10:00:00',
-            'updatedAt'  => '2025-03-10 11:00:00',
+            'id'        => Uuid::uuid4()->toString(),
+            'name'      => 'Company 1',
+            'cnpj'      => '12345678000195',
+            'address'   => '123 Main St',
+            'phone'     => '1234567890',
+            'status'    => Status::ACTIVE,
+            'createdAt' => '2025-03-10 10:00:00',
+            'updatedAt' => '2025-03-10 11:00:00',
         ],
         [
-            'id'         => Uuid::uuid4()->toString(),
-            'name'       => 'Company 2',
-            'cnpj'       => '98765432000185',
-            'address'    => '456 Elm St',
-            'phone'      => '0987654321',
-            'status'     => Status::INACTIVE,
-            'createdAt'  => '2025-03-10 10:00:00',
-            'updatedAt'  => '2025-03-10 11:00:00',
+            'id'        => Uuid::uuid4()->toString(),
+            'name'      => 'Company 2',
+            'cnpj'      => '98765432000185',
+            'address'   => '456 Elm St',
+            'phone'     => '0987654321',
+            'status'    => Status::INACTIVE,
+            'createdAt' => '2025-03-10 10:00:00',
+            'updatedAt' => '2025-03-10 11:00:00',
         ],
     ];
 
     $items = [];
+
     foreach ($companyData as $data) {
         $items[] = new CompanyDTO(
             $data['id'],
@@ -55,7 +55,7 @@ test('returns a successful response for index', function (): void {
         );
     }
 
-    $collection = new AnonymousResourceCollection(collect($items), null);
+    $collection             = new AnonymousResourceCollection(collect($items), null);
     $collection->additional = [
         'pagination' => [
             'total'        => count($items),
@@ -66,7 +66,6 @@ test('returns a successful response for index', function (): void {
         ],
     ];
 
-    // Mock do serviço
     $companyService = Mockery::mock(CompanyService::class);
     $companyService->shouldReceive('showAllCompanies')
         ->once()
@@ -86,7 +85,7 @@ test('returns a successful response for index', function (): void {
 });
 
 test('returns a company for show when found', function (): void {
-    $companyId = Uuid::uuid4()->toString();
+    $companyId  = Uuid::uuid4()->toString();
     $companyDTO = new CompanyDTO(
         $companyId,
         'Company 1',
@@ -116,7 +115,7 @@ test('returns a company for show when found', function (): void {
 });
 
 test('returns 404 when show company is empty', function (): void {
-    $companyId = Uuid::uuid4()->toString();
+    $companyId    = Uuid::uuid4()->toString();
     $emptyCompany = new CompanyDTO('', '', '', '', '', Status::ACTIVE, null, null);
 
     $companyService = Mockery::mock(CompanyService::class);
@@ -137,7 +136,7 @@ test('returns 404 when show company is empty', function (): void {
 });
 
 test('creates a company via store', function (): void {
-    $companyId = Uuid::uuid4()->toString();
+    $companyId  = Uuid::uuid4()->toString();
     $companyDTO = new CompanyDTO(
         $companyId,
         'New Company',
@@ -173,7 +172,7 @@ test('creates a company via store', function (): void {
 });
 
 test('updates a company via update', function (): void {
-    $companyId = Uuid::uuid4()->toString();
+    $companyId  = Uuid::uuid4()->toString();
     $companyDTO = new CompanyDTO(
         $companyId,
         'Updated Company',

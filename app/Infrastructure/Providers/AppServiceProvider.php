@@ -7,8 +7,12 @@ namespace App\Infrastructure\Providers;
 use App\Domain\Enums\Can;
 use App\Domain\Models\User;
 use App\Domain\Repositories\CompanyRepositoryInterface;
+use App\Domain\Repositories\TankRepositoryInterface;
 use App\Infrastructure\Persistence\CompanyRepository;
+use App\Infrastructure\Persistence\TankRepository;
+use App\Presentation\Exceptions\Handler as CustomHandler;
 use Carbon\CarbonImmutable;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
@@ -29,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
+        $this->app->bind(TankRepositoryInterface::class, TankRepository::class);
+        $this->app->bind(ExceptionHandler::class, CustomHandler::class);
     }
 
     /**

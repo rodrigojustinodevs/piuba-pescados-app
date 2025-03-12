@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Requests;
+namespace App\Presentation\Requests\Company;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -25,8 +25,12 @@ class CompanyUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'       => 'sometimes|string',
-            'cnpj'       => 'sometimes|string',
+            'name' => 'sometimes|string',
+            'cnpj' => [
+                'sometimes',
+                'string',
+                'unique:companies,cnpj,' . $this->route('company'), // Ignora o valor do próprio CNPJ ao atualizar
+            ],
             'cell_phone' => 'string',
         ];
     }

@@ -27,6 +27,7 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    #[\Override]
     public function register(): void
     {
         $this->renderable(
@@ -50,13 +51,11 @@ class Handler extends ExceptionHandler
         );
 
         $this->renderable(
-            fn (ValidationException $exception): JsonResponse =>
-            $this->handleValidationException($exception)
+            fn (ValidationException $exception): JsonResponse => $this->handleValidationException($exception)
         );
 
         $this->renderable(
-            fn (Throwable $exception, Request $request): JsonResponse =>
-            $this->handleException(
+            fn (Throwable $exception, Request $request): JsonResponse => $this->handleException(
                 $exception,
                 'Internal server error',
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
@@ -102,7 +101,7 @@ class Handler extends ExceptionHandler
             [
                 'message' => $exception->getMessage(),
                 'code'    => $exception->getCode(),
-                'file'    => $exception->getFile(),
+                'errors'  => $errors,
                 'line'    => $exception->getLine(),
             ],
             $firstErrorMessage,

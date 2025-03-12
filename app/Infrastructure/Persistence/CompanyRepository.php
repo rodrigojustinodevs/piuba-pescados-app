@@ -7,6 +7,7 @@ namespace App\Infrastructure\Persistence;
 use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CompanyRepository implements CompanyRepositoryInterface
 {
@@ -14,7 +15,6 @@ class CompanyRepository implements CompanyRepositoryInterface
      * Create a new company.
      *
      * @param array<string, mixed> $data
-     * @return Company
      */
     public function create(array $data): Company
     {
@@ -24,9 +24,7 @@ class CompanyRepository implements CompanyRepositoryInterface
     /**
      * Update an existing company.
      *
-     * @param string $id
      * @param array<string, mixed> $data
-     * @return Company|null
      */
     public function update(string $id, array $data): ?Company
     {
@@ -43,23 +41,19 @@ class CompanyRepository implements CompanyRepositoryInterface
 
     /**
      * Get paginated companies.
-     *
-     * @param int $page
-     * @return PaginationInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        return new PaginationPresentr(Company::paginate($page));
+        /** @var LengthAwarePaginator<Company> $paginator */
+        $paginator = Company::paginate($page);
+
+        return new PaginationPresentr($paginator);
     }
 
     /**
      * Show company by field and value.
-     *
-     * @param string $field
-     * @param string|int $value
-     * @return Company|null
      */
-    public function showCompany(string $field, string|int $value): ?Company
+    public function showCompany(string $field, string | int $value): ?Company
     {
         return Company::where($field, $value)->first();
     }
@@ -68,7 +62,7 @@ class CompanyRepository implements CompanyRepositoryInterface
     {
         $company = Company::find($id);
 
-        if (!$company) {
+        if (! $company) {
             return false;
         }
 

@@ -26,6 +26,7 @@ class CompanyService
     {
         return DB::transaction(function () use ($data): CompanyDTO {
             $company = $this->companyRepository->create($data);
+
             return $this->mapToDTO($company);
         });
     }
@@ -53,13 +54,12 @@ class CompanyService
     {
         $company = $this->companyRepository->showCompany('id', $id);
 
-        if (!$company) {
+        if (! $company instanceof Company) {
             return null;
         }
 
         return $this->mapToDTO($company);
     }
-
 
     /**
      * @param array<string, mixed> $data
@@ -84,8 +84,7 @@ class CompanyService
 
     private function mapToDTO(?Company $company): ?CompanyDTO
     {
-
-        if (!$company) {
+        if (! $company instanceof Company) {
             return null;
         }
 

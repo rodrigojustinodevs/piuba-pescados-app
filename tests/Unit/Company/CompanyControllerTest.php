@@ -8,8 +8,8 @@ use App\Application\DTOs\CompanyDTO;
 use App\Application\Services\CompanyService;
 use App\Domain\Enums\Status;
 use App\Presentation\Controllers\CompanyController;
-use App\Presentation\Requests\CompanyStoreRequest;
-use App\Presentation\Requests\CompanyUpdateRequest;
+use App\Presentation\Requests\Company\CompanyStoreRequest;
+use App\Presentation\Requests\Company\CompanyUpdateRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -66,7 +66,6 @@ test('returns a successful response for index', function (): void {
         ],
     ];
 
-    // Mock do serviço
     $companyService = Mockery::mock(CompanyService::class);
     $companyService->shouldReceive('showAllCompanies')
         ->once()

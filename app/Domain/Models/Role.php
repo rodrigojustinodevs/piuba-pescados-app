@@ -9,7 +9,11 @@ use Illuminate\Support\Str;
 
 class Role extends BaseModel
 {
-    public string $id;
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
+    protected $fillable = ['id', 'name'];
 
     #[\Override]
     protected static function booted()

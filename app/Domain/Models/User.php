@@ -30,7 +30,9 @@ class User extends Authenticatable implements Auditable
         'remember_token',
     ];
 
-    public string $id;
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     /**
      * Get the attributes that should be cast.

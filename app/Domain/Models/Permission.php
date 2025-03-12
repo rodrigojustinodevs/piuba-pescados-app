@@ -9,7 +9,9 @@ use Illuminate\Support\Str;
 
 class Permission extends BaseModel
 {
-    public string $id;
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     #[\Override]
     protected static function booted()

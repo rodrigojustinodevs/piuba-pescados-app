@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Requests;
+namespace App\Presentation\Requests\Company;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Database\QueryException;
 
 class CompanyStoreRequest extends FormRequest
 {

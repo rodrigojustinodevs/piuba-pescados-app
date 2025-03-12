@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers;
 
 use App\Application\Services\CompanyService;
-use App\Presentation\Requests\CompanyStoreRequest;
-use App\Presentation\Requests\CompanyUpdateRequest;
+use App\Presentation\Requests\Company\CompanyStoreRequest;
+use App\Presentation\Requests\Company\CompanyUpdateRequest;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;

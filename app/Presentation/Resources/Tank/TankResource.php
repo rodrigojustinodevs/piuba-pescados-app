@@ -10,6 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string $id
  * @property-read string $name
  * @property-read int $capacity_liters
+ * @property-read int $volume
  * @property-read string $location
  * @property-read string $status
  * @property-read string|null $cultivation

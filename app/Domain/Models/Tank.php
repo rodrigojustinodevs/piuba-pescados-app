@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
  * @property string $id
  * @property string $name
  * @property int $capacity_liters
+ * @property int $volume
  * @property string $location
  * @property string $status
  * @property string $cultivation

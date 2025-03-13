@@ -79,13 +79,14 @@ class Handler extends ExceptionHandler
         ] : [];
 
         return ApiResponse::error(
-            [
-                'exception' => $exception->getMessage(),
-                'request'   => $request?->fullUrl(),
-                'debug'     => $debug,
-            ],
+            $exception,
             $defaultMessage,
-            $statusCode
+            $statusCode,
+            false,
+            [
+                'request' => $request?->fullUrl(),
+                'debug'   => $debug,
+            ],
         );
     }
 
@@ -99,15 +100,14 @@ class Handler extends ExceptionHandler
                                 (string) $firstError[0] : 'Validation error';
 
         return ApiResponse::error(
-            [
-                'message' => $exception->getMessage(),
-                'code'    => $exception->getCode(),
-                'errors'  => $errors,
-                'line'    => $exception->getLine(),
-            ],
+            $exception,
             $firstErrorMessage,
             JsonResponse::HTTP_UNPROCESSABLE_ENTITY,  // Código de erro de validação
-            true
+            true,
+            [
+                'errors' => $errors,
+                'line'   => $exception->getLine(),
+            ],
         );
     }
 }

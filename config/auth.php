@@ -37,11 +37,9 @@ return [
     |
     */
 
-    'guards' => [
-        'web' => [
-            'driver'   => 'session',
-            'provider' => 'users',
-        ],
+    'defaults' => [
+        'guard'     => 'sanctum',
+        'passwords' => 'users',
     ],
 
     /*

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 use OwenIt\Auditing\Contracts\Auditable;
 
 class User extends Authenticatable implements Auditable
@@ -19,6 +20,8 @@ class User extends Authenticatable implements Auditable
     /** @use HasFactory<UserFactory> */
     use HasFactory;
     use Notifiable;
+    use HasRolesAndPermissions;
+    use HasApiTokens;
 
     /**
      * The attributes that should be hidden for serialization.
@@ -56,7 +59,11 @@ class User extends Authenticatable implements Auditable
         });
     }
 
-    /** @return Factory<User> */
+    /**
+     * Define a factory associada ao modelo.
+     *
+     * @return Factory<User>
+     */
     protected static function newFactory(): Factory
     {
         return UserFactory::new();
@@ -82,5 +89,14 @@ class User extends Authenticatable implements Auditable
         $relation = $this->belongsToMany(Role::class);
 
         return $relation;
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->permissions()->where('name', $permission)->exists()) {
+            return true;
+        }
+
+        return $this->roles()->whereHas('permissions', fn ($q) => $q->where('name', $permission))->exists();
     }
 }

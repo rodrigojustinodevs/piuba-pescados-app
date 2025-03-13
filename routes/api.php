@@ -9,6 +9,8 @@ use App\Presentation\Controllers\TankController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', fn (): string => 'pong');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('tank', [TankController::class, 'store']);
 Route::get('tanks', [TankController::class, 'index']);

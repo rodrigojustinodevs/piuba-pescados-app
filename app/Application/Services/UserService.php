@@ -87,7 +87,7 @@ class UserService
     {
         return new UserDTO(
             id: $user->id,
-            isAdmin: $user->is_admin,
+            isAdmin: $user->is_admin ?? false,
             name: $user->name,
             email: $user->email,
             emailVerifiedAt: $user->email_verified_at,

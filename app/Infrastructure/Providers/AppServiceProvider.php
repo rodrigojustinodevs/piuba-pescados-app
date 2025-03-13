@@ -9,9 +9,11 @@ use App\Domain\Models\User;
 use App\Domain\Repositories\BatcheRepositoryInterface;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
+use App\Domain\Repositories\UserRepositoryInterface;
 use App\Infrastructure\Persistence\BatcheRepository;
 use App\Infrastructure\Persistence\CompanyRepository;
 use App\Infrastructure\Persistence\TankRepository;
+use App\Infrastructure\Persistence\UserRepository;
 use App\Presentation\Exceptions\Handler as CustomHandler;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -37,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
         $this->app->bind(TankRepositoryInterface::class, TankRepository::class);
         $this->app->bind(BatcheRepositoryInterface::class, BatcheRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(ExceptionHandler::class, CustomHandler::class);
     }
 

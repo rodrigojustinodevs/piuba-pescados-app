@@ -58,7 +58,10 @@ class TankRepository implements TankRepositoryInterface
      */
     public function showTank(string $field, string | int $value): ?Tank
     {
-        return Tank::where($field, $value)->first();
+        return Tank::where($field, $value)->with([
+            'tankType:id,name',
+            'company:id,name',
+        ])->first();
     }
 
     public function delete(string $id): bool

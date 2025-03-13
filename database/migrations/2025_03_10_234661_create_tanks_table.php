@@ -16,13 +16,13 @@ return new class () extends Migration
         Schema::create('tanks', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->uuid('company_id');
-            $table->uuid('tank_types_id');
+            $table->uuid('tank_type_id');
             $table->string('name', 255);
             $table->integer('capacity_liters');
             $table->text('location');
             $table->enum('status', ['active', 'inactive']);
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
-            $table->foreign('tank_types_id')->references('id')->on('tank_types')->onDelete('cascade');
+            $table->foreign('tank_type_id')->references('id')->on('tank_types')->onDelete('cascade');
             $table->timestamps();
         });
     }

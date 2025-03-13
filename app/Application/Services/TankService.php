@@ -10,6 +10,7 @@ use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
 use App\Presentation\Resources\Tank\TankResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class TankService
@@ -25,6 +26,13 @@ class TankService
     public function create(array $data): TankDTO
     {
         return DB::transaction(function () use ($data): TankDTO {
+            /** @var \App\Domain\Models\User|null $user */
+            $user = Auth::user();
+
+            if (! $user) {
+                throw new \Exception('Usuário não autenticado');
+            }
+            $data['company_id'] = $user->company_id;
             $tank = $this->tankRepository->create($data);
 
             return $this->mapToDTO($tank);
@@ -87,7 +95,6 @@ class TankService
         if (! $tank instanceof Tank) {
             return null;
         }
-
         return new TankDTO(
             id: $tank->id,
             name: $tank->name,

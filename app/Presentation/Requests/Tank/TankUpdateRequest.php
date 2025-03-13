@@ -27,7 +27,7 @@ class TankUpdateRequest extends FormRequest
     {
         return [
             'company_id'      => ['sometimes', 'uuid', 'exists:companies,id'],
-            'tank_types_id'   => ['sometimes', 'uuid', 'exists:tank_types,id'],
+            'tank_type_id'   => ['sometimes', 'uuid', 'exists:tank_types,id'],
             'name'            => ['sometimes', 'string', 'max:255'],
             'capacity_liters' => ['sometimes', 'integer', 'min:1'],
             'volume'          => ['sometimes', 'integer', 'min:1'],

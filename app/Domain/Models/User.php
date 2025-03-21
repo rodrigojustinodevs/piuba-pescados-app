@@ -99,4 +99,19 @@ class User extends Authenticatable implements Auditable
 
         return $this->roles()->whereHas('permissions', fn ($q) => $q->where('name', $permission))->exists();
     }
+
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roles()->where('name', $roleName)->exists();
+    }
+
+    public function hasCompanyRole(Company $company, string $roleName): bool
+    {
+        return $this->companyRoles($company)->where('name', $roleName)->exists();
+    }
+
+    public function hasCompanyPermission(Company $company, string $permissionName): bool
+    {
+        return $this->companyPermissions($company)->where('name', $permissionName)->exists();
+    }
 }

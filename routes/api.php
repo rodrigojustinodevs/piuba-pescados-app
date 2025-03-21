@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Presentation\Controllers\AuthController;
 use App\Presentation\Controllers\BatcheController;
 use App\Presentation\Controllers\CompanyController;
+use App\Presentation\Controllers\RolePermissionController;
 use App\Presentation\Controllers\TankController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,4 +36,11 @@ Route::middleware(['auth:sanctum', 'permission:manage_users'])->group(function (
     Route::get('/company/{id}', [CompanyController::class, 'show']);
     Route::put('/company/{id}', [CompanyController::class, 'update']);
     Route::delete('/company/{id}', [CompanyController::class, 'destroy']);
+
+    Route::post('/assign-role', [RolePermissionController::class, 'assignRoleToUser']);
+    Route::post('/assign-permission', [RolePermissionController::class, 'assignPermissionToUser']);
+    Route::post('/company/{company_id}/assign-role', [RolePermissionController::class, 'assignRoleToUserInCompany'])
+        ->middleware('company.permission:manage_roles');
+    Route::post('/company/{company_id}/assign-permisssion', [RolePermissionController::class, 'assignPermissionToUserInCompany'])
+        ->middleware('company.permission:manage_permisssions');
 });

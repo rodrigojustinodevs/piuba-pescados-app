@@ -11,7 +11,6 @@ use App\Domain\Repositories\UserRepositoryInterface;
 
 class RolePermissionService
 {
-
     public function __construct(
         protected UserRepositoryInterface $userRepository,
         protected CompanyRepositoryInterface $companyRepository,
@@ -20,6 +19,9 @@ class RolePermissionService
     ) {
     }
 
+    /**
+     * @param array{user_id: int, role_name: string} $data
+     */
     public function assignRoleToUser(array $data): void
     {
         $user = $this->userRepository->showUser('id', $data['user_id']);
@@ -27,6 +29,9 @@ class RolePermissionService
         $user->roles()->syncWithoutDetaching($role);
     }
 
+    /**
+     * @param array{user_id: int, permission_name: string} $data
+     */
     public function assignPermissionToUser(array $data): void
     {
         $user = $this->userRepository->showUser('id', $data['user_id']);
@@ -34,6 +39,9 @@ class RolePermissionService
         $user->permissions()->syncWithoutDetaching($permission);
     }
 
+    /**
+     * @param array{user_id: int, role_name: string, company_id: int} $data
+     */
     public function assignRoleToUserInCompany(array $data): void
     {
         $user = $this->userRepository->showUser('id', $data['user_id']);
@@ -42,6 +50,9 @@ class RolePermissionService
         $user->companyRoles($company)->syncWithoutDetaching($role);
     }
 
+    /**
+     * @param array{user_id: int, permission_name: string, company_id: int} $data
+     */
     public function assignPermissionToUserInCompany(array $data): void
     {
         $user = $this->userRepository->showUser('id', $data['user_id']);

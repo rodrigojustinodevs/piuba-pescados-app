@@ -18,12 +18,12 @@ class RolePermissionController
 {
     public function __construct(
         protected RolePermissionService $rolePermissionService,
-    ) {}
+    ) {
+    }
 
     public function assignRoleToUser(RoleToUserRequest $request): JsonResponse
     {
         try {
-
             $this->rolePermissionService->assignRoleToUser($request->validated());
 
             return ApiResponse::success(null, Response::HTTP_OK, 'Role assigned successfully');

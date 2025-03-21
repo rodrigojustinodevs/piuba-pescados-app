@@ -114,4 +114,26 @@ class User extends Authenticatable implements Auditable
     {
         return $this->companyPermissions($company)->where('name', $permissionName)->exists();
     }
+
+    /**
+     * @return BelongsToMany<Role, User>
+     */
+    public function companyRoles(Company $company): BelongsToMany
+    {
+        /** @var BelongsToMany<Role, User> $relation */
+        $relation = $this->roles()->wherePivot('company_id', $company->id);
+
+        return $relation;
+    }
+
+    /**
+     * @return BelongsToMany<Permission, User>
+     */
+    public function companyPermissions(Company $company): BelongsToMany
+    {
+        /** @var BelongsToMany<Permission, User> $relation */
+        $relation = $this->permissions()->wherePivot('company_id', $company->id);
+
+        return $relation;
+    }
 }

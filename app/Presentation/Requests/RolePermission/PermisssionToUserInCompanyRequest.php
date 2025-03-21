@@ -24,9 +24,9 @@ class PermisssionToUserInCompanyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required|uuid|exists:users,id'],
+            'user_id'         => ['required|uuid|exists:users,id'],
             'permission_name' => ['required|string|exists:permissions,name'],
-            'company_id'   => ['required', 'uuid', 'exists:companies,id'],
+            'company_id'      => ['required', 'uuid', 'exists:companies,id'],
         ];
     }
 }

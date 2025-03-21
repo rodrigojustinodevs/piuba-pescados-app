@@ -25,7 +25,7 @@ class TankStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tank_type_id'   => ['required', 'uuid', 'exists:tank_types,id'],
+            'tank_type_id'    => ['required', 'uuid', 'exists:tank_types,id'],
             'name'            => ['required', 'string', 'max:255'],
             'capacity_liters' => ['required', 'integer', 'min:1'],
             'volume'          => ['required', 'integer', 'min:1'],

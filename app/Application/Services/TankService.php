@@ -33,7 +33,7 @@ class TankService
                 throw new \Exception('Usuário não autenticado');
             }
             $data['company_id'] = $user->company_id;
-            $tank = $this->tankRepository->create($data);
+            $tank               = $this->tankRepository->create($data);
 
             return $this->mapToDTO($tank);
         });
@@ -95,6 +95,7 @@ class TankService
         if (! $tank instanceof Tank) {
             return null;
         }
+
         return new TankDTO(
             id: $tank->id,
             name: $tank->name,

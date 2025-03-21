@@ -27,7 +27,6 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('batche/{id}', [BatcheController::class, 'show']);
     Route::put('batche/{id}', [BatcheController::class, 'update']);
     Route::delete('batche/{id}', [BatcheController::class, 'destroy']);
-
 });
 
 Route::middleware(['auth:sanctum', 'permission:manage_users'])->group(function (): void {

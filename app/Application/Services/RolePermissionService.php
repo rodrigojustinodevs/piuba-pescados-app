@@ -34,7 +34,7 @@ class RolePermissionService
      */
     public function assignPermissionToUser(array $data): void
     {
-        $user = $this->userRepository->showUser('id', $data['user_id']);
+        $user       = $this->userRepository->showUser('id', $data['user_id']);
         $permission = $this->permissionRepository->showPermission('name', $data['permission_name']);
         $user->permissions()->syncWithoutDetaching($permission);
     }
@@ -44,8 +44,8 @@ class RolePermissionService
      */
     public function assignRoleToUserInCompany(array $data): void
     {
-        $user = $this->userRepository->showUser('id', $data['user_id']);
-        $role = $this->roleRepository->showRole('name', $data['role_name']);
+        $user    = $this->userRepository->showUser('id', $data['user_id']);
+        $role    = $this->roleRepository->showRole('name', $data['role_name']);
         $company = $this->companyRepository->showCompany('id', $data['company_id']);
         $user->companyRoles($company)->syncWithoutDetaching($role);
     }
@@ -55,9 +55,9 @@ class RolePermissionService
      */
     public function assignPermissionToUserInCompany(array $data): void
     {
-        $user = $this->userRepository->showUser('id', $data['user_id']);
+        $user       = $this->userRepository->showUser('id', $data['user_id']);
         $permission = $this->permissionRepository->showPermission('name', $data['permission_name']);
-        $company = $this->companyRepository->showCompany('id', $data['company_id']);
+        $company    = $this->companyRepository->showCompany('id', $data['company_id']);
         $user->companyPermissions($company)->syncWithoutDetaching($permission);
     }
 }

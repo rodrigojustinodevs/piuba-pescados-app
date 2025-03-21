@@ -24,7 +24,7 @@ class RoleToUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required|uuid|exists:users,id'],
+            'user_id'   => ['required|uuid|exists:users,id'],
             'role_name' => ['required|string|exists:roles,name'],
         ];
     }

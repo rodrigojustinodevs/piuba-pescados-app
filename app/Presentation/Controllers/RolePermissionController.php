@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers;
 
 use App\Application\Services\RolePermissionService;
-use App\Presentation\Requests\RolePermission\RoleToUserInCompanyRequest;
-use App\Presentation\Requests\RolePermission\RoleToUserRequest;
 use App\Presentation\Requests\RolePermission\PermissionToUserRequest;
 use App\Presentation\Requests\RolePermission\PermisssionToUserInCompanyRequest;
+use App\Presentation\Requests\RolePermission\RoleToUserInCompanyRequest;
+use App\Presentation\Requests\RolePermission\RoleToUserRequest;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;

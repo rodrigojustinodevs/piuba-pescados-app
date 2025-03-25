@@ -16,7 +16,6 @@ class TankDTO
         public string $id,
         public string $name,
         public int $capacityLiters,
-        public int $volume,
         public string $location,
         public Status $status,
         public ?array $tankType = null,
@@ -35,7 +34,6 @@ class TankDTO
             id: $data['id'],
             name: $data['name'],
             capacityLiters: (int) $data['capacity_liters'],
-            volume: (int) $data['volume'],
             location: $data['location'],
             status: Status::from($data['status']),
             tankType: isset($data['tank_type']) ? [
@@ -59,7 +57,6 @@ class TankDTO
             'id'             => $this->id,
             'name'           => $this->name,
             'capacityLiters' => $this->capacityLiters,
-            'volume'         => $this->volume,
             'location'       => $this->location,
             'status'         => $this->status->value,
             'tankType'       => $this->tankType,

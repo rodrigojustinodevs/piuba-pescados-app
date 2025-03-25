@@ -30,7 +30,6 @@ class TankUpdateRequest extends FormRequest
             'tank_types_id'   => ['sometimes', 'uuid', 'exists:tank_types,id'],
             'name'            => ['sometimes', 'string', 'max:255'],
             'capacity_liters' => ['sometimes', 'integer', 'min:1'],
-            'volume'          => ['sometimes', 'integer', 'min:1'],
             'location'        => ['sometimes', 'string'],
             'status'          => ['sometimes', Rule::in(['active', 'inactive'])],
         ];

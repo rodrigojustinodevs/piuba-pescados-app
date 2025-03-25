@@ -33,7 +33,6 @@ class Tank extends BaseModel
         'name',
         'capacity_liters',
         'location',
-        'volume',
         'status',
         'tank_type_id',
         'company_id',
@@ -71,7 +70,7 @@ class Tank extends BaseModel
     public function tankType(): BelongsTo
     {
         /** @var BelongsTo<TankType, static> $relation */
-        $relation = $this->belongsTo(TankType::class, 'tank_type_id'); // Correção do nome da chave
+        $relation = $this->belongsTo(TankType::class, 'tank_types_id');
 
         return $relation;
     }

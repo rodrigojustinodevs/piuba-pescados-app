@@ -10,7 +10,6 @@ use App\Presentation\Requests\Company\CompanyUpdateRequest;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class CompanyController
@@ -32,7 +31,7 @@ class CompanyController
 
             return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
         } catch (Throwable $exception) {
-            return $this->handleException($exception);
+            return ApiResponse::error($exception);
         }
     }
 
@@ -50,7 +49,7 @@ class CompanyController
 
             return ApiResponse::success($company->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
-            return $this->handleException($exception, 'Company not found', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error($exception, 'Company not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -64,7 +63,7 @@ class CompanyController
 
             return ApiResponse::created($company->toArray());
         } catch (Throwable $exception) {
-            return $this->handleException($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -78,7 +77,7 @@ class CompanyController
 
             return ApiResponse::success($company->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
-            return $this->handleException($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -96,34 +95,7 @@ class CompanyController
 
             return ApiResponse::success(null, Response::HTTP_OK, 'Company successfully deleted');
         } catch (Throwable $exception) {
-            return $this->handleException($exception, 'Error deleting company', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error($exception, 'Error deleting company', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    /**
-     * Handle exceptions and return a formatted error response.
-     */
-    private function handleException(
-        Throwable $exception,
-        string $userMessage = 'An error occurred',
-        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
-    ): JsonResponse {
-        Log::error('Error in CompanyController', [
-            'message' => $exception->getMessage(),
-            'code'    => $exception->getCode(),
-            'file'    => $exception->getFile(),
-            'line'    => $exception->getLine(),
-        ]);
-
-        return ApiResponse::error(
-            [
-                'message' => $exception->getMessage(),
-                'code'    => $exception->getCode(),
-                'file'    => $exception->getFile(),
-                'line'    => $exception->getLine(),
-            ],
-            $userMessage,
-            $statusCode
-        );
     }
 }

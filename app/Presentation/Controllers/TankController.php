@@ -31,7 +31,7 @@ class TankController
 
             return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
         } catch (Throwable $exception) {
-            return $this->handleException($exception);
+            return ApiResponse::error($exception);
         }
     }
 
@@ -49,7 +49,7 @@ class TankController
 
             return ApiResponse::success($tank->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
-            return $this->handleException($exception, 'Tank not found', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error($exception, 'Tank not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -63,7 +63,7 @@ class TankController
 
             return ApiResponse::created($tank->toArray());
         } catch (Throwable $exception) {
-            return $this->handleException($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -77,7 +77,7 @@ class TankController
 
             return ApiResponse::success($tank->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
-            return $this->handleException($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
+            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -95,27 +95,7 @@ class TankController
 
             return ApiResponse::success(null, Response::HTTP_OK, 'Tank successfully deleted');
         } catch (Throwable $exception) {
-            return $this->handleException($exception, 'Error deleting tank', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error($exception, 'Error deleting tank', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    /**
-     * Handle exceptions and return a formatted error response.
-     */
-    private function handleException(
-        Throwable $exception,
-        string $userMessage = 'An error occurred',
-        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
-    ): JsonResponse {
-        return ApiResponse::error(
-            [
-                'message' => $exception->getMessage(),
-                'code'    => $exception->getCode(),
-                'file'    => $exception->getFile(),
-                'line'    => $exception->getLine(),
-            ],
-            $userMessage,
-            $statusCode
-        );
     }
 }

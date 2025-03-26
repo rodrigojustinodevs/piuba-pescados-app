@@ -8,8 +8,8 @@ use App\Application\DTOs\TankDTO;
 use App\Domain\Enums\Status;
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class UpdateTankUseCase
 {

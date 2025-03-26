@@ -25,7 +25,7 @@ class UpdateBatcheUseCase
     {
         $batche = $this->batcheRepository->update($id, $data);
 
-        if (! $batche) {
+        if (!$batche instanceof \App\Domain\Models\Batche) {
             throw new Exception('Batche not found');
         }
 

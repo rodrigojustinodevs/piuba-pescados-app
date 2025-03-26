@@ -8,8 +8,8 @@ use App\Application\DTOs\CompanyDTO;
 use App\Domain\Enums\Status;
 use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class UpdateCompanyUseCase
 {

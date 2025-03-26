@@ -22,7 +22,6 @@ test('returns a successful response for index', function (): void {
             'id'        => Uuid::uuid4()->toString(),
             'name'      => 'Tank 1',
             'capacity'  => 1000,
-            'volume'    => 1000,
             "location"  => "Location A",
             'status'    => Status::ACTIVE,
             'tank_type' => [
@@ -39,7 +38,6 @@ test('returns a successful response for index', function (): void {
             'id'        => Uuid::uuid4()->toString(),
             'name'      => 'Tank 2',
             'capacity'  => 2000,
-            'volume'    => 1000,
             "location"  => "Location A",
             'status'    => Status::ACTIVE,
             'tank_type' => [
@@ -61,7 +59,6 @@ test('returns a successful response for index', function (): void {
             $data['id'],
             $data['name'],
             $data['capacity'],
-            $data['volume'],
             $data['location'],
             $data['status'],
             $data['tank_type'],
@@ -103,7 +100,6 @@ test('returns a tank for show when found', function (): void {
         $tankId,
         'Tank 1',
         1000,
-        1500,
         'Location A',
         Status::ACTIVE,
     );
@@ -137,7 +133,6 @@ test('creates a tank via store', function (): void {
         $tankId,
         'Tank 1',
         1000,
-        1500,
         'Location A',
         Status::ACTIVE,
     );
@@ -161,7 +156,6 @@ test('updates a tank via update', function (): void {
         $tankId,
         'Tank 1',
         1000,
-        1500,
         'Location A',
         Status::ACTIVE,
     );

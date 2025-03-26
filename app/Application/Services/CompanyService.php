@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace App\Application\Services;
 
 use App\Application\DTOs\CompanyDTO;
-use App\Domain\Enums\Status;
-use App\Domain\Models\Company;
-use App\Domain\Repositories\CompanyRepositoryInterface;
-use App\Presentation\Resources\Company\CompanyResource;
+use App\Application\UseCases\Company\CreateCompanyUseCase;
+use App\Application\UseCases\Company\DeleteCompanyUseCase;
+use App\Application\UseCases\Company\ShowAllCompaniesUseCase;
+use App\Application\UseCases\Company\ShowCompanyUseCase;
+use App\Application\UseCases\Company\UpdateCompanyUseCase;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\DB;
 
 class CompanyService
 {
     public function __construct(
-        protected CompanyRepositoryInterface $companyRepository
+        protected CreateCompanyUseCase $createCompanyUseCase,
+        protected UpdateCompanyUseCase $updateCompanyUseCase,
+        protected ShowCompanyUseCase $showCompanyUseCase,
+        protected ShowAllCompaniesUseCase $showAllCompaniesUseCase,
+        protected DeleteCompanyUseCase $deleteCompanyUseCase,
     ) {
     }
 
@@ -24,41 +28,7 @@ class CompanyService
      */
     public function create(array $data): CompanyDTO
     {
-        return DB::transaction(function () use ($data): CompanyDTO {
-            $company = $this->companyRepository->create($data);
-
-            return $this->mapToDTO($company);
-        });
-    }
-
-    public function showAllCompanies(): AnonymousResourceCollection
-    {
-        $response = $this->companyRepository->paginate();
-
-        return CompanyResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
-    }
-
-    /**
-     * Returns the details of a company.
-     */
-    public function showCompany(string $id): ?CompanyDTO
-    {
-        $company = $this->companyRepository->showCompany('id', $id);
-
-        if (! $company instanceof Company) {
-            return null;
-        }
-
-        return $this->mapToDTO($company);
+        return $this->createCompanyUseCase->execute($data);
     }
 
     /**
@@ -66,37 +36,21 @@ class CompanyService
      */
     public function updateCompany(string $id, array $data): CompanyDTO
     {
-        return DB::transaction(function () use ($id, $data): CompanyDTO {
-            $company = $this->companyRepository->update($id, $data);
+        return $this->updateCompanyUseCase->execute($id, $data);
+    }
 
-            if (! $company instanceof Company) {
-                throw new \Exception('Company not found');
-            }
+    public function showCompany(string $id): ?CompanyDTO
+    {
+        return $this->showCompanyUseCase->execute($id);
+    }
 
-            return $this->mapToDTO($company);
-        });
+    public function showAllCompanies(): AnonymousResourceCollection
+    {
+        return $this->showAllCompaniesUseCase->execute();
     }
 
     public function deleteCompany(string $id): bool
     {
-        return DB::transaction(fn (): bool => $this->companyRepository->delete($id));
-    }
-
-    private function mapToDTO(?Company $company): ?CompanyDTO
-    {
-        if (! $company instanceof Company) {
-            return null;
-        }
-
-        return new CompanyDTO(
-            id: $company->id,
-            name: $company->name,
-            cnpj: $company->cnpj,
-            address: $company->address,
-            phone: $company->phone,
-            status: Status::from($company->status),
-            createdAt: $company->created_at?->toDateTimeString(),
-            updatedAt: $company->updated_at?->toDateTimeString()
-        );
+        return $this->deleteCompanyUseCase->execute($id);
     }
 }

@@ -5,17 +5,21 @@ declare(strict_types=1);
 namespace App\Application\Services;
 
 use App\Application\DTOs\TankDTO;
-use App\Domain\Enums\Status;
-use App\Domain\Models\Tank;
-use App\Domain\Repositories\TankRepositoryInterface;
-use App\Presentation\Resources\Tank\TankResource;
+use App\Application\UseCases\Tank\CreateTankUseCase;
+use App\Application\UseCases\Tank\ShowAllTanksUseCase;
+use App\Application\UseCases\Tank\ShowTankUseCase;
+use App\Application\UseCases\Tank\UpdateTankUseCase;
+use App\Application\UseCases\Tank\DeleteTankUseCase;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\DB;
 
 class TankService
 {
     public function __construct(
-        protected TankRepositoryInterface $tankRepository
+        protected CreateTankUseCase $createTankUseCase,
+        protected ShowAllTanksUseCase $showAllTanksUseCase,
+        protected ShowTankUseCase $showTankUseCase,
+        protected UpdateTankUseCase $updateTankUseCase,
+        protected DeleteTankUseCase $deleteTankUseCase
     ) {
     }
 
@@ -24,41 +28,17 @@ class TankService
      */
     public function create(array $data): TankDTO
     {
-        return DB::transaction(function () use ($data): TankDTO {
-            $tank = $this->tankRepository->create($data);
-
-            return $this->mapToDTO($tank);
-        });
+        return $this->createTankUseCase->execute($data);
     }
 
     public function showAllTanks(): AnonymousResourceCollection
     {
-        $response = $this->tankRepository->paginate();
-
-        return TankResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->showAllTanksUseCase->execute();
     }
 
-    /**
-     * Returns the details of a tank.
-     */
     public function showTank(string $id): ?TankDTO
     {
-        $tank = $this->tankRepository->showTank('id', $id);
-
-        if (! $tank instanceof Tank) {
-            return null;
-        }
-
-        return $this->mapToDTO($tank);
+        return $this->showTankUseCase->execute($id);
     }
 
     /**
@@ -66,44 +46,11 @@ class TankService
      */
     public function updateTank(string $id, array $data): TankDTO
     {
-        return DB::transaction(function () use ($id, $data): TankDTO {
-            $tank = $this->tankRepository->update($id, $data);
-
-            if (! $tank instanceof Tank) {
-                throw new \Exception('Tank not found');
-            }
-
-            return $this->mapToDTO($tank);
-        });
+        return $this->updateTankUseCase->execute($id, $data);
     }
 
     public function deleteTank(string $id): bool
     {
-        return DB::transaction(fn (): bool => $this->tankRepository->delete($id));
-    }
-
-    private function mapToDTO(?Tank $tank): ?TankDTO
-    {
-        if (! $tank instanceof Tank) {
-            return null;
-        }
-
-        return new TankDTO(
-            id: $tank->id,
-            name: $tank->name,
-            capacityLiters: $tank->capacity_liters,
-            volume: $tank->volume,
-            location: $tank->location,
-            status: Status::from($tank->status),
-            tankType: [
-                'id'   => $tank->tankType->id ?? '',
-                'name' => $tank->tankType->name ?? '',
-            ],
-            company: [
-                'name' => $tank->company->name ?? '',
-            ],
-            createdAt: $tank->created_at?->toDateTimeString(),
-            updatedAt: $tank->updated_at?->toDateTimeString()
-        );
+        return $this->deleteTankUseCase->execute($id);
     }
 }

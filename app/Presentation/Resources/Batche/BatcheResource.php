@@ -35,7 +35,7 @@ class BatcheResource extends JsonResource
             'species'         => $this->species,
             'status'          => $this->status,
             'cultivation'     => $this->cultivation,
-            'tank'            => $this->whenLoaded('tankType', fn (): array => [
+            'tank'            => $this->whenLoaded('tank', fn (): array => [
                 'id'   => $this->tank->id,
                 'name' => $this->tank->name,
             ]),

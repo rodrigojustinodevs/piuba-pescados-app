@@ -10,10 +10,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string $id
  * @property-read string $name
  * @property-read int $capacity_liters
- * @property-read int $volume
  * @property-read string $location
  * @property-read string $status
- * @property-read string|null $cultivation
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\TankType|null $tankType
@@ -34,10 +32,8 @@ class TankResource extends JsonResource
             'id'              => $this->id,
             'name'            => $this->name,
             'capacity_liters' => $this->capacity_liters,
-            'volume'          => $this->volume,
             'location'        => $this->location,
             'status'          => $this->status,
-            'cultivation'     => $this->cultivation,
             'tank_type'       => $this->whenLoaded('tankType', fn (): array => [
                 'id'   => $this->tankType->id,
                 'name' => $this->tankType->name,

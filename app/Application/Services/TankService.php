@@ -6,10 +6,10 @@ namespace App\Application\Services;
 
 use App\Application\DTOs\TankDTO;
 use App\Application\UseCases\Tank\CreateTankUseCase;
+use App\Application\UseCases\Tank\DeleteTankUseCase;
 use App\Application\UseCases\Tank\ShowAllTanksUseCase;
 use App\Application\UseCases\Tank\ShowTankUseCase;
 use App\Application\UseCases\Tank\UpdateTankUseCase;
-use App\Application\UseCases\Tank\DeleteTankUseCase;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TankService

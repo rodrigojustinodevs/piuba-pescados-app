@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Application\UseCases\Batche;
+namespace App\Application\UseCases\Stocking;
 
-use App\Domain\Repositories\BatcheRepositoryInterface;
-use App\Presentation\Resources\Batche\BatcheResource;
+use App\Domain\Repositories\StockingRepositoryInterface;
+use App\Presentation\Resources\Stocking\StockingResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ListBatchesUseCase
+class ListStockingsUseCase
 {
     public function __construct(
-        protected BatcheRepositoryInterface $batcheRepository
+        protected StockingRepositoryInterface $stockingRepository
     ) {
     }
 
     public function execute(): AnonymousResourceCollection
     {
-        $response = $this->batcheRepository->paginate();
+        $response = $this->stockingRepository->paginate();
 
-        return BatcheResource::collection($response->items())
+        return StockingResource::collection($response->items())
             ->additional([
                 'pagination' => [
                     'total'        => $response->total(),

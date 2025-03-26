@@ -21,7 +21,7 @@ class ShowBatcheUseCase
     {
         $batche = $this->batcheRepository->showBatche('id', $id);
 
-        if (! $batche) {
+        if (!$batche instanceof \App\Domain\Models\Batche) {
             return null;
         }
 

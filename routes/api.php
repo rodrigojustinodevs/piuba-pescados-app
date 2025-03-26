@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Presentation\Controllers\BatcheController;
 use App\Presentation\Controllers\CompanyController;
+use App\Presentation\Controllers\StockingController;
 use App\Presentation\Controllers\TankController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +26,9 @@ Route::get('batches', [BatcheController::class, 'index']);
 Route::get('batche/{id}', [BatcheController::class, 'show']);
 Route::put('batche/{id}', [BatcheController::class, 'update']);
 Route::delete('batche/{id}', [BatcheController::class, 'destroy']);
+
+Route::post('stocking', [StockingController::class, 'store']);
+Route::get('stockings', [StockingController::class, 'index']);
+Route::get('stocking/{id}', [StockingController::class, 'show']);
+Route::put('stocking/{id}', [StockingController::class, 'update']);
+Route::delete('stocking/{id}', [StockingController::class, 'destroy']);

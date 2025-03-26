@@ -24,8 +24,6 @@ class BatcheService
     }
 
     /**
-     * Cria um novo lote.
-     *
      * @param array<string, mixed> $data
      */
     public function create(array $data): BatcheDTO
@@ -33,25 +31,17 @@ class BatcheService
         return $this->createBatcheUseCase->execute($data);
     }
 
-    /**
-     * Retorna todos os lotes com paginação.
-     */
     public function showAllBatches(): AnonymousResourceCollection
     {
         return $this->listBatchesUseCase->execute();
     }
 
-    /**
-     * Retorna os detalhes de um lote específico.
-     */
     public function showBatche(string $id): ?BatcheDTO
     {
         return $this->showBatcheUseCase->execute($id);
     }
 
     /**
-     * Atualiza os dados de um lote específico.
-     *
      * @param array<string, mixed> $data
      */
     public function updateBatche(string $id, array $data): BatcheDTO
@@ -59,9 +49,6 @@ class BatcheService
         return $this->updateBatcheUseCase->execute($id, $data);
     }
 
-    /**
-     * Exclui um lote.
-     */
     public function deleteBatche(string $id): bool
     {
         return $this->deleteBatcheUseCase->execute($id);

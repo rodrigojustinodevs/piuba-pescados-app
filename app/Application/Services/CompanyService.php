@@ -23,11 +23,17 @@ class CompanyService
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function create(array $data): CompanyDTO
     {
         return $this->createCompanyUseCase->execute($data);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function updateCompany(string $id, array $data): CompanyDTO
     {
         return $this->updateCompanyUseCase->execute($id, $data);

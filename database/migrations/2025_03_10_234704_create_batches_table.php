@@ -22,6 +22,8 @@ return new class () extends Migration
             $table->enum('status', ['active', 'finished']);
             $table->enum('cultivation', ['nursery', 'daycare']);
             $table->foreign('tank_id')->references('id')->on('tanks')->onDelete('cascade');
+            $table->softDeletes();
+
             $table->timestamps();
         });
     }

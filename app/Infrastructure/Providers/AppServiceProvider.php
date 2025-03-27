@@ -8,10 +8,12 @@ use App\Domain\Enums\Can;
 use App\Domain\Models\User;
 use App\Domain\Repositories\BatcheRepositoryInterface;
 use App\Domain\Repositories\CompanyRepositoryInterface;
+use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
 use App\Infrastructure\Persistence\BatcheRepository;
 use App\Infrastructure\Persistence\CompanyRepository;
+use App\Infrastructure\Persistence\FeedingRepository;
 use App\Infrastructure\Persistence\StockingRepository;
 use App\Infrastructure\Persistence\TankRepository;
 use App\Presentation\Exceptions\Handler as CustomHandler;
@@ -40,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(TankRepositoryInterface::class, TankRepository::class);
         $this->app->bind(BatcheRepositoryInterface::class, BatcheRepository::class);
         $this->app->bind(StockingRepositoryInterface::class, StockingRepository::class);
+        $this->app->bind(FeedingRepositoryInterface::class, FeedingRepository::class);
         $this->app->bind(ExceptionHandler::class, CustomHandler::class);
     }
 

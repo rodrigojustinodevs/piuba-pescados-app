@@ -23,6 +23,8 @@ return new class () extends Migration
             $table->enum('status', ['active', 'inactive']);
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('tank_types_id')->references('id')->on('tank_types')->onDelete('cascade');
+            $table->softDeletes();
+
             $table->timestamps();
         });
     }

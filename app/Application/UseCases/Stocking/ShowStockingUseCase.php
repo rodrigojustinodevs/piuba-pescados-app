@@ -19,7 +19,7 @@ class ShowStockingUseCase
     {
         $stocking = $this->stockingRepository->showStocking('id', $id);
 
-        if (!$stocking instanceof \App\Domain\Models\Stocking) {
+        if (! $stocking instanceof \App\Domain\Models\Stocking) {
             return null;
         }
 

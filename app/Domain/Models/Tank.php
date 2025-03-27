@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -24,6 +25,8 @@ use Illuminate\Support\Str;
  */
 class Tank extends BaseModel
 {
+    use SoftDeletes;
+
     protected $keyType = 'string';
 
     public $incrementing = false;
@@ -42,6 +45,7 @@ class Tank extends BaseModel
     protected $dates = [
         'created_at',
         'updated_at',
+        'deleted_at',
     ];
 
     #[\Override]

@@ -11,14 +11,17 @@ use Illuminate\Support\Str;
 
 /**
  * @property string $id
- * @property Carbon|null $stocking_date
- * @property int $quantity
- * @property float $average_weight
+ * @property string $batcheID
+ * @property Carbon|null $feeding_date
+ * @property float $quantity_provided
+ * @property string $feed_type
+ * @property float $stock_reduction_quantity
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
  * @property-read Batche|null $batche
  */
-class Stocking extends BaseModel
+class Feeding extends BaseModel
 {
     use SoftDeletes;
 
@@ -29,14 +32,15 @@ class Stocking extends BaseModel
     protected $fillable = [
         'id',
         'batche_id',
-        'stocking_date',
-        'quantity',
-        'average_weight',
+        'feeding_date',
+        'quantity_provided',
+        'feed_type',
+        'stock_reduction_quantity',
     ];
 
     /** @var array<string> */
     protected $dates = [
-        'stocking_date',
+        'feeding_date',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -45,8 +49,8 @@ class Stocking extends BaseModel
     #[\Override]
     protected static function booted()
     {
-        static::creating(function (Stocking $stocking): void {
-            $stocking->id = (string) Str::uuid();
+        static::creating(function (Feeding $feeding): void {
+            $feeding->id = (string) Str::uuid();
         });
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Presentation\Controllers\BatcheController;
 use App\Presentation\Controllers\CompanyController;
 use App\Presentation\Controllers\FeedingController;
+use App\Presentation\Controllers\StockController;
 use App\Presentation\Controllers\StockingController;
 use App\Presentation\Controllers\TankController;
 use Illuminate\Support\Facades\Route;
@@ -39,3 +40,9 @@ Route::get('feedings', [FeedingController::class, 'index']);
 Route::get('feeding/{id}', [FeedingController::class, 'show']);
 Route::put('feeding/{id}', [FeedingController::class, 'update']);
 Route::delete('feeding/{id}', [FeedingController::class, 'destroy']);
+
+Route::post('stock', [StockController::class, 'store']);
+Route::get('stocks', [StockController::class, 'index']);
+Route::get('stock/{id}', [StockController::class, 'show']);
+Route::put('stock/{id}', [StockController::class, 'update']);
+Route::delete('stock/{id}', [StockController::class, 'destroy']);

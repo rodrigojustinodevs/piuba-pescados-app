@@ -11,18 +11,17 @@ use Illuminate\Support\Str;
 
 /**
  * @property string $id
- * @property string $name
- * @property int $capacity_liters
- * @property int $volume
- * @property string $location
- * @property string $status
- * @property string $cultivation
+ * @property string $company_id
+ * @property string $feed_type
+ * @property float $current_stock
+ * @property float $minimum_stock
+ * @property float $daily_consumption
+ * @property float $total_consumption
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read TankType|null $tankType
  * @property-read Company|null $company
  */
-class Tank extends BaseModel
+class FeedControl extends BaseModel
 {
     use SoftDeletes;
 
@@ -31,28 +30,27 @@ class Tank extends BaseModel
     public $incrementing = false;
 
     protected $fillable = [
-        'id',
-        'name',
-        'capacity_liters',
-        'location',
-        'status',
-        'tank_type_id',
+        'feed_type',
+        'current_stock',
+        'minimum_stock',
+        'daily_consumption',
+        'total_consumption',
         'company_id',
+        'updated_at',
     ];
 
     /** @var array<string> */
     protected $dates = [
-        'created_at',
         'updated_at',
+        'created_at',
         'deleted_at',
     ];
 
     #[\Override]
     protected static function booted()
     {
-        static::creating(function (Tank $tank): void {
-            $tank->id     = (string) Str::uuid();
-            $tank->status = 'active';
+        static::creating(function (FeedControl $feedControl): void {
+            $feedControl->id = (string) Str::uuid();
         });
     }
 
@@ -63,17 +61,6 @@ class Tank extends BaseModel
     {
         /** @var BelongsTo<Company, static> $relation */
         $relation = $this->belongsTo(Company::class, 'company_id');
-
-        return $relation;
-    }
-
-    /**
-     * @phpstan-return BelongsTo<TankType, static>
-     */
-    public function tankType(): BelongsTo
-    {
-        /** @var BelongsTo<TankType, static> $relation */
-        $relation = $this->belongsTo(TankType::class, 'tank_types_id');
 
         return $relation;
     }

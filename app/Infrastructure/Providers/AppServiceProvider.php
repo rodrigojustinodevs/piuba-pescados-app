@@ -13,6 +13,7 @@ use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
+use App\Domain\Repositories\TransferRepositoryInterface;
 use App\Infrastructure\Persistence\BatcheRepository;
 use App\Infrastructure\Persistence\CompanyRepository;
 use App\Infrastructure\Persistence\FeedControlRepository;
@@ -20,6 +21,7 @@ use App\Infrastructure\Persistence\FeedingRepository;
 use App\Infrastructure\Persistence\StockingRepository;
 use App\Infrastructure\Persistence\StockRepository;
 use App\Infrastructure\Persistence\TankRepository;
+use App\Infrastructure\Persistence\TransferRepository;
 use App\Presentation\Exceptions\Handler as CustomHandler;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -49,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(FeedingRepositoryInterface::class, FeedingRepository::class);
         $this->app->bind(StockRepositoryInterface::class, StockRepository::class);
         $this->app->bind(FeedControlRepositoryInterface::class, FeedControlRepository::class);
+        $this->app->bind(TransferRepositoryInterface::class, TransferRepository::class);
         $this->app->bind(ExceptionHandler::class, CustomHandler::class);
     }
 

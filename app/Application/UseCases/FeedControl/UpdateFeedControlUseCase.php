@@ -7,8 +7,8 @@ namespace App\Application\UseCases\FeedControl;
 use App\Application\DTOs\FeedControlDTO;
 use App\Domain\Models\FeedControl;
 use App\Domain\Repositories\FeedControlRepositoryInterface;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class UpdateFeedControlUseCase
 {
@@ -19,7 +19,7 @@ class UpdateFeedControlUseCase
 
     /**
      * @param array<string, mixed> $data
-     * @throws Exception
+     * @throws RuntimeException
      */
     public function execute(string $id, array $data): FeedControlDTO
     {
@@ -27,7 +27,7 @@ class UpdateFeedControlUseCase
             $feedControl = $this->feedControlRepository->update($id, $data);
 
             if (! $feedControl instanceof FeedControl) {
-                throw new Exception('FeedControl not found');
+                throw new RuntimeException('FeedControl not found');
             }
 
             return new FeedControlDTO(

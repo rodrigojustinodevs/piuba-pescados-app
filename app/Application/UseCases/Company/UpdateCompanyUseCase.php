@@ -8,8 +8,8 @@ use App\Application\DTOs\CompanyDTO;
 use App\Domain\Enums\Status;
 use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class UpdateCompanyUseCase
 {
@@ -27,7 +27,7 @@ class UpdateCompanyUseCase
             $company = $this->companyRepository->update($id, $data);
 
             if (! $company instanceof Company) {
-                throw new Exception('Company not found');
+                throw new RuntimeException('Company not found');
             }
 
             return new CompanyDTO(

@@ -8,8 +8,8 @@ use App\Application\DTOs\FeedingDTO;
 use App\Domain\Models\Feeding;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class UpdateFeedingUseCase
 {
@@ -27,7 +27,7 @@ class UpdateFeedingUseCase
             $feeding = $this->feedingRepository->update($id, $data);
 
             if (! $feeding instanceof Feeding) {
-                throw new Exception('Feeding not found');
+                throw new RuntimeException('Feeding not found');
             }
 
             $feedingDate = $feeding->feeding_date instanceof Carbon

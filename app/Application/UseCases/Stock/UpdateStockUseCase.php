@@ -7,8 +7,8 @@ namespace App\Application\UseCases\Stock;
 use App\Application\DTOs\StockDTO;
 use App\Domain\Models\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class UpdateStockUseCase
 {
@@ -19,7 +19,7 @@ class UpdateStockUseCase
 
     /**
      * @param array<string, mixed> $data
-     * @throws Exception
+     * @throws RuntimeException
      */
     public function execute(string $id, array $data): StockDTO
     {
@@ -27,7 +27,7 @@ class UpdateStockUseCase
             $stock = $this->stockRepository->update($id, $data);
 
             if (! $stock instanceof Stock) {
-                throw new Exception('Stock not found');
+                throw new RuntimeException('Stock not found');
             }
 
             return new StockDTO(

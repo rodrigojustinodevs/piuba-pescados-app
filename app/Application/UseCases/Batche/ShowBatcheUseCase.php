@@ -7,8 +7,10 @@ namespace App\Application\UseCases\Batche;
 use App\Application\DTOs\BatcheDTO;
 use App\Domain\Enums\Cultivation;
 use App\Domain\Enums\Status;
+use App\Domain\Models\Batche;
 use App\Domain\Repositories\BatcheRepositoryInterface;
 use Carbon\Carbon;
+use RuntimeException;
 
 class ShowBatcheUseCase
 {
@@ -21,8 +23,8 @@ class ShowBatcheUseCase
     {
         $batche = $this->batcheRepository->showBatche('id', $id);
 
-        if (! $batche instanceof \App\Domain\Models\Batche) {
-            return null;
+        if (! $batche instanceof Batche) {
+            throw new RuntimeException('Batche not found');
         }
 
         $entryDate = $batche->entry_date instanceof Carbon

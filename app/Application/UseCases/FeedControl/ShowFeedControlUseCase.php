@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Application\UseCases\FeedControl;
 
 use App\Application\DTOs\FeedControlDTO;
+use App\Domain\Models\FeedControl;
 use App\Domain\Repositories\FeedControlRepositoryInterface;
+use Exception;
 
 class ShowFeedControlUseCase
 {
@@ -18,8 +20,8 @@ class ShowFeedControlUseCase
     {
         $feedControl = $this->feedControlRepository->showFeedControl('id', $id);
 
-        if (! $feedControl instanceof \App\Domain\Models\FeedControl) {
-            return null;
+        if (! $feedControl instanceof FeedControl) {
+            throw new Exception('FeedControl not found');
         }
 
         return new FeedControlDTO(

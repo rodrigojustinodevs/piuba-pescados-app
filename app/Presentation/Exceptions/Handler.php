@@ -31,23 +31,28 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->renderable(
-            fn (NotFoundHttpException $exception): JsonResponse => $this->handleException($exception, 'Route not found', JsonResponse::HTTP_NOT_FOUND)
+            fn (NotFoundHttpException $exception): JsonResponse =>
+            $this->handleException($exception, 'Route not found', JsonResponse::HTTP_NOT_FOUND)
         );
 
         $this->renderable(
-            fn (MethodNotAllowedHttpException $exception): JsonResponse => $this->handleException($exception, 'Method not allowed', JsonResponse::HTTP_METHOD_NOT_ALLOWED)
+            fn (MethodNotAllowedHttpException $exception): JsonResponse =>
+            $this->handleException($exception, 'Method not allowed', JsonResponse::HTTP_METHOD_NOT_ALLOWED)
         );
 
         $this->renderable(
-            fn (AuthenticationException $exception): JsonResponse => $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED)
+            fn (AuthenticationException $exception): JsonResponse =>
+            $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED)
         );
 
         $this->renderable(
-            fn (AccessDeniedHttpException $exception): JsonResponse => $this->handleException($exception, 'Access denied', JsonResponse::HTTP_FORBIDDEN)
+            fn (AccessDeniedHttpException $exception): JsonResponse =>
+            $this->handleException($exception, 'Access denied', JsonResponse::HTTP_FORBIDDEN)
         );
 
         $this->renderable(
-            fn (ValidationException $exception): JsonResponse => $this->handleValidationException($exception)
+            fn (ValidationException $exception): JsonResponse =>
+            $this->handleValidationException($exception)
         );
 
         $this->renderable(

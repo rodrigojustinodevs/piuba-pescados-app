@@ -44,7 +44,7 @@ class PaginationPresentr implements PaginationInterface
 
     public function firstPage(): int
     {
-        return $this->paginator->firstItem();
+        return (int) ($this->paginator->firstItem() ?? 1);
     }
 
     public function lastPage(): int

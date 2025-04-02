@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Stocking;
 
 use App\Application\DTOs\StockingDTO;
+use App\Domain\Models\Stocking;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use Carbon\Carbon;
+use RuntimeException;
 
 class ShowStockingUseCase
 {
@@ -19,8 +21,8 @@ class ShowStockingUseCase
     {
         $stocking = $this->stockingRepository->showStocking('id', $id);
 
-        if (! $stocking instanceof \App\Domain\Models\Stocking) {
-            return null;
+        if (! $stocking instanceof Stocking) {
+            throw new RuntimeException('Stocking not found');
         }
 
         $stockingDate = $stocking->stocking_date instanceof Carbon

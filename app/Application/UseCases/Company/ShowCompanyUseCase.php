@@ -8,6 +8,7 @@ use App\Application\DTOs\CompanyDTO;
 use App\Domain\Enums\Status;
 use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
+use RuntimeException;
 
 class ShowCompanyUseCase
 {
@@ -21,7 +22,7 @@ class ShowCompanyUseCase
         $company = $this->companyRepository->showCompany('id', $id);
 
         if (! $company instanceof Company) {
-            throw new \Exception('Company not found');
+            throw new RuntimeException('Company not found');
         }
 
         return new CompanyDTO(

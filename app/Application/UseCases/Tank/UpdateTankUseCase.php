@@ -8,8 +8,8 @@ use App\Application\DTOs\TankDTO;
 use App\Domain\Enums\Status;
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class UpdateTankUseCase
 {
@@ -27,7 +27,7 @@ class UpdateTankUseCase
             $tank = $this->tankRepository->update($id, $data);
 
             if (! $tank instanceof Tank) {
-                throw new Exception('Tank not found');
+                throw new RuntimeException('Tank not found');
             }
 
             return new TankDTO(

@@ -8,8 +8,8 @@ use App\Application\DTOs\StockingDTO;
 use App\Domain\Models\Stocking;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class UpdateStockingUseCase
 {
@@ -27,7 +27,7 @@ class UpdateStockingUseCase
             $stocking = $this->stockingRepository->update($id, $data);
 
             if (! $stocking instanceof Stocking) {
-                throw new Exception('Stocking not found');
+                throw new RuntimeException('Stocking not found');
             }
 
             $stockingDate = $stocking->stocking_date instanceof Carbon

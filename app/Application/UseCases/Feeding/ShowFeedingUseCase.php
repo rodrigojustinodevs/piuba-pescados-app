@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Feeding;
 
 use App\Application\DTOs\FeedingDTO;
+use App\Domain\Models\Feeding;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use Carbon\Carbon;
+use RuntimeException;
 
 class ShowFeedingUseCase
 {
@@ -19,8 +21,8 @@ class ShowFeedingUseCase
     {
         $feeding = $this->feedingRepository->showFeeding('id', $id);
 
-        if (! $feeding instanceof \App\Domain\Models\Feeding) {
-            return null;
+        if (! $feeding instanceof Feeding) {
+            throw new RuntimeException('Feeding not found');
         }
 
         $feedingDate = $feeding->feeding_date instanceof Carbon

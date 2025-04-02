@@ -9,6 +9,7 @@ use App\Presentation\Controllers\FeedingController;
 use App\Presentation\Controllers\StockController;
 use App\Presentation\Controllers\StockingController;
 use App\Presentation\Controllers\TankController;
+use App\Presentation\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', fn (): string => 'pong');
@@ -53,3 +54,9 @@ Route::get('stocks', [StockController::class, 'index']);
 Route::get('stock/{id}', [StockController::class, 'show']);
 Route::put('stock/{id}', [StockController::class, 'update']);
 Route::delete('stock/{id}', [StockController::class, 'destroy']);
+
+Route::post('transfer', [TransferController::class, 'store']);
+Route::get('transfers', [TransferController::class, 'index']);
+Route::get('transfer/{id}', [TransferController::class, 'show']);
+Route::put('transfer/{id}', [TransferController::class, 'update']);
+Route::delete('transfer/{id}', [TransferController::class, 'destroy']);

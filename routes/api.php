@@ -7,7 +7,7 @@ use App\Presentation\Controllers\CompanyController;
 use App\Presentation\Controllers\FeedControlController;
 use App\Presentation\Controllers\FeedingController;
 use App\Presentation\Controllers\StockController;
-use App\Presentation\Controllers\StockingController;
+use App\Presentation\Controllers\SettlementController;
 use App\Presentation\Controllers\TankController;
 use App\Presentation\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
@@ -31,11 +31,11 @@ Route::get('batche/{id}', [BatcheController::class, 'show']);
 Route::put('batche/{id}', [BatcheController::class, 'update']);
 Route::delete('batche/{id}', [BatcheController::class, 'destroy']);
 
-Route::post('stocking', [StockingController::class, 'store']);
-Route::get('stockings', [StockingController::class, 'index']);
-Route::get('stocking/{id}', [StockingController::class, 'show']);
-Route::put('stocking/{id}', [StockingController::class, 'update']);
-Route::delete('stocking/{id}', [StockingController::class, 'destroy']);
+Route::post('settlement', [SettlementController::class, 'store']);
+Route::get('settlements', [SettlementController::class, 'index']);
+Route::get('settlement/{id}', [SettlementController::class, 'show']);
+Route::put('settlement/{id}', [SettlementController::class, 'update']);
+Route::delete('settlement/{id}', [SettlementController::class, 'destroy']);
 
 Route::post('feeding', [FeedingController::class, 'store']);
 Route::get('feedings', [FeedingController::class, 'index']);

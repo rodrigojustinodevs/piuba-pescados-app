@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Application\UseCases\Stocking;
+namespace App\Application\UseCases\Settlement;
 
-use App\Domain\Repositories\StockingRepositoryInterface;
-use App\Presentation\Resources\Stocking\StockingResource;
+use App\Domain\Repositories\SettlementRepositoryInterface;
+use App\Presentation\Resources\Settlement\SettlementResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ListStockingsUseCase
+class ListSettlementsUseCase
 {
     public function __construct(
-        protected StockingRepositoryInterface $stockingRepository
+        protected SettlementRepositoryInterface $settlementRepository
     ) {
     }
 
     public function execute(): AnonymousResourceCollection
     {
-        $response = $this->stockingRepository->paginate();
+        $response = $this->settlementRepository->paginate();
 
-        return StockingResource::collection($response->items())
+        return SettlementResource::collection($response->items())
             ->additional([
                 'pagination' => [
                     'total'        => $response->total(),

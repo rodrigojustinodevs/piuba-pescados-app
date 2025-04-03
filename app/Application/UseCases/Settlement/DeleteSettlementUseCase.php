@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Application\UseCases\Stocking;
+namespace App\Application\UseCases\Settlement;
 
-use App\Domain\Repositories\StockingRepositoryInterface;
+use App\Domain\Repositories\SettlementRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class DeleteStockingUseCase
+class DeleteSettlementUseCase
 {
     public function __construct(
-        protected StockingRepositoryInterface $stockingRepository
+        protected SettlementRepositoryInterface $settlementRepository
     ) {
     }
 
@@ -20,7 +20,7 @@ class DeleteStockingUseCase
         DB::beginTransaction();
 
         try {
-            $deleted = $this->stockingRepository->delete($id);
+            $deleted = $this->settlementRepository->delete($id);
 
             DB::commit();
 

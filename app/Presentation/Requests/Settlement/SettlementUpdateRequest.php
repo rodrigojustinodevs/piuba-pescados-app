@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Requests\Stocking;
+namespace App\Presentation\Requests\Settlement;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StockingUpdateRequest extends FormRequest
+class SettlementUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -20,7 +20,7 @@ class StockingUpdateRequest extends FormRequest
     {
         return [
             'batch_id'       => 'sometimes|uuid|exists:batches,id',
-            'stocking_date'  => 'sometimes|date',
+            'settlement_date'  => 'sometimes|date',
             'quantity'       => 'sometimes|integer|min:1',
             'average_weight' => 'sometimes|numeric|min:0',
         ];
@@ -35,7 +35,7 @@ class StockingUpdateRequest extends FormRequest
         return [
             'batch_id.uuid'          => 'The batch ID must be a valid UUID.',
             'batch_id.exists'        => 'The batch ID must exist in the batches table.',
-            'stocking_date.date'     => 'The stocking date must be a valid date.',
+            'settlement_date.date'     => 'The settlement date must be a valid date.',
             'quantity.integer'       => 'The quantity must be an integer.',
             'quantity.min'           => 'The quantity must be at least 1.',
             'average_weight.numeric' => 'The average weight must be a number.',

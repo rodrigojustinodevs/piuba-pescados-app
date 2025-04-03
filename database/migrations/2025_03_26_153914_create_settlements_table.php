@@ -13,10 +13,10 @@ return new class () extends Migration
      */
     public function up(): void
     {
-        Schema::create('stockings', function (Blueprint $table): void {
+        Schema::create('settlements', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->uuid('batche_id');
-            $table->date('stocking_date');
+            $table->date('settlement_date');
             $table->integer('quantity');
             $table->float('average_weight');
             $table->timestamps();
@@ -31,6 +31,6 @@ return new class () extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('stockings');
+        Schema::dropIfExists('settlements');
     }
 };

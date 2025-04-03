@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Stock;
 
 use App\Domain\Repositories\StockRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class DeleteStockUseCase
 {
@@ -15,6 +16,6 @@ class DeleteStockUseCase
 
     public function execute(string $id): bool
     {
-        return $this->stockRepository->delete($id);
+        return DB::transaction(fn (): bool => $this->stockRepository->delete($id));
     }
 }

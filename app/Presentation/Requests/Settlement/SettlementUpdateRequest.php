@@ -19,10 +19,10 @@ class SettlementUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batch_id'       => 'sometimes|uuid|exists:batches,id',
-            'settlement_date'  => 'sometimes|date',
-            'quantity'       => 'sometimes|integer|min:1',
-            'average_weight' => 'sometimes|numeric|min:0',
+            'batch_id'        => 'sometimes|uuid|exists:batches,id',
+            'settlement_date' => 'sometimes|date',
+            'quantity'        => 'sometimes|integer|min:1',
+            'average_weight'  => 'sometimes|numeric|min:0',
         ];
     }
 
@@ -35,7 +35,7 @@ class SettlementUpdateRequest extends FormRequest
         return [
             'batch_id.uuid'          => 'The batch ID must be a valid UUID.',
             'batch_id.exists'        => 'The batch ID must exist in the batches table.',
-            'settlement_date.date'     => 'The settlement date must be a valid date.',
+            'settlement_date.date'   => 'The settlement date must be a valid date.',
             'quantity.integer'       => 'The quantity must be an integer.',
             'quantity.min'           => 'The quantity must be at least 1.',
             'average_weight.numeric' => 'The average weight must be a number.',

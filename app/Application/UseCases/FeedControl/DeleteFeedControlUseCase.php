@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Application\UseCases\FeedControl;
 
 use App\Domain\Repositories\FeedControlRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class DeleteFeedControlUseCase
 {
     public function __construct(
-        protected FeedControlRepositoryInterface $feedControlRepository
+        protected FeedControlRepositoryInterface $feedcontrolRepository
     ) {
     }
 
     public function execute(string $id): bool
     {
-        return $this->feedControlRepository->delete($id);
+        return DB::transaction(fn (): bool => $this->feedcontrolRepository->delete($id));
     }
 }

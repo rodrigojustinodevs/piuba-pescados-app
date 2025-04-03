@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-class SettlementDTO
+class BiometryDTO
 {
     public function __construct(
         public string $id,
         public string $batcheId,
-        public string $settlementDate,
-        public int $quantity,
         public float $averageWeight,
+        public float $fcr,
+        public ?string $biometryDate = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null
     ) {
@@ -25,9 +25,9 @@ class SettlementDTO
         return new self(
             id: $data['id'],
             batcheId: $data['batche_id'],
-            settlementDate: $data['settlement_date'],
-            quantity: (int) $data['quantity'],
+            biometryDate: $data['biometry_date'] ?? null,
             averageWeight: (float) $data['average_weight'],
+            fcr: (float) $data['fcr'],
             createdAt: $data['created_at'] ?? null,
             updatedAt: $data['updated_at'] ?? null
         );
@@ -39,13 +39,13 @@ class SettlementDTO
     public function toArray(): array
     {
         return [
-            'id'             => $this->id,
-            'batcheId'       => $this->batcheId,
-            'settlementDate' => $this->settlementDate,
-            'quantity'       => $this->quantity,
-            'averageWeight'  => $this->averageWeight,
-            'createdAt'      => $this->createdAt,
-            'updatedAt'      => $this->updatedAt,
+            'id'            => $this->id,
+            'batcheId'      => $this->batcheId,
+            'biometryDate'  => $this->biometryDate,
+            'averageWeight' => $this->averageWeight,
+            'fcr'           => $this->fcr,
+            'createdAt'     => $this->createdAt,
+            'updatedAt'     => $this->updatedAt,
         ];
     }
 
@@ -53,8 +53,7 @@ class SettlementDTO
     {
         return ($this->id === '' || $this->id === '0') &&
                ($this->batcheId === '' || $this->batcheId === '0') &&
-               ($this->settlementDate === '' || $this->settlementDate === '0') &&
-               $this->quantity === 0 &&
-               $this->averageWeight === 0.0;
+               $this->averageWeight === 0.0 &&
+               $this->fcr === 0.0;
     }
 }

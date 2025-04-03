@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Feeding;
 
 use App\Domain\Repositories\FeedingRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class DeleteFeedingUseCase
 {
@@ -15,6 +16,6 @@ class DeleteFeedingUseCase
 
     public function execute(string $id): bool
     {
-        return $this->feedingRepository->delete($id);
+        return DB::transaction(fn (): bool => $this->feedingRepository->delete($id));
     }
 }

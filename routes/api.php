@@ -3,11 +3,12 @@
 declare(strict_types=1);
 
 use App\Presentation\Controllers\BatcheController;
+use App\Presentation\Controllers\BiometryController;
 use App\Presentation\Controllers\CompanyController;
 use App\Presentation\Controllers\FeedControlController;
 use App\Presentation\Controllers\FeedingController;
-use App\Presentation\Controllers\StockController;
 use App\Presentation\Controllers\SettlementController;
+use App\Presentation\Controllers\StockController;
 use App\Presentation\Controllers\TankController;
 use App\Presentation\Controllers\TransferController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,12 @@ Route::get('batches', [BatcheController::class, 'index']);
 Route::get('batche/{id}', [BatcheController::class, 'show']);
 Route::put('batche/{id}', [BatcheController::class, 'update']);
 Route::delete('batche/{id}', [BatcheController::class, 'destroy']);
+
+Route::post('biometry', [BiometryController::class, 'store']);
+Route::get('biometries', [BiometryController::class, 'index']);
+Route::get('biometry/{id}', [BiometryController::class, 'show']);
+Route::put('biometry/{id}', [BiometryController::class, 'update']);
+Route::delete('biometry/{id}', [BiometryController::class, 'destroy']);
 
 Route::post('settlement', [SettlementController::class, 'store']);
 Route::get('settlements', [SettlementController::class, 'index']);

@@ -25,9 +25,9 @@ class SettlementController
     public function index(): JsonResponse
     {
         try {
-            $settlements  = $this->settlementService->showAllSettlements();
-            $data       = $settlements->toArray(request());
-            $pagination = $settlements->additional['pagination'] ?? null;
+            $settlements = $this->settlementService->showAllSettlements();
+            $data        = $settlements->toArray(request());
+            $pagination  = $settlements->additional['pagination'] ?? null;
 
             return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
         } catch (Throwable $exception) {

@@ -6,7 +6,6 @@ namespace App\Application\UseCases\Settlement;
 
 use App\Domain\Repositories\SettlementRepositoryInterface;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class DeleteSettlementUseCase
 {
@@ -17,18 +16,6 @@ class DeleteSettlementUseCase
 
     public function execute(string $id): bool
     {
-        DB::beginTransaction();
-
-        try {
-            $deleted = $this->settlementRepository->delete($id);
-
-            DB::commit();
-
-            return $deleted;
-        } catch (Throwable $e) {
-            DB::rollBack();
-
-            throw $e;
-        }
+        return DB::transaction(fn (): bool => $this->settlementRepository->delete($id));
     }
 }

@@ -27,13 +27,13 @@ class SettlementResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'            => $this->id,
-            'batcheId'      => $this->batche?->id,
-            'settlementDate'  => $this->settlement_date,
-            'quantity'      => $this->quantity,
-            'averageWeight' => $this->average_weight,
-            'createdAt'     => $this->created_at?->toDateTimeString(),
-            'updatedAt'     => $this->updated_at?->toDateTimeString(),
+            'id'             => $this->id,
+            'batcheId'       => $this->batche?->id,
+            'settlementDate' => $this->settlement_date,
+            'quantity'       => $this->quantity,
+            'averageWeight'  => $this->average_weight,
+            'createdAt'      => $this->created_at?->toDateTimeString(),
+            'updatedAt'      => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

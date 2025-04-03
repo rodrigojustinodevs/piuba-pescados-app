@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Batche;
 
 use App\Domain\Repositories\BatcheRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class DeleteBatcheUseCase
 {
@@ -15,6 +16,6 @@ class DeleteBatcheUseCase
 
     public function execute(string $id): bool
     {
-        return $this->batcheRepository->delete($id);
+        return DB::transaction(fn (): bool => $this->batcheRepository->delete($id));
     }
 }

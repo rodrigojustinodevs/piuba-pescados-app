@@ -7,6 +7,7 @@ use App\Presentation\Controllers\BiometryController;
 use App\Presentation\Controllers\CompanyController;
 use App\Presentation\Controllers\FeedControlController;
 use App\Presentation\Controllers\FeedingController;
+use App\Presentation\Controllers\MortalityController;
 use App\Presentation\Controllers\SettlementController;
 use App\Presentation\Controllers\StockController;
 use App\Presentation\Controllers\TankController;
@@ -38,6 +39,12 @@ Route::get('biometry/{id}', [BiometryController::class, 'show']);
 Route::put('biometry/{id}', [BiometryController::class, 'update']);
 Route::delete('biometry/{id}', [BiometryController::class, 'destroy']);
 
+Route::post('mortality', [MortalityController::class, 'store']);
+Route::get('mortalities', [MortalityController::class, 'index']);
+Route::get('mortality/{id}', [MortalityController::class, 'show']);
+Route::put('mortality/{id}', [MortalityController::class, 'update']);
+Route::delete('mortality/{id}', [MortalityController::class, 'destroy']);
+
 Route::post('settlement', [SettlementController::class, 'store']);
 Route::get('settlements', [SettlementController::class, 'index']);
 Route::get('settlement/{id}', [SettlementController::class, 'show']);
@@ -50,11 +57,11 @@ Route::get('feeding/{id}', [FeedingController::class, 'show']);
 Route::put('feeding/{id}', [FeedingController::class, 'update']);
 Route::delete('feeding/{id}', [FeedingController::class, 'destroy']);
 
-Route::post('feedControl', [FeedControlController::class, 'store']);
-Route::get('feedControls', [FeedControlController::class, 'index']);
-Route::get('feedControl/{id}', [FeedControlController::class, 'show']);
-Route::put('feedControl/{id}', [FeedControlController::class, 'update']);
-Route::delete('feedControl/{id}', [FeedControlController::class, 'destroy']);
+Route::post('feed-control', [FeedControlController::class, 'store']);
+Route::get('feed-controls', [FeedControlController::class, 'index']);
+Route::get('feed-control/{id}', [FeedControlController::class, 'show']);
+Route::put('feed-control/{id}', [FeedControlController::class, 'update']);
+Route::delete('feed-control/{id}', [FeedControlController::class, 'destroy']);
 
 Route::post('stock', [StockController::class, 'store']);
 Route::get('stocks', [StockController::class, 'index']);

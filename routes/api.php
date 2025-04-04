@@ -8,6 +8,7 @@ use App\Presentation\Controllers\CompanyController;
 use App\Presentation\Controllers\FeedControlController;
 use App\Presentation\Controllers\FeedingController;
 use App\Presentation\Controllers\MortalityController;
+use App\Presentation\Controllers\SensorController;
 use App\Presentation\Controllers\SettlementController;
 use App\Presentation\Controllers\StockController;
 use App\Presentation\Controllers\TankController;
@@ -68,6 +69,12 @@ Route::get('stocks', [StockController::class, 'index']);
 Route::get('stock/{id}', [StockController::class, 'show']);
 Route::put('stock/{id}', [StockController::class, 'update']);
 Route::delete('stock/{id}', [StockController::class, 'destroy']);
+
+Route::post('sensor', [SensorController::class, 'store']);
+Route::get('sensors', [SensorController::class, 'index']);
+Route::get('sensor/{id}', [SensorController::class, 'show']);
+Route::put('sensor/{id}', [SensorController::class, 'update']);
+Route::delete('sensor/{id}', [SensorController::class, 'destroy']);
 
 Route::post('transfer', [TransferController::class, 'store']);
 Route::get('transfers', [TransferController::class, 'index']);

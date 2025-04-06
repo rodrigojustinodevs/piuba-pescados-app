@@ -9,6 +9,7 @@ use App\Presentation\Controllers\FeedControlController;
 use App\Presentation\Controllers\FeedingController;
 use App\Presentation\Controllers\MortalityController;
 use App\Presentation\Controllers\SensorController;
+use App\Presentation\Controllers\SensorReadingController;
 use App\Presentation\Controllers\SettlementController;
 use App\Presentation\Controllers\StockController;
 use App\Presentation\Controllers\TankController;
@@ -75,6 +76,12 @@ Route::get('sensors', [SensorController::class, 'index']);
 Route::get('sensor/{id}', [SensorController::class, 'show']);
 Route::put('sensor/{id}', [SensorController::class, 'update']);
 Route::delete('sensor/{id}', [SensorController::class, 'destroy']);
+
+Route::post('sensor-reading', [SensorReadingController::class, 'store']);
+Route::get('sensor-readings', [SensorReadingController::class, 'index']);
+Route::get('sensor-reading/{id}', [SensorReadingController::class, 'show']);
+Route::put('sensor-reading/{id}', [SensorReadingController::class, 'update']);
+Route::delete('sensor-reading/{id}', [SensorReadingController::class, 'destroy']);
 
 Route::post('transfer', [TransferController::class, 'store']);
 Route::get('transfers', [TransferController::class, 'index']);

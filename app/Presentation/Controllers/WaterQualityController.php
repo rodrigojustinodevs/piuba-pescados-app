@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
+use App\Application\DTOs\WaterQualityDTO;
 use App\Application\Services\WaterQualityService;
 use App\Presentation\Requests\WaterQuality\WaterQualityStoreRequest;
 use App\Presentation\Requests\WaterQuality\WaterQualityUpdateRequest;
@@ -43,7 +44,7 @@ class WaterQualityController
         try {
             $record = $this->waterQualityService->showWaterQuality($id);
 
-            if (!$record instanceof \App\Application\DTOs\WaterQualityDTO || $record->isEmpty()) {
+            if (!$record instanceof WaterQualityDTO || $record->isEmpty()) {
                 return ApiResponse::error(null, 'Water quality record not found', Response::HTTP_NOT_FOUND);
             }
 

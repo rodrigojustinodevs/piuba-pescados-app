@@ -12,6 +12,7 @@ use App\Presentation\Controllers\PurchaseController;
 use App\Presentation\Controllers\SensorController;
 use App\Presentation\Controllers\SettlementController;
 use App\Presentation\Controllers\StockController;
+use App\Presentation\Controllers\SupplierController;
 use App\Presentation\Controllers\TankController;
 use App\Presentation\Controllers\TransferController;
 use App\Presentation\Controllers\WaterQualityController;
@@ -83,6 +84,12 @@ Route::get('sensors', [SensorController::class, 'index']);
 Route::get('sensor/{id}', [SensorController::class, 'show']);
 Route::put('sensor/{id}', [SensorController::class, 'update']);
 Route::delete('sensor/{id}', [SensorController::class, 'destroy']);
+
+Route::post('supplier', [SupplierController::class, 'store']);
+Route::get('suppliers', [SupplierController::class, 'index']);
+Route::get('supplier/{id}', [SupplierController::class, 'show']);
+Route::put('supplier/{id}', [SupplierController::class, 'update']);
+Route::delete('supplier/{id}', [SupplierController::class, 'destroy']);
 
 Route::post('transfer', [TransferController::class, 'store']);
 Route::get('transfers', [TransferController::class, 'index']);

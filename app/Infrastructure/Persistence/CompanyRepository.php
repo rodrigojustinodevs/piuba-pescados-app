@@ -40,7 +40,7 @@ class CompanyRepository implements CompanyRepositoryInterface
     }
 
     /**
-     * Get paginated companies.
+     * Get paginated .
      */
     public function paginate(int $page = 25): PaginationInterface
     {

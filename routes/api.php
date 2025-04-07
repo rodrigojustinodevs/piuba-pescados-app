@@ -8,6 +8,7 @@ use App\Presentation\Controllers\CompanyController;
 use App\Presentation\Controllers\FeedControlController;
 use App\Presentation\Controllers\FeedingController;
 use App\Presentation\Controllers\MortalityController;
+use App\Presentation\Controllers\PurchaseController;
 use App\Presentation\Controllers\SensorController;
 use App\Presentation\Controllers\SettlementController;
 use App\Presentation\Controllers\StockController;
@@ -64,6 +65,12 @@ Route::get('feed-controls', [FeedControlController::class, 'index']);
 Route::get('feed-control/{id}', [FeedControlController::class, 'show']);
 Route::put('feed-control/{id}', [FeedControlController::class, 'update']);
 Route::delete('feed-control/{id}', [FeedControlController::class, 'destroy']);
+
+Route::post('purchase', [PurchaseController::class, 'store']);
+Route::get('purchases', [PurchaseController::class, 'index']);
+Route::get('purchase/{id}', [PurchaseController::class, 'show']);
+Route::put('purchase/{id}', [PurchaseController::class, 'update']);
+Route::delete('purchase/{id}', [PurchaseController::class, 'destroy']);
 
 Route::post('stock', [StockController::class, 'store']);
 Route::get('stocks', [StockController::class, 'index']);

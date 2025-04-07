@@ -44,13 +44,17 @@ class WaterQualityController
         try {
             $record = $this->waterQualityService->showWaterQuality($id);
 
-            if (!$record instanceof WaterQualityDTO || $record->isEmpty()) {
+            if (! $record instanceof WaterQualityDTO || $record->isEmpty()) {
                 return ApiResponse::error(null, 'Water quality record not found', Response::HTTP_NOT_FOUND);
             }
 
             return ApiResponse::success($record->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Water quality record not found', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error(
+                $exception,
+                'Water quality record not found',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -96,7 +100,11 @@ class WaterQualityController
 
             return ApiResponse::success(null, Response::HTTP_OK, 'Water quality record successfully deleted');
         } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Error deleting water quality record', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error(
+                $exception,
+                'Error deleting water quality record',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

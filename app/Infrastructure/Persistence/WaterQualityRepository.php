@@ -40,7 +40,7 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
     }
 
     /**
-     * Get paginated companies.
+     * Get paginated .
      */
     public function paginate(int $page = 25): PaginationInterface
     {

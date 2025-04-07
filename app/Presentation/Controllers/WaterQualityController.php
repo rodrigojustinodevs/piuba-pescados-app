@@ -44,7 +44,7 @@ class WaterQualityController
         try {
             $record = $this->waterQualityService->showWaterQuality($id);
 
-            if (!$record instanceof WaterQualityDTO || $record->isEmpty()) {
+            if (! $record instanceof WaterQualityDTO || $record->isEmpty()) {
                 return ApiResponse::error(null, 'Water quality record not found', Response::HTTP_NOT_FOUND);
             }
 

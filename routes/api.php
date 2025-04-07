@@ -13,6 +13,7 @@ use App\Presentation\Controllers\SettlementController;
 use App\Presentation\Controllers\StockController;
 use App\Presentation\Controllers\TankController;
 use App\Presentation\Controllers\TransferController;
+use App\Presentation\Controllers\WaterQualityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', fn (): string => 'pong');
@@ -81,3 +82,9 @@ Route::get('transfers', [TransferController::class, 'index']);
 Route::get('transfer/{id}', [TransferController::class, 'show']);
 Route::put('transfer/{id}', [TransferController::class, 'update']);
 Route::delete('transfer/{id}', [TransferController::class, 'destroy']);
+
+Route::post('water-quality', [WaterQualityController::class, 'store']);
+Route::get('water-qualities', [WaterQualityController::class, 'index']);
+Route::get('water-quality/{id}', [WaterQualityController::class, 'show']);
+Route::put('water-quality/{id}', [WaterQualityController::class, 'update']);
+Route::delete('water-quality/{id}', [WaterQualityController::class, 'destroy']);

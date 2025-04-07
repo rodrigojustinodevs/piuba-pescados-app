@@ -17,6 +17,7 @@ use App\Domain\Repositories\SettlementRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
+use App\Domain\Repositories\WaterQualityRepositoryInterface;
 use App\Infrastructure\Persistence\BatcheRepository;
 use App\Infrastructure\Persistence\BiometryRepository;
 use App\Infrastructure\Persistence\CompanyRepository;
@@ -28,6 +29,7 @@ use App\Infrastructure\Persistence\SettlementRepository;
 use App\Infrastructure\Persistence\StockRepository;
 use App\Infrastructure\Persistence\TankRepository;
 use App\Infrastructure\Persistence\TransferRepository;
+use App\Infrastructure\Persistence\WaterQualityRepository;
 use App\Presentation\Exceptions\Handler as CustomHandler;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -60,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(StockRepositoryInterface::class, StockRepository::class);
         $this->app->bind(FeedControlRepositoryInterface::class, FeedControlRepository::class);
         $this->app->bind(SensorRepositoryInterface::class, SensorRepository::class);
+        $this->app->bind(WaterQualityRepositoryInterface::class, WaterQualityRepository::class);
         $this->app->bind(TransferRepositoryInterface::class, TransferRepository::class);
         $this->app->bind(ExceptionHandler::class, CustomHandler::class);
     }

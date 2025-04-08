@@ -38,7 +38,7 @@ class PurchaseController
         try {
             $purchase = $this->purchaseService->show($id);
 
-            if (!$purchase instanceof PurchaseDTO || $purchase->isEmpty()) {
+            if (! $purchase instanceof PurchaseDTO || $purchase->isEmpty()) {
                 return ApiResponse::error(null, 'Purchase not found', Response::HTTP_NOT_FOUND);
             }
 

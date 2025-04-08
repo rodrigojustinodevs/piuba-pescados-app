@@ -52,15 +52,15 @@ class PurchaseDTO
     public function toArray(): array
     {
         return [
-            'id'            => $this->id,
-            'inputName'     => $this->inputName,
-            'quantity'      => $this->quantity,
-            'totalPrice'    => $this->totalPrice,
-            'purchaseDate'  => $this->purchaseDate,
-            'supplier'      => $this->supplier,
-            'company'       => $this->company,
-            'createdAt'     => $this->createdAt,
-            'updatedAt'     => $this->updatedAt,
+            'id'           => $this->id,
+            'inputName'    => $this->inputName,
+            'quantity'     => $this->quantity,
+            'totalPrice'   => $this->totalPrice,
+            'purchaseDate' => $this->purchaseDate,
+            'supplier'     => $this->supplier,
+            'company'      => $this->company,
+            'createdAt'    => $this->createdAt,
+            'updatedAt'    => $this->updatedAt,
         ];
     }
 

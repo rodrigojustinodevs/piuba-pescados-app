@@ -12,10 +12,10 @@ class FinancialCategoryDTO
      * @param array{name?: string|null}|null $company
      */
     public function __construct(
-        public string  $id,
-        public string  $name,
-        public FinancialCategoryType  $type,
-        public ?array  $company = null,
+        public string $id,
+        public string $name,
+        public FinancialCategoryType $type,
+        public ?array $company = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null
     ) {

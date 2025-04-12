@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Presentation\Controllers\BatcheController;
 use App\Presentation\Controllers\BiometryController;
 use App\Presentation\Controllers\CompanyController;
+use App\Presentation\Controllers\CostAllocationController;
 use App\Presentation\Controllers\FeedControlController;
 use App\Presentation\Controllers\FeedingController;
 use App\Presentation\Controllers\FinancialCategoryController;
@@ -43,6 +44,12 @@ Route::get('biometries', [BiometryController::class, 'index']);
 Route::get('biometry/{id}', [BiometryController::class, 'show']);
 Route::put('biometry/{id}', [BiometryController::class, 'update']);
 Route::delete('biometry/{id}', [BiometryController::class, 'destroy']);
+
+Route::post('cost-allocation', [CostAllocationController::class, 'store']);
+Route::get('cost-allocations', [CostAllocationController::class, 'index']);
+Route::get('cost-allocation/{id}', [CostAllocationController::class, 'show']);
+Route::put('cost-allocation/{id}', [CostAllocationController::class, 'update']);
+Route::delete('cost-allocation/{id}', [CostAllocationController::class, 'destroy']);
 
 Route::post('mortality', [MortalityController::class, 'store']);
 Route::get('mortalities', [MortalityController::class, 'index']);

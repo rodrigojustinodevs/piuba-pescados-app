@@ -12,6 +12,7 @@ use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Domain\Repositories\CostAllocationRepositoryInterface;
 use App\Domain\Repositories\FeedControlRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
+use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
@@ -27,6 +28,7 @@ use App\Infrastructure\Persistence\CompanyRepository;
 use App\Infrastructure\Persistence\CostAllocationRepository;
 use App\Infrastructure\Persistence\FeedControlRepository;
 use App\Infrastructure\Persistence\FeedingRepository;
+use App\Infrastructure\Persistence\FinancialCategoryRepository;
 use App\Infrastructure\Persistence\MortalityRepository;
 use App\Infrastructure\Persistence\PurchaseRepository;
 use App\Infrastructure\Persistence\SensorRepository;
@@ -63,13 +65,17 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(BatcheRepositoryInterface::class, BatcheRepository::class);
         $this->app->bind(BiometryRepositoryInterface::class, BiometryRepository::class);
         $this->app->bind(CostAllocationRepositoryInterface::class, CostAllocationRepository::class);
-        $this->app->bind(MortalityRepositoryInterface::class, MortalityRepository::class);
-        $this->app->bind(SettlementRepositoryInterface::class, SettlementRepository::class);
         $this->app->bind(FeedingRepositoryInterface::class, FeedingRepository::class);
-        $this->app->bind(StockRepositoryInterface::class, StockRepository::class);
         $this->app->bind(FeedControlRepositoryInterface::class, FeedControlRepository::class);
+        $this->app->bind(
+            FinancialCategoryRepositoryInterface::class,
+            FinancialCategoryRepository::class
+        );
+        $this->app->bind(MortalityRepositoryInterface::class, MortalityRepository::class);
         $this->app->bind(PurchaseRepositoryInterface::class, PurchaseRepository::class);
         $this->app->bind(SensorRepositoryInterface::class, SensorRepository::class);
+        $this->app->bind(SettlementRepositoryInterface::class, SettlementRepository::class);
+        $this->app->bind(StockRepositoryInterface::class, StockRepository::class);
         $this->app->bind(SupplierRepositoryInterface::class, SupplierRepository::class);
         $this->app->bind(WaterQualityRepositoryInterface::class, WaterQualityRepository::class);
         $this->app->bind(TransferRepositoryInterface::class, TransferRepository::class);

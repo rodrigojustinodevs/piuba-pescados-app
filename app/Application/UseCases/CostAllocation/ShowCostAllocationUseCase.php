@@ -13,7 +13,8 @@ class ShowCostAllocationUseCase
 {
     public function __construct(
         protected CostAllocationRepositoryInterface $costAllocationRepository
-    ) {}
+    ) {
+    }
 
     public function execute(string $id): ?CostAllocationDTO
     {

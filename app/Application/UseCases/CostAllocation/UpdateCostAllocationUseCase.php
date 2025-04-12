@@ -13,7 +13,8 @@ class UpdateCostAllocationUseCase
 {
     public function __construct(
         protected CostAllocationRepositoryInterface $costAllocationRepository
-    ) {}
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data

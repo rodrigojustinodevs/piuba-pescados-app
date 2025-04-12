@@ -44,12 +44,20 @@ class CostAllocationController
             $costAllocation = $this->costAllocationService->showCostAllocation($id);
 
             if (! $costAllocation instanceof \App\Application\DTOs\CostAllocationDTO || $costAllocation->isEmpty()) {
-                return ApiResponse::error(null, 'Cost allocation not found', Response::HTTP_NOT_FOUND);
+                return ApiResponse::error(
+                    null,
+                    'Cost allocation not found',
+                    Response::HTTP_NOT_FOUND
+                );
             }
 
             return ApiResponse::success($costAllocation->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Cost allocation not found', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error(
+                $exception,
+                'Cost allocation not found',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 
@@ -90,12 +98,24 @@ class CostAllocationController
             $deleted = $this->costAllocationService->deleteCostAllocation($id);
 
             if (! $deleted) {
-                return ApiResponse::error(null, 'Cost allocation not found', Response::HTTP_NOT_FOUND);
+                return ApiResponse::error(
+                    null,
+                    'Cost allocation not found',
+                    Response::HTTP_NOT_FOUND
+                );
             }
 
-            return ApiResponse::success(null, Response::HTTP_OK, 'Cost allocation successfully deleted');
+            return ApiResponse::success(
+                null,
+                Response::HTTP_OK,
+                'Cost allocation successfully deleted'
+            );
         } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Error deleting cost allocation', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error(
+                $exception,
+                'Error deleting cost allocation',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

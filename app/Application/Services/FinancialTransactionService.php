@@ -16,8 +16,8 @@ class FinancialTransactionService
 {
     public function __construct(
         protected CreateFinancialTransactionUseCase $createFinancialTransactionUseCase,
-        protected ListFinancialTransactionsUseCase  $listFinancialTransactionsUseCase,
-        protected ShowFinancialTransactionUseCase   $showFinancialTransactionUseCase,
+        protected ListFinancialTransactionsUseCase $listFinancialTransactionsUseCase,
+        protected ShowFinancialTransactionUseCase $showFinancialTransactionUseCase,
         protected UpdateFinancialTransactionUseCase $updateFinancialTransactionUseCase,
         protected DeleteFinancialTransactionUseCase $deleteFinancialTransactionUseCase
     ) {

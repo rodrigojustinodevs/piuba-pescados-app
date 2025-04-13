@@ -13,15 +13,15 @@ class FinancialTransactionDTO
      * @param array{name?: string|null}|null $category
      */
     public function __construct(
-        public string        $id,
+        public string $id,
         public FinancialType $type,
-        public string        $description,
-        public float         $amount,
-        public string        $transactionDate,
-        public ?array        $company = null,
-        public ?array        $category = null,
-        public ?string       $createdAt = null,
-        public ?string       $updatedAt = null,
+        public string $description,
+        public float $amount,
+        public string $transactionDate,
+        public ?array $company = null,
+        public ?array $category = null,
+        public ?string $createdAt = null,
+        public ?string $updatedAt = null,
     ) {
     }
 
@@ -34,7 +34,7 @@ class FinancialTransactionDTO
             id: $data['id'],
             type: FinancialType::from($data['type']),
             description: $data['description'],
-            amount: (float)$data['amount'],
+            amount: (float) $data['amount'],
             transactionDate: $data['transaction_date'],
             company: isset($data['company']) ? [
                 'name' => $data['company']['name'] ?? null,

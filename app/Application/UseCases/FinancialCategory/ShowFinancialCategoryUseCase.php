@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\FinancialCategory;
 
 use App\Application\DTOs\FinancialCategoryDTO;
-use App\Domain\Enums\FinancialCategoryType;
+use App\Domain\Enums\FinancialType;
 use App\Domain\Models\FinancialCategory;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
 use RuntimeException;
@@ -28,7 +28,7 @@ class ShowFinancialCategoryUseCase
         return new FinancialCategoryDTO(
             id: $financialCategory->id,
             name: $financialCategory->name,
-            type: FinancialCategoryType::from($financialCategory->type),
+            type: FinancialType::from($financialCategory->type),
             company: [
                 'name' => $financialCategory->company->name ?? '',
             ],

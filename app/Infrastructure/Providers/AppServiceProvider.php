@@ -13,6 +13,7 @@ use App\Domain\Repositories\CostAllocationRepositoryInterface;
 use App\Domain\Repositories\FeedControlRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
+use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
@@ -29,6 +30,7 @@ use App\Infrastructure\Persistence\CostAllocationRepository;
 use App\Infrastructure\Persistence\FeedControlRepository;
 use App\Infrastructure\Persistence\FeedingRepository;
 use App\Infrastructure\Persistence\FinancialCategoryRepository;
+use App\Infrastructure\Persistence\FinancialTransactionRepository;
 use App\Infrastructure\Persistence\MortalityRepository;
 use App\Infrastructure\Persistence\PurchaseRepository;
 use App\Infrastructure\Persistence\SensorRepository;
@@ -70,6 +72,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             FinancialCategoryRepositoryInterface::class,
             FinancialCategoryRepository::class
+        );
+        $this->app->bind(
+            FinancialTransactionRepositoryInterface::class,
+            FinancialTransactionRepository::class
         );
         $this->app->bind(MortalityRepositoryInterface::class, MortalityRepository::class);
         $this->app->bind(PurchaseRepositoryInterface::class, PurchaseRepository::class);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-use App\Domain\Enums\FinancialCategoryType;
+use App\Domain\Enums\FinancialType;
 
 class FinancialCategoryDTO
 {
@@ -14,7 +14,7 @@ class FinancialCategoryDTO
     public function __construct(
         public string $id,
         public string $name,
-        public FinancialCategoryType $type,
+        public FinancialType $type,
         public ?array $company = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null
@@ -29,7 +29,7 @@ class FinancialCategoryDTO
         return new self(
             id: $data['id'],
             name: $data['name'],
-            type: FinancialCategoryType::from($data['type']),
+            type: FinancialType::from($data['type']),
             company: isset($data['company']) ? [
                 'name' => $data['company']['name'] ?? null,
             ] : null,

@@ -9,6 +9,7 @@ use App\Presentation\Controllers\CostAllocationController;
 use App\Presentation\Controllers\FeedControlController;
 use App\Presentation\Controllers\FeedingController;
 use App\Presentation\Controllers\FinancialCategoryController;
+use App\Presentation\Controllers\FinancialTransactionController;
 use App\Presentation\Controllers\MortalityController;
 use App\Presentation\Controllers\PurchaseController;
 use App\Presentation\Controllers\SensorController;
@@ -80,6 +81,12 @@ Route::get('financial-categories', [FinancialCategoryController::class, 'index']
 Route::get('financial-category/{id}', [FinancialCategoryController::class, 'show']);
 Route::put('financial-category/{id}', [FinancialCategoryController::class, 'update']);
 Route::delete('financial-category/{id}', [FinancialCategoryController::class, 'destroy']);
+
+Route::post('financial-transaction', [FinancialTransactionController::class, 'store']);
+Route::get('financial-transactions', [FinancialTransactionController::class, 'index']);
+Route::get('financial-transaction/{id}', [FinancialTransactionController::class, 'show']);
+Route::put('financial-transaction/{id}', [FinancialTransactionController::class, 'update']);
+Route::delete('financial-transaction/{id}', [FinancialTransactionController::class, 'destroy']);
 
 Route::post('purchase', [PurchaseController::class, 'store']);
 Route::get('purchases', [PurchaseController::class, 'index']);

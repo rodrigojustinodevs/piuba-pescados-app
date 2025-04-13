@@ -31,7 +31,7 @@ class CostAllocationResource extends JsonResource
             'description'      => $this->description,
             'amount'           => $this->amount,
             'registrationDate' => $this->registration_date,
-            'company'          => $this->whenLoaded('company', fn(): array => [
+            'company'          => $this->whenLoaded('company', fn (): array => [
                 'name' => $this->company->name,
             ]),
             'createdAt' => $this->created_at?->toDateTimeString(),

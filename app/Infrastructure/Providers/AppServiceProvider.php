@@ -8,6 +8,7 @@ use App\Domain\Enums\Can;
 use App\Domain\Models\User;
 use App\Domain\Repositories\BatcheRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
+use App\Domain\Repositories\ClientRepositoryInterface;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Domain\Repositories\CostAllocationRepositoryInterface;
 use App\Domain\Repositories\FeedControlRepositoryInterface;
@@ -25,6 +26,7 @@ use App\Domain\Repositories\TransferRepositoryInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
 use App\Infrastructure\Persistence\BatcheRepository;
 use App\Infrastructure\Persistence\BiometryRepository;
+use App\Infrastructure\Persistence\ClientRepository;
 use App\Infrastructure\Persistence\CompanyRepository;
 use App\Infrastructure\Persistence\CostAllocationRepository;
 use App\Infrastructure\Persistence\FeedControlRepository;
@@ -67,6 +69,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(BatcheRepositoryInterface::class, BatcheRepository::class);
         $this->app->bind(BiometryRepositoryInterface::class, BiometryRepository::class);
         $this->app->bind(CostAllocationRepositoryInterface::class, CostAllocationRepository::class);
+        $this->app->bind(ClientRepositoryInterface::class, ClientRepository::class);
         $this->app->bind(FeedingRepositoryInterface::class, FeedingRepository::class);
         $this->app->bind(FeedControlRepositoryInterface::class, FeedControlRepository::class);
         $this->app->bind(

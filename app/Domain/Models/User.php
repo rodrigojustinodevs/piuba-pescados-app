@@ -12,8 +12,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use OwenIt\Auditing\Contracts\Auditable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable implements Auditable
+class User extends Authenticatable implements Auditable, JWTSubject
 {
     use \OwenIt\Auditing\Auditable;
     /** @use HasFactory<UserFactory> */
@@ -82,5 +83,23 @@ class User extends Authenticatable implements Auditable
         $relation = $this->belongsToMany(Role::class);
 
         return $relation;
+    }
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     */
+    public function getJWTIdentifier(): mixed
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array<string, mixed>
+     */
+    public function getJWTCustomClaims(): array
+    {
+        return [];
     }
 }

@@ -6,6 +6,7 @@ namespace App\Infrastructure\Providers;
 
 use App\Domain\Enums\Can;
 use App\Domain\Models\User;
+use App\Domain\Repositories\AuthRetositoryInterface;
 use App\Domain\Repositories\BatcheRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\ClientRepositoryInterface;
@@ -24,6 +25,7 @@ use App\Domain\Repositories\SupplierRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
+use App\Infrastructure\Persistence\AuthRepository;
 use App\Infrastructure\Persistence\BatcheRepository;
 use App\Infrastructure\Persistence\BiometryRepository;
 use App\Infrastructure\Persistence\ClientRepository;
@@ -64,6 +66,7 @@ class AppServiceProvider extends ServiceProvider
     #[Override]
     public function register(): void
     {
+        $this->app->bind(AuthRetositoryInterface::class, AuthRepository::class);
         $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
         $this->app->bind(TankRepositoryInterface::class, TankRepository::class);
         $this->app->bind(BatcheRepositoryInterface::class, BatcheRepository::class);
@@ -88,7 +91,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SupplierRepositoryInterface::class, SupplierRepository::class);
         $this->app->bind(WaterQualityRepositoryInterface::class, WaterQualityRepository::class);
         $this->app->bind(TransferRepositoryInterface::class, TransferRepository::class);
-        $this->app->bind(ExceptionHandler::class, CustomHandler::class);
+        //        $this->app->bind(ExceptionHandler::class, CustomHandler::class);
     }
 
     /**

@@ -2,131 +2,55 @@
 
 declare(strict_types=1);
 
-use App\Presentation\Controllers\BatcheController;
-use App\Presentation\Controllers\BiometryController;
-use App\Presentation\Controllers\ClientController;
-use App\Presentation\Controllers\CompanyController;
-use App\Presentation\Controllers\CostAllocationController;
-use App\Presentation\Controllers\FeedControlController;
-use App\Presentation\Controllers\FeedingController;
-use App\Presentation\Controllers\FinancialCategoryController;
-use App\Presentation\Controllers\FinancialTransactionController;
-use App\Presentation\Controllers\MortalityController;
-use App\Presentation\Controllers\PurchaseController;
-use App\Presentation\Controllers\SensorController;
-use App\Presentation\Controllers\SettlementController;
-use App\Presentation\Controllers\StockController;
-use App\Presentation\Controllers\SupplierController;
-use App\Presentation\Controllers\TankController;
-use App\Presentation\Controllers\TransferController;
-use App\Presentation\Controllers\WaterQualityController;
+use App\Presentation\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/ping', fn (): string => 'pong');
-Route::post('/company', [CompanyController::class, 'store']);
-Route::get('/companies', [CompanyController::class, 'index']);
-Route::get('/company/{id}', [CompanyController::class, 'show']);
-Route::put('/company/{id}', [CompanyController::class, 'update']);
-Route::delete('/company/{id}', [CompanyController::class, 'destroy']);
+Route::post('login', [AuthController::class, 'authenticateUser']);
 
-Route::post('tank', [TankController::class, 'store']);
-Route::get('tanks', [TankController::class, 'index']);
-Route::get('tank/{id}', [TankController::class, 'show']);
-Route::put('tank/{id}', [TankController::class, 'update']);
-Route::delete('tank/{id}', [TankController::class, 'destroy']);
+Route::group(['middleware' => ['auth:api']], function (): void {
+    Route::get('/ping', fn (): string => 'pong');
+});
 
-Route::post('batche', [BatcheController::class, 'store']);
-Route::get('batches', [BatcheController::class, 'index']);
-Route::get('batche/{id}', [BatcheController::class, 'show']);
-Route::put('batche/{id}', [BatcheController::class, 'update']);
-Route::delete('batche/{id}', [BatcheController::class, 'destroy']);
+Route::prefix('admin')
+    ->middleware(['auth:api', 'api', 'role:admin'])
+    ->group(function (): void {
+        require base_path('routes/app/admin/company.php');
+    });
 
-Route::post('biometry', [BiometryController::class, 'store']);
-Route::get('biometries', [BiometryController::class, 'index']);
-Route::get('biometry/{id}', [BiometryController::class, 'show']);
-Route::put('biometry/{id}', [BiometryController::class, 'update']);
-Route::delete('biometry/{id}', [BiometryController::class, 'destroy']);
+Route::prefix('company')
+    ->middleware(['auth:api', 'api', 'role:admin,company_admin,'])
+    ->group(function (): void {
+        require base_path('routes/app/company/batche.php');
 
-Route::post('cost-allocation', [CostAllocationController::class, 'store']);
-Route::get('cost-allocations', [CostAllocationController::class, 'index']);
-Route::get('cost-allocation/{id}', [CostAllocationController::class, 'show']);
-Route::put('cost-allocation/{id}', [CostAllocationController::class, 'update']);
-Route::delete('cost-allocation/{id}', [CostAllocationController::class, 'destroy']);
+        require base_path('routes/app/company/biometry.php');
 
-Route::post('client', [ClientController::class, 'store']);
-Route::get('clients', [ClientController::class, 'index']);
-Route::get('client/{id}', [ClientController::class, 'show']);
-Route::put('client/{id}', [ClientController::class, 'update']);
-Route::delete('client/{id}', [ClientController::class, 'destroy']);
+        require base_path('routes/app/company/client.php');
 
-Route::post('mortality', [MortalityController::class, 'store']);
-Route::get('mortalities', [MortalityController::class, 'index']);
-Route::get('mortality/{id}', [MortalityController::class, 'show']);
-Route::put('mortality/{id}', [MortalityController::class, 'update']);
-Route::delete('mortality/{id}', [MortalityController::class, 'destroy']);
+        require base_path('routes/app/company/costAllocation.php');
 
-Route::post('settlement', [SettlementController::class, 'store']);
-Route::get('settlements', [SettlementController::class, 'index']);
-Route::get('settlement/{id}', [SettlementController::class, 'show']);
-Route::put('settlement/{id}', [SettlementController::class, 'update']);
-Route::delete('settlement/{id}', [SettlementController::class, 'destroy']);
+        require base_path('routes/app/company/feeding.php');
 
-Route::post('feeding', [FeedingController::class, 'store']);
-Route::get('feedings', [FeedingController::class, 'index']);
-Route::get('feeding/{id}', [FeedingController::class, 'show']);
-Route::put('feeding/{id}', [FeedingController::class, 'update']);
-Route::delete('feeding/{id}', [FeedingController::class, 'destroy']);
+        require base_path('routes/app/company/feedControl.php');
 
-Route::post('feed-control', [FeedControlController::class, 'store']);
-Route::get('feed-controls', [FeedControlController::class, 'index']);
-Route::get('feed-control/{id}', [FeedControlController::class, 'show']);
-Route::put('feed-control/{id}', [FeedControlController::class, 'update']);
-Route::delete('feed-control/{id}', [FeedControlController::class, 'destroy']);
+        require base_path('routes/app/company/financialCategory.php');
 
-Route::post('financial-category', [FinancialCategoryController::class, 'store']);
-Route::get('financial-categories', [FinancialCategoryController::class, 'index']);
-Route::get('financial-category/{id}', [FinancialCategoryController::class, 'show']);
-Route::put('financial-category/{id}', [FinancialCategoryController::class, 'update']);
-Route::delete('financial-category/{id}', [FinancialCategoryController::class, 'destroy']);
+        require base_path('routes/app/company/financialTransaction.php');
 
-Route::post('financial-transaction', [FinancialTransactionController::class, 'store']);
-Route::get('financial-transactions', [FinancialTransactionController::class, 'index']);
-Route::get('financial-transaction/{id}', [FinancialTransactionController::class, 'show']);
-Route::put('financial-transaction/{id}', [FinancialTransactionController::class, 'update']);
-Route::delete('financial-transaction/{id}', [FinancialTransactionController::class, 'destroy']);
+        require base_path('routes/app/company/mortality.php');
 
-Route::post('purchase', [PurchaseController::class, 'store']);
-Route::get('purchases', [PurchaseController::class, 'index']);
-Route::get('purchase/{id}', [PurchaseController::class, 'show']);
-Route::put('purchase/{id}', [PurchaseController::class, 'update']);
-Route::delete('purchase/{id}', [PurchaseController::class, 'destroy']);
+        require base_path('routes/app/company/purchase.php');
 
-Route::post('stock', [StockController::class, 'store']);
-Route::get('stocks', [StockController::class, 'index']);
-Route::get('stock/{id}', [StockController::class, 'show']);
-Route::put('stock/{id}', [StockController::class, 'update']);
-Route::delete('stock/{id}', [StockController::class, 'destroy']);
+        require base_path('routes/app/company/sensor.php');
 
-Route::post('sensor', [SensorController::class, 'store']);
-Route::get('sensors', [SensorController::class, 'index']);
-Route::get('sensor/{id}', [SensorController::class, 'show']);
-Route::put('sensor/{id}', [SensorController::class, 'update']);
-Route::delete('sensor/{id}', [SensorController::class, 'destroy']);
+        require base_path('routes/app/company/settlement.php');
 
-Route::post('supplier', [SupplierController::class, 'store']);
-Route::get('suppliers', [SupplierController::class, 'index']);
-Route::get('supplier/{id}', [SupplierController::class, 'show']);
-Route::put('supplier/{id}', [SupplierController::class, 'update']);
-Route::delete('supplier/{id}', [SupplierController::class, 'destroy']);
+        require base_path('routes/app/company/stock.php');
 
-Route::post('transfer', [TransferController::class, 'store']);
-Route::get('transfers', [TransferController::class, 'index']);
-Route::get('transfer/{id}', [TransferController::class, 'show']);
-Route::put('transfer/{id}', [TransferController::class, 'update']);
-Route::delete('transfer/{id}', [TransferController::class, 'destroy']);
+        require base_path('routes/app/company/supplier.php');
 
-Route::post('water-quality', [WaterQualityController::class, 'store']);
-Route::get('water-qualities', [WaterQualityController::class, 'index']);
-Route::get('water-quality/{id}', [WaterQualityController::class, 'show']);
-Route::put('water-quality/{id}', [WaterQualityController::class, 'update']);
-Route::delete('water-quality/{id}', [WaterQualityController::class, 'destroy']);
+        require base_path('routes/app/company/transfer.php');
+
+        require base_path('routes/app/company/tank.php');
+
+        require base_path('routes/app/company/waterQuality.php');
+    });

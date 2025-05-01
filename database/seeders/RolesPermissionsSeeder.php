@@ -15,7 +15,7 @@ class RolesPermissionsSeeder extends Seeder
     {
         $roles = [
             'admin',
-            'user-admin',
+            'company-admin',
             'guest',
         ];
 
@@ -27,7 +27,7 @@ class RolesPermissionsSeeder extends Seeder
             Permission::create(['name' => $permission]);
         }
 
-        $userAdmin = Role::where('name', 'user-admin')->first();
+        $userAdmin = Role::where('name', 'admin')->first();
         $userAdmin->permissions()->attach(Permission::where('name', 'view-users')->first());
     }
 }

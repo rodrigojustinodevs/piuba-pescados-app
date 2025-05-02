@@ -13,11 +13,10 @@ class CreateFeedingUseCase
 {
     public function __construct(
         protected FeedingRepositoryInterface $feedingRepository
-    ) {
-    }
+    ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function execute(array $data): FeedingDTO
     {
@@ -30,7 +29,7 @@ class CreateFeedingUseCase
 
             return new FeedingDTO(
                 id: $feeding->id,
-                batcheID: $feeding->batche_id,
+                batcheId: $feeding->batche_id,
                 feedingDate: $feedingDate->toDateString(),
                 quantityProvided: $feeding->quantity_provided,
                 feedType: $feeding->feed_type,

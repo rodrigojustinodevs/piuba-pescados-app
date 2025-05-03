@@ -36,12 +36,15 @@ class AuthRepository implements AuthRetositoryInterface
 
     public function userHasPermission(string $permission): bool
     {
-        if (Auth::user()
-            ->permissions()
-            ->where('name', $permission)
-            ->exists()) {
+        if (
+            Auth::user()
+                ->permissions()
+                ->where('name', $permission)
+                ->exists()
+        ) {
             return true;
         }
+
         return (bool) Auth::user()
             ->roles()
             ->whereHas('permissions', fn ($q) => $q->where('name', $permission))

@@ -37,21 +37,75 @@ class Handler extends ExceptionHandler
             $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED);
         });
 
-        $this->renderable(fn(NotFoundHttpException $exception, Request $request): JsonResponse => $this->handleException($exception, 'Route not found', JsonResponse::HTTP_NOT_FOUND, $request));
+        $this->renderable(
+            fn (NotFoundHttpException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Route not found',
+                JsonResponse::HTTP_NOT_FOUND,
+                $r
+            )
+        );
 
-        $this->renderable(fn(MethodNotAllowedHttpException $exception, Request $request): JsonResponse => $this->handleException($exception, 'Method not allowed', JsonResponse::HTTP_METHOD_NOT_ALLOWED, $request));
+        $this->renderable(
+            fn (MethodNotAllowedHttpException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Method not allowed',
+                JsonResponse::HTTP_METHOD_NOT_ALLOWED,
+                $r
+            )
+        );
 
-        $this->renderable(fn(AuthenticationException $exception, Request $request): JsonResponse => $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED, $request));
+        $this->renderable(
+            fn (AuthenticationException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'User not authenticated',
+                JsonResponse::HTTP_UNAUTHORIZED,
+                $r
+            )
+        );
 
-        $this->renderable(fn(AccessDeniedHttpException $exception, Request $request): JsonResponse => $this->handleException($exception, 'Access denied', JsonResponse::HTTP_FORBIDDEN, $request));
+        $this->renderable(
+            fn (AccessDeniedHttpException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Access denied',
+                JsonResponse::HTTP_FORBIDDEN,
+                $r
+            )
+        );
 
-        $this->renderable(fn(ValidationException $exception, Request $request): JsonResponse => $this->handleValidationException($exception, $request));
+        $this->renderable(
+            fn (ValidationException $e, Request $r): JsonResponse => $this->handleValidationException(
+                $e,
+                $r
+            )
+        );
 
-        $this->renderable(fn(TokenExpiredException $exception, Request $request): JsonResponse => $this->handleException($exception, 'Token expired', JsonResponse::HTTP_UNAUTHORIZED, $request));
+        $this->renderable(
+            fn (TokenExpiredException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Token expired',
+                JsonResponse::HTTP_UNAUTHORIZED,
+                $r
+            )
+        );
 
-        $this->renderable(fn(TokenInvalidException $exception, Request $request): JsonResponse => $this->handleException($exception, 'Token invalid', JsonResponse::HTTP_UNAUTHORIZED, $request));
+        $this->renderable(
+            fn (TokenInvalidException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Token invalid',
+                JsonResponse::HTTP_UNAUTHORIZED,
+                $r
+            )
+        );
 
-        $this->renderable(fn(JWTException $exception, Request $request): JsonResponse => $this->handleException($exception, 'JWT error', JsonResponse::HTTP_UNAUTHORIZED, $request));
+        $this->renderable(
+            fn (JWTException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'JWT error',
+                JsonResponse::HTTP_UNAUTHORIZED,
+                $r
+            )
+        );
     }
 
     #[\Override]

@@ -5,24 +5,21 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Application\DTOs\LoginCredentialsDTO;
-use App\Domain\Repositories\AuthRetositoryInterface;
+use App\Domain\Repositories\AuthRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
-class AuthRepository implements AuthRetositoryInterface
+class AuthRepository implements AuthRepositoryInterface
 {
-    public function __construct(private JWTAuth $jwt) {}
-
     public function attemptLogin(LoginCredentialsDTO $credentials): ?string
     {
         try {
-            $token = $this->jwt->attempt([
+            $token = auth('api')->attempt([
                 'email'    => $credentials->email,
                 'password' => $credentials->password,
             ]);
 
-            return $token ?: null;
+            return is_string($token) ? $token : null;
         } catch (JWTException) {
             return null;
         }

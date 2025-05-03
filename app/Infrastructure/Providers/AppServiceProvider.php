@@ -6,7 +6,7 @@ namespace App\Infrastructure\Providers;
 
 use App\Domain\Enums\Can;
 use App\Domain\Models\User;
-use App\Domain\Repositories\AuthRetositoryInterface;
+use App\Domain\Repositories\AuthRepositoryInterface;
 use App\Domain\Repositories\BatcheRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\ClientRepositoryInterface;
@@ -66,7 +66,7 @@ class AppServiceProvider extends ServiceProvider
     #[Override]
     public function register(): void
     {
-        $this->app->bind(AuthRetositoryInterface::class, AuthRepository::class);
+        $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
         $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
         $this->app->bind(TankRepositoryInterface::class, TankRepository::class);
         $this->app->bind(BatcheRepositoryInterface::class, BatcheRepository::class);

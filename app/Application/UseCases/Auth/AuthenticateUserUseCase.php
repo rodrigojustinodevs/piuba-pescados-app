@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Auth;
 
 use App\Application\DTOs\LoginCredentialsDTO;
-use App\Domain\Repositories\AuthRetositoryInterface;
+use App\Domain\Repositories\AuthRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 class AuthenticateUserUseCase
 {
     public function __construct(
-        protected AuthRetositoryInterface $authManager
+        protected AuthRepositoryInterface $authManager
     ) {
     }
 

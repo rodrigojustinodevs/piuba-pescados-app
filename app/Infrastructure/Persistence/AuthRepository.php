@@ -14,12 +14,13 @@ class AuthRepository implements AuthRepositoryInterface
     public function attemptLogin(LoginCredentialsDTO $credentials): ?string
     {
         try {
+            /** @var string|false $token */
             $token = auth('api')->attempt([
                 'email'    => $credentials->email,
                 'password' => $credentials->password,
             ]);
 
-            return is_string($token) ? $token : null;
+            return $token !== false ? $token : null;
         } catch (JWTException) {
             return null;
         }

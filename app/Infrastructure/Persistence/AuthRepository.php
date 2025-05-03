@@ -12,10 +12,12 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthRepository implements AuthRetositoryInterface
 {
+    public function __construct(private JWTAuth $jwt) {}
+
     public function attemptLogin(LoginCredentialsDTO $credentials): ?string
     {
         try {
-            $token = JWTAuth::attempt([
+            $token = $this->jwt->attempt([
                 'email'    => $credentials->email,
                 'password' => $credentials->password,
             ]);

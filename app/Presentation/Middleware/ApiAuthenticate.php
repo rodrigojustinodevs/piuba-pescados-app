@@ -7,11 +7,14 @@ namespace App\Presentation\Middleware;
 use Closure;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ApiAuthenticate extends Middleware
 {
+    public function __construct(
+        private JWTAuth $jwt
+    ) {}
+
     #[\Override]
     protected function redirectTo($request): ?string
     {
@@ -22,7 +25,7 @@ class ApiAuthenticate extends Middleware
     public function handle($request, Closure $next, ...$guards)
     {
         if ($this->needsAuthentication($request)) {
-            JWTAuth::parseToken()->authenticate();
+            $this->jwt->parseToken()->authenticate();
 
             $this->authenticate($request, $guards);
         }

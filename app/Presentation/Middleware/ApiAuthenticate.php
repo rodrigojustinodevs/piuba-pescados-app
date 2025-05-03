@@ -13,7 +13,8 @@ class ApiAuthenticate extends Middleware
 {
     public function __construct(
         private JWTAuth $jwt
-    ) {}
+    ) {
+    }
 
     #[\Override]
     protected function redirectTo($request): ?string

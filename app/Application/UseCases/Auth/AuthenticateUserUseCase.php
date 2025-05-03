@@ -16,10 +16,10 @@ class AuthenticateUserUseCase
     }
 
     /**
-     * @return string|null  The JWT token if authentication succeeds, or null otherwise.
+     * @return string|null The JWT token if authentication succeeds, or null otherwise.
      */
     public function execute(LoginCredentialsDTO $credentials): ?string
     {
-        return DB::transaction(fn(): ?string => $this->authManager->attemptLogin($credentials));
+        return DB::transaction(fn (): ?string => $this->authManager->attemptLogin($credentials));
     }
 }

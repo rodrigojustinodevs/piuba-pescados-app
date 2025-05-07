@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 
 /**
  * @property string $id
- * @property string $batch_id
+ * @property string $batche_id
  * @property float $total_weight
  * @property float $price_per_kg
  * @property float $total_revenue
@@ -31,7 +31,7 @@ class Harvest extends BaseModel
 
     protected $fillable = [
         'id',
-        'batch_id',
+        'batche_id',
         'total_weight',
         'price_per_kg',
         'total_revenue',
@@ -57,10 +57,10 @@ class Harvest extends BaseModel
     /**
      * @phpstan-return BelongsTo<Batche, static>
      */
-    public function batch(): BelongsTo
+    public function batche(): BelongsTo
     {
         /** @var BelongsTo<Batche, static> $relation */
-        $relation = $this->belongsTo(Batche::class, 'batch_id');
+        $relation = $this->belongsTo(Batche::class, 'batche_id');
 
         return $relation;
     }

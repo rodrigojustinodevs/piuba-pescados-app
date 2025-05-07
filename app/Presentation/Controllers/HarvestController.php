@@ -25,8 +25,8 @@ class HarvestController
     public function index(): JsonResponse
     {
         try {
-            $harvests  = $this->harvestService->showAllHarvests();
-            $data      = $harvests->toArray(request());
+            $harvests   = $this->harvestService->showAllHarvests();
+            $data       = $harvests->toArray(request());
             $pagination = $harvests->additional['pagination'] ?? null;
 
             return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);

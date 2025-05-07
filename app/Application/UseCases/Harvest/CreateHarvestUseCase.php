@@ -13,7 +13,8 @@ class CreateHarvestUseCase
 {
     public function __construct(
         protected HarvestRepositoryInterface $harvestRepository
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

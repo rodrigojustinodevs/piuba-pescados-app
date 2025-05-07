@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
@@ -56,7 +55,7 @@ class HarvestRepository implements HarvestRepositoryInterface
     /**
      * Show harvest by field and value.
      */
-    public function showHarvest(string $field, string|int $value): ?Harvest
+    public function showHarvest(string $field, string | int $value): ?Harvest
     {
         return Harvest::where($field, $value)->first();
     }
@@ -65,7 +64,7 @@ class HarvestRepository implements HarvestRepositoryInterface
     {
         $harvest = Harvest::find($id);
 
-        if (!$harvest) {
+        if (! $harvest) {
             return false;
         }
 

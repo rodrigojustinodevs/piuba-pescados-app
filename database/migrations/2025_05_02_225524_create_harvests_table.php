@@ -13,7 +13,7 @@ return new class () extends Migration
      */
     public function up(): void
     {
-        Schema::create('harvests', function (Blueprint $table) {
+        Schema::create('harvests', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->uuid('batche_id');
             $table->float('total_weight');

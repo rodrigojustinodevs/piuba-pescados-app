@@ -13,7 +13,8 @@ class CreateFeedingUseCase
 {
     public function __construct(
         protected FeedingRepositoryInterface $feedingRepository
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array<string, mixed>  $data

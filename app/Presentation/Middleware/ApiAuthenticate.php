@@ -7,13 +7,13 @@ namespace App\Presentation\Middleware;
 use Closure;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
-use Tymon\JWTAuth\JWT;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Tymon\JWTAuth\JWTAuth;
 
 class ApiAuthenticate extends Middleware
 {
     public function __construct(
-        private JWT $jwt
+        private JWTAuth $jwt
     ) {
     }
 

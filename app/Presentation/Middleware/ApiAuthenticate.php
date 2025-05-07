@@ -9,12 +9,15 @@ use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\JWTAuth;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
 
 class ApiAuthenticate extends Middleware
 {
     public function __construct(
+        AuthFactory $auth, // <- injeta o auth factory corretamente
         private JWTAuth $jwt
     ) {
+        parent::__construct($auth); // <- chama o construtor do Middleware pai
     }
 
     #[\Override]

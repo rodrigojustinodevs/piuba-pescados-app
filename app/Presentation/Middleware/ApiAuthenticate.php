@@ -11,9 +11,11 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\JWTAuth;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 
+
 class ApiAuthenticate extends Middleware
 {
     public function __construct(
+
         AuthFactory $auth,
         private JWTAuth $jwt
     ) {

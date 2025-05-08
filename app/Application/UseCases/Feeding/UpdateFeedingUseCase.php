@@ -36,7 +36,7 @@ class UpdateFeedingUseCase
 
             return new FeedingDTO(
                 id: $feeding->id,
-                batcheID: $feeding->batche_id,
+                batcheId: $feeding->batche_id,
                 feedingDate: $feedingDate->toDateString(),
                 quantityProvided: $feeding->quantity_provided,
                 feedType: $feeding->feed_type,

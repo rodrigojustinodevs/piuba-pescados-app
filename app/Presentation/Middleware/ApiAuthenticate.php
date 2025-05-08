@@ -6,10 +6,11 @@ namespace App\Presentation\Middleware;
 
 use Closure;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\JWTAuth;
-use Illuminate\Contracts\Auth\Factory as AuthFactory;
 
 class ApiAuthenticate extends Middleware
 {
@@ -36,7 +37,7 @@ class ApiAuthenticate extends Middleware
             $user = $this->jwt->authenticate();
 
             if (! $user) {
-                abort(401, 'Unauthorized');
+                throw new AccessDeniedHttpException('Unauthorized');
             }
 
             $this->authenticate($request, $guards);

@@ -18,7 +18,7 @@ Route::prefix('admin')
     });
 
 Route::prefix('company')
-    ->middleware(['auth:api', 'api', 'role:admin,company_admin,'])
+    ->middleware(['auth:api', 'api', 'role:admin|company-admin'])
     ->group(function (): void {
         require base_path('routes/app/company/batche.php');
 
@@ -35,6 +35,8 @@ Route::prefix('company')
         require base_path('routes/app/company/financialCategory.php');
 
         require base_path('routes/app/company/financialTransaction.php');
+
+        require base_path('routes/app/company/harvest.php');
 
         require base_path('routes/app/company/mortality.php');
 

@@ -24,6 +24,7 @@ class PermissionSeeder extends Seeder
             'feeding',
             'feed-control',
             'financial-transaction',
+            'harvest',
             'job',
             'purchase',
             'sensor',

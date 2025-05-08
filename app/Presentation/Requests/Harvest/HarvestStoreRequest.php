@@ -27,7 +27,7 @@ class HarvestStoreRequest extends FormRequest
             'batche_id'    => ['required', 'uuid', 'exists:batches,id'],
             'total_weight' => ['required', 'numeric', 'min:0'],
             'price_per_kg' => ['required', 'numeric', 'min:0'],
-            'total_income' => ['required', 'numeric', 'min:0'],
+            'total_revenue' => ['required', 'numeric', 'min:0'],
             'harvest_date' => ['required', 'date'],
         ];
     }
@@ -53,9 +53,9 @@ class HarvestStoreRequest extends FormRequest
             'price_per_kg.numeric'  => 'The price per kg must be a number.',
             'price_per_kg.min'      => 'The price per kg must be at least 0.',
 
-            'total_income.required' => 'The total income is required.',
-            'total_income.numeric'  => 'The total income must be a number.',
-            'total_income.min'      => 'The total income must be at least 0.',
+            'total_revenue.required' => 'The total revenue is required.',
+            'total_revenue.numeric'  => 'The total revenue must be a number.',
+            'total_revenue.min'      => 'The total revenue must be at least 0.',
 
             'harvest_date.required' => 'The harvest date is required.',
             'harvest_date.date'     => 'The harvest date must be a valid date.',

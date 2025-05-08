@@ -23,7 +23,7 @@ return new class () extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade');
+            $table->foreign('batche_id')->references('id')->on('batches')->onDelete('cascade');
         });
     }
 

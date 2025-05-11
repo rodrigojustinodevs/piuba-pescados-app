@@ -27,6 +27,7 @@ class PermissionSeeder extends Seeder
             'harvest',
             'job',
             'purchase',
+            'sale',
             'sensor',
             'settlement',
             'stock',

@@ -16,7 +16,7 @@ class ApiAuthenticate extends Middleware
 {
     public function __construct(
         AuthFactory $auth,
-        private JWTAuth $jwt
+        private readonly JWTAuth $jwt
     ) {
         parent::__construct($auth);
     }

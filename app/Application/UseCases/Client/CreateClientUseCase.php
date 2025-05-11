@@ -26,11 +26,11 @@ class CreateClientUseCase
             return new ClientDTO(
                 id: $client->id,
                 name: $client->name,
-                documentNumber: $client->document_number,
-                personType: $client->person_type,
-                email: $client->email,
-                phone: $client->phone,
                 contact: $client->contact,
+                phone: $client->phone,
+                email: $client->email,
+                personType: $client->person_type,
+                documentNumber: $client->document_number,
                 address: $client->address,
                 company: [
                     'name' => $client->company->name ?? null,

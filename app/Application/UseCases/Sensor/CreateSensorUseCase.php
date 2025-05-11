@@ -33,12 +33,12 @@ class CreateSensorUseCase
             return new SensorDTO(
                 id: $sensor->id,
                 sensorType: SensorType::from($sensor->sensor_type),
-                installationDate: $installationDate->toDateString(),
                 status: Status::from($sensor->status),
                 tank: [
                     'id'   => $sensor->tank->id ?? '',
                     'name' => $sensor->tank->name ?? '',
                 ],
+                installationDate: $installationDate->toDateString(),
                 createdAt: $sensor->created_at?->toDateTimeString(),
                 updatedAt: $sensor->updated_at?->toDateTimeString()
             );

@@ -28,9 +28,11 @@ class AuthRepository implements AuthRepositoryInterface
 
     public function userHasRole(string $role): bool
     {
+        $roleArray = explode('|', $role);
+
         return Auth::user()
             ->roles()
-            ->where('name', $role)
+            ->whereIn('name', $roleArray)
             ->exists();
     }
 

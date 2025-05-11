@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain\Repositories;
 
 use App\Application\DTOs\LoginCredentialsDTO;
@@ -7,6 +9,8 @@ use App\Application\DTOs\LoginCredentialsDTO;
 interface AuthRepositoryInterface
 {
     public function attemptLogin(LoginCredentialsDTO $credentials): ?string;
+
     public function userHasRole(string $role): bool;
+
     public function userHasPermission(string $permission): bool;
 }

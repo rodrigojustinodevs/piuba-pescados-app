@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Requests\Harvest;
+namespace App\Presentation\Requests\Sale;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class HarvestUpdateRequest extends FormRequest
+class SaleUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,13 @@ class HarvestUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'company_id'    => ['sometimes', 'uuid', 'exists:companies,id'],
+            'client_id'     => ['sometimes', 'uuid', 'exists:clients,id'],
             'batche_id'     => ['sometimes', 'uuid', 'exists:batches,id'],
             'total_weight'  => ['sometimes', 'numeric', 'min:0'],
             'price_per_kg'  => ['sometimes', 'numeric', 'min:0'],
             'total_revenue' => ['sometimes', 'numeric', 'min:0'],
-            'harvest_date'  => ['sometimes', 'date'],
+            'sale_date'     => ['sometimes', 'date'],
         ];
     }
 
@@ -41,19 +43,25 @@ class HarvestUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'company_id.uuid'   => 'The company ID must be a valid UUID.',
+            'company_id.exists' => 'The company must exist in the companies table.',
+
+            'client_id.uuid'   => 'The client ID must be a valid UUID.',
+            'client_id.exists' => 'The client must exist in the clients table.',
+
             'batche_id.uuid'   => 'The batche ID must be a valid UUID.',
-            'batche_id.exists' => 'The selected batche does not exist.',
+            'batche_id.exists' => 'The batche must exist in the batches table.',
 
             'total_weight.numeric' => 'The total weight must be a number.',
             'total_weight.min'     => 'The total weight must be at least 0.',
 
-            'price_per_kg.numeric' => 'The price per kg must be a number.',
-            'price_per_kg.min'     => 'The price per kg must be at least 0.',
+            'price_per_kg.numeric' => 'The price per kilogram must be a number.',
+            'price_per_kg.min'     => 'The price per kilogram must be at least 0.',
 
             'total_revenue.numeric' => 'The total revenue must be a number.',
             'total_revenue.min'     => 'The total revenue must be at least 0.',
 
-            'harvest_date.date' => 'The harvest date must be a valid date.',
+            'sale_date.date' => 'The sale date must be a valid date.',
         ];
     }
 }

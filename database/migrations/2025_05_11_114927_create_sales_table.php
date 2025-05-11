@@ -13,20 +13,21 @@ return new class () extends Migration
      */
     public function up(): void
     {
-        Schema::create('clients', function (Blueprint $table): void {
+        Schema::create('sales', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->uuid('company_id');
-            $table->string('name', 255);
-            $table->enum('person_type', ['individual', 'company'])->default('individual');
-            $table->string('document_number', 18)->nullable();
-            $table->string('contact', 255)->nullable();
-            $table->string('phone', 20)->nullable();
-            $table->string('email', 255)->nullable();
-            $table->text('address')->nullable();
+            $table->uuid('client_id');
+            $table->uuid('batche_id');
+            $table->float('total_weight');
+            $table->float('price_per_kg');
+            $table->float('total_revenue');
+            $table->date('sale_date');
             $table->timestamps();
             $table->softDeletes();
 
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
+            $table->foreign('batche_id')->references('id')->on('batches')->onDelete('cascade');
         });
     }
 
@@ -35,6 +36,6 @@ return new class () extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clients');
+        Schema::dropIfExists('sales');
     }
 };

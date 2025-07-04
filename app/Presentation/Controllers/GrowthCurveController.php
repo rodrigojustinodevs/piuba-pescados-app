@@ -25,7 +25,7 @@ class GrowthCurveController
     public function index(): JsonResponse
     {
         try {
-            $curves     = $this->growthCurveService->showAllGrowthCurves();
+            $curves     = $this->growthCurveService->showAll();
             $data       = $curves->toArray(request());
             $pagination = $curves->additional['pagination'] ?? null;
 
@@ -41,7 +41,7 @@ class GrowthCurveController
     public function show(string $id): JsonResponse
     {
         try {
-            $curve = $this->growthCurveService->showGrowthCurve($id);
+            $curve = $this->growthCurveService->show($id);
 
             if (! $curve || $curve->isEmpty()) {
                 return ApiResponse::error(null, 'Growth curve not found', Response::HTTP_NOT_FOUND);
@@ -73,7 +73,7 @@ class GrowthCurveController
     public function update(GrowthCurveUpdateRequest $request, string $id): JsonResponse
     {
         try {
-            $curve = $this->growthCurveService->updateGrowthCurve($id, $request->validated());
+            $curve = $this->growthCurveService->update($id, $request->validated());
 
             return ApiResponse::success($curve->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -87,7 +87,7 @@ class GrowthCurveController
     public function destroy(string $id): JsonResponse
     {
         try {
-            $deleted = $this->growthCurveService->deleteGrowthCurve($id);
+            $deleted = $this->growthCurveService->delete($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Growth curve not found', Response::HTTP_NOT_FOUND);

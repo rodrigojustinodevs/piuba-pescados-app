@@ -6,9 +6,6 @@ namespace App\Application\DTOs;
 
 class GrowthCurveDTO
 {
-    /**
-     * @param array{name?: string|null}|null $batche
-     */
     public function __construct(
         public string $id,
         public float $averageWeight,

@@ -45,10 +45,7 @@ class GrowthCurveRepository implements GrowthCurveRepositoryInterface
     public function paginate(int $page = 25): PaginationInterface
     {
         /** @var LengthAwarePaginator<GrowthCurve> $paginator */
-        $paginator = GrowthCurve::with([
-            'client:id,name',
-            'company:id,name',
-        ])->paginate($page);
+        $paginator = GrowthCurve::paginate($page);
 
         return new PaginationPresentr($paginator);
     }

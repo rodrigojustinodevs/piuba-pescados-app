@@ -43,7 +43,7 @@ class SubscriptionRepository implements SubscriptionRepositoryInterface
     {
         $subscription = $this->findById($id);
 
-        if (!$subscription instanceof \App\Domain\Models\Subscription) {
+        if (! $subscription instanceof Subscription) {
             return null;
         }
 
@@ -56,7 +56,7 @@ class SubscriptionRepository implements SubscriptionRepositoryInterface
     {
         $subscription = $this->findById($id);
 
-        if (!$subscription instanceof \App\Domain\Models\Subscription) {
+        if (! $subscription instanceof Subscription) {
             return false;
         }
 

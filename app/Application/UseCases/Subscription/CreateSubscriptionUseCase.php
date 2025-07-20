@@ -15,13 +15,16 @@ class CreateSubscriptionUseCase
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param  array<string, mixed>  $data
      */
     public function execute(array $data): SubscriptionDTO
     {
         return DB::transaction(function () use ($data): SubscriptionDTO {
-            $subscription = $this->repository->create($data);
-            return SubscriptionDTO::fromArray($subscription->toArray());
+            $subscription                 = $this->repository->create($data);
+            $subscriptionArray            = $subscription->toArray();
+            $subscriptionArray['company'] = $subscription->company ?? null;
+
+            return SubscriptionDTO::fromArray($subscriptionArray);
         });
     }
 }

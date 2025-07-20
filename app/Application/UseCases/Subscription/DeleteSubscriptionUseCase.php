@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Subscription;
 
 use App\Domain\Repositories\SubscriptionRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class DeleteSubscriptionUseCase
 {
@@ -14,6 +15,6 @@ class DeleteSubscriptionUseCase
 
     public function execute(string $id): bool
     {
-        return $this->repository->delete($id);
+        return DB::transaction(fn (): bool => $this->repository->delete($id));
     }
 }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Domain\Models\GrowthCurve;
-use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\GrowthCurveRepositoryInterface;
+use App\Domain\Repositories\PaginationInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class GrowthCurveRepository implements GrowthCurveRepositoryInterface

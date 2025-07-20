@@ -25,7 +25,7 @@ class ShowSubscriptionUseCase
         }
 
         $subscriptionStartDate = Carbon::parse($subscription->start_date);
-        $subscriptionEndDate = Carbon::parse($subscription->end_date);
+        $subscriptionEndDate   = Carbon::parse($subscription->end_date);
 
         return new SubscriptionDTO(
             id: $subscription->id,

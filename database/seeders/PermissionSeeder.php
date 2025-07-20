@@ -17,6 +17,7 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $entities = [
+            'alert',
             'biometry',
             'client',
             'company',
@@ -24,6 +25,7 @@ class PermissionSeeder extends Seeder
             'feeding',
             'feed-control',
             'financial-transaction',
+            'growth-curve',
             'harvest',
             'job',
             'purchase',
@@ -31,6 +33,7 @@ class PermissionSeeder extends Seeder
             'sensor',
             'settlement',
             'stock',
+            'subscription',
             'supplier',
             'tank',
             'transfer',

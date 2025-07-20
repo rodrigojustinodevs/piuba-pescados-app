@@ -22,6 +22,8 @@ Route::prefix('admin')
 Route::prefix('company')
     ->middleware(['auth:api', 'api', 'role:admin|company-admin'])
     ->group(function (): void {
+        require base_path('routes/app/company/alert.php');
+
         require base_path('routes/app/company/batche.php');
 
         require base_path('routes/app/company/biometry.php');

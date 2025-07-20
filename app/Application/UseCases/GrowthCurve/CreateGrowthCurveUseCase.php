@@ -23,6 +23,7 @@ class CreateGrowthCurveUseCase
         /** @return GrowthCurveDTO */
         return DB::transaction(function () use ($data): GrowthCurveDTO {
             $growthCurve = $this->growthCurveRepository->create($data);
+
             return GrowthCurveDTO::fromArray($growthCurve->toArray());
         });
     }

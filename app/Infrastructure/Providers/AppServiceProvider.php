@@ -6,6 +6,7 @@ namespace App\Infrastructure\Providers;
 
 use App\Domain\Enums\Can;
 use App\Domain\Models\User;
+use App\Domain\Repositories\AlertRepositoryInterface;
 use App\Domain\Repositories\AuthRepositoryInterface;
 use App\Domain\Repositories\BatcheRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
@@ -29,6 +30,7 @@ use App\Domain\Repositories\SupplierRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
+use App\Infrastructure\Persistence\AlertRepository;
 use App\Infrastructure\Persistence\AuthRepository;
 use App\Infrastructure\Persistence\BatcheRepository;
 use App\Infrastructure\Persistence\BiometryRepository;
@@ -73,6 +75,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
+        $this->app->bind(AlertRepositoryInterface::class, AlertRepository::class);
         $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
         $this->app->bind(TankRepositoryInterface::class, TankRepository::class);
         $this->app->bind(BatcheRepositoryInterface::class, BatcheRepository::class);

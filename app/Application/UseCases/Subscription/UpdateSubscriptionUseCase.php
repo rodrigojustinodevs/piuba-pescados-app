@@ -22,7 +22,7 @@ class UpdateSubscriptionUseCase
      */
     public function execute(string $id, array $data): SubscriptionDTO
     {
-        return DB::transaction(function () use ($id, $data): \App\Application\DTOs\SubscriptionDTO {
+        return DB::transaction(function () use ($id, $data): SubscriptionDTO {
             $subscription = $this->repository->update($id, $data);
 
             if (! $subscription instanceof Subscription) {

@@ -14,6 +14,7 @@ return new class () extends Migration
     public function up(): void
     {
         Schema::create('growth_curves', function (Blueprint $table): void {
+
             $table->uuid('id')->primary();
             $table->uuid('batche_id');
             $table->float('average_weight');

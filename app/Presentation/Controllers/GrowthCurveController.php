@@ -44,6 +44,7 @@ class GrowthCurveController
             $curve = $this->growthCurveService->show($id);
 
             if (!$curve instanceof \App\Application\DTOs\GrowthCurveDTO || $curve->isEmpty()) {
+
                 return ApiResponse::error(null, 'Growth curve not found', Response::HTTP_NOT_FOUND);
             }
 

@@ -16,7 +16,8 @@ class GrowthCurveController
 {
     public function __construct(
         protected GrowthCurveService $growthCurveService
-    ) {}
+    ) {
+    }
 
     /**
      * Display a listing of growth curves.

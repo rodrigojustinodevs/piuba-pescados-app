@@ -13,14 +13,20 @@ return new class () extends Migration
      */
     public function up(): void
     {
-        Schema::create('growth_curves', function (Blueprint $table): void {
+        Schema::create('subscriptions', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->uuid('batche_id');
-            $table->float('average_weight');
+            $table->uuid('company_id');
+            $table->string('plan', 50);
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->string('status', 20);
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('batche_id')->references('id')->on('batches');
+            $table->foreign('company_id')
+                ->references('id')
+                ->on('companies')
+                ->onDelete('cascade');
         });
     }
 
@@ -29,6 +35,6 @@ return new class () extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('growth_curves');
+        Schema::dropIfExists('subscriptions');
     }
 };

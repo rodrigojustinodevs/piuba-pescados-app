@@ -23,7 +23,6 @@ class CreateGrowthCurveUseCase
         return DB::transaction(function () use ($data): GrowthCurveDTO {
             $growthCurve = $this->growthCurveRepository->create($data);
 
-
             return new GrowthCurveDTO(
                 id: $growthCurve->id,
                 batcheId: $growthCurve->batche_id,

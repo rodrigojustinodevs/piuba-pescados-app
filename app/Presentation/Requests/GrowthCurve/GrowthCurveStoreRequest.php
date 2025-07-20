@@ -24,7 +24,7 @@ class GrowthCurveStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batche_id'   => ['required', 'uuid', 'exists:batches,id'],
+            'batche_id'      => ['required', 'uuid', 'exists:batches,id'],
             'average_weight' => ['required', 'numeric', 'min:0'],
         ];
     }

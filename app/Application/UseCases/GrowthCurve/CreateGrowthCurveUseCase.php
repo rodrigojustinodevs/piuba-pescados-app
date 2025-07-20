@@ -20,17 +20,10 @@ class CreateGrowthCurveUseCase
      */
     public function execute(array $data): GrowthCurveDTO
     {
+        /** @return GrowthCurveDTO */
         return DB::transaction(function () use ($data): GrowthCurveDTO {
             $growthCurve = $this->growthCurveRepository->create($data);
-
-
-            return new GrowthCurveDTO(
-                id: $growthCurve->id,
-                batcheId: $growthCurve->batche_id,
-                averageWeight: $growthCurve->average_weight,
-                createdAt: $growthCurve->created_at?->toDateTimeString(),
-                updatedAt: $growthCurve->updated_at?->toDateTimeString()
-            );
+            return GrowthCurveDTO::fromArray($growthCurve->toArray());
         });
     }
 }

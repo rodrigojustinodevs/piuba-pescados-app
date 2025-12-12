@@ -59,10 +59,6 @@ RUN mkdir -p /var/www/storage/temp/ \
     && chown www:www-data -R /var/www/ \
     && chmod 774 -R /var/www/
 
-# Copy nginx/php/supervisor configs
-# RUN cp docker/supervisor.conf /etc/supervisord.conf \
-#    && cp docker/php.ini /usr/local/etc/php/conf.d/app.ini \
-#    && cp docker/nginx.conf /etc/nginx/sites-enabled/default
 
 # PHP Error Log Files
 # RUN mkdir /var/log/php

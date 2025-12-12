@@ -31,9 +31,19 @@ class CompanyResource extends JsonResource
             'id'         => $this->id,
             'name'       => $this->name,
             'cnpj'       => $this->cnpj,
-            'address'    => $this->address,
+            'email'      => $this->email,
             'phone'      => $this->phone,
-            'status'     => $this->status, // Verifique se precisa do enum aqui
+            'address'    => [
+                'street'      => $this->address_street,
+                'number'      => $this->address_number,
+                'complement'  => $this->address_complement,
+                'neighborhood' => $this->address_neighborhood,
+                'city'        => $this->address_city,
+                'state'       => $this->address_state,
+                'zipCode'     => $this->address_zip_code,
+            ],
+            'active'     => $this->status === 'active',
+            'status'     => $this->status,
             'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
             'updated_at' => $this->updated_at ? $this->updated_at->toDateTimeString() : null,
         ];

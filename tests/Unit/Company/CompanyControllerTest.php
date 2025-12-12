@@ -22,8 +22,17 @@ test('returns a successful response for index', function (): void {
             'id'        => Uuid::uuid4()->toString(),
             'name'      => 'Company 1',
             'cnpj'      => '12345678000195',
-            'address'   => '123 Main St',
+            'email'     => 'company1@test.com',
             'phone'     => '1234567890',
+            'address'   => [
+                'street'      => '123 Main St',
+                'number'      => '123',
+                'complement'  => null,
+                'neighborhood' => 'Downtown',
+                'city'        => 'São Paulo',
+                'state'       => 'SP',
+                'zipCode'     => '01234-567',
+            ],
             'status'    => Status::ACTIVE,
             'createdAt' => '2025-03-10 10:00:00',
             'updatedAt' => '2025-03-10 11:00:00',
@@ -32,8 +41,17 @@ test('returns a successful response for index', function (): void {
             'id'        => Uuid::uuid4()->toString(),
             'name'      => 'Company 2',
             'cnpj'      => '98765432000185',
-            'address'   => '456 Elm St',
+            'email'     => 'company2@test.com',
             'phone'     => '0987654321',
+            'address'   => [
+                'street'      => '456 Elm St',
+                'number'      => '456',
+                'complement'  => null,
+                'neighborhood' => 'Uptown',
+                'city'        => 'Rio de Janeiro',
+                'state'       => 'RJ',
+                'zipCode'     => '20000-000',
+            ],
             'status'    => Status::INACTIVE,
             'createdAt' => '2025-03-10 10:00:00',
             'updatedAt' => '2025-03-10 11:00:00',
@@ -47,8 +65,9 @@ test('returns a successful response for index', function (): void {
             $data['id'],
             $data['name'],
             $data['cnpj'],
-            $data['address'],
+            $data['email'],
             $data['phone'],
+            $data['address'],
             $data['status'],
             $data['createdAt'],
             $data['updatedAt']
@@ -90,8 +109,17 @@ test('returns a company for show when found', function (): void {
         $companyId,
         'Company 1',
         '12345678000195',
-        '123 Main St',
+        'company1@test.com',
         '1234567890',
+        [
+            'street'      => '123 Main St',
+            'number'      => '123',
+            'complement'  => null,
+            'neighborhood' => 'Downtown',
+            'city'        => 'São Paulo',
+            'state'       => 'SP',
+            'zipCode'     => '01234-567',
+        ],
         Status::ACTIVE,
         '2025-03-10 10:00:00',
         '2025-03-10 11:00:00'
@@ -116,7 +144,7 @@ test('returns a company for show when found', function (): void {
 
 test('returns 404 when show company is empty', function (): void {
     $companyId    = Uuid::uuid4()->toString();
-    $emptyCompany = new CompanyDTO('', '', '', '', '', Status::ACTIVE, null, null);
+    $emptyCompany = new CompanyDTO('', '', '', null, '', [], Status::ACTIVE, null, null);
 
     $companyService = Mockery::mock(CompanyService::class);
     $companyService->shouldReceive('showCompany')
@@ -141,8 +169,17 @@ test('creates a company via store', function (): void {
         $companyId,
         'New Company',
         '12345678000195',
-        '123 New St',
+        'newcompany@test.com',
         '1234567890',
+        [
+            'street'      => '123 New St',
+            'number'      => '123',
+            'complement'  => null,
+            'neighborhood' => 'Downtown',
+            'city'        => 'São Paulo',
+            'state'       => 'SP',
+            'zipCode'     => '01234-567',
+        ],
         Status::ACTIVE,
         '2025-03-10 10:00:00',
         '2025-03-10 11:00:00'
@@ -177,8 +214,17 @@ test('updates a company via update', function (): void {
         $companyId,
         'Updated Company',
         '98765432000185',
-        '456 Updated St',
+        'updated@test.com',
         '0987654321',
+        [
+            'street'      => '456 Updated St',
+            'number'      => '456',
+            'complement'  => null,
+            'neighborhood' => 'Uptown',
+            'city'        => 'Rio de Janeiro',
+            'state'       => 'RJ',
+            'zipCode'     => '20000-000',
+        ],
         Status::ACTIVE,
         '2025-03-10 10:00:00',
         '2025-03-10 11:00:00'

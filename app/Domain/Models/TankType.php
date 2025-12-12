@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property string $id
  * @property string $name
+ * @property string|null $description
  *
  * @property-read Tank[] $tanks
  */
@@ -22,7 +23,7 @@ class TankType extends BaseModel
 
     protected $keyType = 'string';
 
-    protected $fillable = ['id', 'name'];
+    protected $fillable = ['id', 'name', 'description'];
 
     #[\Override]
     public function save(array $options = [])

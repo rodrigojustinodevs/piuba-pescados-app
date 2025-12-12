@@ -7,6 +7,7 @@ namespace App\Application\Services;
 use App\Application\DTOs\TankDTO;
 use App\Application\UseCases\Tank\CreateTankUseCase;
 use App\Application\UseCases\Tank\DeleteTankUseCase;
+use App\Application\UseCases\Tank\GetTankTypesUseCase;
 use App\Application\UseCases\Tank\ShowAllTanksUseCase;
 use App\Application\UseCases\Tank\ShowTankUseCase;
 use App\Application\UseCases\Tank\UpdateTankUseCase;
@@ -19,7 +20,8 @@ class TankService
         protected ShowAllTanksUseCase $showAllTanksUseCase,
         protected ShowTankUseCase $showTankUseCase,
         protected UpdateTankUseCase $updateTankUseCase,
-        protected DeleteTankUseCase $deleteTankUseCase
+        protected DeleteTankUseCase $deleteTankUseCase,
+        protected GetTankTypesUseCase $getTankTypesUseCase
     ) {
     }
 
@@ -52,5 +54,13 @@ class TankService
     public function deleteTank(string $id): bool
     {
         return $this->deleteTankUseCase->execute($id);
+    }
+
+    /**
+     * @return array<int, array<string, string|null>>
+     */
+    public function getTankTypes(): array
+    {
+        return $this->getTankTypesUseCase->execute();
     }
 }

@@ -98,4 +98,18 @@ class TankController
             return ApiResponse::error($exception, 'Error deleting tank', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Get tank types.
+     */
+    public function getTankTypes(): JsonResponse
+    {
+        try {
+            $tankTypes = $this->tankService->getTankTypes();
+
+            return ApiResponse::success($tankTypes, Response::HTTP_OK, 'Success');
+        } catch (Throwable $exception) {
+            return ApiResponse::error($exception, 'Error fetching tank types', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

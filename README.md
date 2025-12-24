@@ -1,66 +1,268 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Piuba Pescados API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST para o sistema de gestão de piscicultura Piuba Pescados, desenvolvida em Laravel 12 com arquitetura em camadas.
 
-## About Laravel
+## 📋 Pré-requisitos
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Docker e Docker Compose instalados
+- Git
+- Portas disponíveis: `8005` (nginx), `3308` (MySQL), `1883` e `9001` (MQTT)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Instalação
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. Clone o repositório
 
-## Learning Laravel
+```bash
+git clone <url-do-repositorio>
+cd piuba-pescados-app
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 2. Configure o ambiente
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Crie um arquivo `.env` baseado no `.env.example` (se existir) ou configure as seguintes variáveis:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```env
+APP_NAME="Piuba Pescados API"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8005
 
-## Laravel Sponsors
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=piuba_pescados
+DB_USERNAME=piuba_user
+DB_PASSWORD=piuba_password
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+JWT_SECRET=
+JWT_TTL=60
+JWT_REFRESH_TTL=20160
 
-### Premium Partners
+REDIS_HOST=redis
+QUEUE_CONNECTION=redis
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 3. Gere a chave da aplicação e JWT
 
-## Contributing
+```bash
+# Dentro do container Docker
+docker exec -it api_piuba_pescados_app php artisan key:generate
+docker exec -it api_piuba_pescados_app php artisan jwt:secret
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Construa e inicie os containers
 
-## Code of Conduct
+```bash
+docker-compose up -d --build
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 5. Execute as migrations
 
-## Security Vulnerabilities
+```bash
+docker exec -it api_piuba_pescados_app php artisan migrate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 6. Execute os seeders
 
-## License
+```bash
+docker exec -it api_piuba_pescados_app php artisan db:seed
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Os seeders irão criar:
+- Roles: `operator`, `master_admin`, `company_admin`, `manager`
+- Permissões para todas as entidades
+- Companies de teste
+- Usuário master_admin (email: `master.admin@piuba.com`, senha: `password123`)
+
+## 🔧 Comandos Úteis
+
+### Acessar o container da aplicação
+
+```bash
+docker exec -it api_piuba_pescados_app bash
+```
+
+### Executar comandos Artisan
+
+```bash
+docker exec -it api_piuba_pescados_app php artisan <comando>
+```
+
+### Ver logs
+
+```bash
+docker logs api_piuba_pescados_app -f
+```
+
+### Parar os containers
+
+```bash
+docker-compose down
+```
+
+### Parar e remover volumes (⚠️ apaga dados do banco)
+
+```bash
+docker-compose down -v
+```
+
+## 📚 Estrutura do Projeto
+
+O projeto segue uma arquitetura em camadas:
+
+```
+app/
+├── Application/        # Camada de aplicação (DTOs, Services, UseCases)
+├── Domain/            # Camada de domínio (Models, Repositories, Enums)
+├── Infrastructure/    # Camada de infraestrutura (Persistence, Providers)
+└── Presentation/      # Camada de apresentação (Controllers, Requests, Resources, Middleware)
+```
+
+## 🔐 Autenticação
+
+A API utiliza autenticação JWT. Para obter um token:
+
+```bash
+POST /api/login
+Content-Type: application/json
+
+{
+  "email": "master.admin@piuba.com",
+  "password": "password123"
+}
+```
+
+Resposta:
+```json
+{
+  "status": true,
+  "response": {
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+  },
+  "message": "Authenticated successfully"
+}
+```
+
+Use o token nas requisições subsequentes:
+
+```
+Authorization: Bearer {token}
+```
+
+## 👥 Roles e Permissões
+
+### Roles Disponíveis
+
+- **master_admin**: Administrador master do sistema
+- **company_admin**: Administrador de company
+- **manager**: Gerente
+- **operator**: Operador
+
+### Permissões
+
+As permissões seguem o padrão: `{acao}-{entidade}`
+
+Exemplos:
+- `create-company`
+- `update-company`
+- `delete-company`
+- `view-company`
+- `create-tank`
+- `update-tank`
+- etc.
+
+## 🧪 Testes
+
+```bash
+docker exec -it api_piuba_pescados_app php artisan test
+```
+
+## 📖 Documentação da API
+
+A documentação Swagger/OpenAPI está disponível em:
+
+```
+http://localhost:8005/api/docs
+```
+
+Para gerar/atualizar a documentação:
+
+```bash
+docker exec -it api_piuba_pescados_app php artisan l5-swagger:generate
+```
+
+## 🛠️ Tecnologias
+
+- **Laravel 12**: Framework PHP
+- **PHP 8.3**: Linguagem de programação
+- **MySQL 8.0**: Banco de dados
+- **Redis**: Cache e filas
+- **JWT Auth**: Autenticação
+- **Docker**: Containerização
+- **Nginx**: Servidor web
+
+## 📝 Variáveis de Ambiente Importantes
+
+| Variável | Descrição | Padrão |
+|----------|-----------|--------|
+| `APP_URL` | URL base da aplicação | `http://localhost:8005` |
+| `DB_DATABASE` | Nome do banco de dados | `piuba_pescados` |
+| `DB_USERNAME` | Usuário do banco | `piuba_user` |
+| `DB_PASSWORD` | Senha do banco | `piuba_password` |
+| `JWT_SECRET` | Chave secreta do JWT | (gerado) |
+| `JWT_TTL` | Tempo de vida do token (minutos) | `60` |
+
+## 🐛 Troubleshooting
+
+### Erro ao conectar ao banco de dados
+
+Verifique se o container MySQL está rodando:
+
+```bash
+docker ps | grep mysql
+```
+
+### Erro de permissões no storage
+
+```bash
+docker exec -it api_piuba_pescados_app chmod -R 775 storage bootstrap/cache
+```
+
+### Limpar cache
+
+```bash
+docker exec -it api_piuba_pescados_app php artisan optimize:clear
+```
+
+### Reinstalar dependências
+
+```bash
+docker exec -it api_piuba_pescados_app composer install
+```
+
+## 📄 Licença
+
+Este projeto é proprietário e confidencial.
+
+## 👨‍💻 Desenvolvimento
+
+Para desenvolvimento local, você pode usar:
+
+```bash
+composer dev
+```
+
+Isso iniciará:
+- Servidor Laravel
+- Queue worker
+- Log viewer (Pail)
+- Vite (frontend assets)
+
+## 🔗 Endpoints Principais
+
+- `POST /api/login` - Autenticação
+- `GET /api/ping` - Health check (requer autenticação)
+- `GET /api/docs` - Documentação Swagger
+
+Para mais endpoints, consulte a documentação Swagger em `/api/docs`.

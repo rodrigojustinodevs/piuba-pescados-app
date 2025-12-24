@@ -59,13 +59,16 @@ RUN mkdir -p /var/www/storage/temp/ \
     && chown www:www-data -R /var/www/ \
     && chmod 774 -R /var/www/
 
+# Configure Git to allow the repository directory
+RUN git config --global --add safe.directory /var/www
 
 # PHP Error Log Files
 # RUN mkdir /var/log/php
 # RUN touch /var/log/php/errors.log && chmod 777 /var/log/php/errors.log
 
 # Deployment steps
-RUN composer update && composer install --optimize-autoloader --no-dev
+# Use --no-scripts to avoid executing Laravel service providers during build
+RUN composer update --no-scripts && composer install --optimize-autoloader --no-dev --no-scripts
 # RUN chmod +x /var/www/docker/run.sh
 
 # Expose port 80

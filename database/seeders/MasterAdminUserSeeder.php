@@ -49,7 +49,11 @@ class MasterAdminUserSeeder extends Seeder
 
         // Vincular usuário à company na tabela company_user
         if (! $company->users()->where('users.id', $masterAdminUser->id)->exists()) {
-            $company->users()->attach($masterAdminUser->id);
+            DB::table('company_user')->insert([
+                'id' => (string) \Illuminate\Support\Str::uuid(),
+                'company_id' => $company->id,
+                'user_id' => $masterAdminUser->id,
+            ]);
         }
 
         // Vincular role master_admin ao usuário na company (tabela company_user_role)
@@ -65,8 +69,6 @@ class MasterAdminUserSeeder extends Seeder
                 'company_id' => $company->id,
                 'user_id'    => $masterAdminUser->id,
                 'role_id'    => $masterAdminRole->id,
-                'created_at' => now(),
-                'updated_at' => now(),
             ]);
         }
 

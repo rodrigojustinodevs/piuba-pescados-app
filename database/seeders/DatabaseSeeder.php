@@ -20,17 +20,20 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             CompanyRolesPermissionsSeeder::class,
             MasterAdminUserSeeder::class,
+            UsersByRoleSeeder::class,
         ]);
 
-        User::factory()->create([
-            'is_admin' => true,
-            'name'     => 'Test User',
-            'email'    => 'test@example.com',
-        ]);
-
-        User::factory()->create([
-            'name'  => 'Test User 2',
-            'email' => 'test2@example.com',
-        ]);
+        // Factory users disabled in production (requires fakerphp/faker which is dev dependency)
+        // Uncomment if running in development environment:
+        // User::factory()->create([
+        //     'is_admin' => true,
+        //     'name'     => 'Test User',
+        //     'email'    => 'test@example.com',
+        // ]);
+        //
+        // User::factory()->create([
+        //     'name'  => 'Test User 2',
+        //     'email' => 'test2@example.com',
+        // ]);
     }
 }

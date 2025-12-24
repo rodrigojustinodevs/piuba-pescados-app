@@ -18,6 +18,7 @@ class RolesPermissionsSeeder extends Seeder
             'master_admin',
             'company_admin',
             'manager',
+            'admin',
         ];
 
         foreach ($roles as $role) {
@@ -25,10 +26,16 @@ class RolesPermissionsSeeder extends Seeder
         }
 
         foreach (Can::cases() as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission->value]);
         }
 
         $userAdmin = Role::where('name', 'admin')->first();
-        $userAdmin->permissions()->attach(Permission::where('name', 'view-users')->first());
+        $viewUserPermission = Permission::where('name', 'view-user')->first();
+        
+        if ($userAdmin && $viewUserPermission) {
+            if (! $userAdmin->permissions()->where('permissions.id', $viewUserPermission->id)->exists()) {
+                $userAdmin->permissions()->attach($viewUserPermission->id);
+            }
+        }
     }
 }

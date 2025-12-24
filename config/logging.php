@@ -56,7 +56,7 @@ return [
 
         'stack' => [
             'driver'            => 'stack',
-            'channels'          => explode(',', env('LOG_STACK', 'single')),
+            'channels'          => explode(',', (string) env('LOG_STACK', 'single')),
             'ignore_exceptions' => false,
         ],
 
@@ -110,7 +110,7 @@ return [
         'syslog' => [
             'driver'               => 'syslog',
             'level'                => env('LOG_LEVEL', 'debug'),
-            'facility'             => env('LOG_SYSLOG_FACILITY', LOG_USER),
+            'facility'             => env('LOG_SYSLOG_FACILITY', defined('LOG_USER') ? LOG_USER : 1),
             'replace_placeholders' => true,
         ],
 

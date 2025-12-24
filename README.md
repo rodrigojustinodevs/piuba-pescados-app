@@ -266,3 +266,31 @@ Isso iniciará:
 - `GET /api/docs` - Documentação Swagger
 
 Para mais endpoints, consulte a documentação Swagger em `/api/docs`.
+
+## 👥 Usuários de Teste por Role
+
+O seeder `UsersByRoleSeeder` cria um usuário para cada role, permitindo testar os diferentes tipos de acesso.
+
+### Usuários Criados
+
+| Role | Email | Senha | Descrição |
+|------|-------|-------|-----------|
+| `admin` | `admin@piuba.com` | `password123` | Administrador geral |
+| `master_admin` | `master.admin@piuba.com` | `password123` | Administrador master |
+| `company_admin` | `company.admin@piuba.com` | `password123` | Administrador de company |
+| `company-admin` | `company-admin@piuba.com` | `password123` | Administrador de company (com hífen) |
+| `manager` | `manager@piuba.com` | `password123` | Gerente |
+| `operator` | `operator@piuba.com` | `password123` | Operador |
+| `guest` | `guest@piuba.com` | `password123` | Convidado |
+
+### O que o Seeder Faz
+
+O seeder realiza as seguintes ações para cada usuário:
+
+| Ação | Descrição |
+|------|-----------|
+| Cria/Atualiza usuário | Cria ou atualiza o usuário com as credenciais especificadas |
+| Associa role globalmente | Associa o role ao usuário na tabela `role_user` |
+| Vincula à company | Vincula o usuário a uma company na tabela `company_user` |
+| Associa role na company | Associa o role do usuário na company (tabela `company_user_role`) |
+| Define is_admin | Define `is_admin = true` para roles `admin` e `master_admin` |

@@ -33,9 +33,8 @@ class Handler extends ExceptionHandler
     #[\Override]
     public function register(): void
     {
-        $this->reportable(function (Throwable $exception): void {
-            $this->handleException($exception, 'User not authenticated', JsonResponse::HTTP_UNAUTHORIZED);
-        });
+        // reportable is for logging/reporting exceptions, not rendering them
+        // Rendering is handled by renderable callbacks below
 
         $this->renderable(
             fn (NotFoundHttpException $e, Request $r): JsonResponse => $this->handleException(

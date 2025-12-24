@@ -163,18 +163,35 @@ class CompanyRolesPermissionsSeeder extends Seeder
             );
 
             // Associar roles padrões à company (se ainda não estiverem associados)
-            $roleIds = [];
+            $rolesToAttach = [];
+            
             if (! $company->roles()->where('roles.id', $adminRole->id)->exists()) {
-                $roleIds[] = $adminRole->id;
+                $rolesToAttach[] = [
+                    'id' => (string) Str::uuid(),
+                    'role_id' => $adminRole->id,
+                ];
             }
             if (! $company->roles()->where('roles.id', $companyAdminRole->id)->exists()) {
-                $roleIds[] = $companyAdminRole->id;
+                $rolesToAttach[] = [
+                    'id' => (string) Str::uuid(),
+                    'role_id' => $companyAdminRole->id,
+                ];
             }
             if (! $company->roles()->where('roles.id', $guestRole->id)->exists()) {
-                $roleIds[] = $guestRole->id;
+                $rolesToAttach[] = [
+                    'id' => (string) Str::uuid(),
+                    'role_id' => $guestRole->id,
+                ];
             }
-            if (! empty($roleIds)) {
-                $company->roles()->attach($roleIds);
+            
+            if (! empty($rolesToAttach)) {
+                foreach ($rolesToAttach as $roleData) {
+                    DB::table('company_role')->insert([
+                        'id' => $roleData['id'],
+                        'company_id' => $company->id,
+                        'role_id' => $roleData['role_id'],
+                    ]);
+                }
             }
         }
 

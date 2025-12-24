@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             RolesPermissionsSeeder::class,
             TankTypeSeeder::class,
             PermissionSeeder::class,
+            CompanyRolesPermissionsSeeder::class,
+            MasterAdminUserSeeder::class,
         ]);
 
         User::factory()->create([

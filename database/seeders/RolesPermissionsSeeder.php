@@ -14,13 +14,14 @@ class RolesPermissionsSeeder extends Seeder
     public function run(): void
     {
         $roles = [
-            'admin',
-            'company-admin',
-            'guest',
+            'operator',
+            'master_admin',
+            'company_admin',
+            'manager',
         ];
 
         foreach ($roles as $role) {
-            Role::create(['name' => $role]);
+            Role::firstOrCreate(['name' => $role]);
         }
 
         foreach (Can::cases() as $permission) {

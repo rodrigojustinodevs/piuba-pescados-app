@@ -120,14 +120,55 @@ class ClientController
      *         required=true,
      *         @OA\JsonContent(
      *             required={"company_id", "name", "person_type"},
-     *             @OA\Property(property="company_id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
+     *             @OA\Property(
+     *                 property="company_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 example="550e8400-e29b-41d4-a716-446655440000"
+     *             ),
      *             @OA\Property(property="name", type="string", maxLength=255, example="João Silva"),
-     *             @OA\Property(property="contact", type="string", nullable=true, maxLength=255, example="Maria Silva"),
-     *             @OA\Property(property="phone", type="string", nullable=true, maxLength=20, example="(85) 99999-9999"),
-     *             @OA\Property(property="email", type="string", format="email", nullable=true, maxLength=255, example="joao@example.com"),
-     *             @OA\Property(property="person_type", type="string", enum={"individual", "company"}, example="individual"),
-     *             @OA\Property(property="document_number", type="string", nullable=true, pattern="^\\d{11}|\\d{14}$", example="12345678901"),
-     *             @OA\Property(property="address", type="string", nullable=true, maxLength=255, example="Rua Exemplo, 123")
+     *             @OA\Property(
+     *                 property="contact",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="Maria Silva"
+     *             ),
+     *             @OA\Property(
+     *                 property="phone",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=20,
+     *                 example="(85) 99999-9999"
+     *             ),
+     *             @OA\Property(
+     *                 property="email",
+     *                 type="string",
+     *                 format="email",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="joao@example.com"
+     *             ),
+     *             @OA\Property(
+     *                 property="person_type",
+     *                 type="string",
+     *                 enum={"individual", "company"},
+     *                 example="individual"
+     *             ),
+     *             @OA\Property(
+     *                 property="document_number",
+     *                 type="string",
+     *                 nullable=true,
+     *                 pattern="^\\d{11}|\\d{14}$",
+     *                 example="12345678901"
+     *             ),
+     *             @OA\Property(
+     *                 property="address",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="Rua Exemplo, 123"
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -170,14 +211,55 @@ class ClientController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="company_id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
+     *             @OA\Property(
+     *                 property="company_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 example="550e8400-e29b-41d4-a716-446655440000"
+     *             ),
      *             @OA\Property(property="name", type="string", maxLength=255, example="João Silva"),
-     *             @OA\Property(property="contact", type="string", nullable=true, maxLength=255, example="Maria Silva"),
-     *             @OA\Property(property="phone", type="string", nullable=true, maxLength=20, example="(85) 99999-9999"),
-     *             @OA\Property(property="email", type="string", format="email", nullable=true, maxLength=255, example="joao@example.com"),
-     *             @OA\Property(property="person_type", type="string", enum={"individual", "company"}, example="individual"),
-     *             @OA\Property(property="document_number", type="string", nullable=true, pattern="^\\d{11}|\\d{14}$", example="12345678901"),
-     *             @OA\Property(property="address", type="string", nullable=true, maxLength=255, example="Rua Exemplo, 123")
+     *             @OA\Property(
+     *                 property="contact",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="Maria Silva"
+     *             ),
+     *             @OA\Property(
+     *                 property="phone",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=20,
+     *                 example="(85) 99999-9999"
+     *             ),
+     *             @OA\Property(
+     *                 property="email",
+     *                 type="string",
+     *                 format="email",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="joao@example.com"
+     *             ),
+     *             @OA\Property(
+     *                 property="person_type",
+     *                 type="string",
+     *                 enum={"individual", "company"},
+     *                 example="individual"
+     *             ),
+     *             @OA\Property(
+     *                 property="document_number",
+     *                 type="string",
+     *                 nullable=true,
+     *                 pattern="^\\d{11}|\\d{14}$",
+     *                 example="12345678901"
+     *             ),
+     *             @OA\Property(
+     *                 property="address",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="Rua Exemplo, 123"
+     *             )
      *         )
      *     ),
      *     @OA\Response(

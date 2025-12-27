@@ -115,8 +115,18 @@ class TankController
      *         required=true,
      *         @OA\JsonContent(
      *             required={"company_id", "tank_types_id", "name", "capacity_liters", "location", "status"},
-     *             @OA\Property(property="company_id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
-     *             @OA\Property(property="tank_types_id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440001"),
+     *             @OA\Property(
+     *                 property="company_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 example="550e8400-e29b-41d4-a716-446655440000"
+     *             ),
+     *             @OA\Property(
+     *                 property="tank_types_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 example="550e8400-e29b-41d4-a716-446655440001"
+     *             ),
      *             @OA\Property(property="name", type="string", maxLength=255, example="Tanque 01"),
      *             @OA\Property(property="capacity_liters", type="integer", minimum=1, example=10000),
      *             @OA\Property(property="location", type="string", example="Setor A"),
@@ -163,8 +173,18 @@ class TankController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="company_id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
-     *             @OA\Property(property="tank_types_id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440001"),
+     *             @OA\Property(
+     *                 property="company_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 example="550e8400-e29b-41d4-a716-446655440000"
+     *             ),
+     *             @OA\Property(
+     *                 property="tank_types_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 example="550e8400-e29b-41d4-a716-446655440001"
+     *             ),
      *             @OA\Property(property="name", type="string", maxLength=255, example="Tanque 01"),
      *             @OA\Property(property="capacity_liters", type="integer", minimum=1, example=10000),
      *             @OA\Property(property="location", type="string", example="Setor A"),

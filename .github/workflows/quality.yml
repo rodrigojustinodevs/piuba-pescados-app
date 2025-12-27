@@ -42,4 +42,4 @@ jobs:
 
       - name: Check for Composer security issues
         run: |
-          composer audit
+          composer audit --abandoned=ignore

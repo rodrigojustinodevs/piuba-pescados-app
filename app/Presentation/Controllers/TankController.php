@@ -259,7 +259,10 @@ class TankController
         try {
             $tankTypes = $this->tankService->getTankTypes();
 
-            return ApiResponse::success($tankTypes, Response::HTTP_OK, 'Success');
+            /** @var array<int|string, mixed> $tankTypesData */
+            $tankTypesData = $tankTypes;
+
+            return ApiResponse::success($tankTypesData, Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Error fetching tank types', Response::HTTP_INTERNAL_SERVER_ERROR);
         }

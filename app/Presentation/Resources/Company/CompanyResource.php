@@ -10,8 +10,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string $id
  * @property-read string $name
  * @property-read string $cnpj
- * @property-read string $address
- * @property-read string $phone
+ * @property-read string|null $email
+ * @property-read string|null $phone
+ * @property-read string|null $address_street
+ * @property-read string|null $address_number
+ * @property-read string|null $address_complement
+ * @property-read string|null $address_neighborhood
+ * @property-read string|null $address_city
+ * @property-read string|null $address_state
+ * @property-read string|null $address_zip_code
  * @property-read string $status
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at

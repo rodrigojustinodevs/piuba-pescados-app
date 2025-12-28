@@ -43,7 +43,6 @@ class ResolveUserPermissionsUseCase
     {
         // Remove cache sem companyId
         Cache::forget($this->getCacheKey($userId, null));
-
     }
 
     /**

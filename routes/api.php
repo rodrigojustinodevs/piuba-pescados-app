@@ -13,7 +13,7 @@ Route::group(['middleware' => ['auth:api']], function (): void {
 });
 
 Route::prefix('admin')
-    ->middleware(['auth:api', 'api', 'role:admin'])
+    ->middleware(['auth:api', 'api', 'role:admin|master_admin'])
     ->group(function (): void {
         require base_path('routes/app/admin/company.php');
 
@@ -21,7 +21,7 @@ Route::prefix('admin')
     });
 
 Route::prefix('company')
-    ->middleware(['auth:api', 'api', 'role:admin|company-admin'])
+    ->middleware(['auth:api', 'api', 'role:admin|master_admin|company-admin'])
     ->group(function (): void {
         require base_path('routes/app/company/alert.php');
 

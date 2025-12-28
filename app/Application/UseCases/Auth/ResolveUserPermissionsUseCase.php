@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 
 class ResolveUserPermissionsUseCase
 {
-    private const CACHE_TTL = 600; // 10 minutos
+    private const CACHE_TTL = 600;
 
     public function __construct(
         protected AuthRepositoryInterface $authRepository
@@ -36,12 +36,8 @@ class ResolveUserPermissionsUseCase
         Cache::forget($cacheKey);
     }
 
-    /**
-     * Invalida cache de todas as permissões de um usuário (todas as empresas)
-     */
     public function invalidateAllUserCache(string $userId): void
     {
-        // Remove cache sem companyId
         Cache::forget($this->getCacheKey($userId, null));
     }
 

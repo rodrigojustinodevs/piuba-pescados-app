@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Middleware;
 
-use App\Domain\Repositories\AuthRepositoryInterface;
+use App\Application\UseCases\Auth\CheckUserPermissionUseCase;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -12,22 +12,57 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class CheckPermission
 {
     public function __construct(
-        protected AuthRepositoryInterface $authRepository
+        protected CheckUserPermissionUseCase $checkPermissionUseCase
     ) {
     }
 
     public function handle(Request $request, Closure $next, string $permissions): mixed
     {
-        $permissionsArray = explode(',', $permissions);
+        $user = $request->user();
 
-        foreach ($permissionsArray as $permission) {
-            $permission = trim($permission);
+        if (! $user) {
+            throw new AccessDeniedHttpException('Unauthorized');
+        }
 
-            if ($permission && $this->authRepository->userHasPermission($permission)) {
-                return $next($request);
-            }
+        $permissionList = $this->parsePermissions($permissions);
+        $companyId = $this->resolveCompanyId($request);
+
+        if ($this->checkPermissionUseCase->userHasAnyPermission($user, $permissionList, $companyId)) {
+            return $next($request);
         }
 
         throw new AccessDeniedHttpException('Forbidden: missing required permission. ' . $permissions);
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function parsePermissions(string $permissions): array
+    {
+        return array_map(
+            'trim',
+            preg_split('/[,|]/', $permissions)
+        );
+    }
+
+    private function resolveCompanyId(Request $request): ?string
+    {
+        if ($request->hasHeader('X-Company-Id')) {
+            return $request->header('X-Company-Id');
+        }
+
+        $route = $request->route();
+        if ($route) {
+            $companyId = $route->parameter('company') ?? $route->parameter('companyId');
+            if ($companyId) {
+                return (string) $companyId;
+            }
+        }
+
+        if ($request->has('company_id')) {
+            return $request->query('company_id');
+        }
+
+        return null;
     }
 }

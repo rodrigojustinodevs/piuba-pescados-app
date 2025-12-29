@@ -4,22 +4,33 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
-readonly class Permission
+use InvalidArgumentException;
+
+final class Permission
 {
     public function __construct(
-        public string $name
+        private readonly string $name
     ) {
         $this->validate();
     }
 
     private function validate(): void
     {
+        if (empty($this->name)) {
+            throw new InvalidArgumentException('Permission name cannot be empty.');
+        }
+
         if (! preg_match('/^[a-z]+(-[a-z]+)+$/', $this->name)) {
-            throw new \InvalidArgumentException("Invalid permission format: {$this->name}");
+            throw new InvalidArgumentException("Invalid permission format: {$this->name}");
         }
     }
 
-    public function equals(Permission $other): bool
+    public function value(): string
+    {
+        return $this->name;
+    }
+
+    public function equals(self $other): bool
     {
         return $this->name === $other->name;
     }

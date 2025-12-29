@@ -30,13 +30,13 @@ class CompanyDTO
     public static function fromArray(array $data): self
     {
         $address = [
-            'street'      => $data['address_street'] ?? null,
-            'number'      => $data['address_number'] ?? null,
-            'complement'  => $data['address_complement'] ?? null,
+            'street'       => $data['address_street'] ?? null,
+            'number'       => $data['address_number'] ?? null,
+            'complement'   => $data['address_complement'] ?? null,
             'neighborhood' => $data['address_neighborhood'] ?? null,
-            'city'        => $data['address_city'] ?? null,
-            'state'       => $data['address_state'] ?? null,
-            'zipCode'     => $data['address_zip_code'] ?? null,
+            'city'         => $data['address_city'] ?? null,
+            'state'        => $data['address_state'] ?? null,
+            'zipCode'      => $data['address_zip_code'] ?? null,
         ];
 
         return new self(

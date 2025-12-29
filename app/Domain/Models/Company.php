@@ -42,7 +42,8 @@ class Company extends BaseModel
     protected static function booted()
     {
         static::creating(function (Company $company): void {
-            $company->id     = (string) Str::uuid();
+            $company->id = (string) Str::uuid();
+
             if (! isset($company->status)) {
                 $company->status = 'active';
             }

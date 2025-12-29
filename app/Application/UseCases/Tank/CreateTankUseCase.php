@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Tank;
 
 use App\Application\DTOs\TankDTO;
-use App\Domain\Enums\Status;
 use App\Domain\Repositories\TankRepositoryInterface;
+use App\Infrastructure\Mappers\TankMapper;
 use Illuminate\Support\Facades\DB;
 
 class CreateTankUseCase
@@ -22,24 +22,11 @@ class CreateTankUseCase
     public function execute(array $data): TankDTO
     {
         return DB::transaction(function () use ($data): TankDTO {
-            $tank = $this->tankRepository->create($data);
+            $mappedData = TankMapper::fromRequest($data);
 
-            return new TankDTO(
-                id: $tank->id,
-                name: $tank->name,
-                capacityLiters: $tank->capacity_liters,
-                location: $tank->location,
-                status: Status::from($tank->status),
-                tankType: [
-                    'id'   => $tank->tankType->id ?? '',
-                    'name' => $tank->tankType->name ?? '',
-                ],
-                company: [
-                    'name' => $tank->company->name ?? '',
-                ],
-                createdAt: $tank->created_at?->toDateTimeString(),
-                updatedAt: $tank->updated_at?->toDateTimeString()
-            );
+            $tank = $this->tankRepository->create($mappedData);
+
+            return TankMapper::toDTO($tank);
         });
     }
 }

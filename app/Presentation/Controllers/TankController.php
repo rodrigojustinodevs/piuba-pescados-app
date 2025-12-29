@@ -100,7 +100,12 @@ class TankController
      *             @OA\Property(
      *                 property="data",
      *                 type="object",
-     *                 @OA\Property(property="id", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
+     *                 @OA\Property(
+     *                     property="id",
+     *                     type="string",
+     *                     format="uuid",
+     *                     example="550e8400-e29b-41d4-a716-446655440000"
+     *                 ),
      *                 @OA\Property(property="name", type="string", example="Tanque 01"),
      *                 @OA\Property(property="capacityLiters", type="integer", example=10000),
      *                 @OA\Property(property="location", type="string", example="Setor A - Bloco 3"),

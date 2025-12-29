@@ -16,16 +16,28 @@ final class UserMapper
      *
      * @return array<string, mixed>
      */
+    /**
+     * Converte Model para array usando Value Objects
+     *
+     * @return array<string, mixed>
+     */
     public static function toArray(User $model): array
     {
+        /** @var \Carbon\CarbonImmutable|null $emailVerifiedAt */
+        $emailVerifiedAt = $model->email_verified_at;
+        /** @var \Carbon\CarbonImmutable|null $createdAt */
+        $createdAt = $model->created_at;
+        /** @var \Carbon\CarbonImmutable|null $updatedAt */
+        $updatedAt = $model->updated_at;
+
         return [
             'id'                => $model->id,
             'name'              => $model->name,
             'email'             => $model->email,
             'is_admin'          => $model->is_admin ?? false,
-            'email_verified_at' => $model->email_verified_at?->toDateTimeString(),
-            'created_at'        => $model->created_at?->toDateTimeString(),
-            'updated_at'        => $model->updated_at?->toDateTimeString(),
+            'email_verified_at' => $emailVerifiedAt?->toDateTimeString(),
+            'created_at'        => $createdAt?->toDateTimeString(),
+            'updated_at'        => $updatedAt?->toDateTimeString(),
         ];
     }
 

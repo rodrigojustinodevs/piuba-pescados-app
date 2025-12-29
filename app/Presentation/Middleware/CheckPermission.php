@@ -25,7 +25,7 @@ class CheckPermission
         }
 
         $permissionList = $this->parsePermissions($permissions);
-        $companyId = $this->resolveCompanyId($request);
+        $companyId      = $this->resolveCompanyId($request);
 
         if ($this->checkPermissionUseCase->userHasAnyPermission($user, $permissionList, $companyId)) {
             return $next($request);
@@ -52,8 +52,10 @@ class CheckPermission
         }
 
         $route = $request->route();
+
         if ($route) {
             $companyId = $route->parameter('company') ?? $route->parameter('companyId');
+
             if ($companyId) {
                 return (string) $companyId;
             }

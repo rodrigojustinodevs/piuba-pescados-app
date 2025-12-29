@@ -19,18 +19,19 @@ class TankStoreRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
+     * Usa camelCase para não expor estrutura do banco de dados
      *
      * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
      */
     public function rules(): array
     {
         return [
-            'company_id'      => ['required', 'uuid', 'exists:companies,id'],
-            'tank_types_id'   => ['required', 'uuid', 'exists:tank_types,id'],
-            'name'            => ['required', 'string', 'max:255'],
-            'capacity_liters' => ['required', 'integer', 'min:1'],
-            'location'        => ['required', 'string'],
-            'status'          => ['required', Rule::in(['active', 'inactive'])->__toString()],
+            'companyId'      => ['required', 'uuid', 'exists:companies,id'],
+            'tankTypeId'     => ['required', 'uuid', 'exists:tank_types,id'],
+            'name'           => ['required', 'string', 'max:255'],
+            'capacityLiters' => ['required', 'integer', 'min:1'],
+            'location'       => ['required', 'string'],
+            'status'         => ['required', Rule::in(['active', 'inactive'])->__toString()],
         ];
     }
 }

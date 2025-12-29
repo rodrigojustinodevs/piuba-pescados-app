@@ -53,19 +53,19 @@ class ResolveUserPermissionsUseCase
         $allPermissions = collect();
 
         $directPermissionsGlobal = $this->authRepository->getUserDirectPermissions($user);
-        $allPermissions = $allPermissions->merge($directPermissionsGlobal);
+        $allPermissions          = $allPermissions->merge($directPermissionsGlobal);
 
         if ($companyId) {
             $directPermissionsCompany = $this->authRepository->getUserDirectPermissionsByCompany($user, $companyId);
-            $allPermissions = $allPermissions->merge($directPermissionsCompany);
+            $allPermissions           = $allPermissions->merge($directPermissionsCompany);
         }
 
         $rolePermissionsGlobal = $this->authRepository->getUserRolePermissions($user);
-        $allPermissions = $allPermissions->merge($rolePermissionsGlobal);
+        $allPermissions        = $allPermissions->merge($rolePermissionsGlobal);
 
         if ($companyId) {
             $rolePermissionsCompany = $this->authRepository->getUserRolePermissionsByCompany($user, $companyId);
-            $allPermissions = $allPermissions->merge($rolePermissionsCompany);
+            $allPermissions         = $allPermissions->merge($rolePermissionsCompany);
         }
 
         return $allPermissions->unique()->values();

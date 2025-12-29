@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('login', [AuthController::class, 'authenticateUser']);
 
-
 Route::group(['middleware' => ['auth:api']], function (): void {
     Route::get('/ping', fn (): string => 'pong');
 });

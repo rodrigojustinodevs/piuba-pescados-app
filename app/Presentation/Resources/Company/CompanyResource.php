@@ -35,19 +35,19 @@ class CompanyResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'cnpj'       => $this->cnpj,
-            'email'      => $this->email,
-            'phone'      => $this->phone,
-            'address'    => [
-                'street'      => $this->address_street,
-                'number'      => $this->address_number,
-                'complement'  => $this->address_complement,
+            'id'      => $this->id,
+            'name'    => $this->name,
+            'cnpj'    => $this->cnpj,
+            'email'   => $this->email,
+            'phone'   => $this->phone,
+            'address' => [
+                'street'       => $this->address_street,
+                'number'       => $this->address_number,
+                'complement'   => $this->address_complement,
                 'neighborhood' => $this->address_neighborhood,
-                'city'        => $this->address_city,
-                'state'       => $this->address_state,
-                'zipCode'     => $this->address_zip_code,
+                'city'         => $this->address_city,
+                'state'        => $this->address_state,
+                'zipCode'      => $this->address_zip_code,
             ],
             'active'     => $this->status === 'active',
             'status'     => $this->status,

@@ -26,7 +26,7 @@ class MasterAdminUserSeeder extends Seeder
 
         if (! $company) {
             $this->command->warn('Nenhuma company encontrada. Execute o CompanyRolesPermissionsSeeder primeiro.');
-            
+
             return;
         }
 
@@ -50,9 +50,9 @@ class MasterAdminUserSeeder extends Seeder
         // Vincular usuário à company na tabela company_user
         if (! $company->users()->where('users.id', $masterAdminUser->id)->exists()) {
             DB::table('company_user')->insert([
-                'id' => (string) \Illuminate\Support\Str::uuid(),
+                'id'         => (string) \Illuminate\Support\Str::uuid(),
                 'company_id' => $company->id,
-                'user_id' => $masterAdminUser->id,
+                'user_id'    => $masterAdminUser->id,
             ]);
         }
 
@@ -78,4 +78,3 @@ class MasterAdminUserSeeder extends Seeder
         $this->command->info("Company vinculada: {$company->name} (ID: {$company->id})");
     }
 }
-

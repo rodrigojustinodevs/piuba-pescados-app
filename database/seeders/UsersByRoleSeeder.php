@@ -24,7 +24,7 @@ class UsersByRoleSeeder extends Seeder
 
         if (! $company) {
             $this->command->warn('Nenhuma company encontrada. Execute o CompanyRolesPermissionsSeeder primeiro.');
-            
+
             return;
         }
 
@@ -68,6 +68,7 @@ class UsersByRoleSeeder extends Seeder
 
             if (! $role) {
                 $this->command->warn("Role '{$roleName}' não encontrado. Pulando...");
+
                 continue;
             }
 
@@ -128,4 +129,3 @@ class UsersByRoleSeeder extends Seeder
         $this->command->comment('Você pode usar qualquer um desses usuários para testar os diferentes tipos de acesso.');
     }
 }
-

@@ -20,6 +20,38 @@ class ClientController
     ) {
     }
 
+    /**
+     * @OA\Get(
+     *     path="/company/clients",
+     *     summary="List all clients",
+     *     tags={"Clients"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of clients",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function index(): JsonResponse
     {
         try {
@@ -33,6 +65,32 @@ class ClientController
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/company/client/{id}",
+     *     summary="Get a specific client",
+     *     tags={"Clients"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Client ID",
+     *         required=true,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Client details",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Client not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function show(string $id): JsonResponse
     {
         try {
@@ -52,6 +110,80 @@ class ClientController
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/company/client",
+     *     summary="Create a new client",
+     *     tags={"Clients"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"company_id", "name", "person_type"},
+     *             @OA\Property(
+     *                 property="company_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 example="550e8400-e29b-41d4-a716-446655440000"
+     *             ),
+     *             @OA\Property(property="name", type="string", maxLength=255, example="João Silva"),
+     *             @OA\Property(
+     *                 property="contact",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="Maria Silva"
+     *             ),
+     *             @OA\Property(
+     *                 property="phone",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=20,
+     *                 example="(85) 99999-9999"
+     *             ),
+     *             @OA\Property(
+     *                 property="email",
+     *                 type="string",
+     *                 format="email",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="joao@example.com"
+     *             ),
+     *             @OA\Property(
+     *                 property="person_type",
+     *                 type="string",
+     *                 enum={"individual", "company"},
+     *                 example="individual"
+     *             ),
+     *             @OA\Property(
+     *                 property="document_number",
+     *                 type="string",
+     *                 nullable=true,
+     *                 pattern="^\\d{11}|\\d{14}$",
+     *                 example="12345678901"
+     *             ),
+     *             @OA\Property(
+     *                 property="address",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="Rua Exemplo, 123"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Client created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Client created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Validation error"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function store(ClientStoreRequest $request): JsonResponse
     {
         try {
@@ -63,6 +195,87 @@ class ClientController
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/company/client/{id}",
+     *     summary="Update a client",
+     *     tags={"Clients"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Client ID",
+     *         required=true,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="company_id",
+     *                 type="string",
+     *                 format="uuid",
+     *                 example="550e8400-e29b-41d4-a716-446655440000"
+     *             ),
+     *             @OA\Property(property="name", type="string", maxLength=255, example="João Silva"),
+     *             @OA\Property(
+     *                 property="contact",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="Maria Silva"
+     *             ),
+     *             @OA\Property(
+     *                 property="phone",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=20,
+     *                 example="(85) 99999-9999"
+     *             ),
+     *             @OA\Property(
+     *                 property="email",
+     *                 type="string",
+     *                 format="email",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="joao@example.com"
+     *             ),
+     *             @OA\Property(
+     *                 property="person_type",
+     *                 type="string",
+     *                 enum={"individual", "company"},
+     *                 example="individual"
+     *             ),
+     *             @OA\Property(
+     *                 property="document_number",
+     *                 type="string",
+     *                 nullable=true,
+     *                 pattern="^\\d{11}|\\d{14}$",
+     *                 example="12345678901"
+     *             ),
+     *             @OA\Property(
+     *                 property="address",
+     *                 type="string",
+     *                 nullable=true,
+     *                 maxLength=255,
+     *                 example="Rua Exemplo, 123"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Client updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Validation error"),
+     *     @OA\Response(response=404, description="Client not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function update(ClientUpdateRequest $request, string $id): JsonResponse
     {
         try {
@@ -74,6 +287,31 @@ class ClientController
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/company/client/{id}",
+     *     summary="Delete a client",
+     *     tags={"Clients"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Client ID",
+     *         required=true,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Client deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Client successfully deleted")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Client not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function destroy(string $id): JsonResponse
     {
         try {

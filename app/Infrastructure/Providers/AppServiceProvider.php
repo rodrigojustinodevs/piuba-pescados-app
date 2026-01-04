@@ -60,7 +60,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
@@ -186,20 +185,10 @@ class AppServiceProvider extends ServiceProvider
                 $permission->value,
                 function (User $user) use ($permission) {
                     /** @var User $user */
-                    $check = $user
+                    return $user
                         ->permissions()
                         ->whereName($permission->value)
                         ->exists();
-
-                    Log::info(
-                        'Checking permission: ' . $permission->value,
-                        [
-                            'user'  => $user->id,
-                            'check' => $check ? 'true' : 'false',
-                        ]
-                    );
-
-                    return $check;
                 }
             );
         }

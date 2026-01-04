@@ -23,7 +23,7 @@ class ApiResponse
     }
 
     /**
-     * @param array<string, mixed>|null $data
+     * @param array<int|string, mixed>|null $data
      * @param array<string, mixed>|null $paginationData
      */
     public static function success(

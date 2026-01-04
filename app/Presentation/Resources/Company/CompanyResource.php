@@ -10,8 +10,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string $id
  * @property-read string $name
  * @property-read string $cnpj
- * @property-read string $address
- * @property-read string $phone
+ * @property-read string|null $email
+ * @property-read string|null $phone
+ * @property-read string|null $address_street
+ * @property-read string|null $address_number
+ * @property-read string|null $address_complement
+ * @property-read string|null $address_neighborhood
+ * @property-read string|null $address_city
+ * @property-read string|null $address_state
+ * @property-read string|null $address_zip_code
  * @property-read string $status
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
@@ -28,19 +35,19 @@ class CompanyResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'cnpj'       => $this->cnpj,
-            'email'      => $this->email,
-            'phone'      => $this->phone,
-            'address'    => [
-                'street'      => $this->address_street,
-                'number'      => $this->address_number,
-                'complement'  => $this->address_complement,
+            'id'      => $this->id,
+            'name'    => $this->name,
+            'cnpj'    => $this->cnpj,
+            'email'   => $this->email,
+            'phone'   => $this->phone,
+            'address' => [
+                'street'       => $this->address_street,
+                'number'       => $this->address_number,
+                'complement'   => $this->address_complement,
                 'neighborhood' => $this->address_neighborhood,
-                'city'        => $this->address_city,
-                'state'       => $this->address_state,
-                'zipCode'     => $this->address_zip_code,
+                'city'         => $this->address_city,
+                'state'        => $this->address_state,
+                'zipCode'      => $this->address_zip_code,
             ],
             'active'     => $this->status === 'active',
             'status'     => $this->status,

@@ -24,4 +24,3 @@ class GetTankTypesUseCase
         })->toArray();
     }
 }
-

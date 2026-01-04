@@ -19,19 +19,18 @@ class TankUpdateRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
      * @return array<string, list<\Illuminate\Validation\Rules\In|string>
      * |array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
      */
     public function rules(): array
     {
         return [
-            'company_id'      => ['sometimes', 'uuid', 'exists:companies,id'],
-            'tank_types_id'   => ['sometimes', 'uuid', 'exists:tank_types,id'],
-            'name'            => ['sometimes', 'string', 'max:255'],
-            'capacity_liters' => ['sometimes', 'integer', 'min:1'],
-            'location'        => ['sometimes', 'string'],
-            'status'          => ['sometimes', Rule::in(['active', 'inactive'])],
+            'companyId'      => ['sometimes', 'uuid', 'exists:companies,id'],
+            'tankTypeId'     => ['sometimes', 'uuid', 'exists:tank_types,id'],
+            'name'           => ['sometimes', 'string', 'max:255'],
+            'capacityLiters' => ['sometimes', 'integer', 'min:1'],
+            'location'       => ['sometimes', 'string'],
+            'status'         => ['sometimes', Rule::in(['active', 'inactive'])],
         ];
     }
 }

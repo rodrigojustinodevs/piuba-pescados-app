@@ -31,10 +31,10 @@ class TankResource extends JsonResource
         return [
             'id'              => $this->id,
             'name'            => $this->name,
-            'capacity_liters' => $this->capacity_liters,
+            'capacityLiters'  => $this->capacity_liters,
             'location'        => $this->location,
             'status'          => $this->status,
-            'tank_type'       => $this->whenLoaded('tankType', fn (): array => [
+            'tankType'       => $this->whenLoaded('tankType', fn (): array => [
                 'id'   => $this->tankType->id,
                 'name' => $this->tankType->name,
             ]),

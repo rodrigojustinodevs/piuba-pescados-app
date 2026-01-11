@@ -28,7 +28,7 @@ class ResolveUserPermissionsUseCase
         return Cache::remember(
             $cacheKey,
             self::CACHE_TTL,
-            fn(): \Illuminate\Support\Collection => $this->loadPermissionsFromRepository($user, $companyId)
+            fn (): Collection => $this->loadPermissionsFromRepository($user, $companyId)
         );
     }
 
@@ -75,7 +75,7 @@ class ResolveUserPermissionsUseCase
 
     private function getCacheKey(string $userId, ?string $companyId): string
     {
-        $baseKey = "user:{$userId}:permissions";
+        $baseKey       = "user:{$userId}:permissions";
         $companySuffix = ($companyId !== null && $companyId !== '' && $companyId !== '0')
             ? ":company:{$companyId}"
             : '';

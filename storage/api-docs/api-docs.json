@@ -97,6 +97,489 @@
                 }
             }
         },
+        "/company/batches": {
+            "get": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Listar lotes",
+                "operationId": "4f7175a6cd16537d5a186e8affd5eb45",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Itens por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de lotes",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "entryDate": {
+                                                        "type": "string",
+                                                        "format": "date"
+                                                    },
+                                                    "initialQuantity": {
+                                                        "type": "integer",
+                                                        "example": 1000
+                                                    },
+                                                    "species": {
+                                                        "type": "string",
+                                                        "example": "Tilapia"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "active"
+                                                    },
+                                                    "cultivation": {
+                                                        "type": "string",
+                                                        "example": "daycare"
+                                                    },
+                                                    "tank": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "format": "uuid",
+                                                                "nullable": true
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "createdAt": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "nullable": true
+                                                    },
+                                                    "updatedAt": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/batche/{id}": {
+            "get": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Detalhar um lote",
+                "operationId": "00fd11f8bb50e02f7e49a0e723563bbe",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do lote",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lote encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "entryDate": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2024-10-15"
+                                                },
+                                                "initialQuantity": {
+                                                    "type": "integer",
+                                                    "example": 1200
+                                                },
+                                                "species": {
+                                                    "type": "string",
+                                                    "example": "Camarão"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "active"
+                                                },
+                                                "cultivation": {
+                                                    "type": "string",
+                                                    "example": "nursery"
+                                                },
+                                                "tank": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid",
+                                                            "nullable": true
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Batche not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Atualizar um lote",
+                "operationId": "97dfe51c2551e0d0ad0f8a5c964625fa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do lote",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "tankId": {
+                                        "description": "ID do tanque",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "entryDate": {
+                                        "description": "Data de entrada",
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "initialQuantity": {
+                                        "description": "Quantidade inicial",
+                                        "type": "integer",
+                                        "minimum": 1
+                                    },
+                                    "species": {
+                                        "description": "Espécie",
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "status": {
+                                        "description": "Status do lote",
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "finished"
+                                        ]
+                                    },
+                                    "cultivation": {
+                                        "description": "Tipo de cultivo",
+                                        "type": "string",
+                                        "enum": [
+                                            "daycare",
+                                            "nursery"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lote atualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Batche not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Remover um lote",
+                "operationId": "c79e23888c95f588d9329e1d165d397a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do lote",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lote removido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Batche successfully deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Batche not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/batche": {
+            "post": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Criar um lote",
+                "operationId": "80530940cf272f0a319e1fd08e41dbe3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tankId",
+                                    "entryDate",
+                                    "initialQuantity",
+                                    "species",
+                                    "cultivation"
+                                ],
+                                "properties": {
+                                    "tankId": {
+                                        "description": "ID do tanque",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                    },
+                                    "entryDate": {
+                                        "description": "Data de entrada",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2024-10-15"
+                                    },
+                                    "initialQuantity": {
+                                        "description": "Quantidade inicial",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "example": 1200
+                                    },
+                                    "species": {
+                                        "description": "Espécie",
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Tilapia"
+                                    },
+                                    "cultivation": {
+                                        "description": "Tipo de cultivo",
+                                        "type": "string",
+                                        "enum": [
+                                            "daycare",
+                                            "nursery"
+                                        ],
+                                        "example": "daycare"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Lote criado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/clients": {
             "get": {
                 "tags": [
@@ -1077,6 +1560,10 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Batches",
+            "description": "Batches"
         },
         {
             "name": "Clients",

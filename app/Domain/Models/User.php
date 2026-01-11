@@ -100,6 +100,15 @@ class User extends Authenticatable implements Auditable, JWTSubject
      */
     public function getJWTCustomClaims(): array
     {
-        return [];
+        // Carrega as roles globais do usuário de forma eficiente
+        $roles = $this->roles()->pluck('name')->toArray();
+        
+        // Verifica se o usuário é master_admin
+        $isMasterAdmin = in_array('master_admin', $roles, true);
+
+        return [
+            'roles' => $roles,
+            'is_master_admin' => $isMasterAdmin,
+        ];
     }
 }

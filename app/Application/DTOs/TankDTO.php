@@ -41,6 +41,7 @@ class TankDTO
                 'name' => $data['tank_type']['name'] ?? null,
             ] : null,
             company: isset($data['company']) ? [
+                'id'   => $data['company']['id'] ?? null,
                 'name' => $data['company']['name'] ?? null,
             ] : null,
             createdAt: $data['created_at'] ?? null,

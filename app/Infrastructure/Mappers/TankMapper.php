@@ -26,6 +26,7 @@ final class TankMapper
                 'name' => $model->tankType->name ?? null,
             ],
             company: [
+                'id'   => $model->company->id ?? null,
                 'name' => $model->company->name ?? null,
             ],
             createdAt: $model->created_at?->toDateTimeString(),

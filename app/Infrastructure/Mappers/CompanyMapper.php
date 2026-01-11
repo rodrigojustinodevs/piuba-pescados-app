@@ -135,11 +135,11 @@ final class CompanyMapper
 
         // Formato 2: Objeto address (address.street, address.number, etc.) - COMPATIBILIDADE
         // Usado apenas se não houver campos camelCase diretos
-        if (empty($addressData) && isset($data['address']) && is_array($data['address'])) {
+        if ($addressData === [] && isset($data['address']) && is_array($data['address'])) {
             $addressData = $data['address'];
         }
 
-        if (! empty($addressData)) {
+        if ($addressData !== []) {
             $address                        = Address::fromArray($addressData);
             $addressArray                   = $address->toArray();
             $mapped['address_street']       = $addressArray['street'] ?? null;

@@ -7,7 +7,7 @@ namespace App\Domain\ValueObjects;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
-final readonly class TankId
+final readonly class BatcheId
 {
     public function __construct(
         private string $value
@@ -18,7 +18,7 @@ final readonly class TankId
     private function validate(): void
     {
         if ($this->value === '' || $this->value === '0') {
-            throw new InvalidArgumentException('Tank ID cannot be empty.');
+            throw new InvalidArgumentException('Batche ID cannot be empty.');
         }
 
         if (! Str::isUuid($this->value)) {

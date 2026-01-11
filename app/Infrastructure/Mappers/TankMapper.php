@@ -87,11 +87,7 @@ final class TankMapper
         }
 
         // Processar status
-        if (isset($data['status'])) {
-            $mapped['status'] = $data['status'];
-        } else {
-            $mapped['status'] = 'active';
-        }
+        $mapped['status'] = $data['status'] ?? 'active';
 
         return $mapped;
     }

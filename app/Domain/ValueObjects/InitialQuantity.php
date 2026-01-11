@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final readonly class CapacityLiters
+final readonly class InitialQuantity
 {
     public function __construct(
         private int $value
@@ -17,11 +17,11 @@ final readonly class CapacityLiters
     private function validate(): void
     {
         if ($this->value < 1) {
-            throw new InvalidArgumentException('Capacity must be at least 1 liter.');
+            throw new InvalidArgumentException('Initial quantity must be at least 1.');
         }
 
-        if ($this->value > 1_000_000_000) {
-            throw new InvalidArgumentException('Capacity cannot exceed 1,000,000,000 liters.');
+        if ($this->value > 10_000_000) {
+            throw new InvalidArgumentException('Initial quantity cannot exceed 10,000,000.');
         }
     }
 

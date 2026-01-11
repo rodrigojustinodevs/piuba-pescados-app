@@ -15,12 +15,10 @@ class GetTankTypesUseCase
     {
         $tankTypes = TankType::orderBy('name')->get();
 
-        return $tankTypes->map(function (TankType $tankType): array {
-            return [
-                'id'          => $tankType->id,
-                'name'        => $tankType->name,
-                'description' => $tankType->description ?? null,
-            ];
-        })->toArray();
+        return $tankTypes->map(fn(TankType $tankType): array => [
+            'id'          => $tankType->id,
+            'name'        => $tankType->name,
+            'description' => $tankType->description ?? null,
+        ])->toArray();
     }
 }

@@ -6,21 +6,21 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final class Permission
+final readonly class Permission
 {
     public function __construct(
-        private readonly string $name
+        private string $name
     ) {
         $this->validate();
     }
 
     private function validate(): void
     {
-        if (empty($this->name)) {
+        if ($this->name === '' || $this->name === '0') {
             throw new InvalidArgumentException('Permission name cannot be empty.');
         }
 
-        if (! preg_match('/^[a-z]+(-[a-z]+)+$/', $this->name)) {
+        if (in_array(preg_match('/^[a-z]+(-[a-z]+)+$/', $this->name), [0, false], true)) {
             throw new InvalidArgumentException("Invalid permission format: {$this->name}");
         }
     }

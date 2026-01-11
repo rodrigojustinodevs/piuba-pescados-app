@@ -29,11 +29,11 @@ class TankResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'              => $this->id,
-            'name'            => $this->name,
-            'capacityLiters'  => $this->capacity_liters,
-            'location'        => $this->location,
-            'status'          => $this->status,
+            'id'             => $this->id,
+            'name'           => $this->name,
+            'capacityLiters' => $this->capacity_liters,
+            'location'       => $this->location,
+            'status'         => $this->status,
             'tankType'       => $this->whenLoaded('tankType', fn (): array => [
                 'id'   => $this->tankType->id,
                 'name' => $this->tankType->name,

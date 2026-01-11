@@ -6,17 +6,17 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final class Name
+final readonly class Name
 {
     public function __construct(
-        private readonly string $value
+        private string $value
     ) {
         $this->validate();
     }
 
     private function validate(): void
     {
-        if (empty(trim($this->value))) {
+        if (in_array(trim($this->value), ['', '0'], true)) {
             throw new InvalidArgumentException('Name cannot be empty.');
         }
 

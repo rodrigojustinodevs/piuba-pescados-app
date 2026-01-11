@@ -26,12 +26,12 @@ class BatcheUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tank_id'          => ['sometimes', 'uuid', 'exists:tanks,id'],
-            'entry_date'       => ['sometimes', 'date'],
-            'initial_quantity' => ['sometimes', 'integer', 'min:1'],
-            'species'          => ['sometimes', 'string', 'max:255'],
-            'status'           => ['sometimes', Rule::in(['active', 'finished'])],
-            'cultivation'      => ['sometimes', Rule::in(['daycare', 'nursery'])],
+            'tankId'          => ['sometimes', 'uuid', 'exists:tanks,id'],
+            'entryDate'       => ['sometimes', 'date'],
+            'initialQuantity' => ['sometimes', 'integer', 'min:1'],
+            'species'         => ['sometimes', 'string', 'max:255'],
+            'status'          => ['sometimes', Rule::in(['active', 'finished'])],
+            'cultivation'     => ['sometimes', Rule::in(['daycare', 'nursery'])],
         ];
     }
 }

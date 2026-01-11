@@ -6,10 +6,10 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final class Phone
+final readonly class Phone
 {
     public function __construct(
-        private readonly string $value
+        private string $value
     ) {
         $this->validate();
     }
@@ -18,7 +18,7 @@ final class Phone
     {
         $phone = $this->sanitize();
 
-        if (empty($phone)) {
+        if ($phone === '' || $phone === '0') {
             throw new InvalidArgumentException('Phone cannot be empty.');
         }
 
@@ -26,7 +26,7 @@ final class Phone
             throw new InvalidArgumentException('Phone must have 10 or 11 digits.');
         }
 
-        if (! preg_match('/^[0-9]{10,11}$/', $phone)) {
+        if (in_array(preg_match('/^\d{10,11}$/', $phone), [0, false], true)) {
             throw new InvalidArgumentException("Invalid phone format: {$this->value}");
         }
     }

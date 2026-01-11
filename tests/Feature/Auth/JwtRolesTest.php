@@ -12,12 +12,12 @@ uses(RefreshDatabase::class);
 
 test('JWT token includes user roles in custom claims', function (): void {
     // Arrange: Criar roles
-    $adminRole = Role::create(['name' => 'admin']);
+    $adminRole    = Role::create(['name' => 'admin']);
     $operatorRole = Role::create(['name' => 'operator']);
 
     // Arrange: Criar usuário com roles
     $user = User::factory()->create([
-        'email' => 'test@example.com',
+        'email'    => 'test@example.com',
         'password' => Hash::make('password123'),
     ]);
 
@@ -25,7 +25,7 @@ test('JWT token includes user roles in custom claims', function (): void {
 
     // Act: Fazer login
     $response = $this->postJson('/api/login', [
-        'email' => 'test@example.com',
+        'email'    => 'test@example.com',
         'password' => 'password123',
     ]);
 
@@ -63,7 +63,7 @@ test('JWT token includes master_admin flag when user has master_admin role', fun
 
     // Arrange: Criar usuário com role master_admin
     $user = User::factory()->create([
-        'email' => 'master@example.com',
+        'email'    => 'master@example.com',
         'password' => Hash::make('password123'),
     ]);
 
@@ -71,7 +71,7 @@ test('JWT token includes master_admin flag when user has master_admin role', fun
 
     // Act: Fazer login
     $response = $this->postJson('/api/login', [
-        'email' => 'master@example.com',
+        'email'    => 'master@example.com',
         'password' => 'password123',
     ]);
 
@@ -79,7 +79,7 @@ test('JWT token includes master_admin flag when user has master_admin role', fun
     $response->assertStatus(200);
 
     // Assert: Decodificar token e verificar claims
-    $token = $response->json('response.token');
+    $token   = $response->json('response.token');
     $payload = JWTAuth::setToken($token)->getPayload()->toArray();
 
     // Verificar que master_admin está nas roles
@@ -92,13 +92,13 @@ test('JWT token includes master_admin flag when user has master_admin role', fun
 test('JWT token includes empty roles array when user has no roles', function (): void {
     // Arrange: Criar usuário sem roles
     $user = User::factory()->create([
-        'email' => 'noroles@example.com',
+        'email'    => 'noroles@example.com',
         'password' => Hash::make('password123'),
     ]);
 
     // Act: Fazer login
     $response = $this->postJson('/api/login', [
-        'email' => 'noroles@example.com',
+        'email'    => 'noroles@example.com',
         'password' => 'password123',
     ]);
 
@@ -106,7 +106,7 @@ test('JWT token includes empty roles array when user has no roles', function ():
     $response->assertStatus(200);
 
     // Assert: Decodificar token e verificar claims
-    $token = $response->json('response.token');
+    $token   = $response->json('response.token');
     $payload = JWTAuth::setToken($token)->getPayload()->toArray();
 
     // Verificar que roles está presente mas vazio
@@ -124,7 +124,7 @@ test('JWT token can be used to authenticate and access protected routes', functi
 
     // Arrange: Criar usuário com role
     $user = User::factory()->create([
-        'email' => 'protected@example.com',
+        'email'    => 'protected@example.com',
         'password' => Hash::make('password123'),
     ]);
 
@@ -132,7 +132,7 @@ test('JWT token can be used to authenticate and access protected routes', functi
 
     // Act: Fazer login
     $loginResponse = $this->postJson('/api/login', [
-        'email' => 'protected@example.com',
+        'email'    => 'protected@example.com',
         'password' => 'password123',
     ]);
 
@@ -147,4 +147,3 @@ test('JWT token can be used to authenticate and access protected routes', functi
     $protectedResponse->assertStatus(200);
     expect($protectedResponse->content())->toBe('pong');
 });
-

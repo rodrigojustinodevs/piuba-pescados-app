@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Batche;
 
 use App\Application\DTOs\BatcheDTO;
-use App\Domain\Enums\Cultivation;
-use App\Domain\Enums\Status;
 use App\Domain\Models\Batche;
 use App\Domain\Repositories\BatcheRepositoryInterface;
-use Carbon\Carbon;
+use App\Infrastructure\Mappers\BatcheMapper;
+use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class UpdateBatcheUseCase
@@ -24,29 +23,16 @@ class UpdateBatcheUseCase
      */
     public function execute(string $id, array $data): BatcheDTO
     {
-        $batche = $this->batcheRepository->update($id, $data);
+        return DB::transaction(function () use ($id, $data): BatcheDTO {
+            $mappedData = BatcheMapper::fromRequest($data);
 
-        if (! $batche instanceof Batche) {
-            throw new RuntimeException('Batche not found');
-        }
+            $batche = $this->batcheRepository->update($id, $mappedData);
 
-        $entryDate = $batche->entry_date instanceof Carbon
-            ? $batche->entry_date
-            : Carbon::parse($batche->entry_date);
+            if (! $batche instanceof Batche) {
+                throw new RuntimeException('Batche not found');
+            }
 
-        return new BatcheDTO(
-            id: $batche->id,
-            entryDate:$entryDate->toDateString(),
-            initialQuantity: $batche->initial_quantity,
-            species: $batche->species,
-            status: Status::from($batche->status),
-            cultivation: Cultivation::from($batche->cultivation),
-            tank: [
-                'id'   => $batche->tank->id ?? '',
-                'name' => $batche->tank->name ?? '',
-            ],
-            createdAt: $batche->created_at?->toDateTimeString(),
-            updatedAt: $batche->updated_at?->toDateTimeString()
-        );
+            return BatcheMapper::toDTO($batche);
+        });
     }
 }

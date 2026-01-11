@@ -25,11 +25,11 @@ class BatcheStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tank_id'          => ['required', 'uuid', 'exists:tanks,id'],
-            'entry_date'       => ['required', 'date'],
-            'initial_quantity' => ['required', 'integer', 'min:1'],
-            'species'          => ['required', 'string', 'max:255'],
-            'cultivation'      => ['required', Rule::in(['daycare', 'nursery'])->__toString()],
+            'tankId'          => ['required', 'uuid', 'exists:tanks,id'],
+            'entryDate'       => ['required', 'date'],
+            'initialQuantity' => ['required', 'integer', 'min:1'],
+            'species'         => ['required', 'string', 'max:255'],
+            'cultivation'     => ['required', Rule::in(['daycare', 'nursery'])->__toString()],
         ];
     }
 }

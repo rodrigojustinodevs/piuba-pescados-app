@@ -56,7 +56,7 @@ class CompanyRolesPermissionsSeeder extends Seeder
             }
         }
 
-        if (! empty($adminPermissionIds)) {
+        if ($adminPermissionIds !== []) {
             $adminRole->permissions()->attach($adminPermissionIds);
         }
 
@@ -79,7 +79,7 @@ class CompanyRolesPermissionsSeeder extends Seeder
             }
         }
 
-        if (! empty($companyAdminPermissionIds)) {
+        if ($companyAdminPermissionIds !== []) {
             $companyAdminRole->permissions()->attach($companyAdminPermissionIds);
         }
 
@@ -196,14 +196,12 @@ class CompanyRolesPermissionsSeeder extends Seeder
                 ];
             }
 
-            if (! empty($rolesToAttach)) {
-                foreach ($rolesToAttach as $roleData) {
-                    DB::table('company_role')->insert([
-                        'id'         => $roleData['id'],
-                        'company_id' => $company->id,
-                        'role_id'    => $roleData['role_id'],
-                    ]);
-                }
+            foreach ($rolesToAttach as $roleData) {
+                DB::table('company_role')->insert([
+                    'id'         => $roleData['id'],
+                    'company_id' => $company->id,
+                    'role_id'    => $roleData['role_id'],
+                ]);
             }
         }
 

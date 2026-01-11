@@ -7,17 +7,17 @@ namespace App\Domain\ValueObjects;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
-final class UserId
+final readonly class UserId
 {
     public function __construct(
-        private readonly string $value
+        private string $value
     ) {
         $this->validate();
     }
 
     private function validate(): void
     {
-        if (empty($this->value)) {
+        if ($this->value === '' || $this->value === '0') {
             throw new InvalidArgumentException('User ID cannot be empty.');
         }
 

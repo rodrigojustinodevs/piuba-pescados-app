@@ -102,12 +102,12 @@ class User extends Authenticatable implements Auditable, JWTSubject
     {
         // Carrega as roles globais do usuário de forma eficiente
         $roles = $this->roles()->pluck('name')->toArray();
-        
+
         // Verifica se o usuário é master_admin
         $isMasterAdmin = in_array('master_admin', $roles, true);
 
         return [
-            'roles' => $roles,
+            'roles'           => $roles,
             'is_master_admin' => $isMasterAdmin,
         ];
     }

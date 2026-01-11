@@ -6,10 +6,10 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final class CNPJ
+final readonly class CNPJ
 {
     public function __construct(
-        private readonly string $value
+        private string $value
     ) {
         $this->validate();
     }
@@ -18,7 +18,7 @@ final class CNPJ
     {
         $cnpj = $this->sanitize();
 
-        if (empty($cnpj)) {
+        if ($cnpj === '' || $cnpj === '0') {
             throw new InvalidArgumentException('CNPJ cannot be empty.');
         }
 

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
-final class Address
+final readonly class Address
 {
     public function __construct(
-        private readonly ?string $street = null,
-        private readonly ?string $number = null,
-        private readonly ?string $complement = null,
-        private readonly ?string $neighborhood = null,
-        private readonly ?string $city = null,
-        private readonly ?string $state = null,
-        private readonly ?string $zipCode = null
+        private ?string $street = null,
+        private ?string $number = null,
+        private ?string $complement = null,
+        private ?string $neighborhood = null,
+        private ?string $city = null,
+        private ?string $state = null,
+        private ?string $zipCode = null
     ) {
     }
 

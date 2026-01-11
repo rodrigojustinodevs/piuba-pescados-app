@@ -32,10 +32,8 @@ class RolesPermissionsSeeder extends Seeder
         $userAdmin          = Role::where('name', 'admin')->first();
         $viewUserPermission = Permission::where('name', 'view-user')->first();
 
-        if ($userAdmin && $viewUserPermission) {
-            if (! $userAdmin->permissions()->where('permissions.id', $viewUserPermission->id)->exists()) {
-                $userAdmin->permissions()->attach($viewUserPermission->id);
-            }
+        if ($userAdmin && $viewUserPermission && ! $userAdmin->permissions()->where('permissions.id', $viewUserPermission->id)->exists()) {
+            $userAdmin->permissions()->attach($viewUserPermission->id);
         }
     }
 }

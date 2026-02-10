@@ -44,9 +44,13 @@ class CompanyService
         return $this->showCompanyUseCase->execute($id);
     }
 
-    public function showAllCompanies(): AnonymousResourceCollection
+    /**
+     * @param int         $limit Items per page.
+     * @param string|null $search Optional search (filters by name, cnpj, email).
+     */
+    public function showAllCompanies(int $limit = 25, ?string $search = null): AnonymousResourceCollection
     {
-        return $this->showAllCompaniesUseCase->execute();
+        return $this->showAllCompaniesUseCase->execute($limit, $search);
     }
 
     public function deleteCompany(string $id): bool

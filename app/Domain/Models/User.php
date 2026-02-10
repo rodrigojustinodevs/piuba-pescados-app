@@ -86,6 +86,17 @@ class User extends Authenticatable implements Auditable, JWTSubject
     }
 
     /**
+     * @return BelongsToMany<Company, static>
+     */
+    public function companies(): BelongsToMany
+    {
+        /** @var BelongsToMany<Company, static> $relation */
+        $relation = $this->belongsToMany(Company::class, 'company_user');
+
+        return $relation;
+    }
+
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      */
     public function getJWTIdentifier(): mixed
@@ -106,9 +117,26 @@ class User extends Authenticatable implements Auditable, JWTSubject
         // Verifica se o usuário é master_admin
         $isMasterAdmin = in_array('master_admin', $roles, true);
 
-        return [
+        $claims = [
             'roles'           => $roles,
             'is_master_admin' => $isMasterAdmin,
         ];
+
+        // Roles que precisam de company vinculada
+        $companyRoles = ['company-admin', 'manager', 'operator', 'guest'];
+
+        // Verifica se o usuário tem algum desses roles
+        $hasCompanyRole = ! empty(array_intersect($roles, $companyRoles));
+
+        // Se tiver um desses roles e estiver vinculado a uma company, adiciona o companyId
+        if ($hasCompanyRole) {
+            $company = $this->companies()->first();
+
+            if ($company) {
+                $claims['company_id'] = $company->id;
+            }
+        }
+
+        return $claims;
     }
 }

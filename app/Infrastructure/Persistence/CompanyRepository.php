@@ -40,12 +40,19 @@ class CompanyRepository implements CompanyRepositoryInterface
     }
 
     /**
-     * Get paginated .
+     * Get paginated companies with optional search by name, cnpj and email.
      */
-    public function paginate(int $page = 25): PaginationInterface
+    public function paginate(int $perPage = 25, ?string $search = null): PaginationInterface
     {
+        $query = Company::query();
+
+        if ($search !== null && $search !== '') {
+            $term = '%' . $search . '%';
+            $query->whereAny(['name', 'cnpj', 'email'], 'like', $term);
+        }
+
         /** @var LengthAwarePaginator<Company> $paginator */
-        $paginator = Company::paginate($page);
+        $paginator = $query->paginate($perPage);
 
         return new PaginationPresentr($paginator);
     }

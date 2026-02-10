@@ -15,9 +15,13 @@ class ShowAllCompaniesUseCase
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param int         $limit  Items per page (default 25). Page comes from request (?page=1).
+     * @param string|null $search Optional search term (filters by name, cnpj, email).
+     */
+    public function execute(int $limit = 25, ?string $search = null): AnonymousResourceCollection
     {
-        $response = $this->companyRepository->paginate();
+        $response = $this->companyRepository->paginate($limit, $search);
 
         return CompanyResource::collection($response->items())
             ->additional([

@@ -44,7 +44,7 @@ class FeedControlRepository implements FeedControlRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<FeedControl> $paginator */
+        /** @var LengthAwarePaginator<int, FeedControl> $paginator */
         $paginator = FeedControl::with([
             'company:id,name',
         ])->paginate($page);

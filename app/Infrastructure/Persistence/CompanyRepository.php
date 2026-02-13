@@ -51,7 +51,7 @@ class CompanyRepository implements CompanyRepositoryInterface
             $query->whereAny(['name', 'cnpj', 'email'], 'like', $term);
         }
 
-        /** @var LengthAwarePaginator<Company> $paginator */
+        /** @var LengthAwarePaginator<int, Company> $paginator */
         $paginator = $query->paginate($perPage);
 
         return new PaginationPresentr($paginator);

@@ -13,7 +13,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class PaginationPresentr implements PaginationInterface
 {
     /**
-     * @param LengthAwarePaginator<T> $paginator
+     * @param LengthAwarePaginator<int, T> $paginator
      */
     public function __construct(protected LengthAwarePaginator $paginator)
     {

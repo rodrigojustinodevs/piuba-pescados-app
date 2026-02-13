@@ -44,7 +44,7 @@ class CostAllocationRepository implements CostAllocationRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<CostAllocation> $paginator */
+        /** @var LengthAwarePaginator<int, CostAllocation> $paginator */
         $paginator = CostAllocation::with([
             'company:id,name',
         ])->paginate($page);

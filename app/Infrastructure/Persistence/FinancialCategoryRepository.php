@@ -44,7 +44,7 @@ class FinancialCategoryRepository implements FinancialCategoryRepositoryInterfac
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<FinancialCategory> $paginator */
+        /** @var LengthAwarePaginator<int, FinancialCategory> $paginator */
         $paginator = FinancialCategory::with([
             'company:id,name',
         ])->paginate($page);

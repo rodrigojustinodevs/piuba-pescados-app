@@ -44,7 +44,7 @@ class BiometryRepository implements BiometryRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Biometry> $paginator */
+        /** @var LengthAwarePaginator<int, Biometry> $paginator */
         $paginator = Biometry::with([
             'batche:id',
         ])->paginate($page);

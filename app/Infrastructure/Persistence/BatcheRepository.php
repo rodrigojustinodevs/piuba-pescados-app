@@ -44,7 +44,7 @@ class BatcheRepository implements BatcheRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Batche> $paginator */
+        /** @var LengthAwarePaginator<int, Batche> $paginator */
         $paginator = Batche::with([
             'tank:id,name',
         ])->paginate($page);

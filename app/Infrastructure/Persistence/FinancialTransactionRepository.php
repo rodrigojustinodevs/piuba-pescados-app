@@ -44,7 +44,7 @@ class FinancialTransactionRepository implements FinancialTransactionRepositoryIn
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<FinancialTransaction> $paginator */
+        /** @var LengthAwarePaginator<int, FinancialTransaction> $paginator */
         $paginator = FinancialTransaction::with([
             'company:id,name',
             'category:id,name',

@@ -44,7 +44,7 @@ class SupplierRepository implements SupplierRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Supplier> $paginator */
+        /** @var LengthAwarePaginator<int, Supplier> $paginator */
         $paginator = Supplier::with([
             'company:id,name',
         ])->paginate($page);

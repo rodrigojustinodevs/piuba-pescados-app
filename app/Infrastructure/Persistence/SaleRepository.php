@@ -44,7 +44,7 @@ class SaleRepository implements SaleRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Sale> $paginator */
+        /** @var LengthAwarePaginator<int, Sale> $paginator */
         $paginator = Sale::with([
             'client:id,name',
             'company:id,name',

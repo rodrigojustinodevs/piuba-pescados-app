@@ -44,7 +44,7 @@ class SensorRepository implements SensorRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Sensor> $paginator */
+        /** @var LengthAwarePaginator<int, Sensor> $paginator */
         $paginator = Sensor::with([
             'tank:id,name',
         ])->paginate($page);

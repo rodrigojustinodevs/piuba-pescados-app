@@ -44,7 +44,7 @@ class HarvestRepository implements HarvestRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Harvest> $paginator */
+        /** @var LengthAwarePaginator<int, Harvest> $paginator */
         $paginator = Harvest::with([
             'batche:id',
         ])->paginate($page);

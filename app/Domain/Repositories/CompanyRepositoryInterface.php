@@ -29,8 +29,11 @@ interface CompanyRepositoryInterface
 
     /**
      * Paginate company records.
+     *
+     * @param int         $perPage Number of items per page (limit).
+     * @param string|null $search  Optional search term (filters by name, cnpj, email).
      */
-    public function paginate(int $page = 25): PaginationInterface;
+    public function paginate(int $perPage = 25, ?string $search = null): PaginationInterface;
 
     /**
      * Find a company by a specific field.

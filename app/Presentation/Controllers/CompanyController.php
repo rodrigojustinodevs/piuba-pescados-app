@@ -9,6 +9,7 @@ use App\Presentation\Requests\Company\CompanyStoreRequest;
 use App\Presentation\Requests\Company\CompanyUpdateRequest;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Throwable;
 
@@ -21,12 +22,17 @@ class CompanyController
 
     /**
      * Display a listing of companies.
+     *
+     * Query params: page (int), limit (int), search (string - filters by name, cnpj, email).
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            $companies  = $this->companyService->showAllCompanies();
-            $data       = $companies->toArray(request());
+            $limit  = $request->integer('limit', 25);
+            $search = $request->filled('search') ? trim((string) $request->input('search')) : null;
+
+            $companies  = $this->companyService->showAllCompanies($limit, $search);
+            $data       = $companies->toArray($request);
             $pagination = $companies->additional['pagination'] ?? null;
 
             return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);

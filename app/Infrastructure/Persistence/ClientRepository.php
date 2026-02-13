@@ -44,7 +44,7 @@ class ClientRepository implements ClientRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Client> $paginator */
+        /** @var LengthAwarePaginator<int, Client> $paginator */
         $paginator = Client::with([
             'company:id,name',
         ])->paginate($page);

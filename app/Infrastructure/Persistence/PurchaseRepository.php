@@ -44,7 +44,7 @@ class PurchaseRepository implements PurchaseRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Purchase> $paginator */
+        /** @var LengthAwarePaginator<int, Purchase> $paginator */
         $paginator = Purchase::with([
             'supplier:id,name',
             'company:id,name',

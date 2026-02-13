@@ -11,6 +11,7 @@ use App\Presentation\Controllers\CompanyController;
 use App\Presentation\Requests\Company\CompanyStoreRequest;
 use App\Presentation\Requests\Company\CompanyUpdateRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Mockery;
@@ -85,14 +86,27 @@ test('returns a successful response for index', function (): void {
         ],
     ];
 
+    $request = Mockery::mock(Request::class);
+    $request->shouldReceive('integer')
+        ->with('limit', 25)
+        ->once()
+        ->andReturn(25);
+    $request->shouldReceive('filled')
+        ->with('search')
+        ->once()
+        ->andReturn(false);
+    $request->shouldReceive('input')
+        ->never();
+
     $companyService = Mockery::mock(CompanyService::class);
     $companyService->shouldReceive('showAllCompanies')
+        ->with(25, null)
         ->once()
         ->andReturn($collection);
 
     $controller = new CompanyController($companyService);
 
-    $response = $controller->index();
+    $response = $controller->index($request);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);

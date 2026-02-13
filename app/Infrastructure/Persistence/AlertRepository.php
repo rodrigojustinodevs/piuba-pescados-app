@@ -28,7 +28,7 @@ class AlertRepository implements AlertRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var \Illuminate\Pagination\LengthAwarePaginator<Alert> $paginator */
+        /** @var \Illuminate\Pagination\LengthAwarePaginator<int, Alert> $paginator */
         $paginator = Alert::with([
             'company:id,name',
         ])->paginate($page);

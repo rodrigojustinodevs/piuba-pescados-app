@@ -28,7 +28,7 @@ class SubscriptionRepository implements SubscriptionRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var \Illuminate\Pagination\LengthAwarePaginator<Subscription> $paginator */
+        /** @var \Illuminate\Pagination\LengthAwarePaginator<int, Subscription> $paginator */
         $paginator = Subscription::with([
             'company:id,name',
         ])->paginate($page);

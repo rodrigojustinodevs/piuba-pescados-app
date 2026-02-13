@@ -44,7 +44,7 @@ class SettlementRepository implements SettlementRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Settlement> $paginator */
+        /** @var LengthAwarePaginator<int, Settlement> $paginator */
         $paginator = Settlement::with([
             'batche:id',
         ])->paginate($page);

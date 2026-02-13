@@ -44,7 +44,7 @@ class Company extends BaseModel
         static::creating(function (Company $company): void {
             $company->id = (string) Str::uuid();
 
-            if (! property_exists($company, 'status') || $company->status === null) {
+            if (! isset($company->status)) {
                 $company->status = 'active';
             }
         });

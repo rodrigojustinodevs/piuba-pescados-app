@@ -44,7 +44,7 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<WaterQuality> $paginator */
+        /** @var LengthAwarePaginator<int, WaterQuality> $paginator */
         $paginator = WaterQuality::with([
             'tank:id,name',
         ])->paginate($page);

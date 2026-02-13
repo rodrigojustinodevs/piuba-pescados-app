@@ -44,7 +44,7 @@ class BatcheRepository implements BatcheRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Batche> $paginator */
+        /** @var LengthAwarePaginator<int, Batche> $paginator */
         $paginator = Batche::with([
             'tank:id,name',
         ])->paginate($page);
@@ -57,7 +57,9 @@ class BatcheRepository implements BatcheRepositoryInterface
      */
     public function showBatche(string $field, string | int $value): ?Batche
     {
-        return Batche::where($field, $value)->first();
+        return Batche::with([
+            'tank:id,name',
+        ])->where($field, $value)->first();
     }
 
     public function delete(string $id): bool

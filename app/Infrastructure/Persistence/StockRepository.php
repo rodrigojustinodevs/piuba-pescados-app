@@ -44,7 +44,7 @@ class StockRepository implements StockRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Stock> $paginator */
+        /** @var LengthAwarePaginator<int, Stock> $paginator */
         $paginator = Stock::with([
             'company:id,name',
         ])->paginate($page);

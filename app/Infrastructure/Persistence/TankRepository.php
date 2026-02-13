@@ -44,7 +44,7 @@ class TankRepository implements TankRepositoryInterface
      */
     public function paginate(int $page = 25): PaginationInterface
     {
-        /** @var LengthAwarePaginator<Tank> $paginator */
+        /** @var LengthAwarePaginator<int, Tank> $paginator */
         $paginator = Tank::with([
             'tankType:id,name',
             'company:id,name',

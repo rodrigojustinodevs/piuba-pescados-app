@@ -11,12 +11,13 @@ use App\Domain\Models\Batche;
 use App\Domain\ValueObjects\EntryDate;
 use App\Domain\ValueObjects\InitialQuantity;
 use App\Domain\ValueObjects\Species;
+use Carbon\Carbon;
 
 final class BatcheMapper
 {
     public static function toDTO(Batche $model): BatcheDTO
     {
-        $entryDate = $model->entry_date?->toDateString();
+        $entryDate = self::formatEntryDate($model->entry_date);
 
         return new BatcheDTO(
             id: $model->id,
@@ -102,7 +103,7 @@ final class BatcheMapper
      */
     public static function modelToArray(Batche $model): array
     {
-        $entryDate = $model->entry_date?->toDateString();
+        $entryDate = self::formatEntryDate($model->entry_date);
 
         return [
             'id'              => $model->id,
@@ -118,5 +119,39 @@ final class BatcheMapper
             'created_at' => $model->created_at?->toDateTimeString(),
             'updated_at' => $model->updated_at?->toDateTimeString(),
         ];
+    }
+
+    /**
+     * Formata entry_date para string, tratando tanto Carbon quanto string
+     *
+     * @param mixed $entryDate
+     */
+    private static function formatEntryDate($entryDate): ?string
+    {
+        if ($entryDate === null || $entryDate === '') {
+            return null;
+        }
+
+        if (is_string($entryDate)) {
+            try {
+                $parsed = Carbon::parse($entryDate);
+                return $parsed->format('Y-m-d');
+            } catch (\Exception $e) {
+                if (preg_match('/^\d{4}-\d{2}-\d{2}/', $entryDate)) {
+                    return $entryDate;
+                }
+                return null;
+            }
+        }
+
+        if ($entryDate instanceof \DateTimeInterface) {
+            return $entryDate->format('Y-m-d');
+        }
+
+        if (is_object($entryDate) && method_exists($entryDate, 'toDateString')) {
+            return $entryDate->toDateString();
+        }
+
+        return null;
     }
 }

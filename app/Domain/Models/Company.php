@@ -45,6 +45,7 @@ class Company extends BaseModel
             $company->id = (string) Str::uuid();
 
             if (! isset($company->status)) {
+
                 $company->status = 'active';
             }
         });

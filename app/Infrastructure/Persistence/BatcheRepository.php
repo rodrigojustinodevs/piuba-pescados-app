@@ -57,7 +57,9 @@ class BatcheRepository implements BatcheRepositoryInterface
      */
     public function showBatche(string $field, string | int $value): ?Batche
     {
-        return Batche::where($field, $value)->first();
+        return Batche::with([
+            'tank:id,name',
+        ])->where($field, $value)->first();
     }
 
     public function delete(string $id): bool

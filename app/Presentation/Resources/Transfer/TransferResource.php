@@ -34,8 +34,8 @@ class TransferResource extends JsonResource
             'destinationTankId' => $this->destination_tank_id,
             'quantity'          => $this->quantity,
             'description'       => $this->description,
-            'created_at'        => $this->created_at?->toDateTimeString(),
-            'updated_at'        => $this->updated_at?->toDateTimeString(),
+            'createdAt'         => $this->created_at?->toDateTimeString(),
+            'updatedAt'         => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

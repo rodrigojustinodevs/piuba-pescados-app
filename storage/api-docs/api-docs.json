@@ -2070,6 +2070,541 @@
                     }
                 ]
             }
+        },
+        "/company/transfers": {
+            "get": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Listar transfers",
+                "operationId": "94074103a0e8ef041c8034afbacf03a3",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Itens por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de transfers",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "batcheId": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "originTankId": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "destinationTankId": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "quantity": {
+                                                                "type": "integer",
+                                                                "example": 100
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Transferência entre tanques"
+                                                            },
+                                                            "createdAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            },
+                                                            "updatedAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/transfer/{id}": {
+            "get": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Detalhar um transfer",
+                "operationId": "fde20d69c0f323b7ca72ba843103821a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do transfer",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transfer encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batcheId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "originTankId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "destinationTankId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transfer not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Atualizar um transfer",
+                "operationId": "cbcdf02ac1deb2fdea8f9e9044208182",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do transfer",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "batcheId": {
+                                        "description": "ID do lote (Batche)",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "originTankId": {
+                                        "description": "ID do tanque de origem",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "destinationTankId": {
+                                        "description": "ID do tanque de destino",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "quantity": {
+                                        "description": "Quantidade transferida",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "example": 100
+                                    },
+                                    "description": {
+                                        "description": "Descrição da transferência",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transfer atualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batcheId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "originTankId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "destinationTankId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Transfer not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Remover um transfer",
+                "operationId": "4cd81f3626f7a20a5d2d9c9d05eb2957",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do transfer",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transfer removido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "response": {
+                                            "nullable": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Transfer successfully deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Transfer not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/transfer": {
+            "post": {
+                "tags": [
+                    "Transfers"
+                ],
+                "summary": "Criar um transfer",
+                "operationId": "c97d39cc55f1651c25391acc95a48e78",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "batcheId",
+                                    "originTankId",
+                                    "destinationTankId",
+                                    "quantity",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "batcheId": {
+                                        "description": "ID do lote (Batche)",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "originTankId": {
+                                        "description": "ID do tanque de origem",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "destinationTankId": {
+                                        "description": "ID do tanque de destino",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "quantity": {
+                                        "description": "Quantidade transferida",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "example": 100
+                                    },
+                                    "description": {
+                                        "description": "Descrição da transferência",
+                                        "type": "string",
+                                        "example": "Transferência entre tanques"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Transfer criado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successfully created"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batcheId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "originTankId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "destinationTankId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -2103,6 +2638,10 @@
         {
             "name": "Tanks",
             "description": "Tanks"
+        },
+        {
+            "name": "Transfers",
+            "description": "Transfers"
         }
     ]
 }

@@ -6,6 +6,7 @@ namespace App\Application\UseCases\Transfer;
 
 use App\Application\DTOs\TransferDTO;
 use App\Domain\Repositories\TransferRepositoryInterface;
+use App\Infrastructure\Mappers\TransferMapper;
 use RuntimeException;
 
 class ShowTransferUseCase
@@ -23,15 +24,6 @@ class ShowTransferUseCase
             throw new RuntimeException('Transfer not found');
         }
 
-        return new TransferDTO(
-            id: $transfer->id,
-            batcheId: $transfer->batche_id,
-            originTankId: $transfer->origin_tank_id,
-            destinationTankId: $transfer->destination_tank_id,
-            quantity: $transfer->quantity,
-            description: $transfer->description,
-            createdAt: $transfer->created_at?->toDateTimeString(),
-            updatedAt: $transfer->updated_at?->toDateTimeString()
-        );
+        return TransferMapper::toDTO($transfer);
     }
 }

@@ -7,6 +7,7 @@ namespace App\Application\UseCases\Transfer;
 use App\Application\DTOs\TransferDTO;
 use App\Domain\Repositories\BatcheRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
+use App\Infrastructure\Mappers\TransferMapper;
 use Illuminate\Support\Facades\DB;
 
 class CreateTransferUseCase
@@ -23,22 +24,14 @@ class CreateTransferUseCase
     public function execute(array $data): TransferDTO
     {
         return DB::transaction(function () use ($data): TransferDTO {
-            $transfer = $this->transferRepository->create($data);
+            $mappedData = TransferMapper::fromRequest($data);
+            $transfer   = $this->transferRepository->create($mappedData);
 
-            $this->batcheRepository->update($data['batche_id'], [
-                'tank_id' => $data['destination_tank_id'],
+            $this->batcheRepository->update($mappedData['batche_id'], [
+                'tank_id' => $mappedData['destination_tank_id'],
             ]);
 
-            return new TransferDTO(
-                id: $transfer->id,
-                batcheId: $transfer->batche_id,
-                originTankId: $transfer->origin_tank_id,
-                destinationTankId: $transfer->destination_tank_id,
-                quantity: $transfer->quantity,
-                description: $transfer->description,
-                createdAt: $transfer->created_at?->toDateTimeString(),
-                updatedAt: $transfer->updated_at?->toDateTimeString()
-            );
+            return TransferMapper::toDTO($transfer);
         });
     }
 }

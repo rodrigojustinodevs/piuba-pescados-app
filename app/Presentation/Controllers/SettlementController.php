@@ -55,7 +55,12 @@ class SettlementController
      *                         type="object",
      *                         @OA\Property(property="id", type="string", format="uuid"),
      *                         @OA\Property(property="batcheId", type="string", format="uuid", nullable=true),
-     *                         @OA\Property(property="settlementDate", type="string", format="date", example="2026-02-13"),
+     *                         @OA\Property(
+     *                             property="settlementDate",
+     *                             type="string",
+     *                             format="date",
+     *                             example="2026-02-13"
+     *                         ),
      *                         @OA\Property(property="quantity", type="integer", example=100),
      *                         @OA\Property(property="averageWeight", type="number", format="float", example=1.25),
      *                         @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
@@ -235,9 +240,22 @@ class SettlementController
      *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(property="batcheId", type="string", format="uuid", description="ID do lote (Batche)"),
-     *             @OA\Property(property="settlementDate", type="string", format="date", description="Data do settlement", example="2026-02-13"),
+     *             @OA\Property(
+     *                 property="settlementDate",
+     *                 type="string",
+     *                 format="date",
+     *                 description="Data do settlement",
+     *                 example="2026-02-13"
+     *             ),
      *             @OA\Property(property="quantity", type="integer", minimum=1, description="Quantidade", example=100),
-     *             @OA\Property(property="averageWeight", type="number", format="float", minimum=0, description="Peso médio", example=1.25)
+     *             @OA\Property(
+     *                 property="averageWeight",
+     *                 type="number",
+     *                 format="float",
+     *                 minimum=0,
+     *                 description="Peso médio",
+     *                 example=1.25
+     *             )
      *         )
      *     ),
      *     @OA\Response(

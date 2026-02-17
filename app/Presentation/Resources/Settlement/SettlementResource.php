@@ -26,10 +26,15 @@ class SettlementResource extends JsonResource
     #[\Override]
     public function toArray($request): array
     {
+        $settlementDate = $this->settlement_date;
+        if ($settlementDate instanceof \DateTimeInterface) {
+            $settlementDate = $settlementDate->format('Y-m-d');
+        }
+
         return [
             'id'             => $this->id,
             'batcheId'       => $this->batche?->id,
-            'settlementDate' => $this->settlement_date,
+            'settlementDate' => $settlementDate,
             'quantity'       => $this->quantity,
             'averageWeight'  => $this->average_weight,
             'createdAt'      => $this->created_at?->toDateTimeString(),

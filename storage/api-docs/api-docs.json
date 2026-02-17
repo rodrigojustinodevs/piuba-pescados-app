@@ -986,6 +986,533 @@
                 ]
             }
         },
+        "/company/settlements": {
+            "get": {
+                "tags": [
+                    "Settlements"
+                ],
+                "summary": "Listar settlements",
+                "operationId": "a9f6f05deaaa48858bdeb46d13c91b4e",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Itens por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de settlements",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "batcheId": {
+                                                                "type": "string",
+                                                                "format": "uuid",
+                                                                "nullable": true
+                                                            },
+                                                            "settlementDate": {
+                                                                "type": "string",
+                                                                "format": "date",
+                                                                "example": "2026-02-13"
+                                                            },
+                                                            "quantity": {
+                                                                "type": "integer",
+                                                                "example": 100
+                                                            },
+                                                            "averageWeight": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 1.25
+                                                            },
+                                                            "createdAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            },
+                                                            "updatedAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/settlement/{id}": {
+            "get": {
+                "tags": [
+                    "Settlements"
+                ],
+                "summary": "Detalhar um settlement",
+                "operationId": "bdf8f410f0488f80b4221cbaa5078199",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do settlement",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Settlement encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batcheId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "settlementDate": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2026-02-13"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "averageWeight": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 1.25
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Settlement not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Settlements"
+                ],
+                "summary": "Atualizar um settlement",
+                "operationId": "fc388bf804eb02830eb153be7f8c1310",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do settlement",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "batcheId": {
+                                        "description": "ID do lote (Batche)",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "settlementDate": {
+                                        "description": "Data do settlement",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-02-13"
+                                    },
+                                    "quantity": {
+                                        "description": "Quantidade",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "example": 100
+                                    },
+                                    "averageWeight": {
+                                        "description": "Peso médio",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "example": 1.25
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Settlement atualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batcheId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "settlementDate": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2026-02-13"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "averageWeight": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 1.25
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Settlement not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Settlements"
+                ],
+                "summary": "Remover um settlement",
+                "operationId": "f1ba46b96e93300e48c6ebc7b9ea242a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do settlement",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Settlement removido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "response": {
+                                            "nullable": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Settlement successfully deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Settlement not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/settlement": {
+            "post": {
+                "tags": [
+                    "Settlements"
+                ],
+                "summary": "Criar um settlement",
+                "operationId": "8c729da6657653bc8539f3a101a8ac76",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "batcheId",
+                                    "settlementDate",
+                                    "quantity",
+                                    "averageWeight"
+                                ],
+                                "properties": {
+                                    "batcheId": {
+                                        "description": "ID do lote (Batche)",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "settlementDate": {
+                                        "description": "Data do settlement",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-02-13"
+                                    },
+                                    "quantity": {
+                                        "description": "Quantidade",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "example": 100
+                                    },
+                                    "averageWeight": {
+                                        "description": "Peso médio",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "example": 1.25
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Settlement criado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successfully created"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batcheId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "settlementDate": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2026-02-13"
+                                                },
+                                                "quantity": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "averageWeight": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 1.25
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/tanks": {
             "get": {
                 "tags": [
@@ -1568,6 +2095,10 @@
         {
             "name": "Clients",
             "description": "Clients"
+        },
+        {
+            "name": "Settlements",
+            "description": "Settlements"
         },
         {
             "name": "Tanks",

@@ -8,9 +8,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property-read string $id
- * @property-read string $settlement_date
+ * @property-read \Illuminate\Support\Carbon|null $settlement_date
  * @property-read int $quantity
- * @property-read int $average_weight
+ * @property-read float $average_weight
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Batche|null $batche

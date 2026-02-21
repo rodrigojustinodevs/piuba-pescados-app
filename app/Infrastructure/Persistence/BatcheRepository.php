@@ -62,6 +62,19 @@ class BatcheRepository implements BatcheRepositoryInterface
         ])->where($field, $value)->first();
     }
 
+    public function hasActiveBatcheInTank(string $tankId, ?string $exceptBatcheId = null): bool
+    {
+        $query = Batche::query()
+            ->where('tank_id', $tankId)
+            ->where('status', 'active');
+
+        if ($exceptBatcheId !== null && $exceptBatcheId !== '') {
+            $query->where('id', '!=', $exceptBatcheId);
+        }
+
+        return $query->exists();
+    }
+
     public function delete(string $id): bool
     {
         $batche = Batche::find($id);

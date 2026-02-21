@@ -14,6 +14,8 @@ class BatcheDTO
      */
     public function __construct(
         public string $id,
+        public ?string $name,
+        public ?string $description,
         public int $initialQuantity,
         public string $species,
         public Status $status,
@@ -32,6 +34,8 @@ class BatcheDTO
     {
         return new self(
             id: $data['id'],
+            name: $data['name'] ?? null,
+            description: $data['description'] ?? null,
             entryDate: $data['entry_date'],
             initialQuantity: (int) $data['initial_quantity'],
             species: $data['species'],
@@ -53,6 +57,8 @@ class BatcheDTO
     {
         return [
             'id'              => $this->id,
+            'name'            => $this->name,
+            'description'     => $this->description,
             'entryDate'       => $this->entryDate,
             'initialQuantity' => $this->initialQuantity,
             'species'         => $this->species,

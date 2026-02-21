@@ -21,6 +21,8 @@ final class BatcheMapper
 
         return new BatcheDTO(
             id: $model->id,
+            name: $model->name ?? null,
+            description: $model->description ?? null,
             initialQuantity: $model->initial_quantity,
             species: $model->species,
             status: Status::from($model->status ?? 'active'),
@@ -42,6 +44,8 @@ final class BatcheMapper
     {
         return [
             'id'               => $dto->id,
+            'name'             => $dto->name,
+            'description'      => $dto->description,
             'entry_date'       => $dto->entryDate,
             'initial_quantity' => $dto->initialQuantity,
             'species'          => $dto->species,
@@ -61,6 +65,14 @@ final class BatcheMapper
     public static function fromRequest(array $data): array
     {
         $mapped = [];
+
+        if (isset($data['name'])) {
+            $mapped['name'] = (string) $data['name'];
+        }
+
+        if (isset($data['description'])) {
+            $mapped['description'] = (string) $data['description'];
+        }
 
         if (isset($data['species'])) {
             $species           = new Species($data['species']);
@@ -107,6 +119,8 @@ final class BatcheMapper
 
         return [
             'id'              => $model->id,
+            'name'            => $model->name,
+            'description'     => $model->description,
             'entryDate'       => $entryDate,
             'initialQuantity' => $model->initial_quantity,
             'species'         => $model->species,

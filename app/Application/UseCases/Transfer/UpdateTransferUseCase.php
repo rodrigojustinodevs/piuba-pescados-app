@@ -37,6 +37,10 @@ class UpdateTransferUseCase
                 throw new RuntimeException('The origin tank cannot be the same as the destination tank.');
             }
 
+            if ($this->batcheRepository->hasActiveBatcheInTank($transfer->destination_tank_id, $transfer->batche_id)) {
+                throw new RuntimeException('Tank already has an active batche.');
+            }
+
             // Atualiza o tank atual do lote quando houver mudança relevante
             if (isset($mappedData['batche_id']) || isset($mappedData['destination_tank_id'])) {
                 $batcheIdToUpdate = $mappedData['batche_id'] ?? $transfer->batche_id;

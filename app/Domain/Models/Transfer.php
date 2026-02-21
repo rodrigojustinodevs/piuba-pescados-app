@@ -35,6 +35,7 @@ class Transfer extends BaseModel
         'origin_tank_id',
         'destination_tank_id',
         'quantity',
+        'description',
         'created_at',
         'updated_at',
     ];

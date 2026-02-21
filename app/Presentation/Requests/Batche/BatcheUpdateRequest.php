@@ -27,6 +27,8 @@ class BatcheUpdateRequest extends FormRequest
     {
         return [
             'tankId'          => ['sometimes', 'uuid', 'exists:tanks,id'],
+            'name'            => ['sometimes', 'string', 'max:255'],
+            'description'     => ['sometimes', 'nullable', 'string'],
             'entryDate'       => ['sometimes', 'date'],
             'initialQuantity' => ['sometimes', 'integer', 'min:1'],
             'species'         => ['sometimes', 'string', 'max:255'],

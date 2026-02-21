@@ -33,6 +33,11 @@ interface TankRepositoryInterface
     public function paginate(int $page = 25): PaginationInterface;
 
     /**
+     * Paginate tank records that have no batches linked.
+     */
+    public function paginateWithoutBatches(int $page = 25): PaginationInterface;
+
+    /**
      * Find a tank by a specific field.
      */
     public function showTank(string $field, string | int $value): ?Tank;

@@ -8,6 +8,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property-read string $id
+ * @property-read string|null $name
+ * @property-read string|null $description
  * @property-read string $entry_date
  * @property-read int $initial_quantity
  * @property-read int $species
@@ -30,6 +32,8 @@ class BatcheResource extends JsonResource
     {
         return [
             'id'              => $this->id,
+            'name'            => $this->name,
+            'description'     => $this->description,
             'entryDate'       => $this->entry_date,
             'initialQuantity' => $this->initial_quantity,
             'species'         => $this->species,

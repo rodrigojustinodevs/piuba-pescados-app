@@ -36,4 +36,10 @@ interface BatcheRepositoryInterface
      * Find a batche by a specific field.
      */
     public function showBatche(string $field, string | int $value): ?Batche;
+
+    /**
+     * Verifica se existe outro lote ativo no tanque.
+     * Útil para garantir a regra: "um tanque só pode ter um lote ativo por vez".
+     */
+    public function hasActiveBatcheInTank(string $tankId, ?string $exceptBatcheId = null): bool;
 }

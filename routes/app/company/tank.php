@@ -10,6 +10,7 @@ Route::middleware(['permission:create-tank|view-tank|update-tank|delete-tank'])
         Route::get('tank-types', [TankController::class, 'getTankTypes']);
         Route::post('tank', [TankController::class, 'store']);
         Route::get('tanks', [TankController::class, 'index']);
+        Route::get('tanks/without-batches', [TankController::class, 'tanksWithoutBatches']);
         Route::get('tank/{id}', [TankController::class, 'show']);
         Route::put('tank/{id}', [TankController::class, 'update']);
         Route::delete('tank/{id}', [TankController::class, 'destroy']);

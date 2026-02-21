@@ -54,6 +54,22 @@ class TankRepository implements TankRepositoryInterface
     }
 
     /**
+     * Get paginated tanks that have no batches linked.
+     */
+    public function paginateWithoutBatches(int $page = 25): PaginationInterface
+    {
+        /** @var LengthAwarePaginator<int, Tank> $paginator */
+        $paginator = Tank::with([
+            'tankType:id,name',
+            'company:id,name',
+        ])
+            ->whereDoesntHave('batches')
+            ->paginate($page);
+
+        return new PaginationPresentr($paginator);
+    }
+
+    /**
      * Show tank by field and value.
      */
     public function showTank(string $field, string | int $value): ?Tank

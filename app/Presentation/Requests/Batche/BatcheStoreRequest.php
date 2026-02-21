@@ -26,6 +26,8 @@ class BatcheStoreRequest extends FormRequest
     {
         return [
             'tankId'          => ['required', 'uuid', 'exists:tanks,id'],
+            'name'            => ['required', 'string', 'max:255'],
+            'description'     => ['nullable', 'string'],
             'entryDate'       => ['required', 'date'],
             'initialQuantity' => ['required', 'integer', 'min:1'],
             'species'         => ['required', 'string', 'max:255'],

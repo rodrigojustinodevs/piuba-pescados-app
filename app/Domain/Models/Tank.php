@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -21,6 +22,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property-read TankType|null $tankType
  * @property-read Company|null $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Batche> $batches
  */
 class Tank extends BaseModel
 {
@@ -74,6 +76,17 @@ class Tank extends BaseModel
     {
         /** @var BelongsTo<TankType, static> $relation */
         $relation = $this->belongsTo(TankType::class, 'tank_types_id');
+
+        return $relation;
+    }
+
+    /**
+     * @phpstan-return HasMany<Batche, static>
+     */
+    public function batches(): HasMany
+    {
+        /** @var HasMany<Batche, static> $relation */
+        $relation = $this->hasMany(Batche::class, 'tank_id');
 
         return $relation;
     }

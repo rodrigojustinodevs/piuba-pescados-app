@@ -24,7 +24,20 @@ class UpdateBatcheUseCase
     public function execute(string $id, array $data): BatcheDTO
     {
         return DB::transaction(function () use ($id, $data): BatcheDTO {
+            $currentBatche = $this->batcheRepository->showBatche('id', $id);
+
+            if (! $currentBatche instanceof Batche) {
+                throw new RuntimeException('Batche not found');
+            }
+
             $mappedData = BatcheMapper::fromRequest($data);
+
+            $targetTankId = (string) ($mappedData['tank_id'] ?? $currentBatche->tank_id);
+            $targetStatus = (string) ($mappedData['status'] ?? $currentBatche->status);
+
+            if ($targetStatus === 'active' && $this->batcheRepository->hasActiveBatcheInTank($targetTankId, $id)) {
+                throw new RuntimeException('Tank already has an active batche.');
+            }
 
             $batche = $this->batcheRepository->update($id, $mappedData);
 

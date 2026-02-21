@@ -51,7 +51,7 @@ class TransferStoreRequest extends FormRequest
             // Usa camelCase para não expor estrutura do banco de dados
             'batcheId'          => ['required', 'uuid', 'exists:batches,id'],
             'originTankId'      => ['required', 'uuid', 'exists:tanks,id'],
-            'destinationTankId' => ['required', 'uuid', 'exists:tanks,id'],
+            'destinationTankId' => ['required', 'uuid', 'exists:tanks,id', 'different:originTankId'],
             'description'       => ['required', 'string'],
             'quantity'          => ['required', 'integer', 'min:1'],
         ];

@@ -26,7 +26,6 @@ class CreateTransferUseCase
     {
         return DB::transaction(function () use ($data): TransferDTO {
             $mappedData = TransferMapper::fromRequest($data);
-
             $originTankId      = (string) ($mappedData['origin_tank_id'] ?? '');
             $destinationTankId = (string) ($mappedData['destination_tank_id'] ?? '');
             $batcheId          = (string) ($mappedData['batche_id'] ?? '');

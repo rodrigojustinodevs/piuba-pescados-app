@@ -9,6 +9,7 @@ use App\Domain\Repositories\BatcheRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use App\Infrastructure\Mappers\TransferMapper;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class CreateTransferUseCase
 {
@@ -25,11 +26,41 @@ class CreateTransferUseCase
     {
         return DB::transaction(function () use ($data): TransferDTO {
             $mappedData = TransferMapper::fromRequest($data);
+            $originTankId      = (string) ($mappedData['origin_tank_id'] ?? '');
+            $destinationTankId = (string) ($mappedData['destination_tank_id'] ?? '');
+            $batcheId          = (string) ($mappedData['batche_id'] ?? '');
+
+            if ($originTankId === '' || $destinationTankId === '' || $batcheId === '') {
+                throw new RuntimeException('Invalid transfer payload');
+            }
+
+            if ($originTankId === $destinationTankId) {
+                throw new RuntimeException('The origin tank cannot be the same as the destination tank.');
+            }
+
+            $batche = $this->batcheRepository->showBatche('id', $batcheId);
+
+            if (! $batche) {
+                throw new RuntimeException('Batche not found');
+            }
+
+            if ((string) $batche->tank_id !== $originTankId) {
+                throw new RuntimeException('The batche is not in the origin tank informed.');
+            }
+
+            if ($this->batcheRepository->hasActiveBatcheInTank($destinationTankId, $batcheId)) {
+                throw new RuntimeException('Tank already has an active batche.');
+            }
+
             $transfer   = $this->transferRepository->create($mappedData);
 
-            $this->batcheRepository->update($mappedData['batche_id'], [
+            $updatedBatche = $this->batcheRepository->update($batcheId, [
                 'tank_id' => $mappedData['destination_tank_id'],
             ]);
+
+            if (! $updatedBatche) {
+                throw new RuntimeException('Error updating batche tank');
+            }
 
             return TransferMapper::toDTO($transfer);
         });

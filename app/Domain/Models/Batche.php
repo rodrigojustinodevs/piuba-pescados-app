@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 
 /**
  * @property string $id
+ * @property string|null $name
+ * @property string|null $description
  * @property Carbon|null $entry_date
  * @property int $initial_quantity
  * @property string $species
@@ -31,6 +33,8 @@ class Batche extends BaseModel
 
     protected $fillable = [
         'id',
+        'name',
+        'description',
         'tank_id',
         'entry_date',
         'initial_quantity',

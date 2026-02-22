@@ -10,6 +10,7 @@ use App\Application\UseCases\Tank\DeleteTankUseCase;
 use App\Application\UseCases\Tank\GetTankTypesUseCase;
 use App\Application\UseCases\Tank\ShowAllTanksUseCase;
 use App\Application\UseCases\Tank\ShowTankUseCase;
+use App\Application\UseCases\Tank\ShowTanksWithoutBatchesUseCase;
 use App\Application\UseCases\Tank\UpdateTankUseCase;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -18,6 +19,7 @@ class TankService
     public function __construct(
         protected CreateTankUseCase $createTankUseCase,
         protected ShowAllTanksUseCase $showAllTanksUseCase,
+        protected ShowTanksWithoutBatchesUseCase $showTanksWithoutBatchesUseCase,
         protected ShowTankUseCase $showTankUseCase,
         protected UpdateTankUseCase $updateTankUseCase,
         protected DeleteTankUseCase $deleteTankUseCase,
@@ -36,6 +38,11 @@ class TankService
     public function showAllTanks(): AnonymousResourceCollection
     {
         return $this->showAllTanksUseCase->execute();
+    }
+
+    public function showTanksWithoutBatches(): AnonymousResourceCollection
+    {
+        return $this->showTanksWithoutBatchesUseCase->execute();
     }
 
     public function showTank(string $id): ?TankDTO

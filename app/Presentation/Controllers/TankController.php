@@ -80,6 +80,65 @@ class TankController
 
     /**
      * @OA\Get(
+     *     path="/company/tanks/without-batches",
+     *     summary="List tanks that have no batches linked",
+     *     tags={"Tanks"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of tanks without batches",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="string", format="uuid"),
+     *                     @OA\Property(property="name", type="string"),
+     *                     @OA\Property(property="capacityLiters", type="integer"),
+     *                     @OA\Property(property="location", type="string"),
+     *                     @OA\Property(property="status", type="string"),
+     *                     @OA\Property(property="tankType", type="object"),
+     *                     @OA\Property(property="company", type="object")
+     *                 )
+     *             ),
+     *             @OA\Property(property="pagination", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function tanksWithoutBatches(): JsonResponse
+    {
+        try {
+            $tanks      = $this->tankService->showTanksWithoutBatches();
+            $data       = $tanks->toArray(request());
+            $pagination = $tanks->additional['pagination'] ?? null;
+
+            return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
+        } catch (Throwable $exception) {
+            return ApiResponse::error($exception);
+        }
+    }
+
+    /**
+     * @OA\Get(
      *     path="/company/tank/{id}",
      *     summary="Get a specific tank",
      *     tags={"Tanks"},

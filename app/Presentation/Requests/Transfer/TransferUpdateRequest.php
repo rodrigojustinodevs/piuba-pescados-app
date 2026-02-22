@@ -48,10 +48,9 @@ class TransferUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Usa camelCase para não expor estrutura do banco de dados
             'batcheId'          => ['sometimes', 'uuid', 'exists:batches,id'],
             'originTankId'      => ['sometimes', 'uuid', 'exists:tanks,id'],
-            'destinationTankId' => ['sometimes', 'uuid', 'exists:tanks,id'],
+            'destinationTankId' => ['sometimes', 'uuid', 'exists:tanks,id', 'different:originTankId'],
             'description'       => ['sometimes', 'string'],
             'quantity'          => ['sometimes', 'integer', 'min:1'],
         ];

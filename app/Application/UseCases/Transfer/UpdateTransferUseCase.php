@@ -53,14 +53,6 @@ class UpdateTransferUseCase
                 throw new RuntimeException('Transfer not found');
             }
 
-            if ($transfer->origin_tank_id === $transfer->destination_tank_id) {
-                throw new RuntimeException('The origin tank cannot be the same as the destination tank.');
-            }
-
-            if ($this->batcheRepository->hasActiveBatcheInTank($transfer->destination_tank_id, $transfer->batche_id)) {
-                throw new RuntimeException('Tank already has an active batche.');
-            }
-
             if (isset($mappedData['batche_id']) || isset($mappedData['destination_tank_id'])) {
                 $batcheIdToUpdate = $mappedData['batche_id'] ?? $transfer->batche_id;
 

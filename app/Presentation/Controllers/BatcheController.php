@@ -52,7 +52,12 @@ class BatcheController
      *                     type="object",
      *                     @OA\Property(property="id", type="string", format="uuid"),
      *                     @OA\Property(property="name", type="string", nullable=true, description="Nome do lote"),
-     *                     @OA\Property(property="description", type="string", nullable=true, description="Descrição do lote"),
+     *                     @OA\Property(
+     *                         property="description",
+     *                         type="string",
+     *                         nullable=true,
+     *                         description="Descrição do lote"
+     *                     ),
      *                     @OA\Property(property="entryDate", type="string", format="date"),
      *                     @OA\Property(property="initialQuantity", type="integer", example=1000),
      *                     @OA\Property(property="species", type="string", example="Tilapia"),
@@ -112,7 +117,12 @@ class BatcheController
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
      *                 @OA\Property(property="name", type="string", nullable=true, description="Nome do lote"),
-     *                 @OA\Property(property="description", type="string", nullable=true, description="Descrição do lote"),
+     *                 @OA\Property(
+     *                     property="description",
+     *                     type="string",
+     *                     nullable=true,
+     *                     description="Descrição do lote"
+     *                 ),
      *                 @OA\Property(property="entryDate", type="string", format="date", example="2024-10-15"),
      *                 @OA\Property(property="initialQuantity", type="integer", example=1200),
      *                 @OA\Property(property="species", type="string", example="Camarão"),

@@ -43,7 +43,11 @@ class UpdateTransferUseCase
             $destinationChanged = isset($mappedData['destination_tank_id'])
                 && (string) $newDestinationId !== (string) $current->destination_tank_id;
 
-            if ($destinationChanged && $this->batcheRepository->hasActiveBatcheInTank($newDestinationId, $current->batche_id)) {
+            $destinationHasOtherBatch = $this->batcheRepository->hasActiveBatcheInTank(
+                $newDestinationId,
+                $current->batche_id
+            );
+            if ($destinationChanged && $destinationHasOtherBatch) {
                 throw new RuntimeException('Tank already has an active batche.');
             }
 

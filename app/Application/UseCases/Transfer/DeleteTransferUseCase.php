@@ -29,9 +29,13 @@ class DeleteTransferUseCase
             $batche = $this->batcheRepository->showBatche('id', $transfer->batche_id);
 
             if ($batche) {
-                if ($this->batcheRepository->hasActiveBatcheInTank($transfer->origin_tank_id, $transfer->batche_id)) {
+                $originHasOtherBatch = $this->batcheRepository->hasActiveBatcheInTank(
+                    $transfer->origin_tank_id,
+                    $transfer->batche_id
+                );
+                if ($originHasOtherBatch) {
                     throw new RuntimeException(
-                        'Cannot delete transfer: origin tank already has an active batch. One tank can only have one active batch.'
+                        'Cannot delete transfer: origin tank already has an active batch.'
                     );
                 }
 

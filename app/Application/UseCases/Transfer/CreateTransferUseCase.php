@@ -25,18 +25,11 @@ class CreateTransferUseCase
     public function execute(array $data): TransferDTO
     {
         return DB::transaction(function () use ($data): TransferDTO {
-            $mappedData = TransferMapper::fromRequest($data);
-            $originTankId      = (string) ($mappedData['origin_tank_id'] ?? '');
-            $destinationTankId = (string) ($mappedData['destination_tank_id'] ?? '');
-            $batcheId          = (string) ($mappedData['batche_id'] ?? '');
-
-            if ($originTankId === '' || $destinationTankId === '' || $batcheId === '') {
-                throw new RuntimeException('Invalid transfer payload');
-            }
-
-            if ($originTankId === $destinationTankId) {
-                throw new RuntimeException('The origin tank cannot be the same as the destination tank.');
-            }
+            $mappedData        = TransferMapper::fromRequest($data);
+            $originTankId      = (string) $mappedData['origin_tank_id'];
+            $destinationTankId = (string) $mappedData['destination_tank_id'];
+            $batcheId          = (string) $mappedData['batche_id'];
+            $quantity          = (int) $mappedData['quantity'];
 
             $batche = $this->batcheRepository->showBatche('id', $batcheId);
 
@@ -52,10 +45,12 @@ class CreateTransferUseCase
                 throw new RuntimeException('Tank already has an active batche.');
             }
 
-            $transfer   = $this->transferRepository->create($mappedData);
+            $transfer = $this->transferRepository->create($mappedData);
 
+            $newQuantity = $batche->initial_quantity - $quantity;
             $updatedBatche = $this->batcheRepository->update($batcheId, [
-                'tank_id' => $mappedData['destination_tank_id'],
+                'tank_id'          => $mappedData['destination_tank_id'],
+                'initial_quantity' => $newQuantity,
             ]);
 
             if (! $updatedBatche) {

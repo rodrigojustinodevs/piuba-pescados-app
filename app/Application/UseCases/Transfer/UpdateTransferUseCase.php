@@ -27,18 +27,34 @@ class UpdateTransferUseCase
     {
         return DB::transaction(function () use ($id, $data): TransferDTO {
             $mappedData = TransferMapper::fromRequest($data);
-            $transfer   = $this->transferRepository->update($id, $mappedData);
+            $current    = $this->transferRepository->showTransfer('id', $id);
 
-            if (! $transfer instanceof Transfer) {
+            if (! $current instanceof Transfer) {
                 throw new RuntimeException('Transfer not found');
             }
 
-            if ($transfer->origin_tank_id === $transfer->destination_tank_id) {
+            $newOriginId      = $mappedData['origin_tank_id'] ?? $current->origin_tank_id;
+            $newDestinationId = $mappedData['destination_tank_id'] ?? $current->destination_tank_id;
+
+            if ($newOriginId === $newDestinationId) {
                 throw new RuntimeException('The origin tank cannot be the same as the destination tank.');
             }
 
-            if ($this->batcheRepository->hasActiveBatcheInTank($transfer->destination_tank_id, $transfer->batche_id)) {
+            $destinationChanged = isset($mappedData['destination_tank_id'])
+                && (string) $newDestinationId !== (string) $current->destination_tank_id;
+
+            $destinationHasOtherBatch = $this->batcheRepository->hasActiveBatcheInTank(
+                $newDestinationId,
+                $current->batche_id
+            );
+            if ($destinationChanged && $destinationHasOtherBatch) {
                 throw new RuntimeException('Tank already has an active batche.');
+            }
+
+            $transfer = $this->transferRepository->update($id, $mappedData);
+
+            if (! $transfer instanceof Transfer) {
+                throw new RuntimeException('Transfer not found');
             }
 
             if (isset($mappedData['batche_id']) || isset($mappedData['destination_tank_id'])) {

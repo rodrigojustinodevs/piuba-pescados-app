@@ -149,6 +149,16 @@
                                                         "type": "string",
                                                         "format": "uuid"
                                                     },
+                                                    "name": {
+                                                        "description": "Nome do lote",
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    },
+                                                    "description": {
+                                                        "description": "Descrição do lote",
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    },
                                                     "entryDate": {
                                                         "type": "string",
                                                         "format": "date"
@@ -257,6 +267,16 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
+                                                "name": {
+                                                    "description": "Nome do lote",
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "description": {
+                                                    "description": "Descrição do lote",
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
                                                 "entryDate": {
                                                     "type": "string",
                                                     "format": "date",
@@ -348,6 +368,15 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
+                                    "name": {
+                                        "description": "Nome do lote",
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "description": {
+                                        "description": "Descrição do lote",
+                                        "type": "string"
+                                    },
                                     "tankId": {
                                         "description": "ID do tanque",
                                         "type": "string",
@@ -503,6 +532,17 @@
                                     "cultivation"
                                 ],
                                 "properties": {
+                                    "name": {
+                                        "description": "Nome do lote",
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "Lote 01 - Tilápia"
+                                    },
+                                    "description": {
+                                        "description": "Descrição do lote",
+                                        "type": "string",
+                                        "example": "Lote de alevinos recebidos em out/2024"
+                                    },
                                     "tankId": {
                                         "description": "ID do tanque",
                                         "type": "string",

@@ -51,6 +51,8 @@ class BatcheController
      *                 @OA\Items(
      *                     type="object",
      *                     @OA\Property(property="id", type="string", format="uuid"),
+     *                     @OA\Property(property="name", type="string", nullable=true, description="Nome do lote"),
+     *                     @OA\Property(property="description", type="string", nullable=true, description="Descrição do lote"),
      *                     @OA\Property(property="entryDate", type="string", format="date"),
      *                     @OA\Property(property="initialQuantity", type="integer", example=1000),
      *                     @OA\Property(property="species", type="string", example="Tilapia"),
@@ -109,6 +111,8 @@ class BatcheController
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
+     *                 @OA\Property(property="name", type="string", nullable=true, description="Nome do lote"),
+     *                 @OA\Property(property="description", type="string", nullable=true, description="Descrição do lote"),
      *                 @OA\Property(property="entryDate", type="string", format="date", example="2024-10-15"),
      *                 @OA\Property(property="initialQuantity", type="integer", example=1200),
      *                 @OA\Property(property="species", type="string", example="Camarão"),
@@ -155,6 +159,19 @@ class BatcheController
      *         required=true,
      *         @OA\JsonContent(
      *             required={"tankId", "entryDate", "initialQuantity", "species", "cultivation"},
+     *             @OA\Property(
+     *                 property="name",
+     *                 type="string",
+     *                 maxLength=255,
+     *                 description="Nome do lote",
+     *                 example="Lote 01 - Tilápia"
+     *             ),
+     *             @OA\Property(
+     *                 property="description",
+     *                 type="string",
+     *                 description="Descrição do lote",
+     *                 example="Lote de alevinos recebidos em out/2024"
+     *             ),
      *             @OA\Property(
      *                 property="tankId",
      *                 type="string",
@@ -233,6 +250,17 @@ class BatcheController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="name",
+     *                 type="string",
+     *                 maxLength=255,
+     *                 description="Nome do lote"
+     *             ),
+     *             @OA\Property(
+     *                 property="description",
+     *                 type="string",
+     *                 description="Descrição do lote"
+     *             ),
      *             @OA\Property(
      *                 property="tankId",
      *                 type="string",

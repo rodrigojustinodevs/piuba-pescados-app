@@ -145,7 +145,7 @@ class TransferController
 
             return ApiResponse::success($transfer->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Transfer not found', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -351,7 +351,7 @@ class TransferController
 
             return ApiResponse::success(null, Response::HTTP_OK, 'Transfer successfully deleted');
         } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Error deleting transfer', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

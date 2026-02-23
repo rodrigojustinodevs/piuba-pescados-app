@@ -53,10 +53,22 @@ class CreateTransferUseCase
                 throw new RuntimeException('Tank already has an active batche.');
             }
 
-            $transfer   = $this->transferRepository->create($mappedData);
+            $quantity = (int) ($mappedData['quantity'] ?? 0);
+            if ($quantity <= 0) {
+                throw new RuntimeException('Transfer quantity must be greater than zero.');
+            }
+            // if ($batche->initial_quantity < $quantity) {
+            //     throw new RuntimeException(
+            //         'Insufficient quantity in batch. Available: ' . $batche->initial_quantity . ', requested: ' . $quantity . '.'
+            //     );
+            // }
 
+            $transfer = $this->transferRepository->create($mappedData);
+
+            $newQuantity = $batche->initial_quantity - $quantity;
             $updatedBatche = $this->batcheRepository->update($batcheId, [
-                'tank_id' => $mappedData['destination_tank_id'],
+                'tank_id'          => $mappedData['destination_tank_id'],
+                'initial_quantity' => $newQuantity,
             ]);
 
             if (! $updatedBatche) {

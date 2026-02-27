@@ -1,0 +1,125 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Mappers;
+
+use App\Application\DTOs\BiometryDTO;
+use App\Domain\Models\Biometry;
+use Carbon\Carbon;
+
+final class BiometryMapper
+{
+    public static function toDTO(Biometry $model): BiometryDTO
+    {
+        return new BiometryDTO(
+            id: $model->id,
+            batcheId: (string) $model->batche_id,
+            averageWeight: (float) $model->average_weight,
+            fcr: (float) $model->fcr,
+            biometryDate: self::formatBiometryDate($model->biometry_date),
+            createdAt: $model->created_at?->toDateTimeString(),
+            updatedAt: $model->updated_at?->toDateTimeString()
+        );
+    }
+
+    /**
+     * Converte DTO para array (formato para persistência).
+     *
+     * @return array<string, mixed>
+     */
+    public static function toArray(BiometryDTO $dto): array
+    {
+        return [
+            'id'             => $dto->id,
+            'batche_id'      => $dto->batcheId,
+            'biometry_date'  => $dto->biometryDate,
+            'average_weight' => $dto->averageWeight,
+            'fcr'            => $dto->fcr,
+        ];
+    }
+
+    /**
+     * Converte array de request para array de persistência.
+     * Aceita camelCase (batcheId, biometryDate, averageWeight) e snake_case.
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    public static function fromRequest(array $data): array
+    {
+        $mapped = [];
+
+        if (isset($data['batcheId'])) {
+            $mapped['batche_id'] = $data['batcheId'];
+        } elseif (isset($data['batche_id'])) {
+            $mapped['batche_id'] = $data['batche_id'];
+        }
+
+        if (isset($data['biometryDate'])) {
+            $mapped['biometry_date'] = self::formatBiometryDate($data['biometryDate']);
+        } elseif (isset($data['biometry_date'])) {
+            $mapped['biometry_date'] = self::formatBiometryDate($data['biometry_date']);
+        }
+
+        if (isset($data['averageWeight'])) {
+            $mapped['average_weight'] = (float) $data['averageWeight'];
+        } elseif (isset($data['average_weight'])) {
+            $mapped['average_weight'] = (float) $data['average_weight'];
+        }
+
+        if (isset($data['fcr'])) {
+            $mapped['fcr'] = (float) $data['fcr'];
+        }
+
+        return $mapped;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function modelToArray(Biometry $model): array
+    {
+        return [
+            'id'            => $model->id,
+            'batcheId'      => $model->batche_id,
+            'biometryDate'  => self::formatBiometryDate($model->biometry_date),
+            'averageWeight' => (float) $model->average_weight,
+            'fcr'           => (float) $model->fcr,
+            'createdAt'     => $model->created_at?->toDateTimeString(),
+            'updatedAt'     => $model->updated_at?->toDateTimeString(),
+        ];
+    }
+
+    /**
+     * Formata biometry_date para string (Y-m-d).
+     *
+     * @param mixed $biometryDate
+     */
+    private static function formatBiometryDate($biometryDate): string
+    {
+        if ($biometryDate === null || $biometryDate === '') {
+            return '';
+        }
+
+        if ($biometryDate instanceof \DateTimeInterface) {
+            return $biometryDate->format('Y-m-d');
+        }
+
+        if (is_object($biometryDate) && method_exists($biometryDate, 'toDateString')) {
+            $result = $biometryDate->toDateString();
+
+            return is_string($result) ? $result : '';
+        }
+
+        if (is_string($biometryDate)) {
+            try {
+                return Carbon::parse($biometryDate)->format('Y-m-d');
+            } catch (\Exception) {
+                return preg_match('/^\d{4}-\d{2}-\d{2}$/', $biometryDate) ? $biometryDate : '';
+            }
+        }
+
+        return '';
+    }
+}

@@ -56,6 +56,13 @@ class SettlementController
      *                         @OA\Property(property="id", type="string", format="uuid"),
      *                         @OA\Property(property="batcheId", type="string", format="uuid", nullable=true),
      *                         @OA\Property(
+     *                             property="batche",
+     *                             type="object",
+     *                             description="Lote (quando carregado)",
+     *                             @OA\Property(property="id", type="string", format="uuid"),
+     *                             @OA\Property(property="name", type="string", nullable=true)
+     *                         ),
+     *                         @OA\Property(
      *                             property="settlementDate",
      *                             type="string",
      *                             format="date",
@@ -120,6 +127,13 @@ class SettlementController
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
      *                 @OA\Property(property="batcheId", type="string", format="uuid"),
+     *                 @OA\Property(
+     *                     property="batche",
+     *                     type="object",
+     *                     description="Lote (quando carregado)",
+     *                     @OA\Property(property="id", type="string", format="uuid"),
+     *                     @OA\Property(property="name", type="string", nullable=true)
+     *                 ),
      *                 @OA\Property(property="settlementDate", type="string", format="date", example="2026-02-13"),
      *                 @OA\Property(property="quantity", type="integer", example=100),
      *                 @OA\Property(property="averageWeight", type="number", format="float", example=1.25),

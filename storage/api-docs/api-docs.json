@@ -620,6 +620,536 @@
                 ]
             }
         },
+        "/company/biometries": {
+            "get": {
+                "tags": [
+                    "Biometry"
+                ],
+                "summary": "Listar biometrias",
+                "operationId": "62fc92582017ece7d6206a1809db0ca6",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Itens por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de biometrias",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "batcheId": {
+                                                        "description": "ID do lote",
+                                                        "type": "string",
+                                                        "format": "uuid"
+                                                    },
+                                                    "batche": {
+                                                        "description": "Lote (quando carregado)",
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "biometryDate": {
+                                                        "description": "Data da biometria",
+                                                        "type": "string",
+                                                        "format": "date"
+                                                    },
+                                                    "averageWeight": {
+                                                        "description": "Peso médio (g)",
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 15.5
+                                                    },
+                                                    "fcr": {
+                                                        "description": "Fator de conversão alimentar",
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 1.2
+                                                    },
+                                                    "createdAt": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "nullable": true
+                                                    },
+                                                    "updatedAt": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/biometry/{id}": {
+            "get": {
+                "tags": [
+                    "Biometry"
+                ],
+                "summary": "Detalhar uma biometria",
+                "operationId": "9523887bfbf4ac5012990cd4d62afeae",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da biometria",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Biometria encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batcheId": {
+                                                    "description": "ID do lote",
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batche": {
+                                                    "description": "Lote (quando carregado)",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "biometryDate": {
+                                                    "description": "Data da biometria",
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "averageWeight": {
+                                                    "description": "Peso médio (g)",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 15.5
+                                                },
+                                                "fcr": {
+                                                    "description": "Fator de conversão alimentar",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 1.2
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Biometry not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Biometry"
+                ],
+                "summary": "Atualizar biometria",
+                "operationId": "51843464aa1711b7a19b39fba27c0e4a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da biometria",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "batcheId": {
+                                        "description": "ID do lote",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "biometryDate": {
+                                        "description": "Data da biometria",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-02-20"
+                                    },
+                                    "averageWeight": {
+                                        "description": "Peso médio (g)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 15.5
+                                    },
+                                    "fcr": {
+                                        "description": "Fator de conversão alimentar",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1.2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Biometria atualizada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batcheId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "biometryDate": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "averageWeight": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 15.5
+                                                },
+                                                "fcr": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 1.2
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Biometry not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Biometry"
+                ],
+                "summary": "Excluir biometria",
+                "operationId": "c22e9a1089a69fd152ad87f5e16d0a7b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID da biometria",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Biometria excluída com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Biometry successfully deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Biometry not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/biometry": {
+            "post": {
+                "tags": [
+                    "Biometry"
+                ],
+                "summary": "Criar biometria",
+                "operationId": "db9db1fd58fe2ccd6d63e738879bc0ee",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "batcheId",
+                                    "biometryDate",
+                                    "averageWeight",
+                                    "fcr"
+                                ],
+                                "properties": {
+                                    "batcheId": {
+                                        "description": "ID do lote",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "biometryDate": {
+                                        "description": "Data da biometria",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-02-20"
+                                    },
+                                    "averageWeight": {
+                                        "description": "Peso médio (g)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 15.5
+                                    },
+                                    "fcr": {
+                                        "description": "Fator de conversão alimentar",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 1.2
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Biometria criada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successfully created"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batcheId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "biometryDate": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "averageWeight": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 15.5
+                                                },
+                                                "fcr": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 1.2
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/clients": {
             "get": {
                 "tags": [
@@ -1085,6 +1615,20 @@
                                                                 "format": "uuid",
                                                                 "nullable": true
                                                             },
+                                                            "batche": {
+                                                                "description": "Lote (quando carregado)",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string",
+                                                                        "format": "uuid"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "nullable": true
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
                                                             "settlementDate": {
                                                                 "type": "string",
                                                                 "format": "date",
@@ -1201,6 +1745,20 @@
                                                 "batcheId": {
                                                     "type": "string",
                                                     "format": "uuid"
+                                                },
+                                                "batche": {
+                                                    "description": "Lote (quando carregado)",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
                                                 },
                                                 "settlementDate": {
                                                     "type": "string",
@@ -2263,13 +2821,55 @@
                                                                 "type": "string",
                                                                 "format": "uuid"
                                                             },
+                                                            "batche": {
+                                                                "description": "Lote (quando carregado)",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string",
+                                                                        "format": "uuid"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "nullable": true
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
                                                             "originTankId": {
                                                                 "type": "string",
                                                                 "format": "uuid"
                                                             },
+                                                            "originTank": {
+                                                                "description": "Tanque de origem (quando carregado)",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string",
+                                                                        "format": "uuid"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "nullable": true
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
                                                             "destinationTankId": {
                                                                 "type": "string",
                                                                 "format": "uuid"
+                                                            },
+                                                            "destinationTank": {
+                                                                "description": "Tanque de destino (quando carregado)",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string",
+                                                                        "format": "uuid"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "nullable": true
+                                                                    }
+                                                                },
+                                                                "type": "object"
                                                             },
                                                             "quantity": {
                                                                 "type": "integer",
@@ -2382,13 +2982,55 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
+                                                "batche": {
+                                                    "description": "Lote (quando carregado)",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
                                                 "originTankId": {
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
+                                                "originTank": {
+                                                    "description": "Tanque de origem (quando carregado)",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
                                                 "destinationTankId": {
                                                     "type": "string",
                                                     "format": "uuid"
+                                                },
+                                                "destinationTank": {
+                                                    "description": "Tanque de destino (quando carregado)",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
                                                 },
                                                 "quantity": {
                                                     "type": "integer",
@@ -2760,6 +3402,10 @@
         {
             "name": "Batches",
             "description": "Batches"
+        },
+        {
+            "name": "Biometry",
+            "description": "Biometry"
         },
         {
             "name": "Clients",

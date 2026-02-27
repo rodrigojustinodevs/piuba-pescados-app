@@ -33,7 +33,10 @@ class SettlementResource extends JsonResource
 
         return [
             'id'             => $this->id,
-            'batcheId'       => $this->batche?->id,
+            'batche'         => $this->whenLoaded('batche', fn (): array => [
+                'id'   => $this->batche->id,
+                'name' => $this->batche->name,
+            ]),
             'settlementDate' => $settlementDate,
             'quantity'       => $this->quantity,
             'averageWeight'  => $this->average_weight,

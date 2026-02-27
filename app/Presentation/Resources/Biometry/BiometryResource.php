@@ -8,12 +8,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property-read string $id
- * @property-read string $batche_id
  * @property-read float $average_weight
  * @property-read float $fcr
  * @property-read \Illuminate\Support\Carbon|null $biometry_date
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Domain\Models\Batche|null $batche
  */
 class BiometryResource extends JsonResource
 {
@@ -26,10 +26,18 @@ class BiometryResource extends JsonResource
     #[\Override]
     public function toArray($request): array
     {
+        $biometryDate = $this->biometry_date;
+        if ($biometryDate instanceof \DateTimeInterface) {
+            $biometryDate = $biometryDate->format('Y-m-d');
+        }
+
         return [
             'id'            => $this->id,
-            'batcheId'      => $this->batche_id,
-            'biometryDate'  => $this->biometry_date,
+            'batche'        => $this->whenLoaded('batche', fn (): array => [
+                'id'   => $this->batche->id,
+                'name' => $this->batche->name,
+            ]),
+            'biometryDate'  => $biometryDate,
             'averageWeight' => $this->average_weight,
             'fcr'           => $this->fcr,
             'createdAt'     => $this->created_at?->toDateTimeString(),

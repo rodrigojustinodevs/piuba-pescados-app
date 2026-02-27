@@ -15,6 +15,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string $description
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Domain\Models\Batche|null $batche
+ * @property-read \App\Domain\Models\Tank|null $originTank
+ * @property-read \App\Domain\Models\Tank|null $destinationTank
  */
 class TransferResource extends JsonResource
 {
@@ -29,9 +32,18 @@ class TransferResource extends JsonResource
     {
         return [
             'id'                => $this->id,
-            'batcheId'          => $this->batche_id,
-            'originTankId'      => $this->origin_tank_id,
-            'destinationTankId' => $this->destination_tank_id,
+            'batche'            => $this->whenLoaded('batche', fn (): array => [
+                'id'   => $this->batche->id,
+                'name' => $this->batche->name,
+            ]),
+            'originTank'        => $this->whenLoaded('originTank', fn (): array => [
+                'id'   => $this->originTank->id,
+                'name' => $this->originTank->name,
+            ]),
+            'destinationTank'   => $this->whenLoaded('destinationTank', fn (): array => [
+                'id'   => $this->destinationTank->id,
+                'name' => $this->destinationTank->name,
+            ]),
             'quantity'          => $this->quantity,
             'description'       => $this->description,
             'createdAt'         => $this->created_at?->toDateTimeString(),

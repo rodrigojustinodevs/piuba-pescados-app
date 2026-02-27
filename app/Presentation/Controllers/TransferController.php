@@ -55,8 +55,29 @@ class TransferController
      *                         type="object",
      *                         @OA\Property(property="id", type="string", format="uuid"),
      *                         @OA\Property(property="batcheId", type="string", format="uuid"),
+     *                         @OA\Property(
+     *                             property="batche",
+     *                             type="object",
+     *                             description="Lote (quando carregado)",
+     *                             @OA\Property(property="id", type="string", format="uuid"),
+     *                             @OA\Property(property="name", type="string", nullable=true)
+     *                         ),
      *                         @OA\Property(property="originTankId", type="string", format="uuid"),
+     *                         @OA\Property(
+     *                             property="originTank",
+     *                             type="object",
+     *                             description="Tanque de origem (quando carregado)",
+     *                             @OA\Property(property="id", type="string", format="uuid"),
+     *                             @OA\Property(property="name", type="string", nullable=true)
+     *                         ),
      *                         @OA\Property(property="destinationTankId", type="string", format="uuid"),
+     *                         @OA\Property(
+     *                             property="destinationTank",
+     *                             type="object",
+     *                             description="Tanque de destino (quando carregado)",
+     *                             @OA\Property(property="id", type="string", format="uuid"),
+     *                             @OA\Property(property="name", type="string", nullable=true)
+     *                         ),
      *                         @OA\Property(property="quantity", type="integer", example=100),
      *                         @OA\Property(
      *                             property="description",
@@ -120,8 +141,29 @@ class TransferController
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
      *                 @OA\Property(property="batcheId", type="string", format="uuid"),
+     *                 @OA\Property(
+     *                     property="batche",
+     *                     type="object",
+     *                     description="Lote (quando carregado)",
+     *                     @OA\Property(property="id", type="string", format="uuid"),
+     *                     @OA\Property(property="name", type="string", nullable=true)
+     *                 ),
      *                 @OA\Property(property="originTankId", type="string", format="uuid"),
+     *                 @OA\Property(
+     *                     property="originTank",
+     *                     type="object",
+     *                     description="Tanque de origem (quando carregado)",
+     *                     @OA\Property(property="id", type="string", format="uuid"),
+     *                     @OA\Property(property="name", type="string", nullable=true)
+     *                 ),
      *                 @OA\Property(property="destinationTankId", type="string", format="uuid"),
+     *                 @OA\Property(
+     *                     property="destinationTank",
+     *                     type="object",
+     *                     description="Tanque de destino (quando carregado)",
+     *                     @OA\Property(property="id", type="string", format="uuid"),
+     *                     @OA\Property(property="name", type="string", nullable=true)
+     *                 ),
      *                 @OA\Property(property="quantity", type="integer", example=100),
      *                 @OA\Property(property="description", type="string"),
      *                 @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),

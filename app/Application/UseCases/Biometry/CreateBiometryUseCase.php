@@ -6,7 +6,7 @@ namespace App\Application\UseCases\Biometry;
 
 use App\Application\DTOs\BiometryDTO;
 use App\Domain\Repositories\BiometryRepositoryInterface;
-use Carbon\Carbon;
+use App\Infrastructure\Mappers\BiometryMapper;
 use Illuminate\Support\Facades\DB;
 
 class CreateBiometryUseCase
@@ -22,21 +22,10 @@ class CreateBiometryUseCase
     public function execute(array $data): BiometryDTO
     {
         return DB::transaction(function () use ($data): BiometryDTO {
-            $biometry = $this->biometryRepository->create($data);
+            $mappedData = BiometryMapper::fromRequest($data);
+            $biometry  = $this->biometryRepository->create($mappedData);
 
-            $biometryDate = $biometry->biometry_date instanceof Carbon
-                ? $biometry->biometry_date
-                : Carbon::parse($biometry->biometry_date);
-
-            return new BiometryDTO(
-                id: $biometry->id,
-                batcheId: $biometry->batche_id,
-                biometryDate: $biometryDate->toDateString(),
-                averageWeight: $biometry->average_weight,
-                fcr: $biometry->fcr,
-                createdAt: $biometry->created_at?->toDateTimeString(),
-                updatedAt: $biometry->updated_at?->toDateTimeString()
-            );
+            return BiometryMapper::toDTO($biometry);
         });
     }
 }

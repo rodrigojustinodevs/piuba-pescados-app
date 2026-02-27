@@ -59,9 +59,26 @@ class BiometryController
      *                         @OA\Property(property="id", type="string", format="uuid"),
      *                         @OA\Property(property="name", type="string", nullable=true)
      *                     ),
-     *                     @OA\Property(property="biometryDate", type="string", format="date", description="Data da biometria"),
-     *                     @OA\Property(property="averageWeight", type="number", format="float", example=15.5, description="Peso médio (g)"),
-     *                     @OA\Property(property="fcr", type="number", format="float", example=1.2, description="Fator de conversão alimentar"),
+     *                     @OA\Property(
+     *                         property="biometryDate",
+     *                         type="string",
+     *                         format="date",
+     *                         description="Data da biometria"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="averageWeight",
+     *                         type="number",
+     *                         format="float",
+     *                         example=15.5,
+     *                         description="Peso médio (g)"
+     *                     ),
+     *                     @OA\Property(
+     *                         property="fcr",
+     *                         type="number",
+     *                         format="float",
+     *                         example=1.2,
+     *                         description="Fator de conversão alimentar"
+     *                     ),
      *                     @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
      *                     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
      *                 )
@@ -117,9 +134,26 @@ class BiometryController
      *                     @OA\Property(property="id", type="string", format="uuid"),
      *                     @OA\Property(property="name", type="string", nullable=true)
      *                 ),
-     *                 @OA\Property(property="biometryDate", type="string", format="date", description="Data da biometria"),
-     *                 @OA\Property(property="averageWeight", type="number", format="float", example=15.5, description="Peso médio (g)"),
-     *                 @OA\Property(property="fcr", type="number", format="float", example=1.2, description="Fator de conversão alimentar"),
+     *                 @OA\Property(
+     *                     property="biometryDate",
+     *                     type="string",
+     *                     format="date",
+     *                     description="Data da biometria"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="averageWeight",
+     *                     type="number",
+     *                     format="float",
+     *                     example=15.5,
+     *                     description="Peso médio (g)"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="fcr",
+     *                     type="number",
+     *                     format="float",
+     *                     example=1.2,
+     *                     description="Fator de conversão alimentar"
+     *                 ),
      *                 @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
      *                 @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
      *             )
@@ -156,9 +190,27 @@ class BiometryController
      *         @OA\JsonContent(
      *             required={"batcheId","biometryDate","averageWeight","fcr"},
      *             @OA\Property(property="batcheId", type="string", format="uuid", description="ID do lote"),
-     *             @OA\Property(property="biometryDate", type="string", format="date", example="2025-02-20", description="Data da biometria"),
-     *             @OA\Property(property="averageWeight", type="number", format="float", example=15.5, description="Peso médio (g)"),
-     *             @OA\Property(property="fcr", type="number", format="float", example=1.2, description="Fator de conversão alimentar")
+     *             @OA\Property(
+     *                 property="biometryDate",
+     *                 type="string",
+     *                 format="date",
+     *                 example="2025-02-20",
+     *                 description="Data da biometria"
+     *             ),
+     *             @OA\Property(
+     *                 property="averageWeight",
+     *                 type="number",
+     *                 format="float",
+     *                 example=15.5,
+     *                 description="Peso médio (g)"
+     *             ),
+     *             @OA\Property(
+     *                 property="fcr",
+     *                 type="number",
+     *                 format="float",
+     *                 example=1.2,
+     *                 description="Fator de conversão alimentar"
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -213,9 +265,27 @@ class BiometryController
      *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(property="batcheId", type="string", format="uuid", description="ID do lote"),
-     *             @OA\Property(property="biometryDate", type="string", format="date", example="2025-02-20", description="Data da biometria"),
-     *             @OA\Property(property="averageWeight", type="number", format="float", example=15.5, description="Peso médio (g)"),
-     *             @OA\Property(property="fcr", type="number", format="float", example=1.2, description="Fator de conversão alimentar")
+     *             @OA\Property(
+     *                 property="biometryDate",
+     *                 type="string",
+     *                 format="date",
+     *                 example="2025-02-20",
+     *                 description="Data da biometria"
+     *             ),
+     *             @OA\Property(
+     *                 property="averageWeight",
+     *                 type="number",
+     *                 format="float",
+     *                 example=15.5,
+     *                 description="Peso médio (g)"
+     *             ),
+     *             @OA\Property(
+     *                 property="fcr",
+     *                 type="number",
+     *                 format="float",
+     *                 example=1.2,
+     *                 description="Fator de conversão alimentar"
+     *             )
      *         )
      *     ),
      *     @OA\Response(

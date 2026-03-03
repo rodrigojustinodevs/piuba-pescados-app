@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 
 /**
  * @property string $id
- * @property string $batcheID
+ * @property string $batch_id
  * @property Carbon|null $feeding_date
  * @property float $quantity_provided
  * @property string $feed_type
@@ -19,7 +19,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read Batche|null $batche
+ * @property-read Batch|null $batch
  */
 class Feeding extends BaseModel
 {
@@ -31,7 +31,7 @@ class Feeding extends BaseModel
 
     protected $fillable = [
         'id',
-        'batche_id',
+        'batch_id',
         'feeding_date',
         'quantity_provided',
         'feed_type',
@@ -55,12 +55,12 @@ class Feeding extends BaseModel
     }
 
     /**
-     * @phpstan-return BelongsTo<Batche, static>
+     * @phpstan-return BelongsTo<Batch, static>
      */
-    public function batche(): BelongsTo
+    public function batch(): BelongsTo
     {
-        /** @var BelongsTo<Batche, static> $relation */
-        $relation = $this->belongsTo(Batche::class, 'batche_id');
+        /** @var BelongsTo<Batch, static> $relation */
+        $relation = $this->belongsTo(Batch::class, 'batch_id');
 
         return $relation;
     }

@@ -13,7 +13,7 @@ final class TransferMapper
     {
         return new TransferDTO(
             id: $model->id,
-            batcheId: (string) $model->batche_id,
+            batchId: (string) $model->batch_id,
             originTankId: (string) $model->origin_tank_id,
             destinationTankId: (string) $model->destination_tank_id,
             quantity: (int) $model->quantity,
@@ -32,7 +32,7 @@ final class TransferMapper
     {
         return [
             'id'                  => $dto->id,
-            'batche_id'           => $dto->batcheId,
+            'batch_id'            => $dto->batchId,
             'origin_tank_id'      => $dto->originTankId,
             'destination_tank_id' => $dto->destinationTankId,
             'quantity'            => $dto->quantity,
@@ -42,8 +42,8 @@ final class TransferMapper
 
     /**
      * Converte array de request para array de persistência.
-     * Aceita campos em camelCase (batcheId, originTankId, destinationTankId)
-     * e mantém compatibilidade com snake_case (batche_id, origin_tank_id, destination_tank_id).
+     * Aceita campos em camelCase (batchId, originTankId, destinationTankId)
+     * e mantém compatibilidade com snake_case (batch_id, origin_tank_id, destination_tank_id).
      *
      * @param array<string, mixed> $data
      * @return array<string, mixed>
@@ -52,10 +52,10 @@ final class TransferMapper
     {
         $mapped = [];
 
-        if (isset($data['batcheId'])) {
-            $mapped['batche_id'] = $data['batcheId'];
-        } elseif (isset($data['batche_id'])) {
-            $mapped['batche_id'] = $data['batche_id'];
+        if (isset($data['batchId'])) {
+            $mapped['batch_id'] = $data['batchId'];
+        } elseif (isset($data['batch_id'])) {
+            $mapped['batch_id'] = $data['batch_id'];
         }
 
         if (isset($data['originTankId'])) {
@@ -90,7 +90,7 @@ final class TransferMapper
     {
         return [
             'id'                => $model->id,
-            'batcheId'          => $model->batche_id,
+            'batchId'           => $model->batch_id,
             'originTankId'      => $model->origin_tank_id,
             'destinationTankId' => $model->destination_tank_id,
             'quantity'          => (int) $model->quantity,

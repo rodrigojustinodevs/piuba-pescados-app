@@ -14,7 +14,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read float $stock_reduction_quantity
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Domain\Models\Batche|null $batche
+ * @property-read \App\Domain\Models\Batch|null $batch
  */
 class FeedingResource extends JsonResource
 {
@@ -29,7 +29,7 @@ class FeedingResource extends JsonResource
     {
         return [
             'id'                     => $this->id,
-            'batcheId'               => $this->batche?->id,
+            'batchId'                => $this->batch?->id,
             'feedingDate'            => $this->feeding_date,
             'quantityProvided'       => $this->quantity_provided,
             'feedType'               => $this->feed_type,

@@ -11,14 +11,14 @@ use Illuminate\Support\Str;
 
 /**
  * @property string $id
- * @property string $batche_id
+ * @property string $batch_id
  * @property string $tank_id
  * @property float $quantity_transferred
  * @property Carbon|null $transfer_date
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read Batche|null $batche
+ * @property-read Batch|null $batch
  * @property-read Tank|null $tank
  */
 class Transfer extends BaseModel
@@ -31,7 +31,7 @@ class Transfer extends BaseModel
 
     protected $fillable = [
         'id',
-        'batche_id',
+        'batch_id',
         'origin_tank_id',
         'destination_tank_id',
         'quantity',
@@ -56,12 +56,12 @@ class Transfer extends BaseModel
     }
 
     /**
-     * @phpstan-return BelongsTo<Batche, static>
+     * @phpstan-return BelongsTo<Batch, static>
      */
-    public function batche(): BelongsTo
+    public function batch(): BelongsTo
     {
-        /** @var BelongsTo<Batche, static> $relation */
-        $relation = $this->belongsTo(Batche::class, 'batche_id');
+        /** @var BelongsTo<Batch, static> $relation */
+        $relation = $this->belongsTo(Batch::class, 'batch_id');
 
         return $relation;
     }

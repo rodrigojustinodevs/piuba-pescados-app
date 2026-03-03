@@ -46,7 +46,7 @@ class TransferRepository implements TransferRepositoryInterface
     {
         /** @var LengthAwarePaginator<int, Transfer> $paginator */
         $paginator = Transfer::with([
-            'batche:id,name',
+            'batch:id,name',
             'originTank:id,name',
             'destinationTank:id,name',
         ])->paginate($page);

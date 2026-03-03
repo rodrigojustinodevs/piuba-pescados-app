@@ -24,7 +24,7 @@ class GrowthCurveStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batche_id'      => ['required', 'uuid', 'exists:batches,id'],
+            'batch_id'       => ['required', 'uuid', 'exists:batches,id'],
             'average_weight' => ['required', 'numeric', 'min:0'],
         ];
     }
@@ -38,9 +38,9 @@ class GrowthCurveStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batche_id.required' => 'The batche ID is required.',
-            'batche_id.uuid'     => 'The batche ID must be a valid UUID.',
-            'batche_id.exists'   => 'The selected batche does not exist.',
+            'batch_id.required' => 'The batch ID is required.',
+            'batch_id.uuid'     => 'The batch ID must be a valid UUID.',
+            'batch_id.exists'   => 'The selected batch does not exist.',
 
             'average_weight.required' => 'The average weight is required.',
             'average_weight.numeric'  => 'The average weight must be a number.',

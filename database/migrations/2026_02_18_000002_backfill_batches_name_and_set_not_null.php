@@ -25,4 +25,3 @@ return new class () extends Migration
         DB::statement("ALTER TABLE `batches` MODIFY `name` VARCHAR(255) NULL");
     }
 };
-

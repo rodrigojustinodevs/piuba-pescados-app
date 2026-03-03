@@ -46,7 +46,7 @@ class FeedingRepository implements FeedingRepositoryInterface
     {
         /** @var LengthAwarePaginator<int, Feeding> $paginator */
         $paginator = Feeding::with([
-            'batche:id',
+            'batch:id',
         ])->paginate($page);
 
         return new PaginationPresentr($paginator);

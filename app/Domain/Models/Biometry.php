@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read Batche|null $batche
+ * @property-read Batch|null $batch
  */
 class Biometry extends BaseModel
 {
@@ -30,7 +30,7 @@ class Biometry extends BaseModel
 
     protected $fillable = [
         'id',
-        'batche_id',
+        'batch_id',
         'biometry_date',
         'average_weight',
         'fcr',
@@ -53,12 +53,12 @@ class Biometry extends BaseModel
     }
 
     /**
-     * @phpstan-return BelongsTo<Batche, static>
+     * @phpstan-return BelongsTo<Batch, static>
      */
-    public function batche(): BelongsTo
+    public function batch(): BelongsTo
     {
-        /** @var BelongsTo<Batche, static> $relation */
-        $relation = $this->belongsTo(Batche::class, 'batche_id');
+        /** @var BelongsTo<Batch, static> $relation */
+        $relation = $this->belongsTo(Batch::class, 'batch_id');
 
         return $relation;
     }

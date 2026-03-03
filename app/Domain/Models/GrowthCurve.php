@@ -11,13 +11,13 @@ use Illuminate\Support\Str;
 
 /**
  * @property string $id
- * @property string $batche_id
+ * @property string $batch_id
  * @property float $average_weight
  * @property Carbon|null $deleted
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
- * @property-read Batche|null $batche
+ * @property-read Batch|null $batch
  */
 class GrowthCurve extends BaseModel
 {
@@ -29,7 +29,7 @@ class GrowthCurve extends BaseModel
 
     protected $fillable = [
         'id',
-        'batche_id',
+        'batch_id',
         'average_weight',
     ];
 
@@ -49,12 +49,12 @@ class GrowthCurve extends BaseModel
     }
 
     /**
-     * @phpstan-return BelongsTo<Batche, static>
+     * @phpstan-return BelongsTo<Batch, static>
      */
-    public function batche(): BelongsTo
+    public function batch(): BelongsTo
     {
-        /** @var BelongsTo<Batche, static> $relation */
-        $relation = $this->belongsTo(Batche::class, 'batche_id');
+        /** @var BelongsTo<Batch, static> $relation */
+        $relation = $this->belongsTo(Batch::class, 'batch_id');
 
         return $relation;
     }

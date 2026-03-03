@@ -6,7 +6,7 @@ namespace App\Application\UseCases\Transfer;
 
 use App\Application\DTOs\TransferDTO;
 use App\Domain\Models\Transfer;
-use App\Domain\Repositories\BatcheRepositoryInterface;
+use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use App\Infrastructure\Mappers\TransferMapper;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +16,7 @@ class UpdateTransferUseCase
 {
     public function __construct(
         protected TransferRepositoryInterface $transferRepository,
-        protected BatcheRepositoryInterface $batcheRepository
+        protected BatchRepositoryInterface $batchRepository
     ) {
     }
 
@@ -43,12 +43,13 @@ class UpdateTransferUseCase
             $destinationChanged = isset($mappedData['destination_tank_id'])
                 && (string) $newDestinationId !== (string) $current->destination_tank_id;
 
-            $destinationHasOtherBatch = $this->batcheRepository->hasActiveBatcheInTank(
+            $destinationHasOtherBatch = $this->batchRepository->hasActiveBatchInTank(
                 $newDestinationId,
-                $current->batche_id
+                $current->batch_id
             );
+
             if ($destinationChanged && $destinationHasOtherBatch) {
-                throw new RuntimeException('Tank already has an active batche.');
+                throw new RuntimeException('Tank already has an active batch.');
             }
 
             $transfer = $this->transferRepository->update($id, $mappedData);
@@ -57,10 +58,10 @@ class UpdateTransferUseCase
                 throw new RuntimeException('Transfer not found');
             }
 
-            if (isset($mappedData['batche_id']) || isset($mappedData['destination_tank_id'])) {
-                $batcheIdToUpdate = $mappedData['batche_id'] ?? $transfer->batche_id;
+            if (isset($mappedData['batch_id']) || isset($mappedData['destination_tank_id'])) {
+                $batchIdToUpdate = $mappedData['batch_id'] ?? $transfer->batch_id;
 
-                $this->batcheRepository->update($batcheIdToUpdate, [
+                $this->batchRepository->update($batchIdToUpdate, [
                     'tank_id' => $transfer->destination_tank_id,
                 ]);
             }

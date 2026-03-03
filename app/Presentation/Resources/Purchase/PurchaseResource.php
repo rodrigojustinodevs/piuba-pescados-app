@@ -10,6 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string $id
  * @property-read string $company_id
  * @property-read string $supplier_id
+ * @property-read string|null $stocking_id
  * @property-read string $input_name
  * @property-read float $quantity
  * @property-read float $total_price
@@ -18,6 +19,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Company|null $company
  * @property-read \App\Domain\Models\Supplier|null $supplier
+ * @property-read \App\Domain\Models\Stocking|null $stocking
  */
 class PurchaseResource extends JsonResource
 {
@@ -34,6 +36,7 @@ class PurchaseResource extends JsonResource
             'id'           => $this->id,
             'companyId'    => $this->company_id,
             'supplierId'   => $this->supplier_id,
+            'stockingId'   => $this->stocking_id,
             'inputName'    => $this->input_name,
             'quantity'     => $this->quantity,
             'totalPrice'   => $this->total_price,
@@ -44,6 +47,10 @@ class PurchaseResource extends JsonResource
             'supplier' => $this->whenLoaded('supplier', fn (): array => [
                 'id'   => $this->supplier->id ?? '',
                 'name' => $this->supplier->name ?? '',
+            ]),
+            'stocking' => $this->whenLoaded('stocking', fn (): array => [
+                'id'           => $this->stocking->id ?? '',
+                'stockingDate' => $this->stocking->stocking_date?->toDateString() ?? '',
             ]),
             'createdAt' => $this->created_at?->toDateTimeString(),
             'updatedAt' => $this->updated_at?->toDateTimeString(),

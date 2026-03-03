@@ -31,7 +31,6 @@ class ShowWaterQualityUseCase
 
         return new WaterQualityDTO(
             id: $quality->id,
-            analysisDate: $analysisDate->toDateString(),
             ph: $quality->ph,
             oxygen: $quality->oxygen,
             temperature: $quality->temperature,
@@ -40,6 +39,7 @@ class ShowWaterQualityUseCase
                 'id'   => $quality->tank->id ?? '',
                 'name' => $quality->tank->name ?? '',
             ],
+            analysisDate: $analysisDate->toDateString(),
             createdAt: $quality->created_at?->toDateTimeString(),
             updatedAt: $quality->updated_at?->toDateTimeString()
         );

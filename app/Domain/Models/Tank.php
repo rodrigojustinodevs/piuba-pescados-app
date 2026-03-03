@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property-read TankType|null $tankType
  * @property-read Company|null $company
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Batche> $batches
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Batch> $batches
  */
 class Tank extends BaseModel
 {
@@ -75,18 +75,18 @@ class Tank extends BaseModel
     public function tankType(): BelongsTo
     {
         /** @var BelongsTo<TankType, static> $relation */
-        $relation = $this->belongsTo(TankType::class, 'tank_types_id');
+        $relation = $this->belongsTo(TankType::class, 'tank_type_id');
 
         return $relation;
     }
 
     /**
-     * @phpstan-return HasMany<Batche, static>
+     * @phpstan-return HasMany<Batch, static>
      */
     public function batches(): HasMany
     {
-        /** @var HasMany<Batche, static> $relation */
-        $relation = $this->hasMany(Batche::class, 'tank_id');
+        /** @var HasMany<Batch, static> $relation */
+        $relation = $this->hasMany(Batch::class, 'tank_id');
 
         return $relation;
     }

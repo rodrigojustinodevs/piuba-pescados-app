@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
  * @property string $id
  * @property string $company_id
  * @property string $client_id
- * @property string $batche_id
+ * @property string $batch_id
  * @property float $total_weight
  * @property float $price_per_kg
  * @property float $total_revenue
@@ -23,7 +23,7 @@ use Illuminate\Support\Str;
  *
  * @property-read Company|null $company
  * @property-read Client|null $client
- * @property-read Batche|null $batche
+ * @property-read Batch|null $batch
  */
 class Sale extends BaseModel
 {
@@ -37,7 +37,7 @@ class Sale extends BaseModel
         'id',
         'company_id',
         'client_id',
-        'batche_id',
+        'batch_id',
         'total_weight',
         'price_per_kg',
         'total_revenue',
@@ -83,12 +83,12 @@ class Sale extends BaseModel
     }
 
     /**
-     * @phpstan-return BelongsTo<Batche, static>
+     * @phpstan-return BelongsTo<Batch, static>
      */
-    public function batche(): BelongsTo
+    public function batch(): BelongsTo
     {
-        /** @var BelongsTo<Batche, static> $relation */
-        $relation = $this->belongsTo(Batche::class, 'batche_id');
+        /** @var BelongsTo<Batch, static> $relation */
+        $relation = $this->belongsTo(Batch::class, 'batch_id');
 
         return $relation;
     }

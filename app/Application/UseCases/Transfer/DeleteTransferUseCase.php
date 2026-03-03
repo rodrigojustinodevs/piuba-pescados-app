@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Transfer;
 
-use App\Domain\Repositories\BatcheRepositoryInterface;
+use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -13,7 +13,7 @@ class DeleteTransferUseCase
 {
     public function __construct(
         protected TransferRepositoryInterface $transferRepository,
-        protected BatcheRepositoryInterface $batcheRepository
+        protected BatchRepositoryInterface $batchRepository
     ) {
     }
 
@@ -22,30 +22,31 @@ class DeleteTransferUseCase
         return DB::transaction(function () use ($id): bool {
             $transfer = $this->transferRepository->showTransfer('id', $id);
 
-            if (! $transfer) {
+            if (!$transfer instanceof \App\Domain\Models\Transfer) {
                 return false;
             }
 
-            $batche = $this->batcheRepository->showBatche('id', $transfer->batche_id);
+            $batch = $this->batchRepository->showBatch('id', $transfer->batch_id);
 
-            if ($batche) {
-                $originHasOtherBatch = $this->batcheRepository->hasActiveBatcheInTank(
+            if ($batch instanceof \App\Domain\Models\Batch) {
+                $originHasOtherBatch = $this->batchRepository->hasActiveBatchInTank(
                     $transfer->origin_tank_id,
-                    $transfer->batche_id
+                    $transfer->batch_id
                 );
+
                 if ($originHasOtherBatch) {
                     throw new RuntimeException(
                         'Cannot delete transfer: origin tank already has an active batch.'
                     );
                 }
 
-                $newQuantity = $batche->initial_quantity + (int) $transfer->quantity;
-                $updated = $this->batcheRepository->update($transfer->batche_id, [
+                $newQuantity = $batch->initial_quantity + (int) $transfer->quantity;
+                $updated     = $this->batchRepository->update($transfer->batch_id, [
                     'tank_id'          => $transfer->origin_tank_id,
                     'initial_quantity' => $newQuantity,
                 ]);
 
-                if (! $updated) {
+                if (!$updated instanceof \App\Domain\Models\Batch) {
                     throw new RuntimeException('Error reverting batch to origin tank');
                 }
             }

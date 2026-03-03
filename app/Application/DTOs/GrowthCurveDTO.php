@@ -9,7 +9,7 @@ class GrowthCurveDTO
     public function __construct(
         public string $id,
         public float $averageWeight,
-        public string $batcheId,
+        public string $batchId,
         public ?string $createdAt = null,
         public ?string $updatedAt = null
     ) {
@@ -23,7 +23,7 @@ class GrowthCurveDTO
         return new self(
             id: $data['id'],
             averageWeight: (float) $data['average_weight'],
-            batcheId: $data['batche_id'],
+            batchId: $data['batch_id'],
             createdAt: $data['created_at'] ?? null,
             updatedAt: $data['updated_at'] ?? null
         );
@@ -37,7 +37,7 @@ class GrowthCurveDTO
         return [
             'id'            => $this->id,
             'averageWeight' => $this->averageWeight,
-            'batcheId'      => $this->batcheId,
+            'batchId'       => $this->batchId,
             'createdAt'     => $this->createdAt,
             'updatedAt'     => $this->updatedAt,
         ];

@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
  * @property string $id
  * @property string $company_id
  * @property string $supplier_id
+ * @property string|null $stocking_id
  * @property string $input_name
  * @property float $quantity
  * @property float $total_price
@@ -22,6 +23,7 @@ use Illuminate\Support\Str;
  *
  * @property-read Company|null $company
  * @property-read Supplier|null $supplier
+ * @property-read Stocking|null $stocking
  */
 class Purchase extends BaseModel
 {
@@ -35,6 +37,7 @@ class Purchase extends BaseModel
         'id',
         'company_id',
         'supplier_id',
+        'stocking_id',
         'input_name',
         'quantity',
         'total_price',
@@ -75,6 +78,17 @@ class Purchase extends BaseModel
     {
         /** @var BelongsTo<Supplier, static> $relation */
         $relation = $this->belongsTo(Supplier::class, 'supplier_id');
+
+        return $relation;
+    }
+
+    /**
+     * @phpstan-return BelongsTo<Stocking, static>
+     */
+    public function stocking(): BelongsTo
+    {
+        /** @var BelongsTo<Stocking, static> $relation */
+        $relation = $this->belongsTo(Stocking::class, 'stocking_id');
 
         return $relation;
     }

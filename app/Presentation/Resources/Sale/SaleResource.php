@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property-read string $id
- * @property-read string $batche_id
+ * @property-read string $batch_id
  * @property-read float $total_weight
  * @property-read float $price_per_kg
  * @property-read float $total_revenue
@@ -42,7 +42,7 @@ class SaleResource extends JsonResource
                 'id'   => $this->client->id ?? '',
                 'name' => $this->client->name ?? '',
             ]),
-            'batcheId'  => $this->batche_id,
+            'batchId'   => $this->batch_id,
             'createdAt' => $this->created_at?->toDateTimeString(),
             'updatedAt' => $this->updated_at?->toDateTimeString(),
         ];

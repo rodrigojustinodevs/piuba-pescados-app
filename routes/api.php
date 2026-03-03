@@ -24,7 +24,7 @@ Route::prefix('company')
     ->group(function (): void {
         require base_path('routes/app/company/alert.php');
 
-        require base_path('routes/app/company/batche.php');
+        require base_path('routes/app/company/batch.php');
 
         require base_path('routes/app/company/biometry.php');
 
@@ -52,7 +52,7 @@ Route::prefix('company')
 
         require base_path('routes/app/company/sensor.php');
 
-        require base_path('routes/app/company/settlement.php');
+        require base_path('routes/app/company/stocking.php');
 
         require base_path('routes/app/company/stock.php');
 

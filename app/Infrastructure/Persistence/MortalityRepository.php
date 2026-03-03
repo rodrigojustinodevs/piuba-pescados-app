@@ -46,7 +46,7 @@ class MortalityRepository implements MortalityRepositoryInterface
     {
         /** @var LengthAwarePaginator<int, Mortality> $paginator */
         $paginator = Mortality::with([
-            'batche:id',
+            'batch:id',
         ])->paginate($page);
 
         return new PaginationPresentr($paginator);

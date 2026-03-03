@@ -28,6 +28,8 @@ class CreatePurchaseUseCase
                 ? $purchase->purchase_date
                 : Carbon::parse($purchase->purchase_date);
 
+            $stocking = $purchase->stocking;
+
             return new PurchaseDTO(
                 id: $purchase->id,
                 inputName: $purchase->input_name,
@@ -41,6 +43,11 @@ class CreatePurchaseUseCase
                 company: [
                     'name' => $purchase->company->name ?? '',
                 ],
+                stockingId: $purchase->stocking_id,
+                stocking: $stocking ? [
+                    'id'           => $stocking->id,
+                    'stockingDate' => $stocking->stocking_date?->toDateString(),
+                ] : null,
                 createdAt: $purchase->created_at?->toDateTimeString(),
                 updatedAt: $purchase->updated_at?->toDateTimeString()
             );

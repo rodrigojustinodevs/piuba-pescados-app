@@ -51,9 +51,9 @@ class BiometryController
      *                 @OA\Items(
      *                     type="object",
      *                     @OA\Property(property="id", type="string", format="uuid"),
-     *                     @OA\Property(property="batcheId", type="string", format="uuid", description="ID do lote"),
+     *                     @OA\Property(property="batchId", type="string", format="uuid", description="ID do lote"),
      *                     @OA\Property(
-     *                         property="batche",
+     *                         property="batch",
      *                         type="object",
      *                         description="Lote (quando carregado)",
      *                         @OA\Property(property="id", type="string", format="uuid"),
@@ -126,9 +126,9 @@ class BiometryController
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
-     *                 @OA\Property(property="batcheId", type="string", format="uuid", description="ID do lote"),
+     *                 @OA\Property(property="batchId", type="string", format="uuid", description="ID do lote"),
      *                 @OA\Property(
-     *                     property="batche",
+     *                     property="batch",
      *                     type="object",
      *                     description="Lote (quando carregado)",
      *                     @OA\Property(property="id", type="string", format="uuid"),
@@ -188,8 +188,8 @@ class BiometryController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"batcheId","biometryDate","averageWeight","fcr"},
-     *             @OA\Property(property="batcheId", type="string", format="uuid", description="ID do lote"),
+     *             required={"batchId","biometryDate","averageWeight","fcr"},
+     *             @OA\Property(property="batchId", type="string", format="uuid", description="ID do lote"),
      *             @OA\Property(
      *                 property="biometryDate",
      *                 type="string",
@@ -223,7 +223,7 @@ class BiometryController
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
-     *                 @OA\Property(property="batcheId", type="string", format="uuid"),
+     *                 @OA\Property(property="batchId", type="string", format="uuid"),
      *                 @OA\Property(property="biometryDate", type="string", format="date"),
      *                 @OA\Property(property="averageWeight", type="number", format="float", example=15.5),
      *                 @OA\Property(property="fcr", type="number", format="float", example=1.2),
@@ -264,7 +264,7 @@ class BiometryController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="batcheId", type="string", format="uuid", description="ID do lote"),
+     *             @OA\Property(property="batchId", type="string", format="uuid", description="ID do lote"),
      *             @OA\Property(
      *                 property="biometryDate",
      *                 type="string",
@@ -298,7 +298,7 @@ class BiometryController
      *                 property="data",
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
-     *                 @OA\Property(property="batcheId", type="string", format="uuid"),
+     *                 @OA\Property(property="batchId", type="string", format="uuid"),
      *                 @OA\Property(property="biometryDate", type="string", format="date"),
      *                 @OA\Property(property="averageWeight", type="number", format="float", example=15.5),
      *                 @OA\Property(property="fcr", type="number", format="float", example=1.2),

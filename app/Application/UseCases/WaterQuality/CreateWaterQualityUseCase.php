@@ -30,15 +30,15 @@ class CreateWaterQualityUseCase
 
             return new WaterQualityDTO(
                 id: $waterQuality->id,
+                ph: (float) $waterQuality->ph,
+                oxygen: (float) $waterQuality->oxygen,
+                temperature: (float) $waterQuality->temperature,
+                ammonia: (float) $waterQuality->ammonia,
                 tank: [
                     'id'   => $waterQuality->tank->id ?? '',
                     'name' => $waterQuality->tank->name ?? '',
                 ],
                 analysisDate: $analysisDate->toDateString(),
-                ph: (float) $waterQuality->ph,
-                oxygen: (float) $waterQuality->oxygen,
-                temperature: (float) $waterQuality->temperature,
-                ammonia: (float) $waterQuality->ammonia,
                 createdAt: $waterQuality->created_at?->toDateTimeString(),
                 updatedAt: $waterQuality->updated_at?->toDateTimeString()
             );

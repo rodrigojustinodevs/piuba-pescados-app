@@ -24,7 +24,7 @@ class FeedingStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batche_id'                => ['required', 'uuid', 'exists:batches,id'],
+            'batch_id'                 => ['required', 'uuid', 'exists:batches,id'],
             'feeding_date'             => ['required', 'date'],
             'quantity_provided'        => ['required', 'numeric', 'min:0'],
             'feed_type'                => ['required', 'string', 'max:100'],

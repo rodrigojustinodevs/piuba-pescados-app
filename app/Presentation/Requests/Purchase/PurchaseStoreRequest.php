@@ -26,6 +26,7 @@ class PurchaseStoreRequest extends FormRequest
         return [
             'company_id'    => ['required', 'uuid', 'exists:companies,id'],
             'supplier_id'   => ['required', 'uuid', 'exists:suppliers,id'],
+            'stocking_id'   => ['nullable', 'uuid', 'exists:stockings,id'],
             'input_name'    => ['required', 'string', 'max:255'],
             'quantity'      => ['required', 'numeric', 'min:0'],
             'total_price'   => ['required', 'numeric', 'min:0'],
@@ -48,6 +49,8 @@ class PurchaseStoreRequest extends FormRequest
             'supplier_id.required'   => 'The supplier ID is required.',
             'supplier_id.uuid'       => 'The supplier ID must be a valid UUID.',
             'supplier_id.exists'     => 'The selected supplier does not exist.',
+            'stocking_id.uuid'       => 'The stocking ID must be a valid UUID.',
+            'stocking_id.exists'     => 'The selected stocking does not exist.',
             'input_name.required'    => 'The input name is required.',
             'input_name.string'      => 'The input name must be a string.',
             'input_name.max'         => 'The input name may not be greater than 255 characters.',

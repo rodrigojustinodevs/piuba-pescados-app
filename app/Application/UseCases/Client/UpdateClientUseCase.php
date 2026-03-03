@@ -30,12 +30,12 @@ class UpdateClientUseCase
         return new ClientDTO(
             id: $client->id,
             name: $client->name,
-            personType: $client->person_type,
-            documentNumber: $client->document_number,
-            email: $client->email,
-            address: $client->address,
             contact: $client->contact,
             phone: $client->phone,
+            email: $client->email,
+            personType: $client->person_type,
+            documentNumber: $client->document_number,
+            address: $client->address,
             company: [
                 'name' => $client->company->name ?? null,
             ],

@@ -13,7 +13,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read \Illuminate\Support\Carbon|null $biometry_date
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Domain\Models\Batche|null $batche
+ * @property-read \App\Domain\Models\Batch|null $batch
  */
 class BiometryResource extends JsonResource
 {
@@ -27,15 +27,16 @@ class BiometryResource extends JsonResource
     public function toArray($request): array
     {
         $biometryDate = $this->biometry_date;
+
         if ($biometryDate instanceof \DateTimeInterface) {
             $biometryDate = $biometryDate->format('Y-m-d');
         }
 
         return [
-            'id'            => $this->id,
-            'batche'        => $this->whenLoaded('batche', fn (): array => [
-                'id'   => $this->batche->id,
-                'name' => $this->batche->name,
+            'id'    => $this->id,
+            'batch' => $this->whenLoaded('batch', fn (): array => [
+                'id'   => $this->batch->id,
+                'name' => $this->batch->name,
             ]),
             'biometryDate'  => $biometryDate,
             'averageWeight' => $this->average_weight,

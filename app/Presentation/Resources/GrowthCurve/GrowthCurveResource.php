@@ -8,12 +8,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property-read string $id
- * @property-read string $batche_id
+ * @property-read string $batch_id
  * @property-read float $average_weight
  * @property-read \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Domain\Models\Batche|null $batche
+ * @property-read \App\Domain\Models\Batch|null $batch
  */
 class GrowthCurveResource extends JsonResource
 {
@@ -28,7 +28,7 @@ class GrowthCurveResource extends JsonResource
     {
         return [
             'id'            => $this->id,
-            'batcheId'      => $this->batche_id,
+            'batchId'       => $this->batch_id,
             'averageWeight' => $this->average_weight,
             'createdAt'     => $this->created_at?->toDateTimeString(),
             'updatedAt'     => $this->updated_at?->toDateTimeString(),

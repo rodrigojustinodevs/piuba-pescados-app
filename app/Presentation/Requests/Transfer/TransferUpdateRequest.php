@@ -23,8 +23,8 @@ class TransferUpdateRequest extends FormRequest
         // Só faz merge quando o campo alternativo existe, para não injetar null.
         $merge = [];
 
-        if (! $this->has('batcheId') && $this->has('batche_id')) {
-            $merge['batcheId'] = $this->input('batche_id');
+        if (! $this->has('batchId') && $this->has('batch_id')) {
+            $merge['batchId'] = $this->input('batch_id');
         }
 
         if (! $this->has('originTankId') && $this->has('origin_tank_id')) {
@@ -48,7 +48,7 @@ class TransferUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batcheId'          => ['sometimes', 'uuid', 'exists:batches,id'],
+            'batchId'           => ['sometimes', 'uuid', 'exists:batches,id'],
             'originTankId'      => ['sometimes', 'uuid', 'exists:tanks,id'],
             'destinationTankId' => ['sometimes', 'uuid', 'exists:tanks,id', 'different:originTankId'],
             'description'       => ['sometimes', 'string'],

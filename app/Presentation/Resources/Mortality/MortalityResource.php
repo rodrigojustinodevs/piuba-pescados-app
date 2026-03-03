@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property-read string $id
- * @property-read string $batche_id
+ * @property-read string $batch_id
  * @property int $quantity
  * @property string $cause
  * @property-read \Illuminate\Support\Carbon|null $created_at
@@ -27,7 +27,7 @@ class MortalityResource extends JsonResource
     {
         return [
             'id'        => $this->id,
-            'batcheId'  => $this->batche_id,
+            'batchId'   => $this->batch_id,
             'quantity'  => $this->quantity,
             'cause'     => $this->cause,
             'createdAt' => $this->created_at?->toDateTimeString(),

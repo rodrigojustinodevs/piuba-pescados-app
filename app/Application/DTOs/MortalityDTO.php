@@ -38,7 +38,7 @@ class MortalityDTO
     {
         return [
             'id'        => $this->id,
-            'batchId'  => $this->batchId,
+            'batchId'   => $this->batchId,
             'quantity'  => $this->quantity,
             'cause'     => $this->cause,
             'createdAt' => $this->createdAt,

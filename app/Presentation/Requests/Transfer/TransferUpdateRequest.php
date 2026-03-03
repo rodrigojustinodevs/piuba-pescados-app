@@ -48,7 +48,7 @@ class TransferUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batchId'          => ['sometimes', 'uuid', 'exists:batches,id'],
+            'batchId'           => ['sometimes', 'uuid', 'exists:batches,id'],
             'originTankId'      => ['sometimes', 'uuid', 'exists:tanks,id'],
             'destinationTankId' => ['sometimes', 'uuid', 'exists:tanks,id', 'different:originTankId'],
             'description'       => ['sometimes', 'string'],

@@ -20,8 +20,8 @@ class MortalityUpdateRequest extends FormRequest
     {
         return [
             'batch_id' => 'sometimes|uuid|exists:batches,id',
-            'quantity'  => 'sometimes|integer|min:1',
-            'cause'     => 'sometimes|string|max:255',
+            'quantity' => 'sometimes|integer|min:1',
+            'cause'    => 'sometimes|string|max:255',
         ];
     }
 
@@ -32,8 +32,8 @@ class MortalityUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batch_id.uuid'   => 'The batch ID must be a valid UUID.',
-            'batch_id.exists' => 'The batch ID must exist in the batches table.',
+            'batch_id.uuid'    => 'The batch ID must be a valid UUID.',
+            'batch_id.exists'  => 'The batch ID must exist in the batches table.',
             'quantity.integer' => 'The quantity must be an integer.',
             'quantity.min'     => 'The quantity must be at least 1.',
             'cause.string'     => 'The cause must be a valid text.',

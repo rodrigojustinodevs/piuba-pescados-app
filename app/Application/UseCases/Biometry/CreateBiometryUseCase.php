@@ -23,7 +23,7 @@ class CreateBiometryUseCase
     {
         return DB::transaction(function () use ($data): BiometryDTO {
             $mappedData = BiometryMapper::fromRequest($data);
-            $biometry  = $this->biometryRepository->create($mappedData);
+            $biometry   = $this->biometryRepository->create($mappedData);
 
             return BiometryMapper::toDTO($biometry);
         });

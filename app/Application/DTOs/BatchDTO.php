@@ -36,7 +36,6 @@ class BatchDTO
             id: $data['id'],
             name: $data['name'] ?? null,
             description: $data['description'] ?? null,
-            entryDate: $data['entry_date'],
             initialQuantity: (int) $data['initial_quantity'],
             species: $data['species'],
             status: Status::from($data['status']),
@@ -45,6 +44,7 @@ class BatchDTO
                 'id'   => $data['tank']['id'] ?? null,
                 'name' => $data['tank']['name'] ?? null,
             ] : null,
+            entryDate: $data['entry_date'],
             createdAt: $data['created_at'] ?? null,
             updatedAt: $data['updated_at'] ?? null
         );

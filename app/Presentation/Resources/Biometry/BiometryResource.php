@@ -27,13 +27,14 @@ class BiometryResource extends JsonResource
     public function toArray($request): array
     {
         $biometryDate = $this->biometry_date;
+
         if ($biometryDate instanceof \DateTimeInterface) {
             $biometryDate = $biometryDate->format('Y-m-d');
         }
 
         return [
-            'id'            => $this->id,
-            'batch'        => $this->whenLoaded('batch', fn (): array => [
+            'id'    => $this->id,
+            'batch' => $this->whenLoaded('batch', fn (): array => [
                 'id'   => $this->batch->id,
                 'name' => $this->batch->name,
             ]),

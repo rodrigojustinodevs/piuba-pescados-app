@@ -25,7 +25,7 @@ class UpdateStockingUseCase
     {
         return DB::transaction(function () use ($id, $data): StockingDTO {
             $mappedData = StockingMapper::fromRequest($data);
-            $stocking = $this->stockingRepository->update($id, $mappedData);
+            $stocking   = $this->stockingRepository->update($id, $mappedData);
 
             if (! $stocking instanceof Stocking) {
                 throw new RuntimeException('Stocking not found');

@@ -32,7 +32,7 @@ final class TransferMapper
     {
         return [
             'id'                  => $dto->id,
-            'batch_id'           => $dto->batchId,
+            'batch_id'            => $dto->batchId,
             'origin_tank_id'      => $dto->originTankId,
             'destination_tank_id' => $dto->destinationTankId,
             'quantity'            => $dto->quantity,
@@ -90,7 +90,7 @@ final class TransferMapper
     {
         return [
             'id'                => $model->id,
-            'batchId'          => $model->batch_id,
+            'batchId'           => $model->batch_id,
             'originTankId'      => $model->origin_tank_id,
             'destinationTankId' => $model->destination_tank_id,
             'quantity'          => (int) $model->quantity,

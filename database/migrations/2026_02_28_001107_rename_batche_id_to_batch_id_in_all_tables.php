@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class () extends Migration
 {
-    private const TABLES_WITH_BATCHE_ID = [
+    private const array TABLES_WITH_BATCHE_ID = [
         'biometries',
         'feedings',
         'growth_curves',
@@ -34,6 +34,7 @@ return new class () extends Migration
                  LIMIT 1",
                 [DB::getDatabaseName(), $table]
             );
+
             return $name?->CONSTRAINT_NAME ?? "{$table}_batche_id_foreign";
         }
 
@@ -51,6 +52,7 @@ return new class () extends Migration
                  LIMIT 1",
                 [DB::getDatabaseName(), $table]
             );
+
             return $name?->CONSTRAINT_NAME ?? "{$table}_batch_id_foreign";
         }
 
@@ -63,7 +65,7 @@ return new class () extends Migration
      */
     public function up(): void
     {
-        $driver = Schema::getConnection()->getDriverName();
+        Schema::getConnection()->getDriverName();
 
         foreach (self::TABLES_WITH_BATCHE_ID as $table) {
             if (! Schema::hasColumn($table, 'batche_id')) {
@@ -76,7 +78,7 @@ return new class () extends Migration
                 $blueprint->dropForeign($fkName);
             });
             DB::statement("ALTER TABLE `{$table}` CHANGE batche_id batch_id CHAR(36) NOT NULL");
-            Schema::table($table, function ($blueprint) use ($table): void {
+            Schema::table($table, function ($blueprint): void {
                 $blueprint->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade');
             });
         }
@@ -87,7 +89,7 @@ return new class () extends Migration
      */
     public function down(): void
     {
-        $driver = Schema::getConnection()->getDriverName();
+        Schema::getConnection()->getDriverName();
 
         foreach (self::TABLES_WITH_BATCHE_ID as $table) {
             if (! Schema::hasColumn($table, 'batch_id')) {
@@ -100,7 +102,7 @@ return new class () extends Migration
                 $blueprint->dropForeign($fkName);
             });
             DB::statement("ALTER TABLE `{$table}` CHANGE batch_id batche_id CHAR(36) NOT NULL");
-            Schema::table($table, function ($blueprint) use ($table): void {
+            Schema::table($table, function ($blueprint): void {
                 $blueprint->foreign('batche_id')->references('id')->on('batches')->onDelete('cascade');
             });
         }

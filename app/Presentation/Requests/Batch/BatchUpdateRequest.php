@@ -15,7 +15,8 @@ class BatchUpdateRequest extends FormRequest
     }
 
     /**
-     * @return array<string, list<\Illuminate\Validation\Rules\In|string>|array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
+     * @return array<string, list<\Illuminate\Validation\Rules\In|string>|array<int,
+     *         \Illuminate\Contracts\Validation\ValidationRule|string>|string>
      */
     public function rules(): array
     {

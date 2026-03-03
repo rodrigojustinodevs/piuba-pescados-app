@@ -40,7 +40,7 @@ class StockingDTO
     {
         return [
             'id'            => $this->id,
-            'batchId'      => $this->batchId,
+            'batchId'       => $this->batchId,
             'stockingDate'  => $this->stockingDate,
             'quantity'      => $this->quantity,
             'averageWeight' => $this->averageWeight,

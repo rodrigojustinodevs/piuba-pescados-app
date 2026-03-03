@@ -24,7 +24,7 @@ class HarvestStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batch_id'     => ['required', 'uuid', 'exists:batches,id'],
+            'batch_id'      => ['required', 'uuid', 'exists:batches,id'],
             'total_weight'  => ['required', 'numeric', 'min:0'],
             'price_per_kg'  => ['required', 'numeric', 'min:0'],
             'total_revenue' => ['required', 'numeric', 'min:0'],

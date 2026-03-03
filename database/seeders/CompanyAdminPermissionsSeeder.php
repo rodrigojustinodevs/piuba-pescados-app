@@ -12,7 +12,7 @@ class CompanyAdminPermissionsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     * 
+     *
      * Este seeder adiciona permissões ao role company-admin.
      * Para adicionar novas permissões, edite o array $permissionsToAdd abaixo.
      */
@@ -23,7 +23,7 @@ class CompanyAdminPermissionsSeeder extends Seeder
 
         if (! $companyAdminRole) {
             $this->command->warn('Role company-admin não encontrado! Certifique-se de que o RolesPermissionsSeeder foi executado.');
-            
+
             return;
         }
 
@@ -36,141 +36,141 @@ class CompanyAdminPermissionsSeeder extends Seeder
             // Permissões de Company (já existentes no CompanyRolesPermissionsSeeder)
             'view-company',
             'update-company',
-            
+
             // Permissões de Tank
             'create-tank',
             'view-tank',
             'update-tank',
             'delete-tank',
-            
+
             // Permissões de Client
             'create-client',
             'view-client',
             'update-client',
             'delete-client',
-            
+
             // Permissões de Alert
             'create-alert',
             'view-alert',
             'update-alert',
             'delete-alert',
-            
+
             // Permissões de Batch
             'create-batch',
             'view-batch',
             'update-batch',
             'delete-batch',
-            
+
             // Permissões de Biometry
             'create-batch', // Nota: biometry usa as mesmas permissões de batch
             'view-batch',
             'update-batch',
             'delete-batch',
-            
+
             // Permissões de Cost Allocation
             'create-cost-allocation',
             'view-cost-allocation',
             'update-cost-allocation',
             'delete-cost-allocation',
-            
+
             // Permissões de Feeding
             'create-feeding',
             'view-feeding',
             'update-feeding',
             'delete-feeding',
-            
+
             // Permissões de Feed Control
             'create-feed-control',
             'view-feed-control',
             'update-feed-control',
             'delete-feed-control',
-            
+
             // Permissões de Financial Category
             'create-financial-category',
             'view-financial-category',
             'update-financial-category',
             'delete-financial-category',
-            
+
             // Permissões de Financial Transaction
             'create-financial-transaction',
             'view-financial-transaction',
             'update-financial-transaction',
             'delete-financial-transaction',
-            
+
             // Permissões de Growth Curve
             'create-growth-curve',
             'view-growth-curve',
             'update-growth-curve',
             'delete-growth-curve',
-            
+
             // Permissões de Harvest
             'create-harvest',
             'view-harvest',
             'update-harvest',
             'delete-harvest',
-            
+
             // Permissões de Mortality
             'create-mortality',
             'view-mortality',
             'update-mortality',
             'delete-mortality',
-            
+
             // Permissões de Purchase
             'create-purchase',
             'view-purchase',
             'update-purchase',
             'delete-purchase',
-            
+
             // Permissões de Sale
             'create-sale',
             'view-sale',
             'update-sale',
             'delete-sale',
-            
+
             // Permissões de Sensor
             'create-sensor',
             'view-sensor',
             'update-sensor',
             'delete-sensor',
-            
+
             // Permissões de Stocking (aquaculture: povoamento/estocagem)
             'create-stocking',
             'view-stocking',
             'update-stocking',
             'delete-stocking',
-            
+
             // Permissões de Stock
             'create-stock',
             'view-stock',
             'update-stock',
             'delete-stock',
-            
+
             // Permissões de Supplier
             'create-supplier',
             'view-supplier',
             'update-supplier',
             'delete-supplier',
-            
+
             // Permissões de Transfer
             'create-transfer',
             'view-transfer',
             'update-transfer',
             'delete-transfer',
-            
+
             // Permissões de Water Quality
             'create-water-quality',
             'view-water-quality',
             'update-water-quality',
             'delete-water-quality',
-            
+
             // Adicione aqui outras permissões conforme necessário
         ];
 
         // ============================================
         // PROCESSAMENTO
         // ============================================
-        $permissionsToAttach = [];
-        $permissionsNotFound = [];
+        $permissionsToAttach        = [];
+        $permissionsNotFound        = [];
         $permissionsAlreadyAttached = [];
 
         foreach ($permissionsToAdd as $permissionName) {
@@ -180,14 +180,14 @@ class CompanyAdminPermissionsSeeder extends Seeder
             if (! $permission) {
                 $permissionsNotFound[] = $permissionName;
                 $this->command->warn("Permissão '{$permissionName}' não encontrada. Pulando...");
-                
+
                 continue;
             }
 
             // Verificar se já não está associada
             if ($companyAdminRole->permissions()->where('permissions.id', $permission->id)->exists()) {
                 $permissionsAlreadyAttached[] = $permissionName;
-                
+
                 continue;
             }
 
@@ -199,11 +199,9 @@ class CompanyAdminPermissionsSeeder extends Seeder
         // ============================================
         if ($permissionsToAttach !== []) {
             $companyAdminRole->permissions()->attach($permissionsToAttach);
-            
+
             $this->command->info('✅ Permissões adicionadas ao company-admin: ' . count($permissionsToAttach));
-            $this->command->line('   Permissões: ' . implode(', ', array_map(function ($id) {
-                return Permission::find($id)->name;
-            }, $permissionsToAttach)));
+            $this->command->line('   Permissões: ' . implode(', ', array_map(fn($id) => Permission::find($id)->name, $permissionsToAttach)));
         } else {
             $this->command->info('ℹ️  Nenhuma nova permissão para adicionar.');
         }
@@ -225,5 +223,3 @@ class CompanyAdminPermissionsSeeder extends Seeder
         $this->command->info("📊 Total de permissões do company-admin: {$totalPermissions}");
     }
 }
-
-

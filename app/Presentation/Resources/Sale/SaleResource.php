@@ -42,7 +42,7 @@ class SaleResource extends JsonResource
                 'id'   => $this->client->id ?? '',
                 'name' => $this->client->name ?? '',
             ]),
-            'batchId'  => $this->batch_id,
+            'batchId'   => $this->batch_id,
             'createdAt' => $this->created_at?->toDateTimeString(),
             'updatedAt' => $this->updated_at?->toDateTimeString(),
         ];

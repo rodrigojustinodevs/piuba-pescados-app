@@ -29,7 +29,7 @@ class FeedingResource extends JsonResource
     {
         return [
             'id'                     => $this->id,
-            'batchId'               => $this->batch?->id,
+            'batchId'                => $this->batch?->id,
             'feedingDate'            => $this->feeding_date,
             'quantityProvided'       => $this->quantity_provided,
             'feedType'               => $this->feed_type,

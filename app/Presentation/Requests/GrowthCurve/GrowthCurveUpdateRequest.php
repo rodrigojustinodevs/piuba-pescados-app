@@ -24,7 +24,7 @@ class GrowthCurveUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batch_id'      => ['sometimes', 'uuid', 'exists:batches,id'],
+            'batch_id'       => ['sometimes', 'uuid', 'exists:batches,id'],
             'average_weight' => ['sometimes', 'numeric', 'min:0'],
         ];
     }
@@ -38,8 +38,8 @@ class GrowthCurveUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batch_id.uuid'         => 'The batch ID must be a valid UUID.',
-            'batch_id.exists'       => 'The selected batch does not exist.',
+            'batch_id.uuid'          => 'The batch ID must be a valid UUID.',
+            'batch_id.exists'        => 'The selected batch does not exist.',
             'average_weight.numeric' => 'The average weight must be a number.',
             'average_weight.min'     => 'The average weight must be at least 0.',
         ];

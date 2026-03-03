@@ -26,7 +26,7 @@ class SaleStoreRequest extends FormRequest
         return [
             'company_id'    => ['required', 'uuid', 'exists:companies,id'],
             'client_id'     => ['required', 'uuid', 'exists:clients,id'],
-            'batch_id'     => ['required', 'uuid', 'exists:batches,id'],
+            'batch_id'      => ['required', 'uuid', 'exists:batches,id'],
             'total_weight'  => ['required', 'numeric', 'min:0'],
             'price_per_kg'  => ['required', 'numeric', 'min:0'],
             'total_revenue' => ['required', 'numeric', 'min:0'],

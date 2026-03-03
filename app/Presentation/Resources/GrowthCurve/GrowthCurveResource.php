@@ -28,7 +28,7 @@ class GrowthCurveResource extends JsonResource
     {
         return [
             'id'            => $this->id,
-            'batchId'      => $this->batch_id,
+            'batchId'       => $this->batch_id,
             'averageWeight' => $this->average_weight,
             'createdAt'     => $this->created_at?->toDateTimeString(),
             'updatedAt'     => $this->updated_at?->toDateTimeString(),

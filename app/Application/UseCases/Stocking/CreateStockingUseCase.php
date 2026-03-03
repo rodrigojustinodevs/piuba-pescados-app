@@ -23,7 +23,7 @@ class CreateStockingUseCase
     {
         return DB::transaction(function () use ($data): StockingDTO {
             $mappedData = StockingMapper::fromRequest($data);
-            $stocking = $this->stockingRepository->create($mappedData);
+            $stocking   = $this->stockingRepository->create($mappedData);
 
             return StockingMapper::toDTO($stocking);
         });

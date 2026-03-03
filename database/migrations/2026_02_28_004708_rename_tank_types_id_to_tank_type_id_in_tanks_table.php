@@ -15,13 +15,13 @@ return new class () extends Migration
      */
     public function up(): void
     {
-            Schema::table('tanks', function (Blueprint $table): void {
-                $table->dropForeign('tanks_tank_types_id_foreign');
-            });
-            DB::statement('ALTER TABLE `tanks` CHANGE tank_types_id tank_type_id CHAR(36) NOT NULL');
-            Schema::table('tanks', function (Blueprint $table): void {
-                $table->foreign('tank_type_id')->references('id')->on('tank_types')->onDelete('cascade');
-            });
+        Schema::table('tanks', function (Blueprint $table): void {
+            $table->dropForeign('tanks_tank_types_id_foreign');
+        });
+        DB::statement('ALTER TABLE `tanks` CHANGE tank_types_id tank_type_id CHAR(36) NOT NULL');
+        Schema::table('tanks', function (Blueprint $table): void {
+            $table->foreign('tank_type_id')->references('id')->on('tank_types')->onDelete('cascade');
+        });
     }
 
     /**
@@ -29,12 +29,12 @@ return new class () extends Migration
      */
     public function down(): void
     {
-            Schema::table('tanks', function (Blueprint $table): void {
-                $table->dropForeign('tanks_tank_type_id_foreign');
-            });
-            DB::statement('ALTER TABLE `tanks` CHANGE tank_type_id tank_types_id CHAR(36) NOT NULL');
-            Schema::table('tanks', function (Blueprint $table): void {
-                $table->foreign('tank_types_id')->references('id')->on('tank_types')->onDelete('cascade');
-            });
+        Schema::table('tanks', function (Blueprint $table): void {
+            $table->dropForeign('tanks_tank_type_id_foreign');
+        });
+        DB::statement('ALTER TABLE `tanks` CHANGE tank_type_id tank_types_id CHAR(36) NOT NULL');
+        Schema::table('tanks', function (Blueprint $table): void {
+            $table->foreign('tank_types_id')->references('id')->on('tank_types')->onDelete('cascade');
+        });
     }
 };

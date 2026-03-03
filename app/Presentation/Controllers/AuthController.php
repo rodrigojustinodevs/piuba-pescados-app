@@ -63,7 +63,7 @@ class AuthController
 
             $result = $this->authService->authenticate($credentials);
 
-            if ($result === null || $result === '' || $result === '0') {
+            if (in_array($result, [null, '', '0'], true)) {
                 return ApiResponse::error(null, 'Invalid credentials', Response::HTTP_UNAUTHORIZED);
             }
 

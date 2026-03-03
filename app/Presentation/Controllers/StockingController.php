@@ -61,9 +61,19 @@ class StockingController
      *                             @OA\Property(property="id", type="string", format="uuid"),
      *                             @OA\Property(property="name", type="string", nullable=true)
      *                         ),
-     *                         @OA\Property(property="stockingDate", type="string", format="date", example="2026-02-13"),
+     *                         @OA\Property(
+     *                             property="stockingDate",
+     *                             type="string",
+     *                             format="date",
+     *                             example="2026-02-13"
+     *                         ),
      *                         @OA\Property(property="quantity", type="integer", example=100),
-     *                         @OA\Property(property="averageWeight", type="number", format="float", example=1.25),
+     *                         @OA\Property(
+     *                             property="averageWeight",
+     *                             type="number",
+     *                             format="float",
+     *                             example=1.25
+     *                         ),
      *                         @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
      *                         @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
      *                     )
@@ -158,9 +168,28 @@ class StockingController
      *         @OA\JsonContent(
      *             required={"batchId","stockingDate","quantity","averageWeight"},
      *             @OA\Property(property="batchId", type="string", format="uuid", description="Batch ID"),
-     *             @OA\Property(property="stockingDate", type="string", format="date", description="Stocking date", example="2026-02-13"),
-     *             @OA\Property(property="quantity", type="integer", minimum=1, description="Quantity", example=100),
-     *             @OA\Property(property="averageWeight", type="number", format="float", minimum=0, description="Average weight", example=1.25)
+     *             @OA\Property(
+     *                 property="stockingDate",
+     *                 type="string",
+     *                 format="date",
+     *                 description="Stocking date",
+     *                 example="2026-02-13"
+     *             ),
+     *             @OA\Property(
+     *                 property="quantity",
+     *                 type="integer",
+     *                 minimum=1,
+     *                 description="Quantity",
+     *                 example=100
+     *             ),
+     *             @OA\Property(
+     *                 property="averageWeight",
+     *                 type="number",
+     *                 format="float",
+     *                 minimum=0,
+     *                 description="Average weight",
+     *                 example=1.25
+     *             )
      *         )
      *     ),
      *     @OA\Response(

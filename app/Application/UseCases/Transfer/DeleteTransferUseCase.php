@@ -22,17 +22,18 @@ class DeleteTransferUseCase
         return DB::transaction(function () use ($id): bool {
             $transfer = $this->transferRepository->showTransfer('id', $id);
 
-            if (! $transfer) {
+            if (!$transfer instanceof \App\Domain\Models\Transfer) {
                 return false;
             }
 
             $batch = $this->batchRepository->showBatch('id', $transfer->batch_id);
 
-            if ($batch) {
+            if ($batch instanceof \App\Domain\Models\Batch) {
                 $originHasOtherBatch = $this->batchRepository->hasActiveBatchInTank(
                     $transfer->origin_tank_id,
                     $transfer->batch_id
                 );
+
                 if ($originHasOtherBatch) {
                     throw new RuntimeException(
                         'Cannot delete transfer: origin tank already has an active batch.'
@@ -40,12 +41,12 @@ class DeleteTransferUseCase
                 }
 
                 $newQuantity = $batch->initial_quantity + (int) $transfer->quantity;
-                $updated = $this->batchRepository->update($transfer->batch_id, [
+                $updated     = $this->batchRepository->update($transfer->batch_id, [
                     'tank_id'          => $transfer->origin_tank_id,
                     'initial_quantity' => $newQuantity,
                 ]);
 
-                if (! $updated) {
+                if (!$updated instanceof \App\Domain\Models\Batch) {
                     throw new RuntimeException('Error reverting batch to origin tank');
                 }
             }

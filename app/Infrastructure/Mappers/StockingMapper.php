@@ -32,7 +32,7 @@ final class StockingMapper
     {
         return [
             'id'             => $dto->id,
-            'batch_id' => $dto->batchId,
+            'batch_id'       => $dto->batchId,
             'stocking_date'  => $dto->stockingDate,
             'quantity'       => $dto->quantity,
             'average_weight' => $dto->averageWeight,
@@ -41,7 +41,8 @@ final class StockingMapper
 
     /**
      * Converts request array to persistence array.
-     * Accepts camelCase (batchId, stockingDate, averageWeight) and snake_case (batch_id, stocking_date, average_weight).
+     * Accepts camelCase (batchId, stockingDate, averageWeight) and
+     * snake_case (batch_id, stocking_date, average_weight).
      *
      * @param array<string, mixed> $data
      * @return array<string, mixed>
@@ -50,28 +51,21 @@ final class StockingMapper
     {
         $mapped = [];
 
-        if (isset($data['batchId'])) {
-            $mapped['batch_id'] = $data['batchId'];
-        } elseif (isset($data['batch_id'])) {
-            $mapped['batch_id'] = $data['batch_id'];
-        } elseif (isset($data['batch_id'])) {
-            $mapped['batch_id'] = $data['batch_id'];
+        if (isset($data['batchId']) || isset($data['batch_id'])) {
+            $mapped['batch_id'] = $data['batchId'] ?? $data['batch_id'];
         }
 
-        if (isset($data['stockingDate'])) {
-            $mapped['stocking_date'] = self::formatStockingDate($data['stockingDate']);
-        } elseif (isset($data['stocking_date'])) {
-            $mapped['stocking_date'] = self::formatStockingDate($data['stocking_date']);
+        if (isset($data['stockingDate']) || isset($data['stocking_date'])) {
+            $value                   = $data['stockingDate'] ?? $data['stocking_date'];
+            $mapped['stocking_date'] = self::formatStockingDate($value);
         }
 
         if (isset($data['quantity'])) {
             $mapped['quantity'] = (int) $data['quantity'];
         }
 
-        if (isset($data['averageWeight'])) {
-            $mapped['average_weight'] = (float) $data['averageWeight'];
-        } elseif (isset($data['average_weight'])) {
-            $mapped['average_weight'] = (float) $data['average_weight'];
+        if (isset($data['averageWeight']) || isset($data['average_weight'])) {
+            $mapped['average_weight'] = (float) ($data['averageWeight'] ?? $data['average_weight']);
         }
 
         return $mapped;
@@ -84,7 +78,7 @@ final class StockingMapper
     {
         return [
             'id'            => $model->id,
-            'batchId' => $model->batch?->id,
+            'batchId'       => $model->batch?->id,
             'stockingDate'  => self::formatStockingDate($model->stocking_date),
             'quantity'      => (int) $model->quantity,
             'averageWeight' => (float) $model->average_weight,
@@ -111,6 +105,7 @@ final class StockingMapper
         if (is_object($stockingDate) && method_exists($stockingDate, 'toDateString')) {
             /** @var mixed $result */
             $result = $stockingDate->toDateString();
+
             return is_string($result) ? $result : '';
         }
 

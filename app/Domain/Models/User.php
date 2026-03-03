@@ -40,6 +40,7 @@ class User extends Authenticatable implements Auditable, JWTSubject
      *
      * @return array<string, string>
      */
+    #[\Override]
     protected function casts(): array
     {
         return [
@@ -126,7 +127,7 @@ class User extends Authenticatable implements Auditable, JWTSubject
         $companyRoles = ['company-admin', 'manager', 'operator', 'guest'];
 
         // Verifica se o usuário tem algum desses roles
-        $hasCompanyRole = ! empty(array_intersect($roles, $companyRoles));
+        $hasCompanyRole = array_intersect($roles, $companyRoles) !== [];
 
         // Se tiver um desses roles e estiver vinculado a uma company, adiciona o companyId
         if ($hasCompanyRole) {

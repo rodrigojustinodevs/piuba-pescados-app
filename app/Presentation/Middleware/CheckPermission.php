@@ -40,7 +40,7 @@ class CheckPermission
     private function parsePermissions(string $permissions): array
     {
         return array_map(
-            'trim',
+            trim(...),
             preg_split('/[,|]/', $permissions)
         );
     }

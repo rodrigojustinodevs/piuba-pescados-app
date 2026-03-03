@@ -27,7 +27,7 @@ class MortalityResource extends JsonResource
     {
         return [
             'id'        => $this->id,
-            'batchId'  => $this->batch_id,
+            'batchId'   => $this->batch_id,
             'quantity'  => $this->quantity,
             'cause'     => $this->cause,
             'createdAt' => $this->created_at?->toDateTimeString(),

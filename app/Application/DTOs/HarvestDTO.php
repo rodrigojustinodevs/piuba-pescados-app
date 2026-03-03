@@ -42,7 +42,7 @@ class HarvestDTO
     {
         return [
             'id'           => $this->id,
-            'batchId'     => $this->batchId,
+            'batchId'      => $this->batchId,
             'harvestDate'  => $this->harvestDate,
             'totalWeight'  => $this->totalWeight,
             'pricePerKg'   => $this->pricePerKg,

@@ -11,7 +11,6 @@ test('cast', function (): void {
     $user = new User();
 
     $reflection = new ReflectionMethod($user, 'casts');
-    $reflection->setAccessible(true);
 
     $casts = $reflection->invoke($user);
 

@@ -37,7 +37,7 @@ class GrowthCurveDTO
         return [
             'id'            => $this->id,
             'averageWeight' => $this->averageWeight,
-            'batchId'      => $this->batchId,
+            'batchId'       => $this->batchId,
             'createdAt'     => $this->createdAt,
             'updatedAt'     => $this->updatedAt,
         ];

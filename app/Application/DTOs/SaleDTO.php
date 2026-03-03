@@ -59,7 +59,7 @@ class SaleDTO
             'saleDate'     => $this->saleDate,
             'company'      => $this->company,
             'client'       => $this->client,
-            'batchId'     => $this->batchId,
+            'batchId'      => $this->batchId,
             'createdAt'    => $this->createdAt,
             'updatedAt'    => $this->updatedAt,
         ];

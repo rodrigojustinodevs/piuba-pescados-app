@@ -42,7 +42,7 @@ class FeedingDTO
     {
         return [
             'id'                     => $this->id,
-            'batchId'               => $this->batchId,
+            'batchId'                => $this->batchId,
             'feedingDate'            => $this->feedingDate,
             'quantityProvided'       => $this->quantityProvided,
             'feedType'               => $this->feedType,

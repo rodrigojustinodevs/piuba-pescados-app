@@ -25,9 +25,9 @@ class BiometryDTO
         return new self(
             id: $data['id'],
             batchId: $data['batch_id'],
-            biometryDate: $data['biometry_date'] ?? null,
             averageWeight: (float) $data['average_weight'],
             fcr: (float) $data['fcr'],
+            biometryDate: $data['biometry_date'] ?? null,
             createdAt: $data['created_at'] ?? null,
             updatedAt: $data['updated_at'] ?? null
         );
@@ -40,7 +40,7 @@ class BiometryDTO
     {
         return [
             'id'            => $this->id,
-            'batchId'      => $this->batchId,
+            'batchId'       => $this->batchId,
             'biometryDate'  => $this->biometryDate,
             'averageWeight' => $this->averageWeight,
             'fcr'           => $this->fcr,

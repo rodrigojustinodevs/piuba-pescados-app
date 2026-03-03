@@ -47,6 +47,7 @@ class UpdateTransferUseCase
                 $newDestinationId,
                 $current->batch_id
             );
+
             if ($destinationChanged && $destinationHasOtherBatch) {
                 throw new RuntimeException('Tank already has an active batch.');
             }

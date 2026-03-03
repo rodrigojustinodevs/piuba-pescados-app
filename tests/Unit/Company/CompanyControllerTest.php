@@ -158,7 +158,7 @@ test('returns a company for show when found', function (): void {
 
 test('returns 404 when show company is empty', function (): void {
     $companyId    = Uuid::uuid4()->toString();
-    $emptyCompany = new CompanyDTO('', '', '', null, '', [], Status::ACTIVE, null, null);
+    $emptyCompany = new CompanyDTO('', '', '', null, '', [], Status::ACTIVE);
 
     $companyService = Mockery::mock(CompanyService::class);
     $companyService->shouldReceive('showCompany')

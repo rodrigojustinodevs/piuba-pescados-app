@@ -146,11 +146,13 @@ final class BatchMapper
         if (is_string($entryDate)) {
             try {
                 $parsed = Carbon::parse($entryDate);
+
                 return $parsed->format('Y-m-d');
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 if (preg_match('/^\d{4}-\d{2}-\d{2}/', $entryDate)) {
                     return $entryDate;
                 }
+
                 return null;
             }
         }

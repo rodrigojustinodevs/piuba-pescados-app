@@ -27,9 +27,9 @@ class ShowClientUseCase
         return new ClientDTO(
             id: $client->id,
             name: $client->name,
+            contact: $client->contact,
             phone: $client->phone,
             email: $client->email,
-            contact: $client->contact,
             personType: $client->person_type,
             documentNumber: $client->document_number,
             address: $client->address,

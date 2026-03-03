@@ -32,7 +32,7 @@ final class BiometryMapper
     {
         return [
             'id'             => $dto->id,
-            'batch_id'      => $dto->batchId,
+            'batch_id'       => $dto->batchId,
             'biometry_date'  => $dto->biometryDate,
             'average_weight' => $dto->averageWeight,
             'fcr'            => $dto->fcr,
@@ -82,7 +82,7 @@ final class BiometryMapper
     {
         return [
             'id'            => $model->id,
-            'batchId'      => $model->batch_id,
+            'batchId'       => $model->batch_id,
             'biometryDate'  => self::formatBiometryDate($model->biometry_date),
             'averageWeight' => (float) $model->average_weight,
             'fcr'           => (float) $model->fcr,

@@ -31,23 +31,23 @@ class TransferResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'                => $this->id,
-            'batch'             => $this->whenLoaded('batch', fn (): array => [
+            'id'    => $this->id,
+            'batch' => $this->whenLoaded('batch', fn (): array => [
                 'id'   => $this->batch->id,
                 'name' => $this->batch->name,
             ]),
-            'originTank'        => $this->whenLoaded('originTank', fn (): array => [
+            'originTank' => $this->whenLoaded('originTank', fn (): array => [
                 'id'   => $this->originTank->id,
                 'name' => $this->originTank->name,
             ]),
-            'destinationTank'   => $this->whenLoaded('destinationTank', fn (): array => [
+            'destinationTank' => $this->whenLoaded('destinationTank', fn (): array => [
                 'id'   => $this->destinationTank->id,
                 'name' => $this->destinationTank->name,
             ]),
-            'quantity'          => $this->quantity,
-            'description'       => $this->description,
-            'createdAt'         => $this->created_at?->toDateTimeString(),
-            'updatedAt'         => $this->updated_at?->toDateTimeString(),
+            'quantity'    => $this->quantity,
+            'description' => $this->description,
+            'createdAt'   => $this->created_at?->toDateTimeString(),
+            'updatedAt'   => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

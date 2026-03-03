@@ -18,12 +18,8 @@ class StockingUpdateRequest extends FormRequest
     {
         $merge = [];
 
-        if (! $this->has('batchId')) {
-            if ($this->has('batch_id')) {
-                $merge['batchId'] = $this->input('batch_id');
-            } elseif ($this->has('batch_id')) {
-                $merge['batchId'] = $this->input('batch_id');
-            }
+        if (!$this->has('batchId') && $this->has('batch_id')) {
+            $merge['batchId'] = $this->input('batch_id');
         }
 
         if (! $this->has('stockingDate') && $this->has('stocking_date')) {
@@ -45,7 +41,7 @@ class StockingUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batchId'      => 'sometimes|uuid|exists:batches,id',
+            'batchId'       => 'sometimes|uuid|exists:batches,id',
             'stockingDate'  => 'sometimes|date',
             'quantity'      => 'sometimes|integer|min:1',
             'averageWeight' => 'sometimes|numeric|min:0',
@@ -59,11 +55,11 @@ class StockingUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batchId.uuid'         => 'The batch ID must be a valid UUID.',
-            'batchId.exists'       => 'The batch ID must exist in the batches table.',
+            'batchId.uuid'          => 'The batch ID must be a valid UUID.',
+            'batchId.exists'        => 'The batch ID must exist in the batches table.',
             'stockingDate.date'     => 'The stocking date must be a valid date.',
-            'quantity.integer'     => 'The quantity must be an integer.',
-            'quantity.min'         => 'The quantity must be at least 1.',
+            'quantity.integer'      => 'The quantity must be an integer.',
+            'quantity.min'          => 'The quantity must be at least 1.',
             'averageWeight.numeric' => 'The average weight must be a number.',
             'averageWeight.min'     => 'The average weight must be at least 0.',
         ];

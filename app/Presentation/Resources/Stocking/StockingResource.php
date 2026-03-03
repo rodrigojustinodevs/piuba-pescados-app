@@ -27,21 +27,22 @@ class StockingResource extends JsonResource
     public function toArray($request): array
     {
         $stockingDate = $this->stocking_date;
+
         if ($stockingDate instanceof \DateTimeInterface) {
             $stockingDate = $stockingDate->format('Y-m-d');
         }
 
         return [
-            'id'           => $this->id,
-            'batch'        => $this->whenLoaded('batch', fn (): array => [
+            'id'    => $this->id,
+            'batch' => $this->whenLoaded('batch', fn (): array => [
                 'id'   => $this->batch->id,
                 'name' => $this->batch->name,
             ]),
             'stockingDate'  => $stockingDate,
             'quantity'      => $this->quantity,
             'averageWeight' => $this->average_weight,
-            'createdAt'    => $this->created_at?->toDateTimeString(),
-            'updatedAt'    => $this->updated_at?->toDateTimeString(),
+            'createdAt'     => $this->created_at?->toDateTimeString(),
+            'updatedAt'     => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

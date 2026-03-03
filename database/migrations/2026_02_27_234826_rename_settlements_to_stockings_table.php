@@ -17,7 +17,6 @@ return new class () extends Migration
         Schema::rename('settlements', 'stockings');
 
         DB::statement('ALTER TABLE stockings CHANGE settlement_date stocking_date DATE NULL');
-        
     }
 
     /**

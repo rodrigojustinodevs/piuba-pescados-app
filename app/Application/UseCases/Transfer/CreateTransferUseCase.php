@@ -33,7 +33,7 @@ class CreateTransferUseCase
 
             $batch = $this->batchRepository->showBatch('id', $batchId);
 
-            if (! $batch) {
+            if (!$batch instanceof \App\Domain\Models\Batch) {
                 throw new RuntimeException('Batch not found');
             }
 
@@ -47,13 +47,13 @@ class CreateTransferUseCase
 
             $transfer = $this->transferRepository->create($mappedData);
 
-            $newQuantity = $batch->initial_quantity - $quantity;
+            $newQuantity  = $batch->initial_quantity - $quantity;
             $updatedBatch = $this->batchRepository->update($batchId, [
                 'tank_id'          => $mappedData['destination_tank_id'],
                 'initial_quantity' => $newQuantity,
             ]);
 
-            if (! $updatedBatch) {
+            if (!$updatedBatch instanceof \App\Domain\Models\Batch) {
                 throw new RuntimeException('Error updating batch tank');
             }
 

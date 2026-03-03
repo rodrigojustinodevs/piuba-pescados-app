@@ -28,10 +28,10 @@ class ShowAlertUseCase
             alertType: $alert->alert_type,
             message: $alert->message,
             status: $alert->status,
+            createdAt: (string)$alert->created_at?->toDateTimeString(),
             company: [
                 'name' => $alert->company->name ?? '',
             ],
-            createdAt: (string)$alert->created_at?->toDateTimeString(),
             updatedAt: $alert->updated_at?->toDateTimeString(),
         );
     }

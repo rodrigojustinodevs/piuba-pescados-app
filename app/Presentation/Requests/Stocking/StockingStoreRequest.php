@@ -41,7 +41,7 @@ class StockingStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batchId'      => 'required|uuid|exists:batches,id',
+            'batchId'       => 'required|uuid|exists:batches,id',
             'stockingDate'  => 'required|date',
             'quantity'      => 'required|integer|min:1',
             'averageWeight' => 'required|numeric|min:0',
@@ -58,8 +58,8 @@ class StockingStoreRequest extends FormRequest
             'batchId.required'       => 'The batch ID is required.',
             'batchId.uuid'           => 'The batch ID must be a valid UUID.',
             'batchId.exists'         => 'The batch ID must exist in the batches table.',
-            'stockingDate.required'   => 'The stocking date is required.',
-            'stockingDate.date'       => 'The stocking date must be a valid date.',
+            'stockingDate.required'  => 'The stocking date is required.',
+            'stockingDate.date'      => 'The stocking date must be a valid date.',
             'quantity.required'      => 'The quantity is required.',
             'quantity.integer'       => 'The quantity must be an integer.',
             'quantity.min'           => 'The quantity must be at least 1.',

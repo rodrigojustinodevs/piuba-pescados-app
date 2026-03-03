@@ -42,7 +42,7 @@ class TransferDTO
     {
         return [
             'id'                => $this->id,
-            'batchId'          => $this->batchId,
+            'batchId'           => $this->batchId,
             'originTankId'      => $this->originTankId,
             'destinationTankId' => $this->destinationTankId,
             'quantity'          => $this->quantity,

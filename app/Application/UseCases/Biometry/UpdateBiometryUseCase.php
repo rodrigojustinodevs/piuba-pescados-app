@@ -25,7 +25,7 @@ class UpdateBiometryUseCase
     {
         return DB::transaction(function () use ($id, $data): BiometryDTO {
             $mappedData = BiometryMapper::fromRequest($data);
-            $biometry  = $this->biometryRepository->update($id, $mappedData);
+            $biometry   = $this->biometryRepository->update($id, $mappedData);
 
             if (! $biometry instanceof Biometry) {
                 throw new RuntimeException('Biometry not found');

@@ -36,6 +36,7 @@ class ShowPurchaseUseCase
             inputName: $purchase->input_name,
             quantity: $purchase->quantity,
             totalPrice: $purchase->total_price,
+            purchaseDate: $purchaseDate->toDateString(),
             supplier: [
                 'id'   => $purchase->supplier->id ?? '',
                 'name' => $purchase->supplier->name ?? '',
@@ -43,7 +44,6 @@ class ShowPurchaseUseCase
             company: [
                 'name' => $purchase->company->name ?? '',
             ],
-            purchaseDate: $purchaseDate->toDateString(),
             stockingId: $purchase->stocking_id,
             stocking: $stocking ? [
                 'id'           => $stocking->id,

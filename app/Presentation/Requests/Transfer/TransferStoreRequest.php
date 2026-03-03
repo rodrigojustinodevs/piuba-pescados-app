@@ -48,7 +48,7 @@ class TransferStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batchId'          => ['required', 'uuid', 'exists:batches,id'],
+            'batchId'           => ['required', 'uuid', 'exists:batches,id'],
             'originTankId'      => ['required', 'uuid', 'exists:tanks,id'],
             'destinationTankId' => ['required', 'uuid', 'exists:tanks,id', 'different:originTankId'],
             'description'       => ['required', 'string'],

@@ -42,7 +42,7 @@ class ShowSaleUseCase
                 'id'   => $sale->client->id ?? null,
                 'name' => $sale->client->name ?? null,
             ],
-            batcheId: $sale->batche_id,
+            batchId: $sale->batch_id,
             createdAt: $sale->created_at?->toDateTimeString(),
             updatedAt: $sale->updated_at?->toDateTimeString()
         );

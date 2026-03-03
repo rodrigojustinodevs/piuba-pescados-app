@@ -55,17 +55,17 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'update-alert',
             'delete-alert',
             
-            // Permissões de Batche
-            'create-batche',
-            'view-batche',
-            'update-batche',
-            'delete-batche',
+            // Permissões de Batch
+            'create-batch',
+            'view-batch',
+            'update-batch',
+            'delete-batch',
             
             // Permissões de Biometry
-            'create-batche', // Nota: biometry usa as mesmas permissões de batche
-            'view-batche',
-            'update-batche',
-            'delete-batche',
+            'create-batch', // Nota: biometry usa as mesmas permissões de batch
+            'view-batch',
+            'update-batch',
+            'delete-batch',
             
             // Permissões de Cost Allocation
             'create-cost-allocation',
@@ -133,11 +133,11 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'update-sensor',
             'delete-sensor',
             
-            // Permissões de Settlement
-            'create-settlement',
-            'view-settlement',
-            'update-settlement',
-            'delete-settlement',
+            // Permissões de Stocking (aquaculture: povoamento/estocagem)
+            'create-stocking',
+            'view-stocking',
+            'update-stocking',
+            'delete-stocking',
             
             // Permissões de Stock
             'create-stock',

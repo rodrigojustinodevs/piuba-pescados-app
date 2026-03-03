@@ -8,7 +8,7 @@ class TransferDTO
 {
     public function __construct(
         public string $id,
-        public string $batcheId,
+        public string $batchId,
         public string $originTankId,
         public string $destinationTankId,
         public int $quantity,
@@ -25,7 +25,7 @@ class TransferDTO
     {
         return new self(
             id: $data['id'],
-            batcheId: $data['batche_id'],
+            batchId: $data['batch_id'],
             originTankId: $data['origin_tank_id'],
             destinationTankId: $data['destination_tank_id'],
             quantity: (int) $data['quantity'],
@@ -42,7 +42,7 @@ class TransferDTO
     {
         return [
             'id'                => $this->id,
-            'batcheId'          => $this->batcheId,
+            'batchId'          => $this->batchId,
             'originTankId'      => $this->originTankId,
             'destinationTankId' => $this->destinationTankId,
             'quantity'          => $this->quantity,
@@ -55,7 +55,7 @@ class TransferDTO
     public function isEmpty(): bool
     {
         return $this->id === '' ||
-            $this->batcheId === '' ||
+            $this->batchId === '' ||
             $this->originTankId === '' ||
             $this->destinationTankId === '' ||
             $this->description === '' ||

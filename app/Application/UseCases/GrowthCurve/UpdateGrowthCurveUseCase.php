@@ -32,7 +32,7 @@ class UpdateGrowthCurveUseCase
             return new GrowthCurveDTO(
                 id: $growthCurve->id,
                 averageWeight: $growthCurve->average_weight,
-                batcheId: $growthCurve->batche_id,
+                batchId: $growthCurve->batch_id,
                 createdAt: $growthCurve->created_at?->toDateTimeString(),
                 updatedAt: $growthCurve->updated_at?->toDateTimeString()
             );

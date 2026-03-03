@@ -8,7 +8,7 @@ class HarvestDTO
 {
     public function __construct(
         public string $id,
-        public string $batcheId,
+        public string $batchId,
         public string $harvestDate,
         public float $totalWeight,
         public float $pricePerKg,
@@ -25,7 +25,7 @@ class HarvestDTO
     {
         return new self(
             id: $data['id'],
-            batcheId: $data['batche_id'],
+            batchId: $data['batch_id'],
             harvestDate: $data['harvest_date'],
             totalWeight: (float) $data['total_weight'],
             pricePerKg: (float) $data['price_per_kg'],
@@ -42,7 +42,7 @@ class HarvestDTO
     {
         return [
             'id'           => $this->id,
-            'batcheId'     => $this->batcheId,
+            'batchId'     => $this->batchId,
             'harvestDate'  => $this->harvestDate,
             'totalWeight'  => $this->totalWeight,
             'pricePerKg'   => $this->pricePerKg,
@@ -55,7 +55,7 @@ class HarvestDTO
     public function isEmpty(): bool
     {
         return ($this->id === '' || $this->id === '0') &&
-            ($this->batcheId === '' || $this->batcheId === '0') &&
+            ($this->batchId === '' || $this->batchId === '0') &&
             ($this->harvestDate === '' || $this->harvestDate === '0') &&
             ($this->totalWeight === 0.0) &&
             $this->pricePerKg === 0.0 &&

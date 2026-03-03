@@ -9,6 +9,7 @@ class PurchaseDTO
     /**
      * @param array{id?: string|null, name?: string|null}|null $supplier
      * @param array{name?: string|null}|null $company
+     * @param array{id?: string|null, stockingDate?: string|null}|null $stocking
      */
     public function __construct(
         public string $id,
@@ -18,6 +19,8 @@ class PurchaseDTO
         public string $purchaseDate,
         public ?array $supplier = null,
         public ?array $company = null,
+        public ?string $stockingId = null,
+        public ?array $stocking = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null
     ) {
@@ -41,6 +44,11 @@ class PurchaseDTO
             company: isset($data['company']) ? [
                 'name' => $data['company']['name'] ?? null,
             ] : null,
+            stockingId: $data['stocking_id'] ?? null,
+            stocking: isset($data['stocking']) ? [
+                'id'           => $data['stocking']['id'] ?? null,
+                'stockingDate' => $data['stocking']['stocking_date'] ?? null,
+            ] : null,
             createdAt: $data['created_at'] ?? null,
             updatedAt: $data['updated_at'] ?? null
         );
@@ -59,6 +67,8 @@ class PurchaseDTO
             'purchaseDate' => $this->purchaseDate,
             'supplier'     => $this->supplier,
             'company'      => $this->company,
+            'stockingId'   => $this->stockingId,
+            'stocking'     => $this->stocking,
             'createdAt'    => $this->createdAt,
             'updatedAt'    => $this->updatedAt,
         ];

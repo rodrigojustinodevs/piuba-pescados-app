@@ -30,7 +30,7 @@ class CreateFeedingUseCase
 
             return new FeedingDTO(
                 id: $feeding->id,
-                batcheId: $feeding->batche_id,
+                batchId: $feeding->batch_id,
                 feedingDate: $feedingDate->toDateString(),
                 quantityProvided: $feeding->quantity_provided,
                 feedType: $feeding->feed_type,

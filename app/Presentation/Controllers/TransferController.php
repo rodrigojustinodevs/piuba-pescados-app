@@ -54,9 +54,9 @@ class TransferController
      *                     @OA\Items(
      *                         type="object",
      *                         @OA\Property(property="id", type="string", format="uuid"),
-     *                         @OA\Property(property="batcheId", type="string", format="uuid"),
+     *                         @OA\Property(property="batchId", type="string", format="uuid"),
      *                         @OA\Property(
-     *                             property="batche",
+     *                             property="batch",
      *                             type="object",
      *                             description="Lote (quando carregado)",
      *                             @OA\Property(property="id", type="string", format="uuid"),
@@ -140,9 +140,9 @@ class TransferController
      *                 property="response",
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
-     *                 @OA\Property(property="batcheId", type="string", format="uuid"),
+     *                 @OA\Property(property="batchId", type="string", format="uuid"),
      *                 @OA\Property(
-     *                     property="batche",
+     *                     property="batch",
      *                     type="object",
      *                     description="Lote (quando carregado)",
      *                     @OA\Property(property="id", type="string", format="uuid"),
@@ -200,12 +200,12 @@ class TransferController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"batcheId","originTankId","destinationTankId","quantity","description"},
+     *             required={"batchId","originTankId","destinationTankId","quantity","description"},
      *             @OA\Property(
-     *                 property="batcheId",
+     *                 property="batchId",
      *                 type="string",
      *                 format="uuid",
-     *                 description="ID do lote (Batche)"
+     *                 description="ID do lote (Batch)"
      *             ),
      *             @OA\Property(
      *                 property="originTankId",
@@ -244,7 +244,7 @@ class TransferController
      *                 property="response",
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
-     *                 @OA\Property(property="batcheId", type="string", format="uuid"),
+     *                 @OA\Property(property="batchId", type="string", format="uuid"),
      *                 @OA\Property(property="originTankId", type="string", format="uuid"),
      *                 @OA\Property(property="destinationTankId", type="string", format="uuid"),
      *                 @OA\Property(property="quantity", type="integer", example=100),
@@ -287,10 +287,10 @@ class TransferController
      *         required=true,
      *         @OA\JsonContent(
      *             @OA\Property(
-     *                 property="batcheId",
+     *                 property="batchId",
      *                 type="string",
      *                 format="uuid",
-     *                 description="ID do lote (Batche)"
+     *                 description="ID do lote (Batch)"
      *             ),
      *             @OA\Property(
      *                 property="originTankId",
@@ -328,7 +328,7 @@ class TransferController
      *                 property="response",
      *                 type="object",
      *                 @OA\Property(property="id", type="string", format="uuid"),
-     *                 @OA\Property(property="batcheId", type="string", format="uuid"),
+     *                 @OA\Property(property="batchId", type="string", format="uuid"),
      *                 @OA\Property(property="originTankId", type="string", format="uuid"),
      *                 @OA\Property(property="destinationTankId", type="string", format="uuid"),
      *                 @OA\Property(property="quantity", type="integer", example=100),

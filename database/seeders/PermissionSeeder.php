@@ -19,7 +19,7 @@ class PermissionSeeder extends Seeder
         $entities = [
             'alert',
             'biometry',
-            'batche',
+            'batch',
             'client',
             'company',
             'cost-allocation',
@@ -32,7 +32,7 @@ class PermissionSeeder extends Seeder
             'purchase',
             'sale',
             'sensor',
-            'settlement',
+            'stocking',
             'stock',
             'subscription',
             'supplier',

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Transfer;
 
 use App\Application\DTOs\TransferDTO;
-use App\Domain\Repositories\BatcheRepositoryInterface;
+use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use App\Infrastructure\Mappers\TransferMapper;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +15,7 @@ class CreateTransferUseCase
 {
     public function __construct(
         protected TransferRepositoryInterface $transferRepository,
-        protected BatcheRepositoryInterface $batcheRepository
+        protected BatchRepositoryInterface $batchRepository
     ) {
     }
 
@@ -28,33 +28,33 @@ class CreateTransferUseCase
             $mappedData        = TransferMapper::fromRequest($data);
             $originTankId      = (string) $mappedData['origin_tank_id'];
             $destinationTankId = (string) $mappedData['destination_tank_id'];
-            $batcheId          = (string) $mappedData['batche_id'];
+            $batchId           = (string) $mappedData['batch_id'];
             $quantity          = (int) $mappedData['quantity'];
 
-            $batche = $this->batcheRepository->showBatche('id', $batcheId);
+            $batch = $this->batchRepository->showBatch('id', $batchId);
 
-            if (! $batche) {
-                throw new RuntimeException('Batche not found');
+            if (! $batch) {
+                throw new RuntimeException('Batch not found');
             }
 
-            if ((string) $batche->tank_id !== $originTankId) {
-                throw new RuntimeException('The batche is not in the origin tank informed.');
+            if ((string) $batch->tank_id !== $originTankId) {
+                throw new RuntimeException('The batch is not in the origin tank informed.');
             }
 
-            if ($this->batcheRepository->hasActiveBatcheInTank($destinationTankId, $batcheId)) {
-                throw new RuntimeException('Tank already has an active batche.');
+            if ($this->batchRepository->hasActiveBatchInTank($destinationTankId, $batchId)) {
+                throw new RuntimeException('Tank already has an active batch.');
             }
 
             $transfer = $this->transferRepository->create($mappedData);
 
-            $newQuantity = $batche->initial_quantity - $quantity;
-            $updatedBatche = $this->batcheRepository->update($batcheId, [
+            $newQuantity = $batch->initial_quantity - $quantity;
+            $updatedBatch = $this->batchRepository->update($batchId, [
                 'tank_id'          => $mappedData['destination_tank_id'],
                 'initial_quantity' => $newQuantity,
             ]);
 
-            if (! $updatedBatche) {
-                throw new RuntimeException('Error updating batche tank');
+            if (! $updatedBatch) {
+                throw new RuntimeException('Error updating batch tank');
             }
 
             return TransferMapper::toDTO($transfer);

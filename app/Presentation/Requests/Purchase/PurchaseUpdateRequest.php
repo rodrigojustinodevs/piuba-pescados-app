@@ -26,6 +26,7 @@ class PurchaseUpdateRequest extends FormRequest
         return [
             'company_id'         => ['sometimes', 'uuid', 'exists:companies,id'],
             'supplier_id'        => ['sometimes', 'uuid', 'exists:suppliers,id'],
+            'stocking_id'        => ['sometimes', 'nullable', 'uuid', 'exists:stockings,id'],
             'input_name'         => ['sometimes', 'string', 'max:255'],
             'purchased_quantity' => ['sometimes', 'numeric', 'min:0'],
             'total_price'        => ['sometimes', 'numeric', 'min:0'],
@@ -46,6 +47,8 @@ class PurchaseUpdateRequest extends FormRequest
             'company_id.exists'          => 'The company must exist.',
             'supplier_id.uuid'           => 'The supplier ID must be a valid UUID.',
             'supplier_id.exists'         => 'The supplier must exist.',
+            'stocking_id.uuid'           => 'The stocking ID must be a valid UUID.',
+            'stocking_id.exists'         => 'The selected stocking does not exist.',
             'input_name.string'          => 'The input name must be a string.',
             'purchased_quantity.numeric' => 'The purchased quantity must be numeric.',
             'total_price.numeric'        => 'The total price must be numeric.',

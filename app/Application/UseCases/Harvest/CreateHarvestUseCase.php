@@ -30,7 +30,7 @@ class CreateHarvestUseCase
 
             return new HarvestDTO(
                 id: $harvest->id,
-                batcheId: $harvest->batche_id,
+                batchId: $harvest->batch_id,
                 harvestDate: $harvestDate->toDateString(),
                 totalWeight: $harvest->total_weight,
                 pricePerKg: $harvest->price_per_kg,

@@ -18,7 +18,7 @@ class SaleDTO
         public string $saleDate,
         public ?array $company,
         public ?array $client,
-        public string $batcheId,
+        public string $batchId,
         public ?string $createdAt = null,
         public ?string $updatedAt = null
     ) {
@@ -40,7 +40,7 @@ class SaleDTO
                 'id'   => $data['client']['id'] ?? null,
                 'name' => $data['client']['name'] ?? null,
             ] : null,
-            batcheId: $data['batche_id'],
+            batchId: $data['batch_id'],
             createdAt: $data['created_at'] ?? null,
             updatedAt: $data['updated_at'] ?? null
         );
@@ -59,7 +59,7 @@ class SaleDTO
             'saleDate'     => $this->saleDate,
             'company'      => $this->company,
             'client'       => $this->client,
-            'batcheId'     => $this->batcheId,
+            'batchId'     => $this->batchId,
             'createdAt'    => $this->createdAt,
             'updatedAt'    => $this->updatedAt,
         ];

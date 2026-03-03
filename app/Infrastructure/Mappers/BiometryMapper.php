@@ -14,7 +14,7 @@ final class BiometryMapper
     {
         return new BiometryDTO(
             id: $model->id,
-            batcheId: (string) $model->batche_id,
+            batchId: (string) $model->batch_id,
             averageWeight: (float) $model->average_weight,
             fcr: (float) $model->fcr,
             biometryDate: self::formatBiometryDate($model->biometry_date),
@@ -32,7 +32,7 @@ final class BiometryMapper
     {
         return [
             'id'             => $dto->id,
-            'batche_id'      => $dto->batcheId,
+            'batch_id'      => $dto->batchId,
             'biometry_date'  => $dto->biometryDate,
             'average_weight' => $dto->averageWeight,
             'fcr'            => $dto->fcr,
@@ -41,7 +41,7 @@ final class BiometryMapper
 
     /**
      * Converte array de request para array de persistência.
-     * Aceita camelCase (batcheId, biometryDate, averageWeight) e snake_case.
+     * Aceita camelCase (batchId, biometryDate, averageWeight) e snake_case.
      *
      * @param array<string, mixed> $data
      * @return array<string, mixed>
@@ -50,10 +50,10 @@ final class BiometryMapper
     {
         $mapped = [];
 
-        if (isset($data['batcheId'])) {
-            $mapped['batche_id'] = $data['batcheId'];
-        } elseif (isset($data['batche_id'])) {
-            $mapped['batche_id'] = $data['batche_id'];
+        if (isset($data['batchId'])) {
+            $mapped['batch_id'] = $data['batchId'];
+        } elseif (isset($data['batch_id'])) {
+            $mapped['batch_id'] = $data['batch_id'];
         }
 
         if (isset($data['biometryDate'])) {
@@ -82,7 +82,7 @@ final class BiometryMapper
     {
         return [
             'id'            => $model->id,
-            'batcheId'      => $model->batche_id,
+            'batchId'      => $model->batch_id,
             'biometryDate'  => self::formatBiometryDate($model->biometry_date),
             'averageWeight' => (float) $model->average_weight,
             'fcr'           => (float) $model->fcr,

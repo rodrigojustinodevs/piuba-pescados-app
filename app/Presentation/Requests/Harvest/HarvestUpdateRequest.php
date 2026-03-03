@@ -24,7 +24,7 @@ class HarvestUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batche_id'     => ['sometimes', 'uuid', 'exists:batches,id'],
+            'batch_id'     => ['sometimes', 'uuid', 'exists:batches,id'],
             'total_weight'  => ['sometimes', 'numeric', 'min:0'],
             'price_per_kg'  => ['sometimes', 'numeric', 'min:0'],
             'total_revenue' => ['sometimes', 'numeric', 'min:0'],
@@ -41,8 +41,8 @@ class HarvestUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batche_id.uuid'   => 'The batche ID must be a valid UUID.',
-            'batche_id.exists' => 'The selected batche does not exist.',
+            'batch_id.uuid'   => 'The batch ID must be a valid UUID.',
+            'batch_id.exists' => 'The selected batch does not exist.',
 
             'total_weight.numeric' => 'The total weight must be a number.',
             'total_weight.min'     => 'The total weight must be at least 0.',

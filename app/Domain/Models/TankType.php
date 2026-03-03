@@ -43,7 +43,7 @@ class TankType extends BaseModel
     public function tanks(): HasMany
     {
         /** @var HasMany<Tank, static> $relation */
-        $relation = $this->hasMany(Tank::class, 'tank_type_id'); // Correção do nome da chave
+        $relation = $this->hasMany(Tank::class, 'tank_type_id');
 
         return $relation;
     }

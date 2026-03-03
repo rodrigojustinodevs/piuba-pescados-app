@@ -24,7 +24,7 @@ class MortalityStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batche_id' => ['required', 'uuid', 'exists:batches,id'],
+            'batch_id' => ['required', 'uuid', 'exists:batches,id'],
             'quantity'  => ['required', 'integer', 'min:1'],
             'cause'     => ['required', 'string', 'max:255'],
         ];
@@ -39,8 +39,8 @@ class MortalityStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batche_id.required' => 'The batche ID is required.',
-            'batche_id.uuid'     => 'The batche ID must be a valid UUID.',
+            'batch_id.required' => 'The batch ID is required.',
+            'batch_id.uuid'     => 'The batch ID must be a valid UUID.',
             'batch_id.exists'    => 'The batch ID must exist in the batches table.',
             'quantity.required'  => 'The quantity is required.',
             'quantity.integer'   => 'The quantity must be an integer.',

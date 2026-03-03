@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property-read string $id
- * @property-read string $batche_id
+ * @property-read string $batch_id
  * @property-read float $total_weight
  * @property-read float $price_per_kg
  * @property-read float $total_revenue
@@ -29,7 +29,7 @@ class HarvestResource extends JsonResource
     {
         return [
             'id'           => $this->id,
-            'batcheId'     => $this->batche_id,
+            'batchId'     => $this->batch_id,
             'totalWeight'  => $this->total_weight,
             'pricePerKg'   => $this->price_per_kg,
             'totalRevenue' => $this->total_revenue,

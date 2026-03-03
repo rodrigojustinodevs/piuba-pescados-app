@@ -25,7 +25,7 @@ class CreateMortalityUseCase
 
             return new MortalityDTO(
                 id: $mortality->id,
-                batcheId: $mortality->batche_id,
+                batchId: $mortality->batch_id,
                 quantity: $mortality->quantity,
                 cause: $mortality->cause,
                 createdAt: $mortality->created_at?->toDateTimeString(),

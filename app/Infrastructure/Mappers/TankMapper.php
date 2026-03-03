@@ -75,9 +75,9 @@ final class TankMapper
         }
 
         if (isset($data['tankTypeId'])) {
-            $mapped['tank_types_id'] = $data['tankTypeId'];
-        } elseif (isset($data['tank_types_id'])) {
-            $mapped['tank_types_id'] = $data['tank_types_id'];
+            $mapped['tank_type_id'] = $data['tankTypeId'];
+        } elseif (isset($data['tank_type_id'])) {
+            $mapped['tank_type_id'] = $data['tank_type_id'];
         }
 
         if (isset($data['companyId'])) {

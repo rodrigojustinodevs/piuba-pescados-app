@@ -32,6 +32,7 @@ class PurchaseRepository implements PurchaseRepositoryInterface
 
         if ($purchase) {
             $purchase->update($data);
+            $purchase->load(['supplier:id,name', 'company:id,name', 'stocking:id,stocking_date']);
 
             return $purchase;
         }
@@ -48,6 +49,7 @@ class PurchaseRepository implements PurchaseRepositoryInterface
         $paginator = Purchase::with([
             'supplier:id,name',
             'company:id,name',
+            'stocking:id,stocking_date',
         ])->paginate($page);
 
         return new PaginationPresentr($paginator);
@@ -58,7 +60,9 @@ class PurchaseRepository implements PurchaseRepositoryInterface
      */
     public function showPurchase(string $field, string | int $value): ?Purchase
     {
-        return Purchase::where($field, $value)->first();
+        return Purchase::with(['supplier:id,name', 'company:id,name', 'stocking:id,stocking_date'])
+            ->where($field, $value)
+            ->first();
     }
 
     public function delete(string $id): bool

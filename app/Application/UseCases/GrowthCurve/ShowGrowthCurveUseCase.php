@@ -26,7 +26,7 @@ class ShowGrowthCurveUseCase
 
         return new GrowthCurveDTO(
             id: $growthCurve->id,
-            batcheId: $growthCurve->batche_id,
+            batchId: $growthCurve->batch_id,
             averageWeight: $growthCurve->average_weight,
             createdAt: $growthCurve->created_at?->toDateTimeString(),
             updatedAt: $growthCurve->updated_at?->toDateTimeString()

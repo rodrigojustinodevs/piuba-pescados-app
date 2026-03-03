@@ -17,8 +17,8 @@ class BiometryUpdateRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $merge = [];
-        if (! $this->has('batcheId') && $this->has('batche_id')) {
-            $merge['batcheId'] = $this->input('batche_id');
+        if (! $this->has('batchId') && $this->has('batch_id')) {
+            $merge['batchId'] = $this->input('batch_id');
         }
         if (! $this->has('biometryDate') && $this->has('biometry_date')) {
             $merge['biometryDate'] = $this->input('biometry_date');
@@ -37,7 +37,7 @@ class BiometryUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batcheId'      => 'sometimes|uuid|exists:batches,id',
+            'batchId'      => 'sometimes|uuid|exists:batches,id',
             'biometryDate'  => 'sometimes|date',
             'averageWeight' => 'sometimes|numeric|min:0',
             'fcr'           => 'sometimes|numeric|min:0',
@@ -51,8 +51,8 @@ class BiometryUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batcheId.uuid'         => 'The batche ID must be a valid UUID.',
-            'batcheId.exists'       => 'The batche ID must exist in the batches table.',
+            'batchId.uuid'         => 'The batch ID must be a valid UUID.',
+            'batchId.exists'       => 'The batch ID must exist in the batches table.',
             'biometryDate.date'     => 'The biometry date must be a valid date.',
             'averageWeight.numeric' => 'The average weight must be a number.',
             'averageWeight.min'     => 'The average weight must be at least 0.',

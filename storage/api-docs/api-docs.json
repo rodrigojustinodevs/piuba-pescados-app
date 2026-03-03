@@ -102,14 +102,12 @@
                 "tags": [
                     "Batches"
                 ],
-                "summary": "Listar lotes",
-                "operationId": "4f7175a6cd16537d5a186e8affd5eb45",
+                "summary": "List batches",
+                "operationId": "b6c9a2de2368615cd8339af58bf4b52d",
                 "parameters": [
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Número da página",
-                        "required": false,
                         "schema": {
                             "type": "integer",
                             "example": 1
@@ -118,8 +116,6 @@
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Itens por página",
-                        "required": false,
                         "schema": {
                             "type": "integer",
                             "example": 15
@@ -128,93 +124,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lista paginada de lotes",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "string",
-                                                        "format": "uuid"
-                                                    },
-                                                    "name": {
-                                                        "description": "Nome do lote",
-                                                        "type": "string",
-                                                        "nullable": true
-                                                    },
-                                                    "description": {
-                                                        "description": "Descrição do lote",
-                                                        "type": "string",
-                                                        "nullable": true
-                                                    },
-                                                    "entryDate": {
-                                                        "type": "string",
-                                                        "format": "date"
-                                                    },
-                                                    "initialQuantity": {
-                                                        "type": "integer",
-                                                        "example": 1000
-                                                    },
-                                                    "species": {
-                                                        "type": "string",
-                                                        "example": "Tilapia"
-                                                    },
-                                                    "status": {
-                                                        "type": "string",
-                                                        "example": "active"
-                                                    },
-                                                    "cultivation": {
-                                                        "type": "string",
-                                                        "example": "daycare"
-                                                    },
-                                                    "tank": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "string",
-                                                                "format": "uuid",
-                                                                "nullable": true
-                                                            },
-                                                            "name": {
-                                                                "type": "string",
-                                                                "nullable": true
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "createdAt": {
-                                                        "type": "string",
-                                                        "format": "date-time",
-                                                        "nullable": true
-                                                    },
-                                                    "updatedAt": {
-                                                        "type": "string",
-                                                        "format": "date-time",
-                                                        "nullable": true
-                                                    }
-                                                },
-                                                "type": "object"
-                                            }
-                                        },
-                                        "pagination": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Paginated list of batches"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -227,18 +137,17 @@
                 ]
             }
         },
-        "/company/batche/{id}": {
+        "/company/batch/{id}": {
             "get": {
                 "tags": [
                     "Batches"
                 ],
-                "summary": "Detalhar um lote",
-                "operationId": "00fd11f8bb50e02f7e49a0e723563bbe",
+                "summary": "Get batch by ID",
+                "operationId": "3947a469903c69ff19cf06574b27de6e",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID do lote",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -248,91 +157,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lote encontrado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "name": {
-                                                    "description": "Nome do lote",
-                                                    "type": "string",
-                                                    "nullable": true
-                                                },
-                                                "description": {
-                                                    "description": "Descrição do lote",
-                                                    "type": "string",
-                                                    "nullable": true
-                                                },
-                                                "entryDate": {
-                                                    "type": "string",
-                                                    "format": "date",
-                                                    "example": "2024-10-15"
-                                                },
-                                                "initialQuantity": {
-                                                    "type": "integer",
-                                                    "example": 1200
-                                                },
-                                                "species": {
-                                                    "type": "string",
-                                                    "example": "Camarão"
-                                                },
-                                                "status": {
-                                                    "type": "string",
-                                                    "example": "active"
-                                                },
-                                                "cultivation": {
-                                                    "type": "string",
-                                                    "example": "nursery"
-                                                },
-                                                "tank": {
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "string",
-                                                            "format": "uuid",
-                                                            "nullable": true
-                                                        },
-                                                        "name": {
-                                                            "type": "string",
-                                                            "nullable": true
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "createdAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                },
-                                                "updatedAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Batch found"
                     },
                     "404": {
-                        "description": "Batche not found"
+                        "description": "Batch not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -348,13 +176,12 @@
                 "tags": [
                     "Batches"
                 ],
-                "summary": "Atualizar um lote",
-                "operationId": "97dfe51c2551e0d0ad0f8a5c964625fa",
+                "summary": "Update a batch",
+                "operationId": "acf61e313782f666bf0a4117421157e9",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID do lote",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -366,88 +193,19 @@
                     "required": true,
                     "content": {
                         "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "name": {
-                                        "description": "Nome do lote",
-                                        "type": "string",
-                                        "maxLength": 255
-                                    },
-                                    "description": {
-                                        "description": "Descrição do lote",
-                                        "type": "string"
-                                    },
-                                    "tankId": {
-                                        "description": "ID do tanque",
-                                        "type": "string",
-                                        "format": "uuid"
-                                    },
-                                    "entryDate": {
-                                        "description": "Data de entrada",
-                                        "type": "string",
-                                        "format": "date"
-                                    },
-                                    "initialQuantity": {
-                                        "description": "Quantidade inicial",
-                                        "type": "integer",
-                                        "minimum": 1
-                                    },
-                                    "species": {
-                                        "description": "Espécie",
-                                        "type": "string",
-                                        "maxLength": 255
-                                    },
-                                    "status": {
-                                        "description": "Status do lote",
-                                        "type": "string",
-                                        "enum": [
-                                            "active",
-                                            "finished"
-                                        ]
-                                    },
-                                    "cultivation": {
-                                        "description": "Tipo de cultivo",
-                                        "type": "string",
-                                        "enum": [
-                                            "daycare",
-                                            "nursery"
-                                        ]
-                                    }
-                                },
-                                "type": "object"
-                            }
+                            "schema": {}
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Lote atualizado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Batch updated"
                     },
                     "400": {
                         "description": "Validation error"
                     },
                     "404": {
-                        "description": "Batche not found"
+                        "description": "Batch not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -463,13 +221,12 @@
                 "tags": [
                     "Batches"
                 ],
-                "summary": "Remover um lote",
-                "operationId": "c79e23888c95f588d9329e1d165d397a",
+                "summary": "Delete a batch",
+                "operationId": "7e8f0041e5e85f3d8d860d9015b3236a",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID do lote",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -479,27 +236,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lote removido",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Batche successfully deleted"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Batch deleted"
                     },
                     "404": {
-                        "description": "Batche not found"
+                        "description": "Batch not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -512,13 +252,13 @@
                 ]
             }
         },
-        "/company/batche": {
+        "/company/batch": {
             "post": {
                 "tags": [
                     "Batches"
                 ],
-                "summary": "Criar um lote",
-                "operationId": "80530940cf272f0a319e1fd08e41dbe3",
+                "summary": "Create a batch",
+                "operationId": "cf3100647d60105ef11ac6676af20e1a",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -526,85 +266,19 @@
                             "schema": {
                                 "required": [
                                     "tankId",
+                                    "name",
                                     "entryDate",
                                     "initialQuantity",
                                     "species",
                                     "cultivation"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "description": "Nome do lote",
-                                        "type": "string",
-                                        "maxLength": 255,
-                                        "example": "Lote 01 - Tilápia"
-                                    },
-                                    "description": {
-                                        "description": "Descrição do lote",
-                                        "type": "string",
-                                        "example": "Lote de alevinos recebidos em out/2024"
-                                    },
-                                    "tankId": {
-                                        "description": "ID do tanque",
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "example": "550e8400-e29b-41d4-a716-446655440000"
-                                    },
-                                    "entryDate": {
-                                        "description": "Data de entrada",
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2024-10-15"
-                                    },
-                                    "initialQuantity": {
-                                        "description": "Quantidade inicial",
-                                        "type": "integer",
-                                        "minimum": 1,
-                                        "example": 1200
-                                    },
-                                    "species": {
-                                        "description": "Espécie",
-                                        "type": "string",
-                                        "maxLength": 255,
-                                        "example": "Tilapia"
-                                    },
-                                    "cultivation": {
-                                        "description": "Tipo de cultivo",
-                                        "type": "string",
-                                        "enum": [
-                                            "daycare",
-                                            "nursery"
-                                        ],
-                                        "example": "daycare"
-                                    }
-                                },
-                                "type": "object"
+                                ]
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Lote criado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Batch created"
                     },
                     "400": {
                         "description": "Validation error"
@@ -672,12 +346,12 @@
                                                         "type": "string",
                                                         "format": "uuid"
                                                     },
-                                                    "batcheId": {
+                                                    "batchId": {
                                                         "description": "ID do lote",
                                                         "type": "string",
                                                         "format": "uuid"
                                                     },
-                                                    "batche": {
+                                                    "batch": {
                                                         "description": "Lote (quando carregado)",
                                                         "properties": {
                                                             "id": {
@@ -782,12 +456,12 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batcheId": {
+                                                "batchId": {
                                                     "description": "ID do lote",
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batche": {
+                                                "batch": {
                                                     "description": "Lote (quando carregado)",
                                                     "properties": {
                                                         "id": {
@@ -874,7 +548,7 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "batcheId": {
+                                    "batchId": {
                                         "description": "ID do lote",
                                         "type": "string",
                                         "format": "uuid"
@@ -924,7 +598,7 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batcheId": {
+                                                "batchId": {
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
@@ -1043,13 +717,13 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "batcheId",
+                                    "batchId",
                                     "biometryDate",
                                     "averageWeight",
                                     "fcr"
                                 ],
                                 "properties": {
-                                    "batcheId": {
+                                    "batchId": {
                                         "description": "ID do lote",
                                         "type": "string",
                                         "format": "uuid"
@@ -1099,7 +773,7 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batcheId": {
+                                                "batchId": {
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
@@ -1556,18 +1230,18 @@
                 ]
             }
         },
-        "/company/settlements": {
+        "/company/stockings": {
             "get": {
                 "tags": [
-                    "Settlements"
+                    "Stockings"
                 ],
-                "summary": "Listar settlements",
-                "operationId": "a9f6f05deaaa48858bdeb46d13c91b4e",
+                "summary": "List stockings",
+                "operationId": "ae814241d179fd9f6e84d86beb401d12",
                 "parameters": [
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Número da página",
+                        "description": "Page number",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -1577,7 +1251,7 @@
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Itens por página",
+                        "description": "Items per page",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -1587,7 +1261,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lista paginada de settlements",
+                        "description": "Paginated list of stockings",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1610,13 +1284,12 @@
                                                                 "type": "string",
                                                                 "format": "uuid"
                                                             },
-                                                            "batcheId": {
+                                                            "batchId": {
                                                                 "type": "string",
                                                                 "format": "uuid",
                                                                 "nullable": true
                                                             },
-                                                            "batche": {
-                                                                "description": "Lote (quando carregado)",
+                                                            "batch": {
                                                                 "properties": {
                                                                     "id": {
                                                                         "type": "string",
@@ -1629,7 +1302,7 @@
                                                                 },
                                                                 "type": "object"
                                                             },
-                                                            "settlementDate": {
+                                                            "stockingDate": {
                                                                 "type": "string",
                                                                 "format": "date",
                                                                 "example": "2026-02-13"
@@ -1702,18 +1375,18 @@
                 ]
             }
         },
-        "/company/settlement/{id}": {
+        "/company/stocking/{id}": {
             "get": {
                 "tags": [
-                    "Settlements"
+                    "Stockings"
                 ],
-                "summary": "Detalhar um settlement",
-                "operationId": "bdf8f410f0488f80b4221cbaa5078199",
+                "summary": "Get stocking by ID",
+                "operationId": "1428b9c7f2b7a122168e9600088fa880",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID do settlement",
+                        "description": "Stocking ID",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1723,7 +1396,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Settlement encontrado",
+                        "description": "Stocking found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1742,25 +1415,11 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batcheId": {
+                                                "batchId": {
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batche": {
-                                                    "description": "Lote (quando carregado)",
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "string",
-                                                            "format": "uuid"
-                                                        },
-                                                        "name": {
-                                                            "type": "string",
-                                                            "nullable": true
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "settlementDate": {
+                                                "stockingDate": {
                                                     "type": "string",
                                                     "format": "date",
                                                     "example": "2026-02-13"
@@ -1794,7 +1453,7 @@
                         }
                     },
                     "404": {
-                        "description": "Settlement not found"
+                        "description": "Stocking not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -1808,15 +1467,15 @@
             },
             "put": {
                 "tags": [
-                    "Settlements"
+                    "Stockings"
                 ],
-                "summary": "Atualizar um settlement",
-                "operationId": "fc388bf804eb02830eb153be7f8c1310",
+                "summary": "Update a stocking",
+                "operationId": "e66539301a260cfd8ed9430e7c41cd12",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID do settlement",
+                        "description": "Stocking ID",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1830,25 +1489,21 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "batcheId": {
-                                        "description": "ID do lote (Batche)",
+                                    "batchId": {
                                         "type": "string",
                                         "format": "uuid"
                                     },
-                                    "settlementDate": {
-                                        "description": "Data do settlement",
+                                    "stockingDate": {
                                         "type": "string",
                                         "format": "date",
                                         "example": "2026-02-13"
                                     },
                                     "quantity": {
-                                        "description": "Quantidade",
                                         "type": "integer",
                                         "minimum": 1,
                                         "example": 100
                                     },
                                     "averageWeight": {
-                                        "description": "Peso médio",
                                         "type": "number",
                                         "format": "float",
                                         "minimum": 0,
@@ -1862,7 +1517,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Settlement atualizado",
+                        "description": "Stocking updated",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1881,11 +1536,11 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batcheId": {
+                                                "batchId": {
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "settlementDate": {
+                                                "stockingDate": {
                                                     "type": "string",
                                                     "format": "date",
                                                     "example": "2026-02-13"
@@ -1922,7 +1577,7 @@
                         "description": "Validation error"
                     },
                     "404": {
-                        "description": "Settlement not found"
+                        "description": "Stocking not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -1936,15 +1591,15 @@
             },
             "delete": {
                 "tags": [
-                    "Settlements"
+                    "Stockings"
                 ],
-                "summary": "Remover um settlement",
-                "operationId": "f1ba46b96e93300e48c6ebc7b9ea242a",
+                "summary": "Delete a stocking",
+                "operationId": "e622bf2c05681514f3b277a9b7d5ec78",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID do settlement",
+                        "description": "Stocking ID",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1954,7 +1609,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Settlement removido",
+                        "description": "Stocking deleted",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1968,7 +1623,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Settlement successfully deleted"
+                                            "example": "Stocking successfully deleted"
                                         }
                                     },
                                     "type": "object"
@@ -1977,7 +1632,7 @@
                         }
                     },
                     "404": {
-                        "description": "Settlement not found"
+                        "description": "Stocking not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -1990,44 +1645,44 @@
                 ]
             }
         },
-        "/company/settlement": {
+        "/company/stocking": {
             "post": {
                 "tags": [
-                    "Settlements"
+                    "Stockings"
                 ],
-                "summary": "Criar um settlement",
-                "operationId": "8c729da6657653bc8539f3a101a8ac76",
+                "summary": "Create a stocking",
+                "operationId": "bf3f005f67925906279ff89bfa2e7794",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "batcheId",
-                                    "settlementDate",
+                                    "batchId",
+                                    "stockingDate",
                                     "quantity",
                                     "averageWeight"
                                 ],
                                 "properties": {
-                                    "batcheId": {
-                                        "description": "ID do lote (Batche)",
+                                    "batchId": {
+                                        "description": "Batch ID",
                                         "type": "string",
                                         "format": "uuid"
                                     },
-                                    "settlementDate": {
-                                        "description": "Data do settlement",
+                                    "stockingDate": {
+                                        "description": "Stocking date",
                                         "type": "string",
                                         "format": "date",
                                         "example": "2026-02-13"
                                     },
                                     "quantity": {
-                                        "description": "Quantidade",
+                                        "description": "Quantity",
                                         "type": "integer",
                                         "minimum": 1,
                                         "example": 100
                                     },
                                     "averageWeight": {
-                                        "description": "Peso médio",
+                                        "description": "Average weight",
                                         "type": "number",
                                         "format": "float",
                                         "minimum": 0,
@@ -2041,7 +1696,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Settlement criado",
+                        "description": "Stocking created",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2060,11 +1715,11 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batcheId": {
+                                                "batchId": {
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "settlementDate": {
+                                                "stockingDate": {
                                                     "type": "string",
                                                     "format": "date",
                                                     "example": "2026-02-13"
@@ -2817,11 +2472,11 @@
                                                                 "type": "string",
                                                                 "format": "uuid"
                                                             },
-                                                            "batcheId": {
+                                                            "batchId": {
                                                                 "type": "string",
                                                                 "format": "uuid"
                                                             },
-                                                            "batche": {
+                                                            "batch": {
                                                                 "description": "Lote (quando carregado)",
                                                                 "properties": {
                                                                     "id": {
@@ -2978,11 +2633,11 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batcheId": {
+                                                "batchId": {
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batche": {
+                                                "batch": {
                                                     "description": "Lote (quando carregado)",
                                                     "properties": {
                                                         "id": {
@@ -3095,8 +2750,8 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "batcheId": {
-                                        "description": "ID do lote (Batche)",
+                                    "batchId": {
+                                        "description": "ID do lote (Batch)",
                                         "type": "string",
                                         "format": "uuid"
                                     },
@@ -3147,7 +2802,7 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batcheId": {
+                                                "batchId": {
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
@@ -3270,15 +2925,15 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "batcheId",
+                                    "batchId",
                                     "originTankId",
                                     "destinationTankId",
                                     "quantity",
                                     "description"
                                 ],
                                 "properties": {
-                                    "batcheId": {
-                                        "description": "ID do lote (Batche)",
+                                    "batchId": {
+                                        "description": "ID do lote (Batch)",
                                         "type": "string",
                                         "format": "uuid"
                                     },
@@ -3330,7 +2985,7 @@
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
-                                                "batcheId": {
+                                                "batchId": {
                                                     "type": "string",
                                                     "format": "uuid"
                                                 },
@@ -3412,8 +3067,8 @@
             "description": "Clients"
         },
         {
-            "name": "Settlements",
-            "description": "Settlements"
+            "name": "Stockings",
+            "description": "Stockings"
         },
         {
             "name": "Tanks",

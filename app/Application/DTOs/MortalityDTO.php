@@ -8,7 +8,7 @@ class MortalityDTO
 {
     public function __construct(
         public string $id,
-        public string $batcheId,
+        public string $batchId,
         public int $quantity,
         public string $cause,
         public ?string $createdAt = null,
@@ -23,7 +23,7 @@ class MortalityDTO
     {
         return new self(
             id: $data['id'],
-            batcheId: $data['batche_id'],
+            batchId: $data['batch_id'],
             quantity: (int) $data['quantity'],
             cause: $data['cause'],
             createdAt: $data['created_at'] ?? null,
@@ -38,7 +38,7 @@ class MortalityDTO
     {
         return [
             'id'        => $this->id,
-            'batcheId'  => $this->batcheId,
+            'batchId'  => $this->batchId,
             'quantity'  => $this->quantity,
             'cause'     => $this->cause,
             'createdAt' => $this->createdAt,
@@ -49,7 +49,7 @@ class MortalityDTO
     public function isEmpty(): bool
     {
         return ($this->id === '' || $this->id === '0') &&
-               ($this->batcheId === '' || $this->batcheId === '0') &&
+               ($this->batchId === '' || $this->batchId === '0') &&
                $this->quantity === 0 &&
                ($this->cause === '' || $this->cause === '0');
     }

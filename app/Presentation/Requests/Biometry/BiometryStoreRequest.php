@@ -20,8 +20,8 @@ class BiometryStoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $merge = [];
-        if (! $this->has('batcheId') && $this->has('batche_id')) {
-            $merge['batcheId'] = $this->input('batche_id');
+        if (! $this->has('batchId') && $this->has('batch_id')) {
+            $merge['batchId'] = $this->input('batch_id');
         }
         if (! $this->has('biometryDate') && $this->has('biometry_date')) {
             $merge['biometryDate'] = $this->input('biometry_date');
@@ -43,7 +43,7 @@ class BiometryStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batcheId'      => ['required', 'uuid', 'exists:batches,id'],
+            'batchId'      => ['required', 'uuid', 'exists:batches,id'],
             'biometryDate'  => ['required', 'date'],
             'averageWeight' => ['required', 'numeric', 'min:0'],
             'fcr'           => ['required', 'numeric', 'min:0'],

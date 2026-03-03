@@ -26,7 +26,7 @@ class SaleStoreRequest extends FormRequest
         return [
             'company_id'    => ['required', 'uuid', 'exists:companies,id'],
             'client_id'     => ['required', 'uuid', 'exists:clients,id'],
-            'batche_id'     => ['required', 'uuid', 'exists:batches,id'],
+            'batch_id'     => ['required', 'uuid', 'exists:batches,id'],
             'total_weight'  => ['required', 'numeric', 'min:0'],
             'price_per_kg'  => ['required', 'numeric', 'min:0'],
             'total_revenue' => ['required', 'numeric', 'min:0'],
@@ -51,9 +51,9 @@ class SaleStoreRequest extends FormRequest
             'client_id.uuid'     => 'The client ID must be a valid UUID.',
             'client_id.exists'   => 'The client must exist in the clients table.',
 
-            'batche_id.required' => 'The batche ID is required.',
-            'batche_id.uuid'     => 'The batche ID must be a valid UUID.',
-            'batche_id.exists'   => 'The batche must exist in the batches table.',
+            'batch_id.required' => 'The batch ID is required.',
+            'batch_id.uuid'     => 'The batch ID must be a valid UUID.',
+            'batch_id.exists'   => 'The batch must exist in the batches table.',
 
             'total_weight.required' => 'The total weight is required.',
             'total_weight.numeric'  => 'The total weight must be a number.',

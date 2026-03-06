@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers;
 
 use App\Application\DTOs\ClientDTO;
-use App\Application\Services\ClientService;
+use App\Application\UseCases\Client\CreateClientUseCase;
+use App\Application\UseCases\Client\DeleteClientUseCase;
+use App\Application\UseCases\Client\ListClientsUseCase;
+use App\Application\UseCases\Client\ShowClientUseCase;
+use App\Application\UseCases\Client\UpdateClientUseCase;
 use App\Presentation\Requests\Client\ClientStoreRequest;
 use App\Presentation\Requests\Client\ClientUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -15,10 +19,6 @@ use Throwable;
 
 class ClientController
 {
-    public function __construct(
-        protected ClientService $clientService
-    ) {
-    }
 
     /**
      * @OA\Get(
@@ -52,10 +52,10 @@ class ClientController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function index(): JsonResponse
+    public function index(ListClientsUseCase $useCase): JsonResponse
     {
         try {
-            $clients    = $this->clientService->showAllClients();
+            $clients    = $useCase->execute();
             $data       = $clients->toArray(request());
             $pagination = $clients->additional['pagination'] ?? null;
 
@@ -91,10 +91,10 @@ class ClientController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowClientUseCase $useCase): JsonResponse
     {
         try {
-            $client = $this->clientService->showClient($id);
+            $client = $useCase->execute($id);
 
             if (! $client instanceof ClientDTO || $client->isEmpty()) {
                 return ApiResponse::error(
@@ -184,10 +184,10 @@ class ClientController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function store(ClientStoreRequest $request): JsonResponse
+    public function store(ClientStoreRequest $request, CreateClientUseCase $useCase): JsonResponse
     {
         try {
-            $client = $this->clientService->create($request->validated());
+            $client = $useCase->execute($request->validated());
 
             return ApiResponse::created($client->toArray());
         } catch (Throwable $exception) {
@@ -276,10 +276,10 @@ class ClientController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function update(ClientUpdateRequest $request, string $id): JsonResponse
+    public function update(ClientUpdateRequest $request, string $id, UpdateClientUseCase $useCase): JsonResponse
     {
         try {
-            $client = $this->clientService->updateClient($id, $request->validated());
+            $client = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($client->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -312,10 +312,10 @@ class ClientController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteClientUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->clientService->deleteClient($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Client not found', Response::HTTP_NOT_FOUND);

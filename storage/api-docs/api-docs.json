@@ -1230,6 +1230,561 @@
                 ]
             }
         },
+        "/company/feedings": {
+            "get": {
+                "tags": [
+                    "Feedings"
+                ],
+                "summary": "Listar feedings",
+                "operationId": "5b828fc2bc455201111892e0e8d26689",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número da página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Itens por página",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada de feedings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "batch": {
+                                                                "description": "Lote (quando carregado)",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string",
+                                                                        "format": "uuid"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "nullable": true
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "feedingDate": {
+                                                                "type": "string",
+                                                                "format": "date"
+                                                            },
+                                                            "quantityProvided": {
+                                                                "type": "number",
+                                                                "example": 10.5
+                                                            },
+                                                            "feedType": {
+                                                                "type": "string",
+                                                                "example": "ração"
+                                                            },
+                                                            "stockReductionQuantity": {
+                                                                "type": "number",
+                                                                "example": 10.5
+                                                            },
+                                                            "createdAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            },
+                                                            "updatedAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/feeding/{id}": {
+            "get": {
+                "tags": [
+                    "Feedings"
+                ],
+                "summary": "Detalhar um feeding",
+                "operationId": "06fc6bed14351fa151219aabc7b12ffa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do feeding",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Feeding encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batchId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "feedingDate": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2026-02-13"
+                                                },
+                                                "quantityProvided": {
+                                                    "type": "number",
+                                                    "example": 10.5
+                                                },
+                                                "feedType": {
+                                                    "type": "string",
+                                                    "example": "ração"
+                                                },
+                                                "stockReductionQuantity": {
+                                                    "type": "number",
+                                                    "example": 10.5
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Feeding not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Feedings"
+                ],
+                "summary": "Atualizar um feeding",
+                "operationId": "f41ff75d2610626fc7ec12a215d36422",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do feeding",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "batchId": {
+                                        "description": "ID do lote (Batch)",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "feedingDate": {
+                                        "description": "Data da alimentação",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-02-13"
+                                    },
+                                    "quantityProvided": {
+                                        "description": "Quantidade fornecida",
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "example": 10.5
+                                    },
+                                    "feedType": {
+                                        "description": "Tipo de ração",
+                                        "type": "string",
+                                        "maxLength": 100
+                                    },
+                                    "stockReductionQuantity": {
+                                        "description": "Quantidade de redução do estoque",
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "example": 10.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Feeding atualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batchId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "feedingDate": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2026-02-13"
+                                                },
+                                                "quantityProvided": {
+                                                    "type": "number",
+                                                    "example": 10.5
+                                                },
+                                                "feedType": {
+                                                    "type": "string"
+                                                },
+                                                "stockReductionQuantity": {
+                                                    "type": "number",
+                                                    "example": 10.5
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Feeding not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Feedings"
+                ],
+                "summary": "Remover um feeding",
+                "operationId": "d13a84191fad5fe3e0551528a599e6ce",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID do feeding",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Feeding removido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "response": {
+                                            "nullable": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Feeding successfully deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Feeding not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/feeding": {
+            "post": {
+                "tags": [
+                    "Feedings"
+                ],
+                "summary": "Criar um feeding",
+                "operationId": "4d9dcb8759b99746a986920dedf431ce",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "batchId",
+                                    "feedingDate",
+                                    "quantityProvided",
+                                    "feedType",
+                                    "stockReductionQuantity"
+                                ],
+                                "properties": {
+                                    "batchId": {
+                                        "description": "ID do lote (Batch)",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "feedingDate": {
+                                        "description": "Data da alimentação",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-02-13"
+                                    },
+                                    "quantityProvided": {
+                                        "description": "Quantidade fornecida",
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "example": 10.5
+                                    },
+                                    "feedType": {
+                                        "description": "Tipo de ração",
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "ração"
+                                    },
+                                    "stockReductionQuantity": {
+                                        "description": "Quantidade de redução do estoque",
+                                        "type": "number",
+                                        "minimum": 0,
+                                        "example": 10.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Feeding criado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successfully created"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "batchId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "feedingDate": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2026-02-13"
+                                                },
+                                                "quantityProvided": {
+                                                    "type": "number",
+                                                    "example": 10.5
+                                                },
+                                                "feedType": {
+                                                    "type": "string"
+                                                },
+                                                "stockReductionQuantity": {
+                                                    "type": "number",
+                                                    "example": 10.5
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/stockings": {
             "get": {
                 "tags": [
@@ -3065,6 +3620,10 @@
         {
             "name": "Clients",
             "description": "Clients"
+        },
+        {
+            "name": "Feedings",
+            "description": "Feedings"
         },
         {
             "name": "Stockings",

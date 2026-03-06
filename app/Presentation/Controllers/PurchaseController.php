@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers;
 
 use App\Application\DTOs\PurchaseDTO;
-use App\Application\Services\PurchaseService;
+use App\Application\UseCases\Purchase\CreatePurchaseUseCase;
+use App\Application\UseCases\Purchase\DeletePurchaseUseCase;
+use App\Application\UseCases\Purchase\ListPurchasesUseCase;
+use App\Application\UseCases\Purchase\ShowPurchaseUseCase;
+use App\Application\UseCases\Purchase\UpdatePurchaseUseCase;
 use App\Presentation\Requests\Purchase\PurchaseStoreRequest;
 use App\Presentation\Requests\Purchase\PurchaseUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -15,15 +19,10 @@ use Throwable;
 
 class PurchaseController
 {
-    public function __construct(
-        protected PurchaseService $purchaseService
-    ) {
-    }
-
-    public function index(): JsonResponse
+    public function index(ListPurchasesUseCase $useCase): JsonResponse
     {
         try {
-            $purchases  = $this->purchaseService->showAll();
+            $purchases  = $useCase->execute();
             $data       = $purchases->toArray(request());
             $pagination = $purchases->additional['pagination'] ?? null;
 
@@ -33,10 +32,10 @@ class PurchaseController
         }
     }
 
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowPurchaseUseCase $useCase): JsonResponse
     {
         try {
-            $purchase = $this->purchaseService->show($id);
+            $purchase = $useCase->execute($id);
 
             if (! $purchase instanceof PurchaseDTO || $purchase->isEmpty()) {
                 return ApiResponse::error(null, 'Purchase not found', Response::HTTP_NOT_FOUND);
@@ -48,10 +47,10 @@ class PurchaseController
         }
     }
 
-    public function store(PurchaseStoreRequest $request): JsonResponse
+    public function store(PurchaseStoreRequest $request, CreatePurchaseUseCase $useCase): JsonResponse
     {
         try {
-            $purchase = $this->purchaseService->create($request->validated());
+            $purchase = $useCase->execute($request->validated());
 
             return ApiResponse::created($purchase->toArray());
         } catch (Throwable $e) {
@@ -59,10 +58,10 @@ class PurchaseController
         }
     }
 
-    public function update(PurchaseUpdateRequest $request, string $id): JsonResponse
+    public function update(PurchaseUpdateRequest $request, string $id, UpdatePurchaseUseCase $useCase): JsonResponse
     {
         try {
-            $purchase = $this->purchaseService->update($id, $request->validated());
+            $purchase = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($purchase->toArray());
         } catch (Throwable $e) {
@@ -70,10 +69,10 @@ class PurchaseController
         }
     }
 
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeletePurchaseUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->purchaseService->delete($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Purchase not found', Response::HTTP_NOT_FOUND);

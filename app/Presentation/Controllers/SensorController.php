@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\SensorService;
+use App\Application\DTOs\SensorDTO;
+use App\Application\UseCases\Sensor\CreateSensorUseCase;
+use App\Application\UseCases\Sensor\DeleteSensorUseCase;
+use App\Application\UseCases\Sensor\ListSensorsUseCase;
+use App\Application\UseCases\Sensor\ShowSensorUseCase;
+use App\Application\UseCases\Sensor\UpdateSensorUseCase;
 use App\Presentation\Requests\Sensor\SensorStoreRequest;
 use App\Presentation\Requests\Sensor\SensorUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class SensorController
 {
-    public function __construct(
-        protected SensorService $sensorService
-    ) {
-    }
-
     /**
      * Display a listing of sensors.
      */
-    public function index(): JsonResponse
+    public function index(ListSensorsUseCase $useCase): JsonResponse
     {
         try {
-            $sensors    = $this->sensorService->showAllSensors();
+            $sensors    = $useCase->execute();
             $data       = $sensors->toArray(request());
             $pagination = $sensors->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class SensorController
     /**
      * Display the specified sensor.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowSensorUseCase $useCase): JsonResponse
     {
         try {
-            $sensor = $this->sensorService->showSensor($id);
+            $sensor = $useCase->execute($id);
 
-            if (! $sensor instanceof \App\Application\DTOs\SensorDTO || $sensor->isEmpty()) {
+            if (! $sensor instanceof SensorDTO || $sensor->isEmpty()) {
                 return ApiResponse::error(null, 'Sensor not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class SensorController
     /**
      * Store a newly created sensor.
      */
-    public function store(SensorStoreRequest $request): JsonResponse
+    public function store(SensorStoreRequest $request, CreateSensorUseCase $useCase): JsonResponse
     {
         try {
-            $sensor = $this->sensorService->create($request->validated());
+            $sensor = $useCase->execute($request->validated());
 
             return ApiResponse::created($sensor->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,10 @@ class SensorController
     /**
      * Update the specified sensor.
      */
-    public function update(SensorUpdateRequest $request, string $id): JsonResponse
+    public function update(SensorUpdateRequest $request, string $id, UpdateSensorUseCase $useCase): JsonResponse
     {
         try {
-            $sensor = $this->sensorService->updateSensor($id, $request->validated());
+            $sensor = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($sensor->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +84,10 @@ class SensorController
     /**
      * Remove the specified sensor.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteSensorUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->sensorService->deleteSensor($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Sensor not found', Response::HTTP_NOT_FOUND);

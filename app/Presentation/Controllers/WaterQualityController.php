@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers;
 
 use App\Application\DTOs\WaterQualityDTO;
-use App\Application\Services\WaterQualityService;
+use App\Application\UseCases\WaterQuality\CreateWaterQualityUseCase;
+use App\Application\UseCases\WaterQuality\DeleteWaterQualityUseCase;
+use App\Application\UseCases\WaterQuality\ListWaterQualitiesUseCase;
+use App\Application\UseCases\WaterQuality\ShowWaterQualityUseCase;
+use App\Application\UseCases\WaterQuality\UpdateWaterQualityUseCase;
 use App\Presentation\Requests\WaterQuality\WaterQualityStoreRequest;
 use App\Presentation\Requests\WaterQuality\WaterQualityUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -15,18 +19,13 @@ use Throwable;
 
 class WaterQualityController
 {
-    public function __construct(
-        protected WaterQualityService $waterQualityService
-    ) {
-    }
-
     /**
      * Display a listing of water quality records.
      */
-    public function index(): JsonResponse
+    public function index(ListWaterQualitiesUseCase $useCase): JsonResponse
     {
         try {
-            $records    = $this->waterQualityService->showAllWaterQualities();
+            $records    = $useCase->execute();
             $data       = $records->toArray(request());
             $pagination = $records->additional['pagination'] ?? null;
 
@@ -39,10 +38,10 @@ class WaterQualityController
     /**
      * Display the specified water quality record.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowWaterQualityUseCase $useCase): JsonResponse
     {
         try {
-            $record = $this->waterQualityService->showWaterQuality($id);
+            $record = $useCase->execute($id);
 
             if (! $record instanceof WaterQualityDTO || $record->isEmpty()) {
                 return ApiResponse::error(null, 'Water quality record not found', Response::HTTP_NOT_FOUND);
@@ -61,10 +60,10 @@ class WaterQualityController
     /**
      * Store a newly created water quality record.
      */
-    public function store(WaterQualityStoreRequest $request): JsonResponse
+    public function store(WaterQualityStoreRequest $request, CreateWaterQualityUseCase $useCase): JsonResponse
     {
         try {
-            $record = $this->waterQualityService->create($request->validated());
+            $record = $useCase->execute($request->validated());
 
             return ApiResponse::created($record->toArray());
         } catch (Throwable $exception) {
@@ -75,10 +74,10 @@ class WaterQualityController
     /**
      * Update the specified water quality record.
      */
-    public function update(WaterQualityUpdateRequest $request, string $id): JsonResponse
+    public function update(WaterQualityUpdateRequest $request, string $id, UpdateWaterQualityUseCase $useCase): JsonResponse
     {
         try {
-            $record = $this->waterQualityService->updateWaterQuality($id, $request->validated());
+            $record = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($record->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -89,10 +88,10 @@ class WaterQualityController
     /**
      * Remove the specified water quality record.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteWaterQualityUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->waterQualityService->deleteWaterQuality($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Water quality record not found', Response::HTTP_NOT_FOUND);

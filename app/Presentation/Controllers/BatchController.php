@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\BatchService;
+use App\Application\DTOs\BatchDTO;
+use App\Application\UseCases\Batch\CreateBatchUseCase;
+use App\Application\UseCases\Batch\DeleteBatchUseCase;
+use App\Application\UseCases\Batch\ListBatchesUseCase;
+use App\Application\UseCases\Batch\ShowBatchUseCase;
+use App\Application\UseCases\Batch\UpdateBatchUseCase;
 use App\Presentation\Requests\Batch\BatchStoreRequest;
 use App\Presentation\Requests\Batch\BatchUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,11 +19,6 @@ use Throwable;
 
 class BatchController
 {
-    public function __construct(
-        protected BatchService $batchService
-    ) {
-    }
-
     /**
      * @OA\Get(
      *     path="/company/batches",
@@ -31,10 +31,10 @@ class BatchController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function index(): JsonResponse
+    public function index(ListBatchesUseCase $useCase): JsonResponse
     {
         try {
-            $batches    = $this->batchService->showAllBatches();
+            $batches    = $useCase->execute();
             $data       = $batches->toArray(request());
             $pagination = $batches->additional['pagination'] ?? null;
 
@@ -56,12 +56,12 @@ class BatchController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowBatchUseCase $useCase): JsonResponse
     {
         try {
-            $batch = $this->batchService->showBatch($id);
+            $batch = $useCase->execute($id);
 
-            if (! $batch instanceof \App\Application\DTOs\BatchDTO || $batch->isEmpty()) {
+            if (! $batch instanceof BatchDTO || $batch->isEmpty()) {
                 return ApiResponse::error(null, 'Batch not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -83,10 +83,10 @@ class BatchController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function store(BatchStoreRequest $request): JsonResponse
+    public function store(BatchStoreRequest $request, CreateBatchUseCase $useCase): JsonResponse
     {
         try {
-            $batch = $this->batchService->create($request->validated());
+            $batch = $useCase->execute($request->validated());
 
             return ApiResponse::created($batch->toArray());
         } catch (Throwable $exception) {
@@ -108,10 +108,10 @@ class BatchController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function update(BatchUpdateRequest $request, string $id): JsonResponse
+    public function update(BatchUpdateRequest $request, string $id, UpdateBatchUseCase $useCase): JsonResponse
     {
         try {
-            $batch = $this->batchService->updateBatch($id, $request->validated());
+            $batch = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($batch->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -131,10 +131,10 @@ class BatchController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteBatchUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->batchService->deleteBatch($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Batch not found', Response::HTTP_NOT_FOUND);

@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\MortalityService;
+use App\Application\DTOs\MortalityDTO;
+use App\Application\UseCases\Mortality\CreateMortalityUseCase;
+use App\Application\UseCases\Mortality\DeleteMortalityUseCase;
+use App\Application\UseCases\Mortality\ListMortalitiesUseCase;
+use App\Application\UseCases\Mortality\ShowMortalityUseCase;
+use App\Application\UseCases\Mortality\UpdateMortalityUseCase;
 use App\Presentation\Requests\Mortality\MortalityStoreRequest;
 use App\Presentation\Requests\Mortality\MortalityUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class MortalityController
 {
-    public function __construct(
-        protected MortalityService $mortalityService
-    ) {
-    }
-
     /**
      * Display a listing of mortalities.
      */
-    public function index(): JsonResponse
+    public function index(ListMortalitiesUseCase $useCase): JsonResponse
     {
         try {
-            $mortalities = $this->mortalityService->showAllMortalities();
+            $mortalities = $useCase->execute();
             $data        = $mortalities->toArray(request());
             $pagination  = $mortalities->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class MortalityController
     /**
      * Display the specified mortality.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowMortalityUseCase $useCase): JsonResponse
     {
         try {
-            $mortality = $this->mortalityService->showMortality($id);
+            $mortality = $useCase->execute($id);
 
-            if (! $mortality instanceof \App\Application\DTOs\MortalityDTO || $mortality->isEmpty()) {
+            if (! $mortality instanceof MortalityDTO || $mortality->isEmpty()) {
                 return ApiResponse::error(null, 'Mortality not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class MortalityController
     /**
      * Store a newly created mortality.
      */
-    public function store(MortalityStoreRequest $request): JsonResponse
+    public function store(MortalityStoreRequest $request, CreateMortalityUseCase $useCase): JsonResponse
     {
         try {
-            $mortality = $this->mortalityService->create($request->validated());
+            $mortality = $useCase->execute($request->validated());
 
             return ApiResponse::created($mortality->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,10 @@ class MortalityController
     /**
      * Update the specified mortality.
      */
-    public function update(MortalityUpdateRequest $request, string $id): JsonResponse
+    public function update(MortalityUpdateRequest $request, string $id, UpdateMortalityUseCase $useCase): JsonResponse
     {
         try {
-            $mortality = $this->mortalityService->updateMortality($id, $request->validated());
+            $mortality = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($mortality->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +84,10 @@ class MortalityController
     /**
      * Remove the specified mortality.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteMortalityUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->mortalityService->deleteMortality($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Mortality not found', Response::HTTP_NOT_FOUND);

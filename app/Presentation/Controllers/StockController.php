@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\StockService;
+use App\Application\DTOs\StockDTO;
+use App\Application\UseCases\Stock\CreateStockUseCase;
+use App\Application\UseCases\Stock\DeleteStockUseCase;
+use App\Application\UseCases\Stock\ListStocksUseCase;
+use App\Application\UseCases\Stock\ShowStockUseCase;
+use App\Application\UseCases\Stock\UpdateStockUseCase;
 use App\Presentation\Requests\Stock\StockStoreRequest;
 use App\Presentation\Requests\Stock\StockUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class StockController
 {
-    public function __construct(
-        protected StockService $stockService
-    ) {
-    }
-
     /**
      * Display a listing of stocks.
      */
-    public function index(): JsonResponse
+    public function index(ListStocksUseCase $useCase): JsonResponse
     {
         try {
-            $stocks     = $this->stockService->showAllStocks();
+            $stocks     = $useCase->execute();
             $data       = $stocks->toArray(request());
             $pagination = $stocks->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class StockController
     /**
      * Display the specified stock.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowStockUseCase $useCase): JsonResponse
     {
         try {
-            $stock = $this->stockService->showStock($id);
+            $stock = $useCase->execute($id);
 
-            if (! $stock instanceof \App\Application\DTOs\StockDTO || $stock->isEmpty()) {
+            if (! $stock instanceof StockDTO || $stock->isEmpty()) {
                 return ApiResponse::error(null, 'Stock not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class StockController
     /**
      * Store a newly created stock.
      */
-    public function store(StockStoreRequest $request): JsonResponse
+    public function store(StockStoreRequest $request, CreateStockUseCase $useCase): JsonResponse
     {
         try {
-            $stock = $this->stockService->create($request->validated());
+            $stock = $useCase->execute($request->validated());
 
             return ApiResponse::created($stock->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,10 @@ class StockController
     /**
      * Update the specified stock.
      */
-    public function update(StockUpdateRequest $request, string $id): JsonResponse
+    public function update(StockUpdateRequest $request, string $id, UpdateStockUseCase $useCase): JsonResponse
     {
         try {
-            $stock = $this->stockService->updateStock($id, $request->validated());
+            $stock = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($stock->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +84,10 @@ class StockController
     /**
      * Remove the specified stock.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteStockUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->stockService->deleteStock($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Stock not found', Response::HTTP_NOT_FOUND);

@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\GrowthCurveService;
+use App\Application\DTOs\GrowthCurveDTO;
+use App\Application\UseCases\GrowthCurve\CreateGrowthCurveUseCase;
+use App\Application\UseCases\GrowthCurve\DeleteGrowthCurveUseCase;
+use App\Application\UseCases\GrowthCurve\ListGrowthCurvesUseCase;
+use App\Application\UseCases\GrowthCurve\ShowGrowthCurveUseCase;
+use App\Application\UseCases\GrowthCurve\UpdateGrowthCurveUseCase;
 use App\Presentation\Requests\GrowthCurve\GrowthCurveStoreRequest;
 use App\Presentation\Requests\GrowthCurve\GrowthCurveUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class GrowthCurveController
 {
-    public function __construct(
-        protected GrowthCurveService $growthCurveService
-    ) {
-    }
-
     /**
      * Display a listing of growth curves.
      */
-    public function index(): JsonResponse
+    public function index(ListGrowthCurvesUseCase $useCase): JsonResponse
     {
         try {
-            $curves     = $this->growthCurveService->showAll();
+            $curves     = $useCase->execute();
             $data       = $curves->toArray(request());
             $pagination = $curves->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class GrowthCurveController
     /**
      * Display the specified growth curve.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowGrowthCurveUseCase $useCase): JsonResponse
     {
         try {
-            $curve = $this->growthCurveService->show($id);
+            $curve = $useCase->execute($id);
 
-            if (! $curve instanceof \App\Application\DTOs\GrowthCurveDTO || $curve->isEmpty()) {
+            if (! $curve instanceof GrowthCurveDTO || $curve->isEmpty()) {
                 return ApiResponse::error(null, 'Growth curve not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class GrowthCurveController
     /**
      * Store a newly created growth curve.
      */
-    public function store(GrowthCurveStoreRequest $request): JsonResponse
+    public function store(GrowthCurveStoreRequest $request, CreateGrowthCurveUseCase $useCase): JsonResponse
     {
         try {
-            $curve = $this->growthCurveService->create($request->validated());
+            $curve = $useCase->execute($request->validated());
 
             return ApiResponse::created($curve->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,10 @@ class GrowthCurveController
     /**
      * Update the specified growth curve.
      */
-    public function update(GrowthCurveUpdateRequest $request, string $id): JsonResponse
+    public function update(GrowthCurveUpdateRequest $request, string $id, UpdateGrowthCurveUseCase $useCase): JsonResponse
     {
         try {
-            $curve = $this->growthCurveService->update($id, $request->validated());
+            $curve = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($curve->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +84,10 @@ class GrowthCurveController
     /**
      * Remove the specified growth curve.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteGrowthCurveUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->growthCurveService->delete($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Growth curve not found', Response::HTTP_NOT_FOUND);

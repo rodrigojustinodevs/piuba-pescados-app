@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers;
 
 use App\Application\DTOs\LoginCredentialsDTO;
-use App\Application\Services\AuthService;
+use App\Application\UseCases\Auth\AuthenticateUserUseCase;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,11 +14,6 @@ use Throwable;
 
 class AuthController
 {
-    public function __construct(
-        private readonly AuthService $authService
-    ) {
-    }
-
     /**
      * @OA\Post(
      *     path="/login",
@@ -53,7 +48,7 @@ class AuthController
      *     )
      * )
      */
-    public function authenticateUser(Request $request): JsonResponse
+    public function authenticateUser(Request $request, AuthenticateUserUseCase $useCase): JsonResponse
     {
         try {
             $credentials = new LoginCredentialsDTO(
@@ -61,7 +56,7 @@ class AuthController
                 password: $request->get('password')
             );
 
-            $result = $this->authService->authenticate($credentials);
+            $result = $useCase->execute($credentials);
 
             if (in_array($result, [null, '', '0'], true)) {
                 return ApiResponse::error(null, 'Invalid credentials', Response::HTTP_UNAUTHORIZED);

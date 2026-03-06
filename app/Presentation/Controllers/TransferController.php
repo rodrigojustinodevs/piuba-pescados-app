@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\TransferService;
+use App\Application\DTOs\TransferDTO;
+use App\Application\UseCases\Transfer\CreateTransferUseCase;
+use App\Application\UseCases\Transfer\DeleteTransferUseCase;
+use App\Application\UseCases\Transfer\ListTransfersUseCase;
+use App\Application\UseCases\Transfer\ShowTransferUseCase;
+use App\Application\UseCases\Transfer\UpdateTransferUseCase;
 use App\Presentation\Requests\Transfer\TransferStoreRequest;
 use App\Presentation\Requests\Transfer\TransferUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,11 +19,6 @@ use Throwable;
 
 class TransferController
 {
-    public function __construct(
-        protected TransferService $transferService
-    ) {
-    }
-
     /**
      * @OA\Get(
      *     path="/company/transfers",
@@ -104,10 +104,10 @@ class TransferController
      * )
      * Display a listing of transfers.
      */
-    public function index(): JsonResponse
+    public function index(ListTransfersUseCase $useCase): JsonResponse
     {
         try {
-            $transfers  = $this->transferService->showAllTransfers();
+            $transfers  = $useCase->execute();
             $data       = $transfers->toArray(request());
             $pagination = $transfers->additional['pagination'] ?? null;
 
@@ -176,12 +176,12 @@ class TransferController
      * )
      * Display the specified transfer.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowTransferUseCase $useCase): JsonResponse
     {
         try {
-            $transfer = $this->transferService->showTransfer($id);
+            $transfer = $useCase->execute($id);
 
-            if (! $transfer instanceof \App\Application\DTOs\TransferDTO || $transfer->isEmpty()) {
+            if (! $transfer instanceof TransferDTO || $transfer->isEmpty()) {
                 return ApiResponse::error(null, 'Transfer not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -259,10 +259,10 @@ class TransferController
      * )
      * Store a newly created transfer.
      */
-    public function store(TransferStoreRequest $request): JsonResponse
+    public function store(TransferStoreRequest $request, CreateTransferUseCase $useCase): JsonResponse
     {
         try {
-            $transfer = $this->transferService->create($request->validated());
+            $transfer = $useCase->execute($request->validated());
 
             return ApiResponse::created($transfer->toArray());
         } catch (Throwable $exception) {
@@ -344,10 +344,10 @@ class TransferController
      * )
      * Update the specified transfer.
      */
-    public function update(TransferUpdateRequest $request, string $id): JsonResponse
+    public function update(TransferUpdateRequest $request, string $id, UpdateTransferUseCase $useCase): JsonResponse
     {
         try {
-            $transfer = $this->transferService->updateTransfer($id, $request->validated());
+            $transfer = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($transfer->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -382,10 +382,10 @@ class TransferController
      * )
      * Remove the specified transfer.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteTransferUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->transferService->deleteTransfer($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Transfer not found', Response::HTTP_NOT_FOUND);

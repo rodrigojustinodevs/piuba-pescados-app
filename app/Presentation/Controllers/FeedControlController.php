@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\FeedControlService;
+use App\Application\DTOs\FeedControlDTO;
+use App\Application\UseCases\FeedControl\CreateFeedControlUseCase;
+use App\Application\UseCases\FeedControl\DeleteFeedControlUseCase;
+use App\Application\UseCases\FeedControl\ListFeedControlsUseCase;
+use App\Application\UseCases\FeedControl\ShowFeedControlUseCase;
+use App\Application\UseCases\FeedControl\UpdateFeedControlUseCase;
 use App\Presentation\Requests\FeedControl\FeedControlStoreRequest;
 use App\Presentation\Requests\FeedControl\FeedControlUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class FeedControlController
 {
-    public function __construct(
-        protected FeedControlService $feedControlService
-    ) {
-    }
-
     /**
      * Display a listing of feedControls.
      */
-    public function index(): JsonResponse
+    public function index(ListFeedControlsUseCase $useCase): JsonResponse
     {
         try {
-            $feedControls = $this->feedControlService->showAllFeedControls();
+            $feedControls = $useCase->execute();
             $data         = $feedControls->toArray(request());
             $pagination   = $feedControls->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class FeedControlController
     /**
      * Display the specified feedControl.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowFeedControlUseCase $useCase): JsonResponse
     {
         try {
-            $feedControl = $this->feedControlService->showFeedControl($id);
+            $feedControl = $useCase->execute($id);
 
-            if (! $feedControl instanceof \App\Application\DTOs\FeedControlDTO || $feedControl->isEmpty()) {
+            if (! $feedControl instanceof FeedControlDTO || $feedControl->isEmpty()) {
                 return ApiResponse::error(null, 'FeedControl not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class FeedControlController
     /**
      * Store a newly created feedControl.
      */
-    public function store(FeedControlStoreRequest $request): JsonResponse
+    public function store(FeedControlStoreRequest $request, CreateFeedControlUseCase $useCase): JsonResponse
     {
         try {
-            $feedControl = $this->feedControlService->create($request->validated());
+            $feedControl = $useCase->execute($request->validated());
 
             return ApiResponse::created($feedControl->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,10 @@ class FeedControlController
     /**
      * Update the specified feedControl.
      */
-    public function update(FeedControlUpdateRequest $request, string $id): JsonResponse
+    public function update(FeedControlUpdateRequest $request, string $id, UpdateFeedControlUseCase $useCase): JsonResponse
     {
         try {
-            $feedControl = $this->feedControlService->updateFeedControl($id, $request->validated());
+            $feedControl = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($feedControl->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +84,10 @@ class FeedControlController
     /**
      * Remove the specified feedControl.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteFeedControlUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->feedControlService->deleteFeedControl($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'FeedControl not found', Response::HTTP_NOT_FOUND);

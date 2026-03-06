@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\BiometryService;
+use App\Application\DTOs\BiometryDTO;
+use App\Application\UseCases\Biometry\CreateBiometryUseCase;
+use App\Application\UseCases\Biometry\DeleteBiometryUseCase;
+use App\Application\UseCases\Biometry\ListBiometriesUseCase;
+use App\Application\UseCases\Biometry\ShowBiometryUseCase;
+use App\Application\UseCases\Biometry\UpdateBiometryUseCase;
 use App\Presentation\Requests\Biometry\BiometryStoreRequest;
 use App\Presentation\Requests\Biometry\BiometryUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,10 +19,6 @@ use Throwable;
 
 class BiometryController
 {
-    public function __construct(
-        protected BiometryService $biometryService
-    ) {
-    }
 
     /**
      * @OA\Get(
@@ -90,10 +91,10 @@ class BiometryController
      * )
      * Display a listing of biometries.
      */
-    public function index(): JsonResponse
+    public function index(ListBiometriesUseCase $useCase): JsonResponse
     {
         try {
-            $biometries = $this->biometryService->showAllBiometries();
+            $biometries = $useCase->execute();
             $data       = $biometries->toArray(request());
             $pagination = $biometries->additional['pagination'] ?? null;
 
@@ -164,12 +165,12 @@ class BiometryController
      * )
      * Display the specified biometry.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowBiometryUseCase $useCase): JsonResponse
     {
         try {
-            $biometry = $this->biometryService->showBiometry($id);
+            $biometry = $useCase->execute($id);
 
-            if (! $biometry instanceof \App\Application\DTOs\BiometryDTO || $biometry->isEmpty()) {
+            if (! $biometry instanceof BiometryDTO || $biometry->isEmpty()) {
                 return ApiResponse::error(null, 'Biometry not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -237,10 +238,10 @@ class BiometryController
      * )
      * Store a newly created biometry.
      */
-    public function store(BiometryStoreRequest $request): JsonResponse
+    public function store(BiometryStoreRequest $request, CreateBiometryUseCase $useCase): JsonResponse
     {
         try {
-            $biometry = $this->biometryService->create($request->validated());
+            $biometry = $useCase->execute($request->validated());
 
             return ApiResponse::created($biometry->toArray());
         } catch (Throwable $exception) {
@@ -313,10 +314,10 @@ class BiometryController
      * )
      * Update the specified biometry.
      */
-    public function update(BiometryUpdateRequest $request, string $id): JsonResponse
+    public function update(BiometryUpdateRequest $request, string $id, UpdateBiometryUseCase $useCase): JsonResponse
     {
         try {
-            $biometry = $this->biometryService->updateBiometry($id, $request->validated());
+            $biometry = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($biometry->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -350,10 +351,10 @@ class BiometryController
      * )
      * Remove the specified biometry.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteBiometryUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->biometryService->deleteBiometry($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Biometry not found', Response::HTTP_NOT_FOUND);

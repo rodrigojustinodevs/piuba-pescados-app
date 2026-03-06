@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers;
 
 use App\Application\DTOs\FinancialCategoryDTO;
-use App\Application\Services\FinancialCategoryService;
+use App\Application\UseCases\FinancialCategory\CreateFinancialCategoryUseCase;
+use App\Application\UseCases\FinancialCategory\DeleteFinancialCategoryUseCase;
+use App\Application\UseCases\FinancialCategory\ListFinancialCategoriesUseCase;
+use App\Application\UseCases\FinancialCategory\ShowFinancialCategoryUseCase;
+use App\Application\UseCases\FinancialCategory\UpdateFinancialCategoryUseCase;
 use App\Presentation\Requests\FinancialCategory\FinancialCategoryStoreRequest;
 use App\Presentation\Requests\FinancialCategory\FinancialCategoryUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -15,18 +19,13 @@ use Throwable;
 
 class FinancialCategoryController
 {
-    public function __construct(
-        protected FinancialCategoryService $financialCategoryService
-    ) {
-    }
-
     /**
      * Display a listing of financial categories.
      */
-    public function index(): JsonResponse
+    public function index(ListFinancialCategoriesUseCase $useCase): JsonResponse
     {
         try {
-            $categories = $this->financialCategoryService->showAllFinancialCategories();
+            $categories = $useCase->execute();
             $data       = $categories->toArray(request());
             $pagination = $categories->additional['pagination'] ?? null;
 
@@ -39,10 +38,10 @@ class FinancialCategoryController
     /**
      * Display the specified financial category.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowFinancialCategoryUseCase $useCase): JsonResponse
     {
         try {
-            $category = $this->financialCategoryService->showFinancialCategory($id);
+            $category = $useCase->execute($id);
 
             if (! $category instanceof FinancialCategoryDTO || $category->isEmpty()) {
                 return ApiResponse::error(
@@ -65,10 +64,10 @@ class FinancialCategoryController
     /**
      * Store a newly created financial category.
      */
-    public function store(FinancialCategoryStoreRequest $request): JsonResponse
+    public function store(FinancialCategoryStoreRequest $request, CreateFinancialCategoryUseCase $useCase): JsonResponse
     {
         try {
-            $category = $this->financialCategoryService->create($request->validated());
+            $category = $useCase->execute($request->validated());
 
             return ApiResponse::created($category->toArray());
         } catch (Throwable $exception) {
@@ -79,10 +78,10 @@ class FinancialCategoryController
     /**
      * Update the specified financial category.
      */
-    public function update(FinancialCategoryUpdateRequest $request, string $id): JsonResponse
+    public function update(FinancialCategoryUpdateRequest $request, string $id, UpdateFinancialCategoryUseCase $useCase): JsonResponse
     {
         try {
-            $category = $this->financialCategoryService->updateFinancialCategory($id, $request->validated());
+            $category = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($category->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -93,10 +92,10 @@ class FinancialCategoryController
     /**
      * Remove the specified financial category.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteFinancialCategoryUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->financialCategoryService->deleteFinancialCategory($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(

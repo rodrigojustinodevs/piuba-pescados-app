@@ -382,6 +382,35 @@
                                                         "format": "float",
                                                         "example": 1.2
                                                     },
+                                                    "sampleWeight": {
+                                                        "description": "Peso total da amostra (kg)",
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "nullable": true
+                                                    },
+                                                    "sampleQuantity": {
+                                                        "description": "Quantidade de peixes na amostra",
+                                                        "type": "integer",
+                                                        "nullable": true
+                                                    },
+                                                    "biomassEstimated": {
+                                                        "description": "Biomassa total estimada do tanque (kg)",
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "nullable": true
+                                                    },
+                                                    "densityAtTime": {
+                                                        "description": "Densidade no momento da biometria (kg/m³)",
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "nullable": true
+                                                    },
+                                                    "recommendedRation": {
+                                                        "description": "Recomendação de trato diário (kg)",
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "nullable": true
+                                                    },
                                                     "createdAt": {
                                                         "type": "string",
                                                         "format": "date-time",
@@ -492,6 +521,35 @@
                                                     "format": "float",
                                                     "example": 1.2
                                                 },
+                                                "sampleWeight": {
+                                                    "description": "Peso total da amostra (kg)",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
+                                                "sampleQuantity": {
+                                                    "description": "Quantidade de peixes na amostra",
+                                                    "type": "integer",
+                                                    "nullable": true
+                                                },
+                                                "biomassEstimated": {
+                                                    "description": "Biomassa total estimada do tanque (kg)",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
+                                                "densityAtTime": {
+                                                    "description": "Densidade no momento da biometria (kg/m³)",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
+                                                "recommendedRation": {
+                                                    "description": "Recomendação de trato diário (kg)",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
                                                 "createdAt": {
                                                     "type": "string",
                                                     "format": "date-time",
@@ -549,27 +607,36 @@
                             "schema": {
                                 "properties": {
                                     "batchId": {
-                                        "description": "ID do lote",
+                                        "description": "ID do lote (opcional)",
                                         "type": "string",
                                         "format": "uuid"
                                     },
                                     "biometryDate": {
-                                        "description": "Data da biometria",
+                                        "description": "Data da biometria (opcional)",
                                         "type": "string",
                                         "format": "date",
                                         "example": "2025-02-20"
                                     },
                                     "averageWeight": {
-                                        "description": "Peso médio (g)",
+                                        "description": "Peso médio (g). Se omitido com sampleWeight/sampleQuantity, é recalculado.",
                                         "type": "number",
                                         "format": "float",
                                         "example": 15.5
                                     },
+                                    "sampleWeight": {
+                                        "description": "Peso total da amostra (kg) (opcional)",
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "sampleQuantity": {
+                                        "description": "Quantidade de peixes na amostra (opcional)",
+                                        "type": "integer"
+                                    },
                                     "fcr": {
-                                        "description": "Fator de conversão alimentar",
+                                        "description": "Recalculado automaticamente pelo backend.",
                                         "type": "number",
                                         "format": "float",
-                                        "example": 1.2
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -579,7 +646,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Biometria atualizada com sucesso",
+                        "description": "Biometria atualizada. FCR, biomassa, densidade e recomendação de trato são recalculados.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -615,6 +682,30 @@
                                                     "type": "number",
                                                     "format": "float",
                                                     "example": 1.2
+                                                },
+                                                "sampleWeight": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
+                                                "sampleQuantity": {
+                                                    "type": "integer",
+                                                    "nullable": true
+                                                },
+                                                "biomassEstimated": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
+                                                "densityAtTime": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
+                                                "recommendedRation": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
                                                 },
                                                 "createdAt": {
                                                     "type": "string",
@@ -718,13 +809,11 @@
                             "schema": {
                                 "required": [
                                     "batchId",
-                                    "biometryDate",
-                                    "averageWeight",
-                                    "fcr"
+                                    "biometryDate"
                                 ],
                                 "properties": {
                                     "batchId": {
-                                        "description": "ID do lote",
+                                        "description": "ID do lote (deve estar ativo)",
                                         "type": "string",
                                         "format": "uuid"
                                     },
@@ -735,16 +824,27 @@
                                         "example": "2025-02-20"
                                     },
                                     "averageWeight": {
-                                        "description": "Peso médio (g)",
+                                        "description": "Peso médio em gramas. Obrigatório se não enviar sampleWeight/sampleQuantity.",
                                         "type": "number",
                                         "format": "float",
                                         "example": 15.5
                                     },
-                                    "fcr": {
-                                        "description": "Fator de conversão alimentar",
+                                    "sampleWeight": {
+                                        "description": "Peso total da amostra (kg). Obrigatório com sampleQuantity se não enviar averageWeight.",
                                         "type": "number",
                                         "format": "float",
-                                        "example": 1.2
+                                        "example": 25.5
+                                    },
+                                    "sampleQuantity": {
+                                        "description": "Quantidade de peixes na amostra. Obrigatório com sampleWeight se não enviar averageWeight. Mínimo 1.",
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "fcr": {
+                                        "description": "Calculado automaticamente pelo backend quando omitido.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -754,7 +854,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Biometria criada com sucesso",
+                        "description": "Biometria criada com sucesso. FCR, biomassa, densidade e recomendação de trato são calculados automaticamente.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -790,6 +890,30 @@
                                                     "type": "number",
                                                     "format": "float",
                                                     "example": 1.2
+                                                },
+                                                "sampleWeight": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
+                                                "sampleQuantity": {
+                                                    "type": "integer",
+                                                    "nullable": true
+                                                },
+                                                "biomassEstimated": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
+                                                "densityAtTime": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
+                                                },
+                                                "recommendedRation": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "nullable": true
                                                 },
                                                 "createdAt": {
                                                     "type": "string",
@@ -1208,561 +1332,6 @@
                                             "example": "Client created successfully"
                                         },
                                         "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Validation error"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/company/feedings": {
-            "get": {
-                "tags": [
-                    "Feedings"
-                ],
-                "summary": "Listar feedings",
-                "operationId": "5b828fc2bc455201111892e0e8d26689",
-                "parameters": [
-                    {
-                        "name": "page",
-                        "in": "query",
-                        "description": "Número da página",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 1
-                        }
-                    },
-                    {
-                        "name": "per_page",
-                        "in": "query",
-                        "description": "Itens por página",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "example": 25
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista paginada de feedings",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "response": {
-                                            "properties": {
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "string",
-                                                                "format": "uuid"
-                                                            },
-                                                            "batch": {
-                                                                "description": "Lote (quando carregado)",
-                                                                "properties": {
-                                                                    "id": {
-                                                                        "type": "string",
-                                                                        "format": "uuid"
-                                                                    },
-                                                                    "name": {
-                                                                        "type": "string",
-                                                                        "nullable": true
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "feedingDate": {
-                                                                "type": "string",
-                                                                "format": "date"
-                                                            },
-                                                            "quantityProvided": {
-                                                                "type": "number",
-                                                                "example": 10.5
-                                                            },
-                                                            "feedType": {
-                                                                "type": "string",
-                                                                "example": "ração"
-                                                            },
-                                                            "stockReductionQuantity": {
-                                                                "type": "number",
-                                                                "example": 10.5
-                                                            },
-                                                            "createdAt": {
-                                                                "type": "string",
-                                                                "format": "date-time",
-                                                                "nullable": true
-                                                            },
-                                                            "updatedAt": {
-                                                                "type": "string",
-                                                                "format": "date-time",
-                                                                "nullable": true
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "pagination": {
-                                            "properties": {
-                                                "total": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "current_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "last_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "first_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "per_page": {
-                                                    "type": "integer",
-                                                    "example": 25
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/company/feeding/{id}": {
-            "get": {
-                "tags": [
-                    "Feedings"
-                ],
-                "summary": "Detalhar um feeding",
-                "operationId": "06fc6bed14351fa151219aabc7b12ffa",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID do feeding",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Feeding encontrado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "response": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "batchId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "feedingDate": {
-                                                    "type": "string",
-                                                    "format": "date",
-                                                    "example": "2026-02-13"
-                                                },
-                                                "quantityProvided": {
-                                                    "type": "number",
-                                                    "example": 10.5
-                                                },
-                                                "feedType": {
-                                                    "type": "string",
-                                                    "example": "ração"
-                                                },
-                                                "stockReductionQuantity": {
-                                                    "type": "number",
-                                                    "example": 10.5
-                                                },
-                                                "createdAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                },
-                                                "updatedAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Feeding not found"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "put": {
-                "tags": [
-                    "Feedings"
-                ],
-                "summary": "Atualizar um feeding",
-                "operationId": "f41ff75d2610626fc7ec12a215d36422",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID do feeding",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "properties": {
-                                    "batchId": {
-                                        "description": "ID do lote (Batch)",
-                                        "type": "string",
-                                        "format": "uuid"
-                                    },
-                                    "feedingDate": {
-                                        "description": "Data da alimentação",
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2026-02-13"
-                                    },
-                                    "quantityProvided": {
-                                        "description": "Quantidade fornecida",
-                                        "type": "number",
-                                        "minimum": 0,
-                                        "example": 10.5
-                                    },
-                                    "feedType": {
-                                        "description": "Tipo de ração",
-                                        "type": "string",
-                                        "maxLength": 100
-                                    },
-                                    "stockReductionQuantity": {
-                                        "description": "Quantidade de redução do estoque",
-                                        "type": "number",
-                                        "minimum": 0,
-                                        "example": 10.5
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Feeding atualizado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "response": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "batchId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "feedingDate": {
-                                                    "type": "string",
-                                                    "format": "date",
-                                                    "example": "2026-02-13"
-                                                },
-                                                "quantityProvided": {
-                                                    "type": "number",
-                                                    "example": 10.5
-                                                },
-                                                "feedType": {
-                                                    "type": "string"
-                                                },
-                                                "stockReductionQuantity": {
-                                                    "type": "number",
-                                                    "example": 10.5
-                                                },
-                                                "createdAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                },
-                                                "updatedAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Validation error"
-                    },
-                    "404": {
-                        "description": "Feeding not found"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Feedings"
-                ],
-                "summary": "Remover um feeding",
-                "operationId": "d13a84191fad5fe3e0551528a599e6ce",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID do feeding",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Feeding removido",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "response": {
-                                            "nullable": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Feeding successfully deleted"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Feeding not found"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/company/feeding": {
-            "post": {
-                "tags": [
-                    "Feedings"
-                ],
-                "summary": "Criar um feeding",
-                "operationId": "4d9dcb8759b99746a986920dedf431ce",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "batchId",
-                                    "feedingDate",
-                                    "quantityProvided",
-                                    "feedType",
-                                    "stockReductionQuantity"
-                                ],
-                                "properties": {
-                                    "batchId": {
-                                        "description": "ID do lote (Batch)",
-                                        "type": "string",
-                                        "format": "uuid"
-                                    },
-                                    "feedingDate": {
-                                        "description": "Data da alimentação",
-                                        "type": "string",
-                                        "format": "date",
-                                        "example": "2026-02-13"
-                                    },
-                                    "quantityProvided": {
-                                        "description": "Quantidade fornecida",
-                                        "type": "number",
-                                        "minimum": 0,
-                                        "example": 10.5
-                                    },
-                                    "feedType": {
-                                        "description": "Tipo de ração",
-                                        "type": "string",
-                                        "maxLength": 100,
-                                        "example": "ração"
-                                    },
-                                    "stockReductionQuantity": {
-                                        "description": "Quantidade de redução do estoque",
-                                        "type": "number",
-                                        "minimum": 0,
-                                        "example": 10.5
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Feeding criado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Successfully created"
-                                        },
-                                        "response": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "batchId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "feedingDate": {
-                                                    "type": "string",
-                                                    "format": "date",
-                                                    "example": "2026-02-13"
-                                                },
-                                                "quantityProvided": {
-                                                    "type": "number",
-                                                    "example": 10.5
-                                                },
-                                                "feedType": {
-                                                    "type": "string"
-                                                },
-                                                "stockReductionQuantity": {
-                                                    "type": "number",
-                                                    "example": 10.5
-                                                },
-                                                "createdAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                },
-                                                "updatedAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                }
-                                            },
                                             "type": "object"
                                         }
                                     },
@@ -3620,10 +3189,6 @@
         {
             "name": "Clients",
             "description": "Clients"
-        },
-        {
-            "name": "Feedings",
-            "description": "Feedings"
         },
         {
             "name": "Stockings",

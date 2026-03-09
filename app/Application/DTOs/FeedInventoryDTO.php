@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-class FeedControlDTO
+class FeedInventoryDTO
 {
     /**
      * @param array{name?: string|null}|null $company

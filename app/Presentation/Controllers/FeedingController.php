@@ -59,7 +59,18 @@ class FeedingController
     public function store(FeedingStoreRequest $request, CreateFeedingUseCase $useCase): JsonResponse
     {
         try {
-            $feeding = $useCase->execute($request->validated());
+            $validated = $request->validated();
+            $dto = FeedingDTO::fromArray([
+                'id'                       => '',
+                'batch_id'                 => $validated['batchId'],
+                'feeding_date'             => $validated['feedingDate'],
+                'quantity_provided'        => (float) $validated['quantityProvided'],
+                'feed_type'                => $validated['feedType'],
+                'stock_reduction_quantity' => (float) $validated['stockReductionQuantity'],
+                'created_at'               => null,
+                'updated_at'               => null,
+            ]);
+            $feeding = $useCase->execute($dto);
 
             return ApiResponse::created($feeding->toArray());
         } catch (Throwable $exception) {

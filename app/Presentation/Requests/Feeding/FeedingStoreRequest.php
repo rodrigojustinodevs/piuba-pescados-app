@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Requests\Feeding;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class FeedingStoreRequest extends FormRequest
 {
@@ -16,19 +17,61 @@ class FeedingStoreRequest extends FormRequest
         return true;
     }
 
+    #[\Override]
+    protected function prepareForValidation(): void
+    {
+        $merge = [];
+        if (! $this->has('batchId') && $this->has('batch_id')) {
+            $merge['batchId'] = $this->input('batch_id');
+        }
+        if (! $this->has('batchId') && $this->has('batche_id')) {
+            $merge['batchId'] = $this->input('batche_id');
+        }
+        if (! $this->has('feedingDate') && $this->has('feeding_date')) {
+            $merge['feedingDate'] = $this->input('feeding_date');
+        }
+        if (! $this->has('quantityProvided') && $this->has('quantity_provided')) {
+            $merge['quantityProvided'] = $this->input('quantity_provided');
+        }
+        if (! $this->has('feedType') && $this->has('feed_type')) {
+            $merge['feedType'] = $this->input('feed_type');
+        }
+        if (! $this->has('stockReductionQuantity') && $this->has('stock_reduction_quantity')) {
+            $merge['stockReductionQuantity'] = $this->input('stock_reduction_quantity');
+        }
+        if ($merge !== []) {
+            $this->merge($merge);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
+     * Usa camelCase para não expor estrutura do banco.
      *
      * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
      */
     public function rules(): array
     {
         return [
-            'batch_id'                 => ['required', 'uuid', 'exists:batches,id'],
-            'feeding_date'             => ['required', 'date'],
-            'quantity_provided'        => ['required', 'numeric', 'min:0'],
-            'feed_type'                => ['required', 'string', 'max:100'],
-            'stock_reduction_quantity' => ['required', 'numeric', 'min:0'],
+            'batchId'                => [
+                'required',
+                'uuid',
+                Rule::exists('batches', 'id')->where('status', 'active'),
+            ],
+            'feedingDate'            => ['required', 'date'],
+            'quantityProvided'       => ['required', 'numeric', 'gt:0'],
+            'feedType'                => ['required', 'string', 'max:100'],
+            'stockReductionQuantity' => ['required', 'numeric', 'min:0'],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'batchId.exists' => 'The batch informed does not exist or is not active. Only active batches allow feeding.',
         ];
     }
 }

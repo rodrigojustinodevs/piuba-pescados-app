@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Repositories;
 
 use App\Domain\Models\Alert;
+use App\Domain\Models\Batch;
 
 interface AlertRepositoryInterface
 {
@@ -26,4 +27,23 @@ interface AlertRepositoryInterface
     public function update(string $id, array $data): ?Alert;
 
     public function delete(string $id): bool;
+
+    /**
+     * Create a high FCR alert for the given batch.
+     */
+    public function createHighFcrAlert(Batch $batch, float $fcr, float $threshold): Alert;
+
+    /**
+     * Create a density alert for the given batch.
+     */
+    public function createDensityAlert(Batch $batch, float $density, float $threshold): Alert;
+
+    /**
+     * Create a ration deviation alert (quantity provided vs recommended ration).
+     */
+    public function createRationDeviationAlert(
+        Batch $batch,
+        float $quantityProvided,
+        float $recommendedRation
+    ): Alert;
 }

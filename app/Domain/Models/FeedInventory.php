@@ -10,6 +10,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
+ * Controle de estoque de ração (feed inventory).
+ *
  * @property string $id
  * @property string $company_id
  * @property string $feed_type
@@ -21,9 +23,11 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property-read Company|null $company
  */
-class FeedControl extends BaseModel
+class FeedInventory extends BaseModel
 {
     use SoftDeletes;
+
+    protected $table = 'feed_inventory';
 
     protected $keyType = 'string';
 
@@ -49,8 +53,8 @@ class FeedControl extends BaseModel
     #[\Override]
     protected static function booted()
     {
-        static::creating(function (FeedControl $feedControl): void {
-            $feedControl->id = (string) Str::uuid();
+        static::creating(function (FeedInventory $feedInventory): void {
+            $feedInventory->id = (string) Str::uuid();
         });
     }
 

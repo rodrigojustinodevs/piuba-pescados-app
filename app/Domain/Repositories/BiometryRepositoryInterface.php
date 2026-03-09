@@ -36,4 +36,22 @@ interface BiometryRepositoryInterface
      * Find a biometry by a specific field.
      */
     public function showBiometry(string $field, string | int $value): ?Biometry;
+
+    /**
+     * Get the latest biometry for the batch (most recent by biometry_date).
+     */
+    public function findLatestByBatch(string $batchId): ?Biometry;
+
+    /**
+     * Get the latest biometry before the given date for the batch.
+     */
+    public function findLatestBeforeDate(string $batchId, string $date): ?Biometry;
+
+    /**
+     * Get the previous average weight for the given batch and date.
+     */
+    public function previousAverageWeight(
+        string $batchId,
+        string $date
+    ): float;
 }

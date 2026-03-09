@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Application\UseCases\FeedControl;
+namespace App\Application\UseCases\FeedInventory;
 
-use App\Domain\Repositories\FeedControlRepositoryInterface;
-use App\Presentation\Resources\FeedControl\FeedControlResource;
+use App\Domain\Repositories\FeedInventoryRepositoryInterface;
+use App\Presentation\Resources\FeedInventory\FeedInventoryResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ListFeedControlsUseCase
+class ListFeedInventoriesUseCase
 {
     public function __construct(
-        protected FeedControlRepositoryInterface $feedControlRepository
+        protected FeedInventoryRepositoryInterface $feedInventoryRepository
     ) {
     }
 
     public function execute(): AnonymousResourceCollection
     {
-        $response = $this->feedControlRepository->paginate();
+        $response = $this->feedInventoryRepository->paginate();
 
-        return FeedControlResource::collection($response->items())
+        return FeedInventoryResource::collection($response->items())
             ->additional([
                 'pagination' => [
                     'total'        => $response->total(),

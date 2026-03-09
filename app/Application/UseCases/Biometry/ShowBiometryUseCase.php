@@ -13,11 +13,10 @@ use RuntimeException;
 class ShowBiometryUseCase
 {
     public function __construct(
-        protected BiometryRepositoryInterface $biometryRepository
-    ) {
-    }
+        private readonly BiometryRepositoryInterface $biometryRepository,
+    ) {}
 
-    public function execute(string $id): ?BiometryDTO
+    public function execute(string $id): BiometryDTO
     {
         $biometry = $this->biometryRepository->showBiometry('id', $id);
 

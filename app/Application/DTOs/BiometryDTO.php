@@ -13,7 +13,12 @@ class BiometryDTO
         public float $fcr,
         public ?string $biometryDate = null,
         public ?string $createdAt = null,
-        public ?string $updatedAt = null
+        public ?string $updatedAt = null,
+        public ?float $sampleWeight = null,
+        public ?int $sampleQuantity = null,
+        public ?float $biomassEstimated = null,
+        public ?float $densityAtTime = null,
+        public ?float $recommendedRation = null,
     ) {
     }
 
@@ -29,7 +34,12 @@ class BiometryDTO
             fcr: (float) $data['fcr'],
             biometryDate: $data['biometry_date'] ?? null,
             createdAt: $data['created_at'] ?? null,
-            updatedAt: $data['updated_at'] ?? null
+            updatedAt: $data['updated_at'] ?? null,
+            sampleWeight: isset($data['sample_weight']) ? (float) $data['sample_weight'] : null,
+            sampleQuantity: isset($data['sample_quantity']) ? (int) $data['sample_quantity'] : null,
+            biomassEstimated: isset($data['biomass_estimated']) ? (float) $data['biomass_estimated'] : null,
+            densityAtTime: isset($data['density_at_time']) ? (float) $data['density_at_time'] : null,
+            recommendedRation: isset($data['recommended_ration']) ? (float) $data['recommended_ration'] : null,
         );
     }
 
@@ -38,7 +48,7 @@ class BiometryDTO
      */
     public function toArray(): array
     {
-        return [
+        $arr = [
             'id'            => $this->id,
             'batchId'       => $this->batchId,
             'biometryDate'  => $this->biometryDate,
@@ -47,6 +57,22 @@ class BiometryDTO
             'createdAt'     => $this->createdAt,
             'updatedAt'     => $this->updatedAt,
         ];
+        if ($this->sampleWeight !== null) {
+            $arr['sampleWeight'] = $this->sampleWeight;
+        }
+        if ($this->sampleQuantity !== null) {
+            $arr['sampleQuantity'] = $this->sampleQuantity;
+        }
+        if ($this->biomassEstimated !== null) {
+            $arr['biomassEstimated'] = $this->biomassEstimated;
+        }
+        if ($this->densityAtTime !== null) {
+            $arr['densityAtTime'] = $this->densityAtTime;
+        }
+        if ($this->recommendedRation !== null) {
+            $arr['recommendedRation'] = $this->recommendedRation;
+        }
+        return $arr;
     }
 
     public function isEmpty(): bool

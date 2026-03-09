@@ -58,7 +58,7 @@ class BatchRepository implements BatchRepositoryInterface
     public function showBatch(string $field, string | int $value): ?Batch
     {
         return Batch::with([
-            'tank:id,name',
+            'tank:id,name,company_id,capacity_liters',
         ])->where($field, $value)->first();
     }
 

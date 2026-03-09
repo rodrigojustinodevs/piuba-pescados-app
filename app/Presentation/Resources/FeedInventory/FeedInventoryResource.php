@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Resources\FeedControl;
+namespace App\Presentation\Resources\FeedInventory;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,7 +17,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Company|null $company
  */
-class FeedControlResource extends JsonResource
+class FeedInventoryResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

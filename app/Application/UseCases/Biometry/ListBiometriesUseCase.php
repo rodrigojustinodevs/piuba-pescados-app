@@ -11,9 +11,8 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class ListBiometriesUseCase
 {
     public function __construct(
-        protected BiometryRepositoryInterface $biometryRepository
-    ) {
-    }
+        private readonly BiometryRepositoryInterface $biometryRepository,
+    ) {}
 
     public function execute(): AnonymousResourceCollection
     {

@@ -8,6 +8,7 @@ use App\Domain\Models\Feeding;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 
 class FeedingRepository implements FeedingRepositoryInterface
 {
@@ -46,7 +47,7 @@ class FeedingRepository implements FeedingRepositoryInterface
     {
         /** @var LengthAwarePaginator<int, Feeding> $paginator */
         $paginator = Feeding::with([
-            'batch:id',
+            'batch:id,name',
         ])->paginate($page);
 
         return new PaginationPresentr($paginator);
@@ -60,6 +61,23 @@ class FeedingRepository implements FeedingRepositoryInterface
         return Feeding::where($field, $value)->first();
     }
 
+    /**
+     * Get the average daily consumption for a company and feed type.
+     */
+    public function getDailyConsumptionAverage(string $companyId, string $feedType): float
+    {
+        // Faz o agrupamento e média direto no Banco de Dados
+        $average = Feeding::query()
+            ->whereHas('batch.tank', fn ($q) => $q->where('company_id', $companyId))
+            ->where('feed_type', $feedType)
+            ->selectRaw('DATE(feeding_date) as date, SUM(stock_reduction_quantity) as daily_total')
+            ->groupBy('date')
+            ->get()
+            ->avg('daily_total');
+
+        return (float) ($average ?? 0.0);
+    }
+
     public function delete(string $id): bool
     {
         $feeding = Feeding::find($id);
@@ -69,5 +87,20 @@ class FeedingRepository implements FeedingRepositoryInterface
         }
 
         return (bool) $feeding->delete();
+    }
+
+    public function existsByBatch(string $batchId): bool
+    {
+        return Feeding::where('batch_id', $batchId)->exists();
+    }
+
+    public function totalFeedConsumedUntilDate(string $batchId, string $startDate, string $endDate): float
+    {
+        $sum = Feeding::query()
+            ->where('batch_id', $batchId)
+            ->whereBetween('feeding_date', [$startDate, $endDate])
+            ->sum('stock_reduction_quantity');
+
+        return (float) $sum;
     }
 }

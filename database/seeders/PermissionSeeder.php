@@ -24,7 +24,7 @@ class PermissionSeeder extends Seeder
             'company',
             'cost-allocation',
             'feeding',
-            'feed-control',
+            'feed-inventory',
             'financial-transaction',
             'growth-curve',
             'harvest',

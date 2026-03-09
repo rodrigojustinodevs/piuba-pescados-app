@@ -5,18 +5,31 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Feeding;
 
 use App\Application\DTOs\FeedingDTO;
-use App\Domain\Models\Feeding;
+use App\Domain\Repositories\BatchRepositoryInterface;
+use App\Domain\Repositories\BiometryRepositoryInterface;
+use App\Domain\Repositories\FeedInventoryRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
-use Carbon\Carbon;
+use App\Domain\Repositories\StockRepositoryInterface;
+use App\Domain\Services\Alert\AlertService;
+use App\Domain\Services\FeedInventoryService\FeedInventoryValidatorService;
+use App\Domain\Services\Feeding\FeedingService;
+use App\Domain\Services\FeedInventoryService\FeedInventoryService;
+use App\Infrastructure\Mappers\FeedingMapper;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
 class UpdateFeedingUseCase
 {
     public function __construct(
-        protected FeedingRepositoryInterface $feedingRepository
-    ) {
-    }
+        private readonly FeedingRepositoryInterface $feedingRepository,
+        private readonly BatchRepositoryInterface $batchRepository,
+        private readonly BiometryRepositoryInterface $biometryRepository,
+        private readonly FeedInventoryRepositoryInterface $feedInventoryRepository,
+        private readonly StockRepositoryInterface $stockRepository,
+        private readonly FeedInventoryValidatorService $feedInventoryValidatorService,
+        private readonly FeedingService $feedingService,
+        private readonly FeedInventoryService $feedInventoryService,
+        private readonly AlertService $alertService,
+    ) {}
 
     /**
      * @param array<string, mixed> $data
@@ -24,26 +37,33 @@ class UpdateFeedingUseCase
     public function execute(string $id, array $data): FeedingDTO
     {
         return DB::transaction(function () use ($id, $data): FeedingDTO {
-            $feeding = $this->feedingRepository->update($id, $data);
+            $feeding = $this->feedingRepository->showFeeding('id', $id);
 
-            if (! $feeding instanceof Feeding) {
-                throw new RuntimeException('Feeding not found');
+            if (!$feeding) {
+                throw new \RuntimeException('Feeding not found');
             }
 
-            $feedingDate = $feeding->feeding_date instanceof Carbon
-                ? $feeding->feeding_date
-                : Carbon::parse($feeding->feeding_date);
+            $mappedData = FeedingMapper::fromRequest($data);
+            $batch = $this->batchRepository->showBatch('id', $mappedData['batch_id']);
+            $companyId = $batch->tank?->company_id;
 
-            return new FeedingDTO(
-                id: $feeding->id,
-                batchId: $feeding->batch_id,
-                feedingDate: $feedingDate->toDateString(),
-                quantityProvided: $feeding->quantity_provided,
-                feedType: $feeding->feed_type,
-                stockReductionQuantity: $feeding->stock_reduction_quantity,
-                createdAt: $feeding->created_at?->toDateTimeString(),
-                updatedAt: $feeding->updated_at?->toDateTimeString()
+            $this->feedingService->revertStockEffect($feeding, $companyId);
+
+            
+            $updatedFeeding = $this->feedingRepository->update($id, $mappedData);
+            
+            $this->feedingService->applyStockEffect($feeding, $companyId);
+
+            $latestBiometry = $this->biometryRepository->findLatestByBatch($batch->id);
+            $this->alertService->checkRationDeviation(
+                $batch,
+                (float) $mappedData['quantity_provided'],
+                $latestBiometry?->recommended_ration !== null
+                    ? (float) $latestBiometry->recommended_ration
+                    : null
             );
+
+            return FeedingMapper::toDTO($updatedFeeding);
         });
     }
-}
+}  

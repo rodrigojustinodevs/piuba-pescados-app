@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Presentation\Requests\FeedControl;
+namespace App\Presentation\Requests\FeedInventory;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FeedControlUpdateRequest extends FormRequest
+class FeedInventoryUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

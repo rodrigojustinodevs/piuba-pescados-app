@@ -79,11 +79,11 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'update-feeding',
             'delete-feeding',
 
-            // Permissões de Feed Control
-            'create-feed-control',
-            'view-feed-control',
-            'update-feed-control',
-            'delete-feed-control',
+            // Permissões de Feed Inventory (estoque de ração)
+            'create-feed-inventory',
+            'view-feed-inventory',
+            'update-feed-inventory',
+            'delete-feed-inventory',
 
             // Permissões de Financial Category
             'create-financial-category',

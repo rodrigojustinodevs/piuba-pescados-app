@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Company;
 
 use App\Application\DTOs\CompanyDTO;
-use App\Application\Services\CompanyService;
+use App\Application\UseCases\Company\CreateCompanyUseCase;
+use App\Application\UseCases\Company\DeleteCompanyUseCase;
+use App\Application\UseCases\Company\ShowAllCompaniesUseCase;
+use App\Application\UseCases\Company\ShowCompanyUseCase;
+use App\Application\UseCases\Company\UpdateCompanyUseCase;
 use App\Domain\Enums\Status;
 use App\Presentation\Controllers\CompanyController;
 use App\Presentation\Requests\Company\CompanyStoreRequest;
@@ -98,15 +102,14 @@ test('returns a successful response for index', function (): void {
     $request->shouldReceive('input')
         ->never();
 
-    $companyService = Mockery::mock(CompanyService::class);
-    $companyService->shouldReceive('showAllCompanies')
+    $useCase = Mockery::mock(ShowAllCompaniesUseCase::class);
+    $useCase->shouldReceive('execute')
         ->with(25, null)
         ->once()
         ->andReturn($collection);
 
-    $controller = new CompanyController($companyService);
-
-    $response = $controller->index($request);
+    $controller = new CompanyController();
+    $response   = $controller->index($request, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
@@ -139,15 +142,14 @@ test('returns a company for show when found', function (): void {
         '2025-03-10 11:00:00'
     );
 
-    $companyService = Mockery::mock(CompanyService::class);
-    $companyService->shouldReceive('showCompany')
+    $useCase = Mockery::mock(ShowCompanyUseCase::class);
+    $useCase->shouldReceive('execute')
         ->with($companyId)
         ->once()
         ->andReturn($companyDTO);
 
-    $controller = new CompanyController($companyService);
-
-    $response = $controller->show($companyId);
+    $controller = new CompanyController();
+    $response   = $controller->show($companyId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
@@ -160,15 +162,14 @@ test('returns 404 when show company is empty', function (): void {
     $companyId    = Uuid::uuid4()->toString();
     $emptyCompany = new CompanyDTO('', '', '', null, '', [], Status::ACTIVE);
 
-    $companyService = Mockery::mock(CompanyService::class);
-    $companyService->shouldReceive('showCompany')
+    $useCase = Mockery::mock(ShowCompanyUseCase::class);
+    $useCase->shouldReceive('execute')
         ->with($companyId)
         ->once()
         ->andReturn($emptyCompany);
 
-    $controller = new CompanyController($companyService);
-
-    $response = $controller->show($companyId);
+    $controller = new CompanyController();
+    $response   = $controller->show($companyId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_NOT_FOUND);
@@ -199,8 +200,8 @@ test('creates a company via store', function (): void {
         '2025-03-10 11:00:00'
     );
 
-    $companyService = Mockery::mock(CompanyService::class);
-    $companyService->shouldReceive('create')
+    $useCase = Mockery::mock(CreateCompanyUseCase::class);
+    $useCase->shouldReceive('execute')
         ->once()
         ->with(['name' => 'New Company'])
         ->andReturn($companyDTO);
@@ -210,9 +211,8 @@ test('creates a company via store', function (): void {
         ->once()
         ->andReturn(['name' => 'New Company']);
 
-    $controller = new CompanyController($companyService);
-
-    $response = $controller->store($request);
+    $controller = new CompanyController();
+    $response   = $controller->store($request, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_CREATED);
@@ -244,8 +244,8 @@ test('updates a company via update', function (): void {
         '2025-03-10 11:00:00'
     );
 
-    $companyService = Mockery::mock(CompanyService::class);
-    $companyService->shouldReceive('updateCompany')
+    $useCase = Mockery::mock(UpdateCompanyUseCase::class);
+    $useCase->shouldReceive('execute')
         ->once()
         ->with($companyId, ['name' => 'Updated Company'])
         ->andReturn($companyDTO);
@@ -255,9 +255,8 @@ test('updates a company via update', function (): void {
         ->once()
         ->andReturn(['name' => 'Updated Company']);
 
-    $controller = new CompanyController($companyService);
-
-    $response = $controller->update($request, $companyId);
+    $controller = new CompanyController();
+    $response   = $controller->update($request, $companyId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
@@ -270,15 +269,14 @@ test('updates a company via update', function (): void {
 test('deletes a company via destroy', function (): void {
     $companyId = Uuid::uuid4()->toString();
 
-    $companyService = Mockery::mock(CompanyService::class);
-    $companyService->shouldReceive('deleteCompany')
+    $useCase = Mockery::mock(DeleteCompanyUseCase::class);
+    $useCase->shouldReceive('execute')
         ->once()
         ->with($companyId)
         ->andReturn(true);
 
-    $controller = new CompanyController($companyService);
-
-    $response = $controller->destroy($companyId);
+    $controller = new CompanyController();
+    $response   = $controller->destroy($companyId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
@@ -290,15 +288,14 @@ test('deletes a company via destroy', function (): void {
 test('returns 404 when company deletion fails', function (): void {
     $companyId = Uuid::uuid4()->toString();
 
-    $companyService = Mockery::mock(CompanyService::class);
-    $companyService->shouldReceive('deleteCompany')
+    $useCase = Mockery::mock(DeleteCompanyUseCase::class);
+    $useCase->shouldReceive('execute')
         ->once()
         ->with($companyId)
         ->andReturn(false);
 
-    $controller = new CompanyController($companyService);
-
-    $response = $controller->destroy($companyId);
+    $controller = new CompanyController();
+    $response   = $controller->destroy($companyId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_NOT_FOUND);

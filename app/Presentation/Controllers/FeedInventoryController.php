@@ -70,8 +70,11 @@ class FeedInventoryController
     /**
      * Update the specified feed inventory.
      */
-    public function update(FeedInventoryUpdateRequest $request, string $id, UpdateFeedInventoryUseCase $useCase): JsonResponse
-    {
+    public function update(
+        FeedInventoryUpdateRequest $request,
+        string $id,
+        UpdateFeedInventoryUseCase $useCase
+    ): JsonResponse {
         try {
             $feedInventory = $useCase->execute($id, $request->validated());
 
@@ -93,9 +96,17 @@ class FeedInventoryController
                 return ApiResponse::error(null, 'FeedInventory not found', Response::HTTP_NOT_FOUND);
             }
 
-            return ApiResponse::success(null, Response::HTTP_OK, 'FeedInventory successfully deleted');
+            return ApiResponse::success(
+                null,
+                Response::HTTP_OK,
+                'FeedInventory successfully deleted'
+            );
         } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Error deleting feed inventory', Response::HTTP_INTERNAL_SERVER_ERROR);
+            return ApiResponse::error(
+                $exception,
+                'Error deleting feed inventory',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

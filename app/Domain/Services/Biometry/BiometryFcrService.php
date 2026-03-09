@@ -5,25 +5,30 @@ declare(strict_types=1);
 namespace App\Domain\Services\Biometry;
 
 use App\Domain\Models\Batch;
-use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
+use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
 
 class BiometryFcrService
 {
     public function __construct(
-        private FeedingRepositoryInterface $feedingRepository,
-        private BiometryRepositoryInterface $biometryRepository,
-        private MortalityRepositoryInterface $mortalityRepository,
-    ) {}
+        private readonly FeedingRepositoryInterface $feedingRepository,
+        private readonly BiometryRepositoryInterface $biometryRepository,
+        private readonly MortalityRepositoryInterface $mortalityRepository,
+    ) {
+    }
 
     public function calculate(Batch $batch, float $currentWeight, string $biometryDate): float
     {
         // 1. Busca os dados do período (Última biometria ou início do lote)
         $previousBiometry = $this->biometryRepository->findLatestBeforeDate($batch->id, $biometryDate);
-        
-        $previousWeight = $previousBiometry ? (float) $previousBiometry->average_weight : 0.0;
-        $startDate = $previousBiometry ? $previousBiometry->biometry_date : $batch->entry_date;
+
+        $previousWeight = $previousBiometry instanceof \App\Domain\Models\Biometry
+            ? (float) $previousBiometry->average_weight
+            : 0.0;
+        $startDate = $previousBiometry instanceof \App\Domain\Models\Biometry
+            ? $previousBiometry->biometry_date
+            : $batch->entry_date;
 
         // 2. Ração consumida APENAS neste período
         $startDateStr = $startDate instanceof \DateTimeInterface
@@ -57,14 +62,14 @@ class BiometryFcrService
     private function biomassGainKg(Batch $batch, float $currentWeight, float $previousWeight): float
     {
         $livingQuantity = $this->estimatedLivingQuantity($batch);
-        
+
         $individualGain = $currentWeight - $previousWeight;
 
         // Se o peixe perdeu peso (ou medição errada), não há ganho de biomassa
         if ($individualGain <= 0.0) {
             return 0.0;
         }
-            
+
         return ($individualGain * $livingQuantity) / 1000;
     }
 
@@ -88,6 +93,6 @@ class BiometryFcrService
             return round($sampleWeight / $sampleQuantity, 4);
         }
 
-        return (float) $averageWeight;
+        return $averageWeight;
     }
 }

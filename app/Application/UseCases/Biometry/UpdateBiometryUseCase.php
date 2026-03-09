@@ -25,7 +25,8 @@ class UpdateBiometryUseCase
         private readonly BiometryFcrService $biometryFcrService,
         private readonly FeedingService $feedingService,
         private readonly AlertService $alertService,
-    ) {}
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data
@@ -33,7 +34,6 @@ class UpdateBiometryUseCase
     public function execute(string $id, array $data): BiometryDTO
     {
         return DB::transaction(function () use ($id, $data): BiometryDTO {
-
             $biometry = $this->biometryRepository->showBiometry('id', $id);
 
             $batch = $this->batchRepository->showBatch('id', $biometry->batch_id);
@@ -46,8 +46,7 @@ class UpdateBiometryUseCase
                 (float) $mappedData['average_weight']
             );
 
-
-            $biometryDate  = $mappedData['biometry_date'] ?? $biometry->biometry_date;
+            $biometryDate     = $mappedData['biometry_date'] ?? $biometry->biometry_date;
             $biomassEstimated = $averageWeight * (int) $batch->initial_quantity;
 
             $this->biometryValidator->validateAverageWeight($averageWeight);
@@ -58,9 +57,11 @@ class UpdateBiometryUseCase
                 $biometryDate
             );
 
-            $capacityLiters = (int) ($batch->tank?->capacity_liters ?? 0);
-            $density = $this->feedingService->calculateDensity($biomassEstimated, $capacityLiters);
-            $sampleQuantity = (int) ($mappedData['sample_quantity'] ?? $biometry->sample_quantity ?? $batch->initial_quantity);
+            $capacityLiters = (int) ($batch->tank->capacity_liters ?? 0);
+            $density        = $this->feedingService->calculateDensity($biomassEstimated, $capacityLiters);
+            $sampleQuantity = (int) ($mappedData['sample_quantity']
+                ?? $biometry->sample_quantity
+                ?? $batch->initial_quantity);
             $dailyRecommendation = $this->feedingService->getDailyRecommendation($averageWeight, $sampleQuantity);
 
             $updatePayload = [
@@ -71,11 +72,12 @@ class UpdateBiometryUseCase
                 'sample_weight'      => (float) ($mappedData['sample_weight'] ?? $biometry->sample_weight ?? 0),
                 'sample_quantity'    => (int) ($mappedData['sample_quantity'] ?? $biometry->sample_quantity ?? 0),
                 'biomass_estimated'  => $biomassEstimated,
-                'density_at_time'     => $density,
+                'density_at_time'    => $density,
                 'recommended_ration' => $dailyRecommendation,
             ];
 
             $updated = $this->biometryRepository->update($id, $updatePayload);
+
             if (! $updated instanceof Biometry) {
                 throw new RuntimeException('Biometry not found');
             }

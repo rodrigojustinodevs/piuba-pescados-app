@@ -66,7 +66,7 @@ class AlertRepository implements AlertRepositoryInterface
 
     public function createHighFcrAlert(Batch $batch, float $fcr, float $threshold): Alert
     {
-        $companyId = $batch->tank?->company_id ?? '';
+        $companyId = $batch->tank->company_id ?? '';
 
         return $this->create([
             'company_id' => $companyId,
@@ -83,7 +83,7 @@ class AlertRepository implements AlertRepositoryInterface
 
     public function createDensityAlert(Batch $batch, float $density, float $threshold): Alert
     {
-        $companyId = $batch->tank?->company_id ?? '';
+        $companyId = $batch->tank->company_id ?? '';
 
         return $this->create([
             'company_id' => $companyId,
@@ -103,7 +103,7 @@ class AlertRepository implements AlertRepositoryInterface
         float $quantityProvided,
         float $recommendedRation
     ): Alert {
-        $companyId = $batch->tank?->company_id ?? '';
+        $companyId = $batch->tank->company_id ?? '';
 
         return $this->create([
             'company_id' => $companyId,

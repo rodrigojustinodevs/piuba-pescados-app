@@ -78,8 +78,11 @@ class FinancialCategoryController
     /**
      * Update the specified financial category.
      */
-    public function update(FinancialCategoryUpdateRequest $request, string $id, UpdateFinancialCategoryUseCase $useCase): JsonResponse
-    {
+    public function update(
+        FinancialCategoryUpdateRequest $request,
+        string $id,
+        UpdateFinancialCategoryUseCase $useCase
+    ): JsonResponse {
         try {
             $category = $useCase->execute($id, $request->validated());
 

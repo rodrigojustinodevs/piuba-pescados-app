@@ -60,7 +60,7 @@ class FeedingController
     {
         try {
             $validated = $request->validated();
-            $dto = FeedingDTO::fromArray([
+            $dto       = FeedingDTO::fromArray([
                 'id'                       => '',
                 'batch_id'                 => $validated['batchId'],
                 'feeding_date'             => $validated['feedingDate'],

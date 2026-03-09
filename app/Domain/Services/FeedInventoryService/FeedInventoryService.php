@@ -16,7 +16,7 @@ class FeedInventoryService
         float $quantity
     ): array {
         return [
-            'current_stock' => $feedInventory->current_stock - $quantity,
+            'current_stock'     => $feedInventory->current_stock - $quantity,
             'total_consumption' => $feedInventory->total_consumption + $quantity,
         ];
     }

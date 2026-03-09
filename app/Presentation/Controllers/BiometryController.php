@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\BiometryDTO;
 use App\Application\UseCases\Biometry\CreateBiometryUseCase;
 use App\Application\UseCases\Biometry\DeleteBiometryUseCase;
 use App\Application\UseCases\Biometry\ListBiometriesUseCase;
@@ -19,7 +18,6 @@ use Throwable;
 
 class BiometryController
 {
-
     /**
      * @OA\Get(
      *     path="/company/biometries",
@@ -80,11 +78,16 @@ class BiometryController
      *                         example=1.2,
      *                         description="Fator de conversão alimentar"
      *                     ),
-     *                     @OA\Property(property="sampleWeight", type="number", format="float", nullable=true, description="Peso total da amostra (kg)"),
-     *                     @OA\Property(property="sampleQuantity", type="integer", nullable=true, description="Quantidade de peixes na amostra"),
-     *                     @OA\Property(property="biomassEstimated", type="number", format="float", nullable=true, description="Biomassa total estimada do tanque (kg)"),
-     *                     @OA\Property(property="densityAtTime", type="number", format="float", nullable=true, description="Densidade no momento da biometria (kg/m³)"),
-     *                     @OA\Property(property="recommendedRation", type="number", format="float", nullable=true, description="Recomendação de trato diário (kg)"),
+     *                     @OA\Property(property="sampleWeight", type="number", format="float", nullable=true,
+     *                         description="Peso total da amostra (kg)"),
+     *                     @OA\Property(property="sampleQuantity", type="integer", nullable=true,
+     *                         description="Quantidade de peixes na amostra"),
+     *                     @OA\Property(property="biomassEstimated", type="number", format="float", nullable=true,
+     *                         description="Biomassa total estimada do tanque (kg)"),
+     *                     @OA\Property(property="densityAtTime", type="number", format="float", nullable=true,
+     *                         description="Densidade no momento da biometria (kg/m³)"),
+     *                     @OA\Property(property="recommendedRation", type="number", format="float", nullable=true,
+     *                         description="Recomendação de trato diário (kg)"),
      *                     @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
      *                     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
      *                 )
@@ -160,11 +163,16 @@ class BiometryController
      *                     example=1.2,
      *                     description="Fator de conversão alimentar"
      *                 ),
-     *                 @OA\Property(property="sampleWeight", type="number", format="float", nullable=true, description="Peso total da amostra (kg)"),
-     *                 @OA\Property(property="sampleQuantity", type="integer", nullable=true, description="Quantidade de peixes na amostra"),
-     *                 @OA\Property(property="biomassEstimated", type="number", format="float", nullable=true, description="Biomassa total estimada do tanque (kg)"),
-     *                 @OA\Property(property="densityAtTime", type="number", format="float", nullable=true, description="Densidade no momento da biometria (kg/m³)"),
-     *                 @OA\Property(property="recommendedRation", type="number", format="float", nullable=true, description="Recomendação de trato diário (kg)"),
+     *                 @OA\Property(property="sampleWeight", type="number", format="float", nullable=true,
+     *                     description="Peso total da amostra (kg)"),
+     *                 @OA\Property(property="sampleQuantity", type="integer", nullable=true,
+     *                     description="Quantidade de peixes na amostra"),
+     *                 @OA\Property(property="biomassEstimated", type="number", format="float", nullable=true,
+     *                     description="Biomassa total estimada do tanque (kg)"),
+     *                 @OA\Property(property="densityAtTime", type="number", format="float", nullable=true,
+     *                     description="Densidade no momento da biometria (kg/m³)"),
+     *                 @OA\Property(property="recommendedRation", type="number", format="float", nullable=true,
+     *                     description="Recomendação de trato diário (kg)"),
      *                 @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
      *                 @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
      *             )
@@ -180,7 +188,7 @@ class BiometryController
         try {
             $biometry = $useCase->execute($id);
 
-            if (! $biometry instanceof BiometryDTO || $biometry->isEmpty()) {
+            if ($biometry->isEmpty()) {
                 return ApiResponse::error(null, 'Biometry not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -200,7 +208,8 @@ class BiometryController
      *         required=true,
      *         @OA\JsonContent(
      *             required={"batchId","biometryDate"},
-     *             @OA\Property(property="batchId", type="string", format="uuid", description="ID do lote (deve estar ativo)"),
+     *             @OA\Property(property="batchId", type="string", format="uuid",
+     *                 description="ID do lote (deve estar ativo)"),
      *             @OA\Property(
      *                 property="biometryDate",
      *                 type="string",
@@ -213,33 +222,33 @@ class BiometryController
      *                 type="number",
      *                 format="float",
      *                 example=15.5,
-     *                 description="Peso médio em gramas. Obrigatório se não enviar sampleWeight/sampleQuantity."
+     *                 description="Peso médio em gramas. Obrigatório se não enviar sampleWeight/sampleQuantity"
      *             ),
      *             @OA\Property(
      *                 property="sampleWeight",
      *                 type="number",
      *                 format="float",
      *                 example=25.5,
-     *                 description="Peso total da amostra (kg). Obrigatório com sampleQuantity se não enviar averageWeight."
+     *                 description="Peso total da amostra (kg). Obrig. com sampleQuantity se não enviar averageWeight"
      *             ),
      *             @OA\Property(
      *                 property="sampleQuantity",
      *                 type="integer",
      *                 example=100,
-     *                 description="Quantidade de peixes na amostra. Obrigatório com sampleWeight se não enviar averageWeight. Mínimo 1."
+     *                 description="Quantidade na amostra. Obrig. com sampleWeight se não enviar averageWeight. Mín. 1"
      *             ),
      *             @OA\Property(
      *                 property="fcr",
      *                 type="number",
      *                 format="float",
      *                 nullable=true,
-     *                 description="Calculado automaticamente pelo backend quando omitido."
+     *                 description="Calculado automaticamente pelo backend quando omitido"
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Biometria criada com sucesso. FCR, biomassa, densidade e recomendação de trato são calculados automaticamente.",
+     *         description="Biometria criada. FCR, biomassa, densidade e recomendação de trato calculados auto.",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Successfully created"),

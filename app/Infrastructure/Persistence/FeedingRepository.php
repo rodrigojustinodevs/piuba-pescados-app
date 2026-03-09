@@ -8,7 +8,6 @@ use App\Domain\Models\Feeding;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Carbon;
 
 class FeedingRepository implements FeedingRepositoryInterface
 {

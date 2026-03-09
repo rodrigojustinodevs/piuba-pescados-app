@@ -12,7 +12,8 @@ class ListBiometriesUseCase
 {
     public function __construct(
         private readonly BiometryRepositoryInterface $biometryRepository,
-    ) {}
+    ) {
+    }
 
     public function execute(): AnonymousResourceCollection
     {

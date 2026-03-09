@@ -70,8 +70,11 @@ class SubscriptionController
     /**
      * Update the specified subscription.
      */
-    public function update(SubscriptionUpdateRequest $request, string $id, UpdateSubscriptionUseCase $useCase): JsonResponse
-    {
+    public function update(
+        SubscriptionUpdateRequest $request,
+        string $id,
+        UpdateSubscriptionUseCase $useCase
+    ): JsonResponse {
         try {
             $subscription = $useCase->execute($id, $request->validated());
 

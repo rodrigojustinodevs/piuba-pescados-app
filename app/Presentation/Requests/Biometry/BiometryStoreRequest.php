@@ -51,12 +51,12 @@ class BiometryStoreRequest extends FormRequest
      * Get the validation rules that apply to the request.
      * Usa camelCase para não expor estrutura do banco.
      *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'batchId'        => [
+            'batchId' => [
                 'required',
                 'uuid',
                 Rule::exists('batches', 'id')->where('status', 'active'),
@@ -72,17 +72,22 @@ class BiometryStoreRequest extends FormRequest
     /**
      * @return array<string, string>
      */
+    #[\Override]
     public function messages(): array
     {
         return [
-            'batchId.exists' => 'The batch informed does not exist or is not active. Only active batches allow biometry.',
-            'averageWeight.required_without_all' => 'The average weight is required when sample weight and sample quantity are not provided.',
-            'sampleWeight.required_without' => 'The sample weight is required when average weight is not provided.',
-            'sampleQuantity.required_without' => 'The sample quantity is required when average weight is not provided.',
-            'sampleWeight.numeric' => 'The sample weight must be a number.',
-            'sampleWeight.min' => 'The sample weight must be at least 0.',
+            'batchId.exists' => 'The batch informed does not exist or is not active. '
+                . 'Only active batches allow biometry.',
+            'averageWeight.required_without_all' => 'The average weight is required when sample weight '
+                . 'and sample quantity are not provided.',
+            'sampleWeight.required_without' => 'The sample weight is required when average weight '
+                . 'is not provided.',
+            'sampleQuantity.required_without' => 'The sample quantity is required when average weight '
+                . 'is not provided.',
+            'sampleWeight.numeric'   => 'The sample weight must be a number.',
+            'sampleWeight.min'       => 'The sample weight must be at least 0.',
             'sampleQuantity.integer' => 'The sample quantity must be an integer.',
-            'sampleQuantity.min' => 'The sample quantity must be at least 1.',
+            'sampleQuantity.min'     => 'The sample quantity must be at least 1.',
         ];
     }
 }

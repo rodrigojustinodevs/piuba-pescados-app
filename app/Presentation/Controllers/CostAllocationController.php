@@ -78,8 +78,11 @@ class CostAllocationController
     /**
      * Update the specified cost allocation.
      */
-    public function update(CostAllocationUpdateRequest $request, string $id, UpdateCostAllocationUseCase $useCase): JsonResponse
-    {
+    public function update(
+        CostAllocationUpdateRequest $request,
+        string $id,
+        UpdateCostAllocationUseCase $useCase
+    ): JsonResponse {
         try {
             $costAllocation = $useCase->execute($id, $request->validated());
 

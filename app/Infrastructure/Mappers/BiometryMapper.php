@@ -112,15 +112,19 @@ final class BiometryMapper
             'createdAt'     => $model->created_at?->toDateTimeString(),
             'updatedAt'     => $model->updated_at?->toDateTimeString(),
         ];
+
         if (isset($model->sample_weight)) {
             $arr['sampleWeight'] = (float) $model->sample_weight;
         }
+
         if (isset($model->sample_quantity)) {
             $arr['sampleQuantity'] = (int) $model->sample_quantity;
         }
+
         if (isset($model->biomass_estimated)) {
             $arr['biomassEstimated'] = (float) $model->biomass_estimated;
         }
+
         return $arr;
     }
 

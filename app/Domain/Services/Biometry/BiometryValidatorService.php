@@ -13,7 +13,8 @@ class BiometryValidatorService
     public function __construct(
         private readonly FeedingRepositoryInterface $feedingRepository,
         private readonly BiometryRepositoryInterface $biometryRepository,
-    ) {}
+    ) {
+    }
 
     public function validateAverageWeight(float $weight): void
     {
@@ -35,7 +36,17 @@ class BiometryValidatorService
 
     public function validateNoDuplicateDate(string $batchId, string $date): void
     {
-        if ($this->biometryRepository->showBiometry('batch_id', $batchId)?->biometry_date === $date) {
+        $existing = $this->biometryRepository->showBiometry('batch_id', $batchId);
+
+        if (! $existing instanceof \App\Domain\Models\Biometry) {
+            return;
+        }
+        $existingDate    = $existing->biometry_date;
+        $existingDateStr = $existingDate instanceof \DateTimeInterface
+            ? $existingDate->format('Y-m-d')
+            : (string) $existingDate;
+
+        if ($existingDateStr === $date) {
             throw ValidationException::withMessages([
                 'biometry_date' => __('validation.biometry.duplicate_date'),
             ]);

@@ -9,16 +9,17 @@ use App\Domain\Repositories\AlertRepositoryInterface;
 
 class AlertService
 {
-    private const FCR_ALERT_THRESHOLD = 2.0;
+    private const float FCR_ALERT_THRESHOLD = 2.0;
 
-    private const DENSITY_ALERT_THRESHOLD = 50.0;
+    private const float DENSITY_ALERT_THRESHOLD = 50.0;
 
     /** Desvio percentual (0.20 = 20%) entre ração fornecida e recomendada para gerar alerta */
-    private const RATION_DEVIATION_THRESHOLD = 0.20;
+    private const float RATION_DEVIATION_THRESHOLD = 0.20;
 
     public function __construct(
         private readonly AlertRepositoryInterface $alertRepository,
-    ) {}
+    ) {
+    }
 
     public function checkHighFcr(Batch $batch, float $fcr): void
     {
@@ -60,6 +61,7 @@ class AlertService
         }
 
         $deviation = abs($quantityProvided - $recommendedRation) / $recommendedRation;
+
         if ($deviation <= self::RATION_DEVIATION_THRESHOLD) {
             return;
         }

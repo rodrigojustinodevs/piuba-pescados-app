@@ -201,7 +201,7 @@ class CompanyAdminPermissionsSeeder extends Seeder
             $companyAdminRole->permissions()->attach($permissionsToAttach);
 
             $this->command->info('✅ Permissões adicionadas ao company-admin: ' . count($permissionsToAttach));
-            $this->command->line('   Permissões: ' . implode(', ', array_map(fn($id) => Permission::find($id)->name, $permissionsToAttach)));
+            $this->command->line('   Permissões: ' . implode(', ', array_map(fn ($id) => Permission::find($id)->name, $permissionsToAttach)));
         } else {
             $this->command->info('ℹ️  Nenhuma nova permissão para adicionar.');
         }

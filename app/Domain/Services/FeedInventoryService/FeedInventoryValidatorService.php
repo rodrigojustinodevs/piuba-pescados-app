@@ -25,13 +25,13 @@ class FeedInventoryValidatorService
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param float $delta Variation of stock (positive = more consumption).
      */
     public function validateStockChange(FeedInventory $inventory, float $delta): void
     {
         if ($delta > 0 && $inventory->current_stock < $delta) {
             throw ValidationException::withMessages([
-                'stock' => 'Insufficient feed inventory.'
+                'stock' => 'Insufficient feed inventory.',
             ]);
         }
     }

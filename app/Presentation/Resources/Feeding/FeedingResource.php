@@ -28,13 +28,14 @@ class FeedingResource extends JsonResource
     public function toArray($request): array
     {
         $feedingDate = $this->feeding_date;
+
         if ($feedingDate instanceof \DateTimeInterface) {
             $feedingDate = $feedingDate->format('Y-m-d');
         }
 
         return [
-            'id'                     => $this->id,
-            'batch'                  => $this->whenLoaded('batch', fn (): array => [
+            'id'    => $this->id,
+            'batch' => $this->whenLoaded('batch', fn (): array => [
                 'id'   => $this->batch->id,
                 'name' => $this->batch->name,
             ]),

@@ -57,21 +57,27 @@ class BiometryDTO
             'createdAt'     => $this->createdAt,
             'updatedAt'     => $this->updatedAt,
         ];
+
         if ($this->sampleWeight !== null) {
             $arr['sampleWeight'] = $this->sampleWeight;
         }
+
         if ($this->sampleQuantity !== null) {
             $arr['sampleQuantity'] = $this->sampleQuantity;
         }
+
         if ($this->biomassEstimated !== null) {
             $arr['biomassEstimated'] = $this->biomassEstimated;
         }
+
         if ($this->densityAtTime !== null) {
             $arr['densityAtTime'] = $this->densityAtTime;
         }
+
         if ($this->recommendedRation !== null) {
             $arr['recommendedRation'] = $this->recommendedRation;
         }
+
         return $arr;
     }
 

@@ -70,8 +70,11 @@ class GrowthCurveController
     /**
      * Update the specified growth curve.
      */
-    public function update(GrowthCurveUpdateRequest $request, string $id, UpdateGrowthCurveUseCase $useCase): JsonResponse
-    {
+    public function update(
+        GrowthCurveUpdateRequest $request,
+        string $id,
+        UpdateGrowthCurveUseCase $useCase
+    ): JsonResponse {
         try {
             $curve = $useCase->execute($id, $request->validated());
 

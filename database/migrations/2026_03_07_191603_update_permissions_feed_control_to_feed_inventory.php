@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 return new class () extends Migration
 {
-    private const PERMISSION_MAP = [
+    private const array PERMISSION_MAP = [
         'create-feed-control' => 'create-feed-inventory',
         'view-feed-control'   => 'view-feed-inventory',
         'update-feed-control' => 'update-feed-inventory',

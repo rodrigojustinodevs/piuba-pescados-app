@@ -64,8 +64,10 @@ class FinancialTransactionController
     /**
      * Store a newly created financial transaction.
      */
-    public function store(FinancialTransactionStoreRequest $request, CreateFinancialTransactionUseCase $useCase): JsonResponse
-    {
+    public function store(
+        FinancialTransactionStoreRequest $request,
+        CreateFinancialTransactionUseCase $useCase
+    ): JsonResponse {
         try {
             $transaction = $useCase->execute($request->validated());
 
@@ -78,8 +80,11 @@ class FinancialTransactionController
     /**
      * Update the specified financial transaction.
      */
-    public function update(FinancialTransactionUpdateRequest $request, string $id, UpdateFinancialTransactionUseCase $useCase): JsonResponse
-    {
+    public function update(
+        FinancialTransactionUpdateRequest $request,
+        string $id,
+        UpdateFinancialTransactionUseCase $useCase
+    ): JsonResponse {
         try {
             $transaction = $useCase->execute($id, $request->validated());
 

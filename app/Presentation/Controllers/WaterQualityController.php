@@ -74,8 +74,11 @@ class WaterQualityController
     /**
      * Update the specified water quality record.
      */
-    public function update(WaterQualityUpdateRequest $request, string $id, UpdateWaterQualityUseCase $useCase): JsonResponse
-    {
+    public function update(
+        WaterQualityUpdateRequest $request,
+        string $id,
+        UpdateWaterQualityUseCase $useCase
+    ): JsonResponse {
         try {
             $record = $useCase->execute($id, $request->validated());
 

@@ -19,7 +19,6 @@ use Throwable;
 
 class ClientController
 {
-
     /**
      * @OA\Get(
      *     path="/company/clients",

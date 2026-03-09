@@ -18,7 +18,7 @@ class StockingUpdateRequest extends FormRequest
     {
         $merge = [];
 
-        if (!$this->has('batchId') && $this->has('batch_id')) {
+        if (! $this->has('batchId') && $this->has('batch_id')) {
             $merge['batchId'] = $this->input('batch_id');
         }
 

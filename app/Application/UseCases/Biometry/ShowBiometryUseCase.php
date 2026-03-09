@@ -14,7 +14,8 @@ class ShowBiometryUseCase
 {
     public function __construct(
         private readonly BiometryRepositoryInterface $biometryRepository,
-    ) {}
+    ) {
+    }
 
     public function execute(string $id): BiometryDTO
     {

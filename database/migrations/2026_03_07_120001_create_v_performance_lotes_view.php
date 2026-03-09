@@ -12,7 +12,8 @@ return new class () extends Migration
      */
     public function up(): void
     {
-        DB::statement(<<<'SQL'
+        DB::statement(
+            <<<'SQL'
             CREATE VIEW v_performance_lotes AS
             SELECT
                 b.id AS batch_id,

@@ -92,6 +92,6 @@ class BiometryRepository implements BiometryRepositoryInterface
     {
         $previous = $this->findLatestBeforeDate($batchId, $date);
 
-        return $previous !== null ? (float) $previous->average_weight : 0.0;
+        return $previous instanceof Biometry ? (float) $previous->average_weight : 0.0;
     }
 }

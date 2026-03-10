@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Presentation\Controllers;
 
 use App\Application\DTOs\FinancialTransactionDTO;
-use App\Application\Services\FinancialTransactionService;
+use App\Application\UseCases\FinancialTransaction\CreateFinancialTransactionUseCase;
+use App\Application\UseCases\FinancialTransaction\DeleteFinancialTransactionUseCase;
+use App\Application\UseCases\FinancialTransaction\ListFinancialTransactionsUseCase;
+use App\Application\UseCases\FinancialTransaction\ShowFinancialTransactionUseCase;
+use App\Application\UseCases\FinancialTransaction\UpdateFinancialTransactionUseCase;
 use App\Presentation\Requests\FinancialTransaction\FinancialTransactionStoreRequest;
 use App\Presentation\Requests\FinancialTransaction\FinancialTransactionUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -15,18 +19,13 @@ use Throwable;
 
 class FinancialTransactionController
 {
-    public function __construct(
-        protected FinancialTransactionService $financialTransactionService
-    ) {
-    }
-
     /**
      * Display a listing of financial transactions.
      */
-    public function index(): JsonResponse
+    public function index(ListFinancialTransactionsUseCase $useCase): JsonResponse
     {
         try {
-            $transactions = $this->financialTransactionService->showAllFinancialTransactions();
+            $transactions = $useCase->execute();
             $data         = $transactions->toArray(request());
             $pagination   = $transactions->additional['pagination'] ?? null;
 
@@ -39,10 +38,10 @@ class FinancialTransactionController
     /**
      * Display the specified financial transaction.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowFinancialTransactionUseCase $useCase): JsonResponse
     {
         try {
-            $transaction = $this->financialTransactionService->showFinancialTransaction($id);
+            $transaction = $useCase->execute($id);
 
             if (! $transaction instanceof FinancialTransactionDTO || $transaction->isEmpty()) {
                 return ApiResponse::error(
@@ -65,10 +64,12 @@ class FinancialTransactionController
     /**
      * Store a newly created financial transaction.
      */
-    public function store(FinancialTransactionStoreRequest $request): JsonResponse
-    {
+    public function store(
+        FinancialTransactionStoreRequest $request,
+        CreateFinancialTransactionUseCase $useCase
+    ): JsonResponse {
         try {
-            $transaction = $this->financialTransactionService->create($request->validated());
+            $transaction = $useCase->execute($request->validated());
 
             return ApiResponse::created($transaction->toArray());
         } catch (Throwable $exception) {
@@ -79,10 +80,13 @@ class FinancialTransactionController
     /**
      * Update the specified financial transaction.
      */
-    public function update(FinancialTransactionUpdateRequest $request, string $id): JsonResponse
-    {
+    public function update(
+        FinancialTransactionUpdateRequest $request,
+        string $id,
+        UpdateFinancialTransactionUseCase $useCase
+    ): JsonResponse {
         try {
-            $transaction = $this->financialTransactionService->updateFinancialTransaction($id, $request->validated());
+            $transaction = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($transaction->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -93,10 +97,10 @@ class FinancialTransactionController
     /**
      * Remove the specified financial transaction.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteFinancialTransactionUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->financialTransactionService->deleteFinancialTransaction($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(

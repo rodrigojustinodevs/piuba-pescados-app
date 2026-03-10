@@ -70,4 +70,28 @@ class BiometryRepository implements BiometryRepositoryInterface
 
         return (bool) $biometry->delete();
     }
+
+    public function findLatestByBatch(string $batchId): ?Biometry
+    {
+        return Biometry::query()
+            ->where('batch_id', $batchId)
+            ->orderByDesc('biometry_date')
+            ->first();
+    }
+
+    public function findLatestBeforeDate(string $batchId, string $date): ?Biometry
+    {
+        return Biometry::query()
+            ->where('batch_id', $batchId)
+            ->where('biometry_date', '<', $date)
+            ->orderByDesc('biometry_date')
+            ->first();
+    }
+
+    public function previousAverageWeight(string $batchId, string $date): float
+    {
+        $previous = $this->findLatestBeforeDate($batchId, $date);
+
+        return $previous instanceof Biometry ? (float) $previous->average_weight : 0.0;
+    }
 }

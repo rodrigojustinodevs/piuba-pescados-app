@@ -79,11 +79,11 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'update-feeding',
             'delete-feeding',
 
-            // Permissões de Feed Control
-            'create-feed-control',
-            'view-feed-control',
-            'update-feed-control',
-            'delete-feed-control',
+            // Permissões de Feed Inventory (estoque de ração)
+            'create-feed-inventory',
+            'view-feed-inventory',
+            'update-feed-inventory',
+            'delete-feed-inventory',
 
             // Permissões de Financial Category
             'create-financial-category',
@@ -201,7 +201,7 @@ class CompanyAdminPermissionsSeeder extends Seeder
             $companyAdminRole->permissions()->attach($permissionsToAttach);
 
             $this->command->info('✅ Permissões adicionadas ao company-admin: ' . count($permissionsToAttach));
-            $this->command->line('   Permissões: ' . implode(', ', array_map(fn($id) => Permission::find($id)->name, $permissionsToAttach)));
+            $this->command->line('   Permissões: ' . implode(', ', array_map(fn ($id) => Permission::find($id)->name, $permissionsToAttach)));
         } else {
             $this->command->info('ℹ️  Nenhuma nova permissão para adicionar.');
         }

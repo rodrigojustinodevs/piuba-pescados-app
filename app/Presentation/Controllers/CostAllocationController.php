@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\CostAllocationService;
+use App\Application\DTOs\CostAllocationDTO;
+use App\Application\UseCases\CostAllocation\CreateCostAllocationUseCase;
+use App\Application\UseCases\CostAllocation\DeleteCostAllocationUseCase;
+use App\Application\UseCases\CostAllocation\ListCostAllocationsUseCase;
+use App\Application\UseCases\CostAllocation\ShowCostAllocationUseCase;
+use App\Application\UseCases\CostAllocation\UpdateCostAllocationUseCase;
 use App\Presentation\Requests\CostAllocation\CostAllocationStoreRequest;
 use App\Presentation\Requests\CostAllocation\CostAllocationUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class CostAllocationController
 {
-    public function __construct(
-        protected CostAllocationService $costAllocationService
-    ) {
-    }
-
     /**
      * Display a listing of cost allocations.
      */
-    public function index(): JsonResponse
+    public function index(ListCostAllocationsUseCase $useCase): JsonResponse
     {
         try {
-            $costAllocations = $this->costAllocationService->showAllCostAllocations();
+            $costAllocations = $useCase->execute();
             $data            = $costAllocations->toArray(request());
             $pagination      = $costAllocations->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class CostAllocationController
     /**
      * Display the specified cost allocation.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowCostAllocationUseCase $useCase): JsonResponse
     {
         try {
-            $costAllocation = $this->costAllocationService->showCostAllocation($id);
+            $costAllocation = $useCase->execute($id);
 
-            if (! $costAllocation instanceof \App\Application\DTOs\CostAllocationDTO || $costAllocation->isEmpty()) {
+            if (! $costAllocation instanceof CostAllocationDTO || $costAllocation->isEmpty()) {
                 return ApiResponse::error(
                     null,
                     'Cost allocation not found',
@@ -64,10 +64,10 @@ class CostAllocationController
     /**
      * Store a newly created cost allocation.
      */
-    public function store(CostAllocationStoreRequest $request): JsonResponse
+    public function store(CostAllocationStoreRequest $request, CreateCostAllocationUseCase $useCase): JsonResponse
     {
         try {
-            $costAllocation = $this->costAllocationService->create($request->validated());
+            $costAllocation = $useCase->execute($request->validated());
 
             return ApiResponse::created($costAllocation->toArray());
         } catch (Throwable $exception) {
@@ -78,10 +78,13 @@ class CostAllocationController
     /**
      * Update the specified cost allocation.
      */
-    public function update(CostAllocationUpdateRequest $request, string $id): JsonResponse
-    {
+    public function update(
+        CostAllocationUpdateRequest $request,
+        string $id,
+        UpdateCostAllocationUseCase $useCase
+    ): JsonResponse {
         try {
-            $costAllocation = $this->costAllocationService->updateCostAllocation($id, $request->validated());
+            $costAllocation = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($costAllocation->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -92,10 +95,10 @@ class CostAllocationController
     /**
      * Remove the specified cost allocation.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteCostAllocationUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->costAllocationService->deleteCostAllocation($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(

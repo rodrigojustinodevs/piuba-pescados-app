@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\HarvestService;
+use App\Application\DTOs\HarvestDTO;
+use App\Application\UseCases\Harvest\CreateHarvestUseCase;
+use App\Application\UseCases\Harvest\DeleteHarvestUseCase;
+use App\Application\UseCases\Harvest\ListHarvestsUseCase;
+use App\Application\UseCases\Harvest\ShowHarvestUseCase;
+use App\Application\UseCases\Harvest\UpdateHarvestUseCase;
 use App\Presentation\Requests\Harvest\HarvestStoreRequest;
 use App\Presentation\Requests\Harvest\HarvestUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class HarvestController
 {
-    public function __construct(
-        protected HarvestService $harvestService
-    ) {
-    }
-
     /**
      * Display a listing of harvests.
      */
-    public function index(): JsonResponse
+    public function index(ListHarvestsUseCase $useCase): JsonResponse
     {
         try {
-            $harvests   = $this->harvestService->showAllHarvests();
+            $harvests   = $useCase->execute();
             $data       = $harvests->toArray(request());
             $pagination = $harvests->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class HarvestController
     /**
      * Display the specified harvest.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowHarvestUseCase $useCase): JsonResponse
     {
         try {
-            $harvest = $this->harvestService->showHarvest($id);
+            $harvest = $useCase->execute($id);
 
-            if (! $harvest instanceof \App\Application\DTOs\HarvestDTO || $harvest->isEmpty()) {
+            if (! $harvest instanceof HarvestDTO || $harvest->isEmpty()) {
                 return ApiResponse::error(null, 'Harvest not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class HarvestController
     /**
      * Store a newly created harvest.
      */
-    public function store(HarvestStoreRequest $request): JsonResponse
+    public function store(HarvestStoreRequest $request, CreateHarvestUseCase $useCase): JsonResponse
     {
         try {
-            $harvest = $this->harvestService->create($request->validated());
+            $harvest = $useCase->execute($request->validated());
 
             return ApiResponse::created($harvest->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,10 @@ class HarvestController
     /**
      * Update the specified harvest.
      */
-    public function update(HarvestUpdateRequest $request, string $id): JsonResponse
+    public function update(HarvestUpdateRequest $request, string $id, UpdateHarvestUseCase $useCase): JsonResponse
     {
         try {
-            $harvest = $this->harvestService->updateHarvest($id, $request->validated());
+            $harvest = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($harvest->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +84,10 @@ class HarvestController
     /**
      * Remove the specified harvest.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteHarvestUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->harvestService->deleteHarvest($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Harvest not found', Response::HTTP_NOT_FOUND);

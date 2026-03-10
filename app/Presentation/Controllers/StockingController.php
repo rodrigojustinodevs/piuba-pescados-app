@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\StockingService;
+use App\Application\DTOs\StockingDTO;
+use App\Application\UseCases\Stocking\CreateStockingUseCase;
+use App\Application\UseCases\Stocking\DeleteStockingUseCase;
+use App\Application\UseCases\Stocking\ListStockingsUseCase;
+use App\Application\UseCases\Stocking\ShowStockingUseCase;
+use App\Application\UseCases\Stocking\UpdateStockingUseCase;
 use App\Presentation\Requests\Stocking\StockingStoreRequest;
 use App\Presentation\Requests\Stocking\StockingUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,11 +19,6 @@ use Throwable;
 
 class StockingController
 {
-    public function __construct(
-        protected StockingService $stockingService
-    ) {
-    }
-
     /**
      * @OA\Get(
      *     path="/company/stockings",
@@ -93,10 +93,10 @@ class StockingController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function index(): JsonResponse
+    public function index(ListStockingsUseCase $useCase): JsonResponse
     {
         try {
-            $stockings  = $this->stockingService->showAllStockings();
+            $stockings  = $useCase->execute();
             $data       = $stockings->toArray(request());
             $pagination = $stockings->additional['pagination'] ?? null;
 
@@ -142,12 +142,12 @@ class StockingController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowStockingUseCase $useCase): JsonResponse
     {
         try {
-            $stocking = $this->stockingService->showStocking($id);
+            $stocking = $useCase->execute($id);
 
-            if (! $stocking instanceof \App\Application\DTOs\StockingDTO || $stocking->isEmpty()) {
+            if (! $stocking instanceof StockingDTO || $stocking->isEmpty()) {
                 return ApiResponse::error(null, 'Stocking not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -215,10 +215,10 @@ class StockingController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function store(StockingStoreRequest $request): JsonResponse
+    public function store(StockingStoreRequest $request, CreateStockingUseCase $useCase): JsonResponse
     {
         try {
-            $stocking = $this->stockingService->create($request->validated());
+            $stocking = $useCase->execute($request->validated());
 
             return ApiResponse::created($stocking->toArray());
         } catch (Throwable $exception) {
@@ -272,10 +272,10 @@ class StockingController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function update(StockingUpdateRequest $request, string $id): JsonResponse
+    public function update(StockingUpdateRequest $request, string $id, UpdateStockingUseCase $useCase): JsonResponse
     {
         try {
-            $stocking = $this->stockingService->updateStocking($id, $request->validated());
+            $stocking = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($stocking->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -309,10 +309,10 @@ class StockingController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteStockingUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->stockingService->deleteStocking($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Stocking not found', Response::HTTP_NOT_FOUND);

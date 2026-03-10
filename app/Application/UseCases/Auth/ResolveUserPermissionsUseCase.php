@@ -57,7 +57,7 @@ class ResolveUserPermissionsUseCase
         $directPermissionsGlobal = $this->authRepository->getUserDirectPermissions($user);
         $allPermissions          = $allPermissions->merge($directPermissionsGlobal);
 
-        if (!in_array($companyId, [null, '', '0'], true)) {
+        if (! in_array($companyId, [null, '', '0'], true)) {
             $directPermissionsCompany = $this->authRepository->getUserDirectPermissionsByCompany($user, $companyId);
             $allPermissions           = $allPermissions->merge($directPermissionsCompany);
         }
@@ -65,7 +65,7 @@ class ResolveUserPermissionsUseCase
         $rolePermissionsGlobal = $this->authRepository->getUserRolePermissions($user);
         $allPermissions        = $allPermissions->merge($rolePermissionsGlobal);
 
-        if (!in_array($companyId, [null, '', '0'], true)) {
+        if (! in_array($companyId, [null, '', '0'], true)) {
             $rolePermissionsCompany = $this->authRepository->getUserRolePermissionsByCompany($user, $companyId);
             $allPermissions         = $allPermissions->merge($rolePermissionsCompany);
         }

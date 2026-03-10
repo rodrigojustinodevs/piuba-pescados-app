@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Requests\Biometry;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class BiometryUpdateRequest extends FormRequest
 {
@@ -36,15 +37,21 @@ class BiometryUpdateRequest extends FormRequest
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'batchId'       => 'sometimes|uuid|exists:batches,id',
-            'biometryDate'  => 'sometimes|date',
-            'averageWeight' => 'sometimes|numeric|min:0',
-            'fcr'           => 'sometimes|numeric|min:0',
+            'batchId' => [
+                'sometimes',
+                'uuid',
+                Rule::exists('batches', 'id')->where('status', 'active'),
+            ],
+            'biometryDate'   => 'sometimes|date',
+            'averageWeight'  => 'sometimes|numeric|min:0',
+            'sampleWeight'   => 'sometimes|numeric|min:0',
+            'sampleQuantity' => 'sometimes|integer|min:1',
+            'fcr'            => 'sometimes|numeric|min:0',
         ];
     }
 
@@ -55,13 +62,18 @@ class BiometryUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batchId.uuid'          => 'The batch ID must be a valid UUID.',
-            'batchId.exists'        => 'The batch ID must exist in the batches table.',
-            'biometryDate.date'     => 'The biometry date must be a valid date.',
-            'averageWeight.numeric' => 'The average weight must be a number.',
-            'averageWeight.min'     => 'The average weight must be at least 0.',
-            'fcr.numeric'           => 'The FCR must be a number.',
-            'fcr.min'               => 'The FCR must be at least 0.',
+            'batchId.uuid'   => 'The batch ID must be a valid UUID.',
+            'batchId.exists' => 'The batch informed does not exist or is not active. '
+                . 'Only active batches allow biometry.',
+            'biometryDate.date'      => 'The biometry date must be a valid date.',
+            'averageWeight.numeric'  => 'The average weight must be a number.',
+            'averageWeight.min'      => 'The average weight must be at least 0.',
+            'sampleWeight.numeric'   => 'The sample weight must be a number.',
+            'sampleWeight.min'       => 'The sample weight must be at least 0.',
+            'sampleQuantity.integer' => 'The sample quantity must be an integer.',
+            'sampleQuantity.min'     => 'The sample quantity must be at least 1.',
+            'fcr.numeric'            => 'The FCR must be a number.',
+            'fcr.min'                => 'The FCR must be at least 0.',
         ];
     }
 }

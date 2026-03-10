@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\SubscriptionService;
+use App\Application\DTOs\SubscriptionDTO;
+use App\Application\UseCases\Subscription\CreateSubscriptionUseCase;
+use App\Application\UseCases\Subscription\DeleteSubscriptionUseCase;
+use App\Application\UseCases\Subscription\ListSubscriptionsUseCase;
+use App\Application\UseCases\Subscription\ShowSubscriptionUseCase;
+use App\Application\UseCases\Subscription\UpdateSubscriptionUseCase;
 use App\Presentation\Requests\Subscription\SubscriptionStoreRequest;
 use App\Presentation\Requests\Subscription\SubscriptionUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class SubscriptionController
 {
-    public function __construct(
-        protected SubscriptionService $subscriptionService
-    ) {
-    }
-
     /**
      * Display a listing of subscriptions.
      */
-    public function index(): JsonResponse
+    public function index(ListSubscriptionsUseCase $useCase): JsonResponse
     {
         try {
-            $subscriptions = $this->subscriptionService->showAllSubscriptions();
+            $subscriptions = $useCase->execute();
             $data          = $subscriptions->toArray(request());
             $pagination    = $subscriptions->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class SubscriptionController
     /**
      * Display the specified subscription.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowSubscriptionUseCase $useCase): JsonResponse
     {
         try {
-            $subscription = $this->subscriptionService->showSubscription($id);
+            $subscription = $useCase->execute($id);
 
-            if (! $subscription instanceof \App\Application\DTOs\SubscriptionDTO || $subscription->isEmpty()) {
+            if (! $subscription instanceof SubscriptionDTO || $subscription->isEmpty()) {
                 return ApiResponse::error(null, 'Subscription not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class SubscriptionController
     /**
      * Store a newly created subscription.
      */
-    public function store(SubscriptionStoreRequest $request): JsonResponse
+    public function store(SubscriptionStoreRequest $request, CreateSubscriptionUseCase $useCase): JsonResponse
     {
         try {
-            $subscription = $this->subscriptionService->create($request->validated());
+            $subscription = $useCase->execute($request->validated());
 
             return ApiResponse::created($subscription->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,13 @@ class SubscriptionController
     /**
      * Update the specified subscription.
      */
-    public function update(SubscriptionUpdateRequest $request, string $id): JsonResponse
-    {
+    public function update(
+        SubscriptionUpdateRequest $request,
+        string $id,
+        UpdateSubscriptionUseCase $useCase
+    ): JsonResponse {
         try {
-            $subscription = $this->subscriptionService->updateSubscription($id, $request->validated());
+            $subscription = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($subscription->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +87,10 @@ class SubscriptionController
     /**
      * Remove the specified subscription.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteSubscriptionUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->subscriptionService->deleteSubscription($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Subscription not found', Response::HTTP_NOT_FOUND);

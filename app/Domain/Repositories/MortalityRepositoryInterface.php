@@ -36,4 +36,9 @@ interface MortalityRepositoryInterface
      * Find a mortality by a specific field.
      */
     public function showMortality(string $field, string | int $value): ?Mortality;
+
+    /**
+     * Get the total number of mortalities for the given batch.
+     */
+    public function totalMortalities(string $batchId): int;
 }

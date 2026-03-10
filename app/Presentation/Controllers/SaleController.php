@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\SaleService;
+use App\Application\DTOs\SaleDTO;
+use App\Application\UseCases\Sale\CreateSaleUseCase;
+use App\Application\UseCases\Sale\DeleteSaleUseCase;
+use App\Application\UseCases\Sale\ListSalesUseCase;
+use App\Application\UseCases\Sale\ShowSaleUseCase;
+use App\Application\UseCases\Sale\UpdateSaleUseCase;
 use App\Presentation\Requests\Sale\SaleStoreRequest;
 use App\Presentation\Requests\Sale\SaleUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class SaleController
 {
-    public function __construct(
-        protected SaleService $saleService
-    ) {
-    }
-
     /**
      * Display a listing of sales.
      */
-    public function index(): JsonResponse
+    public function index(ListSalesUseCase $useCase): JsonResponse
     {
         try {
-            $sales      = $this->saleService->showAllSales();
+            $sales      = $useCase->execute();
             $data       = $sales->toArray(request());
             $pagination = $sales->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class SaleController
     /**
      * Display the specified sale.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowSaleUseCase $useCase): JsonResponse
     {
         try {
-            $sale = $this->saleService->showSale($id);
+            $sale = $useCase->execute($id);
 
-            if (! $sale instanceof \App\Application\DTOs\SaleDTO || $sale->isEmpty()) {
+            if (! $sale instanceof SaleDTO || $sale->isEmpty()) {
                 return ApiResponse::error(null, 'Sale not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class SaleController
     /**
      * Store a newly created sale.
      */
-    public function store(SaleStoreRequest $request): JsonResponse
+    public function store(SaleStoreRequest $request, CreateSaleUseCase $useCase): JsonResponse
     {
         try {
-            $sale = $this->saleService->create($request->validated());
+            $sale = $useCase->execute($request->validated());
 
             return ApiResponse::created($sale->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,10 @@ class SaleController
     /**
      * Update the specified sale.
      */
-    public function update(SaleUpdateRequest $request, string $id): JsonResponse
+    public function update(SaleUpdateRequest $request, string $id, UpdateSaleUseCase $useCase): JsonResponse
     {
         try {
-            $sale = $this->saleService->updateSale($id, $request->validated());
+            $sale = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($sale->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +84,10 @@ class SaleController
     /**
      * Remove the specified sale.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteSaleUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->saleService->deleteSale($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Sale not found', Response::HTTP_NOT_FOUND);

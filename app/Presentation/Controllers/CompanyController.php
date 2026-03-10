@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\CompanyService;
+use App\Application\DTOs\CompanyDTO;
+use App\Application\UseCases\Company\CreateCompanyUseCase;
+use App\Application\UseCases\Company\DeleteCompanyUseCase;
+use App\Application\UseCases\Company\ShowAllCompaniesUseCase;
+use App\Application\UseCases\Company\ShowCompanyUseCase;
+use App\Application\UseCases\Company\UpdateCompanyUseCase;
 use App\Presentation\Requests\Company\CompanyStoreRequest;
 use App\Presentation\Requests\Company\CompanyUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -15,23 +20,18 @@ use Throwable;
 
 class CompanyController
 {
-    public function __construct(
-        protected CompanyService $companyService
-    ) {
-    }
-
     /**
      * Display a listing of companies.
      *
      * Query params: page (int), limit (int), search (string - filters by name, cnpj, email).
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request, ShowAllCompaniesUseCase $useCase): JsonResponse
     {
         try {
             $limit  = $request->integer('limit', 25);
             $search = $request->filled('search') ? trim((string) $request->input('search')) : null;
 
-            $companies  = $this->companyService->showAllCompanies($limit, $search);
+            $companies  = $useCase->execute($limit, $search);
             $data       = $companies->toArray($request);
             $pagination = $companies->additional['pagination'] ?? null;
 
@@ -44,12 +44,12 @@ class CompanyController
     /**
      * Display the specified company.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowCompanyUseCase $useCase): JsonResponse
     {
         try {
-            $company = $this->companyService->showCompany($id);
+            $company = $useCase->execute($id);
 
-            if (! $company instanceof \App\Application\DTOs\CompanyDTO || $company->isEmpty()) {
+            if (! $company instanceof CompanyDTO || $company->isEmpty()) {
                 return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -62,10 +62,10 @@ class CompanyController
     /**
      * Store a newly created company.
      */
-    public function store(CompanyStoreRequest $request): JsonResponse
+    public function store(CompanyStoreRequest $request, CreateCompanyUseCase $useCase): JsonResponse
     {
         try {
-            $company = $this->companyService->create($request->validated());
+            $company = $useCase->execute($request->validated());
 
             return ApiResponse::created($company->toArray());
         } catch (Throwable $exception) {
@@ -76,10 +76,10 @@ class CompanyController
     /**
      * Update the specified company.
      */
-    public function update(CompanyUpdateRequest $request, string $id): JsonResponse
+    public function update(CompanyUpdateRequest $request, string $id, UpdateCompanyUseCase $useCase): JsonResponse
     {
         try {
-            $company = $this->companyService->updateCompany($id, $request->validated());
+            $company = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($company->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -90,10 +90,10 @@ class CompanyController
     /**
      * Remove the specified company.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteCompanyUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->companyService->deleteCompany($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);

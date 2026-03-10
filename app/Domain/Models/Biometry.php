@@ -14,7 +14,12 @@ use Illuminate\Support\Str;
  * @property string $batch_id
  * @property Carbon|null $biometry_date
  * @property float $average_weight
+ * @property float $sample_weight
+ * @property int $sample_quantity
+ * @property float|null $biomass_estimated
  * @property float $fcr
+ * @property float|null $density_at_time
+ * @property float|null $recommended_ration
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -33,7 +38,12 @@ class Biometry extends BaseModel
         'batch_id',
         'biometry_date',
         'average_weight',
+        'sample_weight',
+        'sample_quantity',
+        'biomass_estimated',
         'fcr',
+        'density_at_time',
+        'recommended_ration',
     ];
 
     /** @var array<string> */

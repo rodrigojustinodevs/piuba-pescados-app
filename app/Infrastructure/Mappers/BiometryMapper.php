@@ -19,7 +19,12 @@ final class BiometryMapper
             fcr: (float) $model->fcr,
             biometryDate: self::formatBiometryDate($model->biometry_date),
             createdAt: $model->created_at?->toDateTimeString(),
-            updatedAt: $model->updated_at?->toDateTimeString()
+            updatedAt: $model->updated_at?->toDateTimeString(),
+            sampleWeight: isset($model->sample_weight) ? (float) $model->sample_weight : null,
+            sampleQuantity: isset($model->sample_quantity) ? (int) $model->sample_quantity : null,
+            biomassEstimated: isset($model->biomass_estimated) ? (float) $model->biomass_estimated : null,
+            densityAtTime: isset($model->density_at_time) ? (float) $model->density_at_time : null,
+            recommendedRation: isset($model->recommended_ration) ? (float) $model->recommended_ration : null,
         );
     }
 
@@ -72,6 +77,24 @@ final class BiometryMapper
             $mapped['fcr'] = (float) $data['fcr'];
         }
 
+        if (isset($data['sampleWeight'])) {
+            $mapped['sample_weight'] = (float) $data['sampleWeight'];
+        } elseif (isset($data['sample_weight'])) {
+            $mapped['sample_weight'] = (float) $data['sample_weight'];
+        }
+
+        if (isset($data['sampleQuantity'])) {
+            $mapped['sample_quantity'] = (int) $data['sampleQuantity'];
+        } elseif (isset($data['sample_quantity'])) {
+            $mapped['sample_quantity'] = (int) $data['sample_quantity'];
+        }
+
+        if (isset($data['biomassEstimated'])) {
+            $mapped['biomass_estimated'] = (float) $data['biomassEstimated'];
+        } elseif (isset($data['biomass_estimated'])) {
+            $mapped['biomass_estimated'] = (float) $data['biomass_estimated'];
+        }
+
         return $mapped;
     }
 
@@ -80,7 +103,7 @@ final class BiometryMapper
      */
     public static function modelToArray(Biometry $model): array
     {
-        return [
+        $arr = [
             'id'            => $model->id,
             'batchId'       => $model->batch_id,
             'biometryDate'  => self::formatBiometryDate($model->biometry_date),
@@ -89,6 +112,20 @@ final class BiometryMapper
             'createdAt'     => $model->created_at?->toDateTimeString(),
             'updatedAt'     => $model->updated_at?->toDateTimeString(),
         ];
+
+        if (isset($model->sample_weight)) {
+            $arr['sampleWeight'] = (float) $model->sample_weight;
+        }
+
+        if (isset($model->sample_quantity)) {
+            $arr['sampleQuantity'] = (int) $model->sample_quantity;
+        }
+
+        if (isset($model->biomass_estimated)) {
+            $arr['biomassEstimated'] = (float) $model->biomass_estimated;
+        }
+
+        return $arr;
     }
 
     /**

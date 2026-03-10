@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\FeedingService;
+use App\Application\DTOs\FeedingDTO;
+use App\Application\UseCases\Feeding\CreateFeedingUseCase;
+use App\Application\UseCases\Feeding\DeleteFeedingUseCase;
+use App\Application\UseCases\Feeding\ListFeedingsUseCase;
+use App\Application\UseCases\Feeding\ShowFeedingUseCase;
+use App\Application\UseCases\Feeding\UpdateFeedingUseCase;
 use App\Presentation\Requests\Feeding\FeedingStoreRequest;
 use App\Presentation\Requests\Feeding\FeedingUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class FeedingController
 {
-    public function __construct(
-        protected FeedingService $feedingService
-    ) {
-    }
-
     /**
      * Display a listing of feedings.
      */
-    public function index(): JsonResponse
+    public function index(ListFeedingsUseCase $useCase): JsonResponse
     {
         try {
-            $feedings   = $this->feedingService->showAllFeedings();
+            $feedings   = $useCase->execute();
             $data       = $feedings->toArray(request());
             $pagination = $feedings->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class FeedingController
     /**
      * Display the specified feeding.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowFeedingUseCase $useCase): JsonResponse
     {
         try {
-            $feeding = $this->feedingService->showFeeding($id);
+            $feeding = $useCase->execute($id);
 
-            if (! $feeding instanceof \App\Application\DTOs\FeedingDTO || $feeding->isEmpty()) {
+            if (! $feeding instanceof FeedingDTO || $feeding->isEmpty()) {
                 return ApiResponse::error(null, 'Feeding not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,21 @@ class FeedingController
     /**
      * Store a newly created feeding.
      */
-    public function store(FeedingStoreRequest $request): JsonResponse
+    public function store(FeedingStoreRequest $request, CreateFeedingUseCase $useCase): JsonResponse
     {
         try {
-            $feeding = $this->feedingService->create($request->validated());
+            $validated = $request->validated();
+            $dto       = FeedingDTO::fromArray([
+                'id'                       => '',
+                'batch_id'                 => $validated['batchId'],
+                'feeding_date'             => $validated['feedingDate'],
+                'quantity_provided'        => (float) $validated['quantityProvided'],
+                'feed_type'                => $validated['feedType'],
+                'stock_reduction_quantity' => (float) $validated['stockReductionQuantity'],
+                'created_at'               => null,
+                'updated_at'               => null,
+            ]);
+            $feeding = $useCase->execute($dto);
 
             return ApiResponse::created($feeding->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +81,10 @@ class FeedingController
     /**
      * Update the specified feeding.
      */
-    public function update(FeedingUpdateRequest $request, string $id): JsonResponse
+    public function update(FeedingUpdateRequest $request, string $id, UpdateFeedingUseCase $useCase): JsonResponse
     {
         try {
-            $feeding = $this->feedingService->updateFeeding($id, $request->validated());
+            $feeding = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($feeding->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +95,10 @@ class FeedingController
     /**
      * Remove the specified feeding.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteFeedingUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->feedingService->deleteFeeding($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Feeding not found', Response::HTTP_NOT_FOUND);

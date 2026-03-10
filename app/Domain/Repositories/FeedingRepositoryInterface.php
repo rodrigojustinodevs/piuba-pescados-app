@@ -36,4 +36,23 @@ interface FeedingRepositoryInterface
      * Find a feeding by a specific field.
      */
     public function showFeeding(string $field, string | int $value): ?Feeding;
+
+    /**
+     * Get the average daily consumption (by day) for a company and feed type.
+     */
+    public function getDailyConsumptionAverage(string $companyId, string $feedType): float;
+
+    /**
+     * Check if at least one feeding exists for the given batch.
+     */
+    public function existsByBatch(string $batchId): bool;
+
+    /**
+     * Get the total feed consumed until the given date for the given batch.
+     */
+    public function totalFeedConsumedUntilDate(
+        string $batchId,
+        string $startDate,
+        string $endDate
+    ): float;
 }

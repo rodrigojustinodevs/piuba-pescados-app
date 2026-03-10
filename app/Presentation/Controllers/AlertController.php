@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\AlertService;
+use App\Application\DTOs\AlertDTO;
+use App\Application\UseCases\Alert\CreateAlertUseCase;
+use App\Application\UseCases\Alert\DeleteAlertUseCase;
+use App\Application\UseCases\Alert\ListAlertsUseCase;
+use App\Application\UseCases\Alert\ShowAlertUseCase;
+use App\Application\UseCases\Alert\UpdateAlertUseCase;
 use App\Presentation\Requests\Alert\AlertStoreRequest;
 use App\Presentation\Requests\Alert\AlertUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class AlertController
 {
-    public function __construct(
-        protected AlertService $alertService
-    ) {
-    }
-
     /**
      * Display a listing of alerts.
      */
-    public function index(): JsonResponse
+    public function index(ListAlertsUseCase $useCase): JsonResponse
     {
         try {
-            $alerts     = $this->alertService->showAllAlerts();
+            $alerts     = $useCase->execute();
             $data       = $alerts->toArray(request());
             $pagination = $alerts->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class AlertController
     /**
      * Display the specified alert.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowAlertUseCase $useCase): JsonResponse
     {
         try {
-            $alert = $this->alertService->showAlert($id);
+            $alert = $useCase->execute($id);
 
-            if (! $alert instanceof \App\Application\DTOs\AlertDTO || $alert->isEmpty()) {
+            if (! $alert instanceof AlertDTO || $alert->isEmpty()) {
                 return ApiResponse::error(null, 'Alert not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class AlertController
     /**
      * Store a newly created alert.
      */
-    public function store(AlertStoreRequest $request): JsonResponse
+    public function store(AlertStoreRequest $request, CreateAlertUseCase $useCase): JsonResponse
     {
         try {
-            $alert = $this->alertService->create($request->validated());
+            $alert = $useCase->execute($request->validated());
 
             return ApiResponse::created($alert->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,10 @@ class AlertController
     /**
      * Update the specified alert.
      */
-    public function update(AlertUpdateRequest $request, string $id): JsonResponse
+    public function update(AlertUpdateRequest $request, string $id, UpdateAlertUseCase $useCase): JsonResponse
     {
         try {
-            $alert = $this->alertService->updateAlert($id, $request->validated());
+            $alert = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($alert->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +84,10 @@ class AlertController
     /**
      * Remove the specified alert.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteAlertUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->alertService->deleteAlert($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Alert not found', Response::HTTP_NOT_FOUND);

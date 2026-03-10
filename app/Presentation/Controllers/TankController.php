@@ -4,7 +4,14 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\TankService;
+use App\Application\DTOs\TankDTO;
+use App\Application\UseCases\Tank\CreateTankUseCase;
+use App\Application\UseCases\Tank\DeleteTankUseCase;
+use App\Application\UseCases\Tank\GetTankTypesUseCase;
+use App\Application\UseCases\Tank\ShowAllTanksUseCase;
+use App\Application\UseCases\Tank\ShowTanksWithoutBatchesUseCase;
+use App\Application\UseCases\Tank\ShowTankUseCase;
+use App\Application\UseCases\Tank\UpdateTankUseCase;
 use App\Presentation\Requests\Tank\TankStoreRequest;
 use App\Presentation\Requests\Tank\TankUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,11 +21,6 @@ use Throwable;
 
 class TankController
 {
-    public function __construct(
-        protected TankService $tankService
-    ) {
-    }
-
     /**
      * @OA\Get(
      *     path="/company/tanks",
@@ -65,10 +67,10 @@ class TankController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function index(): JsonResponse
+    public function index(ShowAllTanksUseCase $useCase): JsonResponse
     {
         try {
-            $tanks      = $this->tankService->showAllTanks();
+            $tanks      = $useCase->execute();
             $data       = $tanks->toArray(request());
             $pagination = $tanks->additional['pagination'] ?? null;
 
@@ -124,10 +126,10 @@ class TankController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function tanksWithoutBatches(): JsonResponse
+    public function tanksWithoutBatches(ShowTanksWithoutBatchesUseCase $useCase): JsonResponse
     {
         try {
-            $tanks      = $this->tankService->showTanksWithoutBatches();
+            $tanks      = $useCase->execute();
             $data       = $tanks->toArray(request());
             $pagination = $tanks->additional['pagination'] ?? null;
 
@@ -189,12 +191,12 @@ class TankController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowTankUseCase $useCase): JsonResponse
     {
         try {
-            $tank = $this->tankService->showTank($id);
+            $tank = $useCase->execute($id);
 
-            if (! $tank instanceof \App\Application\DTOs\TankDTO || $tank->isEmpty()) {
+            if (! $tank instanceof TankDTO || $tank->isEmpty()) {
                 return ApiResponse::error(null, 'Tank not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -280,10 +282,10 @@ class TankController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function store(TankStoreRequest $request): JsonResponse
+    public function store(TankStoreRequest $request, CreateTankUseCase $useCase): JsonResponse
     {
         try {
-            $tank = $this->tankService->create($request->validated());
+            $tank = $useCase->execute($request->validated());
 
             return ApiResponse::created($tank->toArray());
         } catch (Throwable $exception) {
@@ -374,10 +376,10 @@ class TankController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function update(TankUpdateRequest $request, string $id): JsonResponse
+    public function update(TankUpdateRequest $request, string $id, UpdateTankUseCase $useCase): JsonResponse
     {
         try {
-            $tank = $this->tankService->updateTank($id, $request->validated());
+            $tank = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($tank->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -410,10 +412,10 @@ class TankController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteTankUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->tankService->deleteTank($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Tank not found', Response::HTTP_NOT_FOUND);
@@ -443,10 +445,10 @@ class TankController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function getTankTypes(): JsonResponse
+    public function getTankTypes(GetTankTypesUseCase $useCase): JsonResponse
     {
         try {
-            $tankTypes = $this->tankService->getTankTypes();
+            $tankTypes = $useCase->execute();
 
             /** @var array<int|string, mixed> $tankTypesData */
             $tankTypesData = $tankTypes;

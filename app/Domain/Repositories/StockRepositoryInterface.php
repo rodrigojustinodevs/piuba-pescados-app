@@ -36,4 +36,19 @@ interface StockRepositoryInterface
      * Find a stock by a specific field.
      */
     public function showStock(string $field, string | int $value): ?Stock;
+
+    /**
+     * Find a stock by company and supply name.
+     */
+    public function findByCompanyAndSupplyName(string $companyId, string $supplyName): ?Stock;
+
+    /**
+     * Decrement the stock quantity.
+     */
+    public function decrementStock(string $id, float $quantity): bool;
+
+    /**
+     * Increment the stock quantity (e.g. revert part of a feeding update).
+     */
+    public function incrementStock(string $id, float $quantity): bool;
 }

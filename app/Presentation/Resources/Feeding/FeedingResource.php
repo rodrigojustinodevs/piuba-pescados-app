@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property-read string $id
- * @property-read string $feeding_date
+ * @property-read \Illuminate\Support\Carbon|null $feeding_date
  * @property-read float $quantity_provided
  * @property-read string $feed_type
  * @property-read float $stock_reduction_quantity
@@ -27,10 +27,19 @@ class FeedingResource extends JsonResource
     #[\Override]
     public function toArray($request): array
     {
+        $feedingDate = $this->feeding_date;
+
+        if ($feedingDate instanceof \DateTimeInterface) {
+            $feedingDate = $feedingDate->format('Y-m-d');
+        }
+
         return [
-            'id'                     => $this->id,
-            'batchId'                => $this->batch?->id,
-            'feedingDate'            => $this->feeding_date,
+            'id'    => $this->id,
+            'batch' => $this->whenLoaded('batch', fn (): array => [
+                'id'   => $this->batch->id,
+                'name' => $this->batch->name,
+            ]),
+            'feedingDate'            => $feedingDate,
             'quantityProvided'       => $this->quantity_provided,
             'feedType'               => $this->feed_type,
             'stockReductionQuantity' => $this->stock_reduction_quantity,

@@ -70,4 +70,12 @@ class MortalityRepository implements MortalityRepositoryInterface
 
         return (bool) $mortality->delete();
     }
+
+    /**
+     * Get the total number of mortalities for the given batch.
+     */
+    public function totalMortalities(string $batchId): int
+    {
+        return Mortality::where('batch_id', $batchId)->sum('quantity');
+    }
 }

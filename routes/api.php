@@ -34,7 +34,7 @@ Route::prefix('company')
 
         require base_path('routes/app/company/feeding.php');
 
-        require base_path('routes/app/company/feedControl.php');
+        require base_path('routes/app/company/feedInventory.php');
 
         require base_path('routes/app/company/financialCategory.php');
 

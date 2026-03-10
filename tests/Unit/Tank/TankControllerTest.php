@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Tank;
 
 use App\Application\DTOs\TankDTO;
-use App\Application\Services\TankService;
+use App\Application\UseCases\Tank\CreateTankUseCase;
+use App\Application\UseCases\Tank\DeleteTankUseCase;
+use App\Application\UseCases\Tank\ShowAllTanksUseCase;
+use App\Application\UseCases\Tank\ShowTankUseCase;
+use App\Application\UseCases\Tank\UpdateTankUseCase;
 use App\Domain\Enums\Status;
 use App\Presentation\Controllers\TankController;
 use App\Presentation\Requests\Tank\TankStoreRequest;
@@ -22,14 +26,14 @@ test('returns a successful response for index', function (): void {
             'id'        => Uuid::uuid4()->toString(),
             'name'      => 'Tank 1',
             'capacity'  => 1000,
-            "location"  => "Location A",
+            'location'  => 'Location A',
             'status'    => Status::ACTIVE,
             'tank_type' => [
                 'id'   => '2fad96ea-2da6-491b-82e6-8d832f3dac41',
                 'name' => 'Tanques Flutuantes',
             ],
             'company' => [
-                'name' > 'Empresa X',
+                'name' => 'Empresa X',
             ],
             'createdAt' => '2025-03-12 01:12:48',
             'updatedAt' => '2025-03-12 01:27:41',
@@ -38,14 +42,14 @@ test('returns a successful response for index', function (): void {
             'id'        => Uuid::uuid4()->toString(),
             'name'      => 'Tank 2',
             'capacity'  => 2000,
-            "location"  => "Location A",
+            'location'  => 'Location A',
             'status'    => Status::ACTIVE,
             'tank_type' => [
                 'id'   => '2fad96ea-2da6-491b-82e6-8d832f3dac41',
                 'name' => 'Tanques Flutuantes',
             ],
             'company' => [
-                'name' > 'Empresa X',
+                'name' => 'Empresa X',
             ],
             'createdAt' => '2025-03-12 01:12:48',
             'updatedAt' => '2025-03-12 01:27:41',
@@ -79,11 +83,11 @@ test('returns a successful response for index', function (): void {
         ],
     ];
 
-    $tankService = Mockery::mock(TankService::class);
-    $tankService->shouldReceive('showAllTanks')->once()->andReturn($collection);
+    $useCase = Mockery::mock(ShowAllTanksUseCase::class);
+    $useCase->shouldReceive('execute')->once()->andReturn($collection);
 
-    $controller = new TankController($tankService);
-    $response   = $controller->index();
+    $controller = new TankController();
+    $response   = $controller->index($useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
@@ -101,14 +105,14 @@ test('returns a tank for show when found', function (): void {
         'Tank 1',
         1000,
         'Location A',
-        Status::ACTIVE,
+        Status::ACTIVE
     );
 
-    $tankService = Mockery::mock(TankService::class);
-    $tankService->shouldReceive('showTank')->with($tankId)->once()->andReturn($tankDTO);
+    $useCase = Mockery::mock(ShowTankUseCase::class);
+    $useCase->shouldReceive('execute')->with($tankId)->once()->andReturn($tankDTO);
 
-    $controller = new TankController($tankService);
-    $response   = $controller->show($tankId);
+    $controller = new TankController();
+    $response   = $controller->show($tankId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
@@ -117,11 +121,11 @@ test('returns a tank for show when found', function (): void {
 test('returns 404 when show tank is empty', function (): void {
     $tankId = Uuid::uuid4()->toString();
 
-    $tankService = Mockery::mock(TankService::class);
-    $tankService->shouldReceive('showTank')->with($tankId)->once()->andReturn(null);
+    $useCase = Mockery::mock(ShowTankUseCase::class);
+    $useCase->shouldReceive('execute')->with($tankId)->once()->andReturn(null);
 
-    $controller = new TankController($tankService);
-    $response   = $controller->show($tankId);
+    $controller = new TankController();
+    $response   = $controller->show($tankId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_NOT_FOUND);
@@ -137,14 +141,14 @@ test('creates a tank via store', function (): void {
         Status::ACTIVE,
     );
 
-    $tankService = Mockery::mock(TankService::class);
-    $tankService->shouldReceive('create')->once()->andReturn($tankDTO);
+    $useCase = Mockery::mock(CreateTankUseCase::class);
+    $useCase->shouldReceive('execute')->once()->andReturn($tankDTO);
 
     $request = Mockery::mock(TankStoreRequest::class);
     $request->shouldReceive('validated')->once()->andReturn(['name' => 'New Tank', 'capacity' => 1500]);
 
-    $controller = new TankController($tankService);
-    $response   = $controller->store($request);
+    $controller = new TankController();
+    $response   = $controller->store($request, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_CREATED);
@@ -160,14 +164,17 @@ test('updates a tank via update', function (): void {
         Status::ACTIVE,
     );
 
-    $tankService = Mockery::mock(TankService::class);
-    $tankService->shouldReceive('updateTank')->once()->andReturn($tankDTO);
+    $useCase = Mockery::mock(UpdateTankUseCase::class);
+    $useCase->shouldReceive('execute')
+        ->once()
+        ->with($tankId, ['name' => 'Updated Tank', 'capacity' => 2000])
+        ->andReturn($tankDTO);
 
     $request = Mockery::mock(TankUpdateRequest::class);
     $request->shouldReceive('validated')->once()->andReturn(['name' => 'Updated Tank', 'capacity' => 2000]);
 
-    $controller = new TankController($tankService);
-    $response   = $controller->update($request, $tankId);
+    $controller = new TankController();
+    $response   = $controller->update($request, $tankId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
@@ -176,11 +183,11 @@ test('updates a tank via update', function (): void {
 test('deletes a tank via destroy', function (): void {
     $tankId = Uuid::uuid4()->toString();
 
-    $tankService = Mockery::mock(TankService::class);
-    $tankService->shouldReceive('deleteTank')->once()->andReturn(true);
+    $useCase = Mockery::mock(DeleteTankUseCase::class);
+    $useCase->shouldReceive('execute')->once()->andReturn(true);
 
-    $controller = new TankController($tankService);
-    $response   = $controller->destroy($tankId);
+    $controller = new TankController();
+    $response   = $controller->destroy($tankId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_OK);
@@ -189,11 +196,11 @@ test('deletes a tank via destroy', function (): void {
 test('returns 404 when tank deletion fails', function (): void {
     $tankId = Uuid::uuid4()->toString();
 
-    $tankService = Mockery::mock(TankService::class);
-    $tankService->shouldReceive('deleteTank')->once()->andReturn(false);
+    $useCase = Mockery::mock(DeleteTankUseCase::class);
+    $useCase->shouldReceive('execute')->once()->andReturn(false);
 
-    $controller = new TankController($tankService);
-    $response   = $controller->destroy($tankId);
+    $controller = new TankController();
+    $response   = $controller->destroy($tankId, $useCase);
 
     expect($response)->toBeInstanceOf(JsonResponse::class);
     expect($response->getStatusCode())->toBe(Response::HTTP_NOT_FOUND);

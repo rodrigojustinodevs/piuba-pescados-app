@@ -22,7 +22,7 @@ class DeleteTransferUseCase
         return DB::transaction(function () use ($id): bool {
             $transfer = $this->transferRepository->showTransfer('id', $id);
 
-            if (!$transfer instanceof \App\Domain\Models\Transfer) {
+            if (! $transfer instanceof \App\Domain\Models\Transfer) {
                 return false;
             }
 
@@ -46,7 +46,7 @@ class DeleteTransferUseCase
                     'initial_quantity' => $newQuantity,
                 ]);
 
-                if (!$updated instanceof \App\Domain\Models\Batch) {
+                if (! $updated instanceof \App\Domain\Models\Batch) {
                     throw new RuntimeException('Error reverting batch to origin tank');
                 }
             }

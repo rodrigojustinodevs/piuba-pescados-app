@@ -13,8 +13,8 @@ use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\ClientRepositoryInterface;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Domain\Repositories\CostAllocationRepositoryInterface;
-use App\Domain\Repositories\FeedControlRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
+use App\Domain\Repositories\FeedInventoryRepositoryInterface;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
 use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 use App\Domain\Repositories\GrowthCurveRepositoryInterface;
@@ -37,8 +37,8 @@ use App\Infrastructure\Persistence\BiometryRepository;
 use App\Infrastructure\Persistence\ClientRepository;
 use App\Infrastructure\Persistence\CompanyRepository;
 use App\Infrastructure\Persistence\CostAllocationRepository;
-use App\Infrastructure\Persistence\FeedControlRepository;
 use App\Infrastructure\Persistence\FeedingRepository;
+use App\Infrastructure\Persistence\FeedInventoryRepository;
 use App\Infrastructure\Persistence\FinancialCategoryRepository;
 use App\Infrastructure\Persistence\FinancialTransactionRepository;
 use App\Infrastructure\Persistence\GrowthCurveRepository;
@@ -82,7 +82,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CostAllocationRepositoryInterface::class, CostAllocationRepository::class);
         $this->app->bind(ClientRepositoryInterface::class, ClientRepository::class);
         $this->app->bind(FeedingRepositoryInterface::class, FeedingRepository::class);
-        $this->app->bind(FeedControlRepositoryInterface::class, FeedControlRepository::class);
+        $this->app->bind(FeedInventoryRepositoryInterface::class, FeedInventoryRepository::class);
         $this->app->bind(
             FinancialCategoryRepositoryInterface::class,
             FinancialCategoryRepository::class

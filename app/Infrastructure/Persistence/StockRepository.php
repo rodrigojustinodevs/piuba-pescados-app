@@ -60,6 +60,44 @@ class StockRepository implements StockRepositoryInterface
         return Stock::where($field, $value)->first();
     }
 
+    /**
+     * Find stock by company and supply name.
+     */
+    public function findByCompanyAndSupplyName(string $companyId, string $supplyName): ?Stock
+    {
+        return Stock::where('company_id', $companyId)
+            ->where('supply_name', $supplyName)
+            ->first();
+    }
+
+    public function decrementStock(string $id, float $quantity): bool
+    {
+        $stock = Stock::find($id);
+
+        if (! $stock) {
+            return false;
+        }
+
+        $stock->decrement('current_quantity', $quantity);
+        $stock->increment('withdrawn_quantity', $quantity);
+
+        return $stock->save();
+    }
+
+    public function incrementStock(string $id, float $quantity): bool
+    {
+        $stock = Stock::find($id);
+
+        if (! $stock) {
+            return false;
+        }
+
+        $stock->increment('current_quantity', $quantity);
+        $stock->decrement('withdrawn_quantity', $quantity);
+
+        return $stock->save();
+    }
+
     public function delete(string $id): bool
     {
         $stock = Stock::find($id);

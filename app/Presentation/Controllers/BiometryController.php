@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\BiometryService;
+use App\Application\UseCases\Biometry\CreateBiometryUseCase;
+use App\Application\UseCases\Biometry\DeleteBiometryUseCase;
+use App\Application\UseCases\Biometry\ListBiometriesUseCase;
+use App\Application\UseCases\Biometry\ShowBiometryUseCase;
+use App\Application\UseCases\Biometry\UpdateBiometryUseCase;
 use App\Presentation\Requests\Biometry\BiometryStoreRequest;
 use App\Presentation\Requests\Biometry\BiometryUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,11 +18,6 @@ use Throwable;
 
 class BiometryController
 {
-    public function __construct(
-        protected BiometryService $biometryService
-    ) {
-    }
-
     /**
      * @OA\Get(
      *     path="/company/biometries",
@@ -79,6 +78,16 @@ class BiometryController
      *                         example=1.2,
      *                         description="Fator de conversão alimentar"
      *                     ),
+     *                     @OA\Property(property="sampleWeight", type="number", format="float", nullable=true,
+     *                         description="Peso total da amostra (kg)"),
+     *                     @OA\Property(property="sampleQuantity", type="integer", nullable=true,
+     *                         description="Quantidade de peixes na amostra"),
+     *                     @OA\Property(property="biomassEstimated", type="number", format="float", nullable=true,
+     *                         description="Biomassa total estimada do tanque (kg)"),
+     *                     @OA\Property(property="densityAtTime", type="number", format="float", nullable=true,
+     *                         description="Densidade no momento da biometria (kg/m³)"),
+     *                     @OA\Property(property="recommendedRation", type="number", format="float", nullable=true,
+     *                         description="Recomendação de trato diário (kg)"),
      *                     @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
      *                     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
      *                 )
@@ -90,10 +99,10 @@ class BiometryController
      * )
      * Display a listing of biometries.
      */
-    public function index(): JsonResponse
+    public function index(ListBiometriesUseCase $useCase): JsonResponse
     {
         try {
-            $biometries = $this->biometryService->showAllBiometries();
+            $biometries = $useCase->execute();
             $data       = $biometries->toArray(request());
             $pagination = $biometries->additional['pagination'] ?? null;
 
@@ -154,6 +163,16 @@ class BiometryController
      *                     example=1.2,
      *                     description="Fator de conversão alimentar"
      *                 ),
+     *                 @OA\Property(property="sampleWeight", type="number", format="float", nullable=true,
+     *                     description="Peso total da amostra (kg)"),
+     *                 @OA\Property(property="sampleQuantity", type="integer", nullable=true,
+     *                     description="Quantidade de peixes na amostra"),
+     *                 @OA\Property(property="biomassEstimated", type="number", format="float", nullable=true,
+     *                     description="Biomassa total estimada do tanque (kg)"),
+     *                 @OA\Property(property="densityAtTime", type="number", format="float", nullable=true,
+     *                     description="Densidade no momento da biometria (kg/m³)"),
+     *                 @OA\Property(property="recommendedRation", type="number", format="float", nullable=true,
+     *                     description="Recomendação de trato diário (kg)"),
      *                 @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
      *                 @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
      *             )
@@ -164,12 +183,12 @@ class BiometryController
      * )
      * Display the specified biometry.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowBiometryUseCase $useCase): JsonResponse
     {
         try {
-            $biometry = $this->biometryService->showBiometry($id);
+            $biometry = $useCase->execute($id);
 
-            if (! $biometry instanceof \App\Application\DTOs\BiometryDTO || $biometry->isEmpty()) {
+            if ($biometry->isEmpty()) {
                 return ApiResponse::error(null, 'Biometry not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -188,8 +207,9 @@ class BiometryController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"batchId","biometryDate","averageWeight","fcr"},
-     *             @OA\Property(property="batchId", type="string", format="uuid", description="ID do lote"),
+     *             required={"batchId","biometryDate"},
+     *             @OA\Property(property="batchId", type="string", format="uuid",
+     *                 description="ID do lote (deve estar ativo)"),
      *             @OA\Property(
      *                 property="biometryDate",
      *                 type="string",
@@ -202,20 +222,33 @@ class BiometryController
      *                 type="number",
      *                 format="float",
      *                 example=15.5,
-     *                 description="Peso médio (g)"
+     *                 description="Peso médio em gramas. Obrigatório se não enviar sampleWeight/sampleQuantity"
+     *             ),
+     *             @OA\Property(
+     *                 property="sampleWeight",
+     *                 type="number",
+     *                 format="float",
+     *                 example=25.5,
+     *                 description="Peso total da amostra (kg). Obrig. com sampleQuantity se não enviar averageWeight"
+     *             ),
+     *             @OA\Property(
+     *                 property="sampleQuantity",
+     *                 type="integer",
+     *                 example=100,
+     *                 description="Quantidade na amostra. Obrig. com sampleWeight se não enviar averageWeight. Mín. 1"
      *             ),
      *             @OA\Property(
      *                 property="fcr",
      *                 type="number",
      *                 format="float",
-     *                 example=1.2,
-     *                 description="Fator de conversão alimentar"
+     *                 nullable=true,
+     *                 description="Calculado automaticamente pelo backend quando omitido"
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Biometria criada com sucesso",
+     *         description="Biometria criada. FCR, biomassa, densidade e recomendação de trato calculados auto.",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Successfully created"),
@@ -227,6 +260,11 @@ class BiometryController
      *                 @OA\Property(property="biometryDate", type="string", format="date"),
      *                 @OA\Property(property="averageWeight", type="number", format="float", example=15.5),
      *                 @OA\Property(property="fcr", type="number", format="float", example=1.2),
+     *                 @OA\Property(property="sampleWeight", type="number", format="float", nullable=true),
+     *                 @OA\Property(property="sampleQuantity", type="integer", nullable=true),
+     *                 @OA\Property(property="biomassEstimated", type="number", format="float", nullable=true),
+     *                 @OA\Property(property="densityAtTime", type="number", format="float", nullable=true),
+     *                 @OA\Property(property="recommendedRation", type="number", format="float", nullable=true),
      *                 @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
      *                 @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
      *             )
@@ -237,10 +275,10 @@ class BiometryController
      * )
      * Store a newly created biometry.
      */
-    public function store(BiometryStoreRequest $request): JsonResponse
+    public function store(BiometryStoreRequest $request, CreateBiometryUseCase $useCase): JsonResponse
     {
         try {
-            $biometry = $this->biometryService->create($request->validated());
+            $biometry = $useCase->execute($request->validated());
 
             return ApiResponse::created($biometry->toArray());
         } catch (Throwable $exception) {
@@ -264,33 +302,44 @@ class BiometryController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="batchId", type="string", format="uuid", description="ID do lote"),
+     *             @OA\Property(property="batchId", type="string", format="uuid", description="ID do lote (opcional)"),
      *             @OA\Property(
      *                 property="biometryDate",
      *                 type="string",
      *                 format="date",
      *                 example="2025-02-20",
-     *                 description="Data da biometria"
+     *                 description="Data da biometria (opcional)"
      *             ),
      *             @OA\Property(
      *                 property="averageWeight",
      *                 type="number",
      *                 format="float",
      *                 example=15.5,
-     *                 description="Peso médio (g)"
+     *                 description="Peso médio (g). Se omitido com sampleWeight/sampleQuantity, é recalculado."
+     *             ),
+     *             @OA\Property(
+     *                 property="sampleWeight",
+     *                 type="number",
+     *                 format="float",
+     *                 description="Peso total da amostra (kg) (opcional)"
+     *             ),
+     *             @OA\Property(
+     *                 property="sampleQuantity",
+     *                 type="integer",
+     *                 description="Quantidade de peixes na amostra (opcional)"
      *             ),
      *             @OA\Property(
      *                 property="fcr",
      *                 type="number",
      *                 format="float",
-     *                 example=1.2,
-     *                 description="Fator de conversão alimentar"
+     *                 nullable=true,
+     *                 description="Recalculado automaticamente pelo backend."
      *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Biometria atualizada com sucesso",
+     *         description="Biometria atualizada. FCR, biomassa, densidade e recomendação de trato são recalculados.",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Success"),
@@ -302,6 +351,11 @@ class BiometryController
      *                 @OA\Property(property="biometryDate", type="string", format="date"),
      *                 @OA\Property(property="averageWeight", type="number", format="float", example=15.5),
      *                 @OA\Property(property="fcr", type="number", format="float", example=1.2),
+     *                 @OA\Property(property="sampleWeight", type="number", format="float", nullable=true),
+     *                 @OA\Property(property="sampleQuantity", type="integer", nullable=true),
+     *                 @OA\Property(property="biomassEstimated", type="number", format="float", nullable=true),
+     *                 @OA\Property(property="densityAtTime", type="number", format="float", nullable=true),
+     *                 @OA\Property(property="recommendedRation", type="number", format="float", nullable=true),
      *                 @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
      *                 @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
      *             )
@@ -313,10 +367,10 @@ class BiometryController
      * )
      * Update the specified biometry.
      */
-    public function update(BiometryUpdateRequest $request, string $id): JsonResponse
+    public function update(BiometryUpdateRequest $request, string $id, UpdateBiometryUseCase $useCase): JsonResponse
     {
         try {
-            $biometry = $this->biometryService->updateBiometry($id, $request->validated());
+            $biometry = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($biometry->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -350,10 +404,10 @@ class BiometryController
      * )
      * Remove the specified biometry.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteBiometryUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->biometryService->deleteBiometry($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Biometry not found', Response::HTTP_NOT_FOUND);

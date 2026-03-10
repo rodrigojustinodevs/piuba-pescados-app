@@ -33,7 +33,7 @@ class CreateTransferUseCase
 
             $batch = $this->batchRepository->showBatch('id', $batchId);
 
-            if (!$batch instanceof \App\Domain\Models\Batch) {
+            if (! $batch instanceof \App\Domain\Models\Batch) {
                 throw new RuntimeException('Batch not found');
             }
 
@@ -53,7 +53,7 @@ class CreateTransferUseCase
                 'initial_quantity' => $newQuantity,
             ]);
 
-            if (!$updatedBatch instanceof \App\Domain\Models\Batch) {
+            if (! $updatedBatch instanceof \App\Domain\Models\Batch) {
                 throw new RuntimeException('Error updating batch tank');
             }
 

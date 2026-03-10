@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\Services\SupplierService;
+use App\Application\DTOs\SupplierDTO;
+use App\Application\UseCases\Supplier\CreateSupplierUseCase;
+use App\Application\UseCases\Supplier\DeleteSupplierUseCase;
+use App\Application\UseCases\Supplier\ListSuppliersUseCase;
+use App\Application\UseCases\Supplier\ShowSupplierUseCase;
+use App\Application\UseCases\Supplier\UpdateSupplierUseCase;
 use App\Presentation\Requests\Supplier\SupplierStoreRequest;
 use App\Presentation\Requests\Supplier\SupplierUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -14,18 +19,13 @@ use Throwable;
 
 class SupplierController
 {
-    public function __construct(
-        protected SupplierService $supplierService
-    ) {
-    }
-
     /**
      * Display a listing of suppliers.
      */
-    public function index(): JsonResponse
+    public function index(ListSuppliersUseCase $useCase): JsonResponse
     {
         try {
-            $suppliers  = $this->supplierService->showAllSuppliers();
+            $suppliers  = $useCase->execute();
             $data       = $suppliers->toArray(request());
             $pagination = $suppliers->additional['pagination'] ?? null;
 
@@ -38,12 +38,12 @@ class SupplierController
     /**
      * Display the specified supplier.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, ShowSupplierUseCase $useCase): JsonResponse
     {
         try {
-            $supplier = $this->supplierService->showSupplier($id);
+            $supplier = $useCase->execute($id);
 
-            if (! $supplier instanceof \App\Application\DTOs\SupplierDTO || $supplier->isEmpty()) {
+            if (! $supplier instanceof SupplierDTO || $supplier->isEmpty()) {
                 return ApiResponse::error(null, 'Supplier not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -56,10 +56,10 @@ class SupplierController
     /**
      * Store a newly created supplier.
      */
-    public function store(SupplierStoreRequest $request): JsonResponse
+    public function store(SupplierStoreRequest $request, CreateSupplierUseCase $useCase): JsonResponse
     {
         try {
-            $supplier = $this->supplierService->create($request->validated());
+            $supplier = $useCase->execute($request->validated());
 
             return ApiResponse::created($supplier->toArray());
         } catch (Throwable $exception) {
@@ -70,10 +70,10 @@ class SupplierController
     /**
      * Update the specified supplier.
      */
-    public function update(SupplierUpdateRequest $request, string $id): JsonResponse
+    public function update(SupplierUpdateRequest $request, string $id, UpdateSupplierUseCase $useCase): JsonResponse
     {
         try {
-            $supplier = $this->supplierService->updateSupplier($id, $request->validated());
+            $supplier = $useCase->execute($id, $request->validated());
 
             return ApiResponse::success($supplier->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
@@ -84,10 +84,10 @@ class SupplierController
     /**
      * Remove the specified supplier.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $id, DeleteSupplierUseCase $useCase): JsonResponse
     {
         try {
-            $deleted = $this->supplierService->deleteSupplier($id);
+            $deleted = $useCase->execute($id);
 
             if (! $deleted) {
                 return ApiResponse::error(null, 'Supplier not found', Response::HTTP_NOT_FOUND);

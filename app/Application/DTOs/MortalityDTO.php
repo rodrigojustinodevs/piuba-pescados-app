@@ -9,6 +9,7 @@ class MortalityDTO
     public function __construct(
         public string $id,
         public string $batchId,
+        public string $mortalityDate,
         public int $quantity,
         public string $cause,
         public ?string $createdAt = null,
@@ -24,6 +25,7 @@ class MortalityDTO
         return new self(
             id: $data['id'],
             batchId: $data['batch_id'],
+            mortalityDate: $data['mortality_date'] ?? '',
             quantity: (int) $data['quantity'],
             cause: $data['cause'],
             createdAt: $data['created_at'] ?? null,
@@ -37,12 +39,13 @@ class MortalityDTO
     public function toArray(): array
     {
         return [
-            'id'        => $this->id,
-            'batchId'   => $this->batchId,
-            'quantity'  => $this->quantity,
-            'cause'     => $this->cause,
-            'createdAt' => $this->createdAt,
-            'updatedAt' => $this->updatedAt,
+            'id'            => $this->id,
+            'batchId'       => $this->batchId,
+            'mortalityDate' => $this->mortalityDate,
+            'quantity'      => $this->quantity,
+            'cause'         => $this->cause,
+            'createdAt'     => $this->createdAt,
+            'updatedAt'     => $this->updatedAt,
         ];
     }
 
@@ -50,6 +53,7 @@ class MortalityDTO
     {
         return ($this->id === '' || $this->id === '0') &&
                ($this->batchId === '' || $this->batchId === '0') &&
+               ($this->mortalityDate === '' || $this->mortalityDate === '0') &&
                $this->quantity === 0 &&
                ($this->cause === '' || $this->cause === '0');
     }

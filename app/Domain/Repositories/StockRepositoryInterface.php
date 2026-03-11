@@ -43,6 +43,11 @@ interface StockRepositoryInterface
     public function findByCompanyAndSupplyName(string $companyId, string $supplyName): ?Stock;
 
     /**
+     * Get unit price for a stock by company and supply name.
+     */
+    public function getUnitPrice(string $companyId, string $supplyName): float;
+
+    /**
      * Decrement the stock quantity.
      */
     public function decrementStock(string $id, float $quantity): bool;

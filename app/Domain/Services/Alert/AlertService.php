@@ -47,6 +47,25 @@ class AlertService
         );
     }
 
+    /** Limite percentual de mortalidade (10%) para alerta crítico. */
+    private const float HIGH_MORTALITY_THRESHOLD = 10.0;
+
+    /**
+     * Verifica se a taxa de mortalidade do lote ultrapassou o limite e cria alerta.
+     */
+    public function checkHighMortality(Batch $batch, float $mortalityRate): void
+    {
+        if ($mortalityRate <= self::HIGH_MORTALITY_THRESHOLD) {
+            return;
+        }
+
+        $this->alertRepository->createHighMortalityAlert(
+            $batch,
+            $mortalityRate,
+            self::HIGH_MORTALITY_THRESHOLD
+        );
+    }
+
     /**
      * Compara quantidade fornecida com a ração recomendada da última biometria.
      * Cria alerta se o desvio percentual for maior que RATION_DEVIATION_THRESHOLD.

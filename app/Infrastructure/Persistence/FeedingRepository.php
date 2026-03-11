@@ -88,6 +88,14 @@ class FeedingRepository implements FeedingRepositoryInterface
         return (bool) $feeding->delete();
     }
 
+    public function findLatestByBatch(string $batchId): ?Feeding
+    {
+        return Feeding::query()
+            ->where('batch_id', $batchId)
+            ->orderByDesc('feeding_date')
+            ->first();
+    }
+
     public function existsByBatch(string $batchId): bool
     {
         return Feeding::where('batch_id', $batchId)->exists();
@@ -101,5 +109,12 @@ class FeedingRepository implements FeedingRepositoryInterface
             ->sum('stock_reduction_quantity');
 
         return (float) $sum;
+    }
+
+    public function getTotalFeedConsumedByBatch(string $batchId): float
+    {
+        return (float) Feeding::query()
+            ->where('batch_id', $batchId)
+            ->sum('quantity_provided');
     }
 }

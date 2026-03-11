@@ -7,6 +7,7 @@ namespace App\Application\UseCases\Mortality;
 use App\Application\DTOs\MortalityDTO;
 use App\Domain\Models\Mortality;
 use App\Domain\Repositories\MortalityRepositoryInterface;
+use App\Infrastructure\Mappers\MortalityMapper;
 use RuntimeException;
 
 class ShowMortalityUseCase
@@ -24,13 +25,6 @@ class ShowMortalityUseCase
             throw new RuntimeException('Mortality not found');
         }
 
-        return new MortalityDTO(
-            id: $mortality->id,
-            batchId: $mortality->batch_id,
-            quantity: $mortality->quantity,
-            cause: $mortality->cause,
-            createdAt: $mortality->created_at?->toDateTimeString(),
-            updatedAt: $mortality->updated_at?->toDateTimeString()
-        );
+        return MortalityMapper::toDTO($mortality);
     }
 }

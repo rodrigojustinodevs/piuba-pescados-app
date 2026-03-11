@@ -9,6 +9,7 @@ use App\Application\UseCases\Mortality\CreateMortalityUseCase;
 use App\Application\UseCases\Mortality\DeleteMortalityUseCase;
 use App\Application\UseCases\Mortality\ListMortalitiesUseCase;
 use App\Application\UseCases\Mortality\ShowMortalityUseCase;
+use App\Application\UseCases\Mortality\SurvivalRateUseCase;
 use App\Application\UseCases\Mortality\UpdateMortalityUseCase;
 use App\Presentation\Requests\Mortality\MortalityStoreRequest;
 use App\Presentation\Requests\Mortality\MortalityUpdateRequest;
@@ -96,6 +97,17 @@ class MortalityController
             return ApiResponse::success(null, Response::HTTP_OK, 'Mortality successfully deleted');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Error deleting mortality', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function survivalRate(string $batchId, SurvivalRateUseCase $useCase): JsonResponse
+    {
+        try {
+            $survivalRate = $useCase->execute($batchId);
+
+            return ApiResponse::success($survivalRate->toArray(), Response::HTTP_OK, 'Success');
+        } catch (Throwable $exception) {
+            return ApiResponse::error($exception, 'Error getting survival rate', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

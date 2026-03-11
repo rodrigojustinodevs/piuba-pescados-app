@@ -9,6 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @property-read string $id
  * @property-read string $batch_id
+ * @property-read \Illuminate\Support\Carbon|null $mortality_date
  * @property int $quantity
  * @property string $cause
  * @property-read \Illuminate\Support\Carbon|null $created_at
@@ -25,13 +26,19 @@ class MortalityResource extends JsonResource
     #[\Override]
     public function toArray($request): array
     {
+        $mortalityDate          = $this->mortality_date;
+        $mortalityDateFormatted = $mortalityDate instanceof \DateTimeInterface
+            ? $mortalityDate->format('Y-m-d')
+            : '';
+
         return [
-            'id'        => $this->id,
-            'batchId'   => $this->batch_id,
-            'quantity'  => $this->quantity,
-            'cause'     => $this->cause,
-            'createdAt' => $this->created_at?->toDateTimeString(),
-            'updatedAt' => $this->updated_at?->toDateTimeString(),
+            'id'            => $this->id,
+            'batchId'       => $this->batch_id,
+            'mortalityDate' => $mortalityDateFormatted,
+            'quantity'      => $this->quantity,
+            'cause'         => $this->cause,
+            'createdAt'     => $this->created_at?->toDateTimeString(),
+            'updatedAt'     => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

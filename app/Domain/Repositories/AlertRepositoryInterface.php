@@ -46,4 +46,9 @@ interface AlertRepositoryInterface
         float $quantityProvided,
         float $recommendedRation
     ): Alert;
+
+    /**
+     * Create a high mortality alert for the given batch.
+     */
+    public function createHighMortalityAlert(Batch $batch, float $mortalityRate, float $threshold): Alert;
 }

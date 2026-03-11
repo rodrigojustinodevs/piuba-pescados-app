@@ -7,9 +7,11 @@ namespace App\Presentation\Controllers;
 use App\Application\DTOs\BatchDTO;
 use App\Application\UseCases\Batch\CreateBatchUseCase;
 use App\Application\UseCases\Batch\DeleteBatchUseCase;
+use App\Application\UseCases\Batch\FinishBatchUseCase;
 use App\Application\UseCases\Batch\ListBatchesUseCase;
 use App\Application\UseCases\Batch\ShowBatchUseCase;
 use App\Application\UseCases\Batch\UpdateBatchUseCase;
+use App\Presentation\Requests\Batch\BatchFinishRequest;
 use App\Presentation\Requests\Batch\BatchStoreRequest;
 use App\Presentation\Requests\Batch\BatchUpdateRequest;
 use App\Presentation\Response\ApiResponse;
@@ -77,7 +79,52 @@ class BatchController
      *     summary="Create a batch",
      *     tags={"Batches"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(required=true, @OA\JsonContent(required={"tankId","name","entryDate","initialQuantity","species","cultivation"})),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"tankId","name","entryDate","initialQuantity","species","cultivation"},
+     *             @OA\Property(
+     *                 property="tankId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 description="ID do tanque"
+     *             ),
+     *             @OA\Property(
+     *                 property="name",
+     *                 type="string",
+     *                 maxLength=255,
+     *                 description="Nome do lote"
+     *             ),
+     *             @OA\Property(
+     *                 property="description",
+     *                 type="string",
+     *                 nullable=true,
+     *                 description="Descrição"
+     *             ),
+     *             @OA\Property(
+     *                 property="entryDate",
+     *                 type="string",
+     *                 format="date",
+     *                 example="2025-01-15"
+     *             ),
+     *             @OA\Property(
+     *                 property="initialQuantity",
+     *                 type="integer",
+     *                 minimum=1,
+     *                 description="Quantidade inicial de peixes"
+     *             ),
+     *             @OA\Property(
+     *                 property="species",
+     *                 type="string",
+     *                 maxLength=255
+     *             ),
+     *             @OA\Property(
+     *                 property="cultivation",
+     *                 type="string",
+     *                 enum={"daycare","nursery"}
+     *             )
+     *         )
+     *     ),
      *     @OA\Response(response=201, description="Batch created"),
      *     @OA\Response(response=400, description="Validation error"),
      *     @OA\Response(response=401, description="Unauthorized")
@@ -101,7 +148,19 @@ class BatchController
      *     tags={"Batches"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\RequestBody(required=true, @OA\JsonContent()),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="tankId", type="string", format="uuid"),
+     *             @OA\Property(property="name", type="string", maxLength=255),
+     *             @OA\Property(property="description", type="string", nullable=true),
+     *             @OA\Property(property="entryDate", type="string", format="date"),
+     *             @OA\Property(property="initialQuantity", type="integer", minimum=1),
+     *             @OA\Property(property="species", type="string", maxLength=255),
+     *             @OA\Property(property="status", type="string", enum={"active","finished"}),
+     *             @OA\Property(property="cultivation", type="string", enum={"daycare","nursery"})
+     *         )
+     *     ),
      *     @OA\Response(response=200, description="Batch updated"),
      *     @OA\Response(response=400, description="Validation error"),
      *     @OA\Response(response=404, description="Batch not found"),
@@ -143,6 +202,70 @@ class BatchController
             return ApiResponse::success(null, Response::HTTP_OK, 'Batch successfully deleted');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Error deleting batch', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/company/batch/{id}/finish",
+     *     summary="Finalizar lote (despesca)",
+     *     description="Registra a colheita e finaliza o lote. Retorna relatório de desempenho biológico e financeiro.",
+     *     tags={"Batches"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="UUID do lote",
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"total_weight","price_per_kg"},
+     *             @OA\Property(
+     *                 property="total_weight",
+     *                 type="number",
+     *                 format="float",
+                 minimum=0,
+     *                 example=1250.5,
+     *                 description="Peso total da despesca (kg). Aceita também totalWeight."
+     *             ),
+     *             @OA\Property(
+     *                 property="price_per_kg",
+     *                 type="number",
+     *                 format="float",
+     *                 minimum=0,
+     *                 example=12.00,
+     *                 description="Preço por kg (R$). Aceita também pricePerKg."
+     *             ),
+     *             @OA\Property(
+     *                 property="harvest_date",
+     *                 type="string",
+     *                 format="date",
+     *                 nullable=true,
+     *                 example="2025-03-10",
+     *                 description="Data da despesca (Y-m-d). Opcional; usa data atual se omitido. Aceita harvestDate."
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lote finalizado com relatório de identidade, desempenho biológico e desempenho financeiro."
+     *     ),
+     *     @OA\Response(response=400, description="Erro de validação ou lote já finalizado"),
+     *     @OA\Response(response=404, description="Batch not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function finish(BatchFinishRequest $request, string $id, FinishBatchUseCase $useCase): JsonResponse
+    {
+        try {
+            $batch = $useCase->execute($id, $request->validated());
+
+            return ApiResponse::success($batch, Response::HTTP_OK, 'Batch successfully finished');
+        } catch (Throwable $exception) {
+            return ApiResponse::error($exception, 'Error finishing batch', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

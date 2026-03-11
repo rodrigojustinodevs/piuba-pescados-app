@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
  * @property string $company_id
  * @property string $supply_name
  * @property float $current_quantity
+ * @property float $unit_price
  * @property string $unit
  * @property float $minimum_stock
  * @property Carbon|null $updated_at
@@ -33,6 +34,7 @@ class Stock extends BaseModel
         'company_id',
         'supply_name',
         'current_quantity',
+        'unit_price',
         'unit',
         'minimum_stock',
         'updated_at',

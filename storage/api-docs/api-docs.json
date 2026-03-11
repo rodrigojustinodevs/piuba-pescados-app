@@ -381,7 +381,7 @@
                     "Batches"
                 ],
                 "summary": "Finalizar lote (despesca)",
-                "description": "Registra a colheita e finaliza o lote. Retorna relatório final com desempenho biológico e financeiro.",
+                "description": "Registra a colheita e finaliza o lote. Retorna relatório de desempenho biológico e financeiro.",
                 "operationId": "3933329bb62cadc90c0d3be8c5977026",
                 "parameters": [
                     {
@@ -420,7 +420,7 @@
                                         "example": 12
                                     },
                                     "harvest_date": {
-                                        "description": "Data da despesca (Y-m-d). Opcional; usa data atual se omitido. Aceita também harvestDate.",
+                                        "description": "Data da despesca (Y-m-d). Opcional; usa data atual se omitido. Aceita harvestDate.",
                                         "type": "string",
                                         "format": "date",
                                         "example": "2025-03-10",
@@ -434,7 +434,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Lote finalizado com relatório (identity, biologicalPerformance, financialPerformance)"
+                        "description": "Lote finalizado com relatório de identidade, desempenho biológico e desempenho financeiro."
                     },
                     "400": {
                         "description": "Erro de validação ou lote já finalizado"

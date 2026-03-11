@@ -227,7 +227,7 @@ class BatchController
      *                 property="total_weight",
      *                 type="number",
      *                 format="float",
-                 minimum=0,
+     *                 minimum=0,
      *                 example=1250.5,
      *                 description="Peso total da despesca (kg). Aceita também totalWeight."
      *             ),

@@ -117,4 +117,21 @@ class AlertRepository implements AlertRepositoryInterface
             'status' => 'pending',
         ]);
     }
+
+    public function createHighMortalityAlert(Batch $batch, float $mortalityRate, float $threshold): Alert
+    {
+        $companyId = $batch->tank->company_id ?? '';
+
+        return $this->create([
+            'company_id' => $companyId,
+            'alert_type' => 'high_mortality',
+            'message'    => sprintf(
+                'Lote %s com mortalidade de %.1f%% acima do limite (%.1f%%).',
+                $batch->name ?? $batch->id,
+                $mortalityRate,
+                $threshold
+            ),
+            'status' => 'pending',
+        ]);
+    }
 }

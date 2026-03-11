@@ -40,5 +40,5 @@ interface MortalityRepositoryInterface
     /**
      * Get the total number of mortalities for the given batch.
      */
-    public function totalMortalities(string $batchId): int;
+    public function totalMortalities(string $batchId, ?string $excludeMortalityId = null): int;
 }

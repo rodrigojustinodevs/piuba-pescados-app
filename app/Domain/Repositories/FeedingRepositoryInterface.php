@@ -43,6 +43,11 @@ interface FeedingRepositoryInterface
     public function getDailyConsumptionAverage(string $companyId, string $feedType): float;
 
     /**
+     * Get the latest feeding for the batch (most recent by feeding_date).
+     */
+    public function findLatestByBatch(string $batchId): ?Feeding;
+
+    /**
      * Check if at least one feeding exists for the given batch.
      */
     public function existsByBatch(string $batchId): bool;
@@ -55,4 +60,9 @@ interface FeedingRepositoryInterface
         string $startDate,
         string $endDate
     ): float;
+
+    /**
+     * Get the total feed consumed by the batch until the given date.
+     */
+    public function getTotalFeedConsumedByBatch(string $batchId): float;
 }

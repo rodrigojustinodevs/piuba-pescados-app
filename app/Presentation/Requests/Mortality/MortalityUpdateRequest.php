@@ -8,6 +8,24 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class MortalityUpdateRequest extends FormRequest
 {
+    #[\Override]
+    protected function prepareForValidation(): void
+    {
+        $data = [];
+
+        if ($this->has('batch_id') && ! $this->has('batchId')) {
+            $data['batchId'] = $this->input('batch_id');
+        }
+
+        if ($this->has('mortality_date') && ! $this->has('mortalityDate')) {
+            $data['mortalityDate'] = $this->input('mortality_date');
+        }
+
+        if ($data !== []) {
+            $this->merge($data);
+        }
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -19,9 +37,10 @@ class MortalityUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'batch_id' => 'sometimes|uuid|exists:batches,id',
-            'quantity' => 'sometimes|integer|min:1',
-            'cause'    => 'sometimes|string|max:255',
+            'batchId'       => 'sometimes|uuid|exists:batches,id',
+            'mortalityDate' => 'sometimes|date|date_format:Y-m-d',
+            'quantity'      => 'sometimes|integer|min:1',
+            'cause'         => 'sometimes|string|max:255',
         ];
     }
 
@@ -32,8 +51,10 @@ class MortalityUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batch_id.uuid'    => 'The batch ID must be a valid UUID.',
-            'batch_id.exists'  => 'The batch ID must exist in the batches table.',
+            'batchId.uuid'        => 'The batch ID must be a valid UUID.',
+            'batchId.exists'      => 'The batch ID must exist in the batches table.',
+            'mortalityDate.date'  => 'The mortality date must be a valid date.',
+            'mortalityDate.date_format' => 'The mortality date must be in Y-m-d format.',
             'quantity.integer' => 'The quantity must be an integer.',
             'quantity.min'     => 'The quantity must be at least 1.',
             'cause.string'     => 'The cause must be a valid text.',

@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 /**
  * @property string $id
  * @property string $batch_id
+ * @property \Illuminate\Support\Carbon|null $mortality_date
  * @property int $quantity
  * @property string $cause
  * @property Carbon|null $created_at
@@ -30,12 +31,14 @@ class Mortality extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'mortality_date',
         'quantity',
         'cause',
     ];
 
     /** @var array<string> */
     protected $dates = [
+        'mortality_date',
         'created_at',
         'updated_at',
         'deleted_at',

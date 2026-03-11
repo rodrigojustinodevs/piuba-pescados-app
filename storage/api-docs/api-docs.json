@@ -193,7 +193,49 @@
                     "required": true,
                     "content": {
                         "application/json": {
-                            "schema": {}
+                            "schema": {
+                                "properties": {
+                                    "tankId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "entryDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "initialQuantity": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    },
+                                    "species": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "finished"
+                                        ]
+                                    },
+                                    "cultivation": {
+                                        "type": "string",
+                                        "enum": [
+                                            "daycare",
+                                            "nursery"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
                         }
                     }
                 },
@@ -271,7 +313,46 @@
                                     "initialQuantity",
                                     "species",
                                     "cultivation"
-                                ]
+                                ],
+                                "properties": {
+                                    "tankId": {
+                                        "description": "ID do tanque",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "name": {
+                                        "description": "Nome do lote",
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "description": {
+                                        "description": "Descrição",
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "entryDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-01-15"
+                                    },
+                                    "initialQuantity": {
+                                        "description": "Quantidade inicial de peixes",
+                                        "type": "integer",
+                                        "minimum": 1
+                                    },
+                                    "species": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "cultivation": {
+                                        "type": "string",
+                                        "enum": [
+                                            "daycare",
+                                            "nursery"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
@@ -282,6 +363,84 @@
                     },
                     "400": {
                         "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/batch/{id}/finish": {
+            "post": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Finalizar lote (despesca)",
+                "description": "Registra a colheita e finaliza o lote. Retorna relatório final com desempenho biológico e financeiro.",
+                "operationId": "3933329bb62cadc90c0d3be8c5977026",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID do lote",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "total_weight",
+                                    "price_per_kg"
+                                ],
+                                "properties": {
+                                    "total_weight": {
+                                        "description": "Peso total da despesca (kg). Aceita também totalWeight.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "example": 1250.5
+                                    },
+                                    "price_per_kg": {
+                                        "description": "Preço por kg (R$). Aceita também pricePerKg.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "example": 12
+                                    },
+                                    "harvest_date": {
+                                        "description": "Data da despesca (Y-m-d). Opcional; usa data atual se omitido. Aceita também harvestDate.",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-03-10",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lote finalizado com relatório (identity, biologicalPerformance, financialPerformance)"
+                    },
+                    "400": {
+                        "description": "Erro de validação ou lote já finalizado"
+                    },
+                    "404": {
+                        "description": "Batch not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -824,24 +983,24 @@
                                         "example": "2025-02-20"
                                     },
                                     "averageWeight": {
-                                        "description": "Peso médio em gramas. Obrigatório se não enviar sampleWeight/sampleQuantity.",
+                                        "description": "Peso médio em gramas. Obrigatório se não enviar sampleWeight/sampleQuantity",
                                         "type": "number",
                                         "format": "float",
                                         "example": 15.5
                                     },
                                     "sampleWeight": {
-                                        "description": "Peso total da amostra (kg). Obrigatório com sampleQuantity se não enviar averageWeight.",
+                                        "description": "Peso total da amostra (kg). Obrig. com sampleQuantity se não enviar averageWeight",
                                         "type": "number",
                                         "format": "float",
                                         "example": 25.5
                                     },
                                     "sampleQuantity": {
-                                        "description": "Quantidade de peixes na amostra. Obrigatório com sampleWeight se não enviar averageWeight. Mínimo 1.",
+                                        "description": "Quantidade na amostra. Obrig. com sampleWeight se não enviar averageWeight. Mín. 1",
                                         "type": "integer",
                                         "example": 100
                                     },
                                     "fcr": {
-                                        "description": "Calculado automaticamente pelo backend quando omitido.",
+                                        "description": "Calculado automaticamente pelo backend quando omitido",
                                         "type": "number",
                                         "format": "float",
                                         "nullable": true
@@ -854,7 +1013,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Biometria criada com sucesso. FCR, biomassa, densidade e recomendação de trato são calculados automaticamente.",
+                        "description": "Biometria criada. FCR, biomassa, densidade e recomendação de trato calculados auto.",
                         "content": {
                             "application/json": {
                                 "schema": {

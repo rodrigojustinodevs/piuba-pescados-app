@@ -12,4 +12,5 @@ Route::middleware(['permission:create-mortality|view-mortality|update-mortality|
         Route::get('mortality/{id}', [MortalityController::class, 'show']);
         Route::put('mortality/{id}', [MortalityController::class, 'update']);
         Route::delete('mortality/{id}', [MortalityController::class, 'destroy']);
+        Route::get('/batch/{batchId}/survival-rate', [MortalityController::class, 'survivalRate']);
     });

@@ -8,6 +8,7 @@ use App\Domain\Models\Stock;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
+use RuntimeException;
 
 class StockRepository implements StockRepositoryInterface
 {
@@ -68,6 +69,22 @@ class StockRepository implements StockRepositoryInterface
         return Stock::where('company_id', $companyId)
             ->where('supply_name', $supplyName)
             ->first();
+    }
+
+    /**
+     * Get unit price for a stock by company and supply name.
+     */
+    public function getUnitPrice(string $companyId, string $supplyName): float
+    {
+        $unitPrice = Stock::select('unit_price')->where('company_id', $companyId)
+        ->where('supply_name', $supplyName)
+        ->value('unit_price');
+
+        if (! $unitPrice || ! is_numeric($unitPrice)) {
+            throw new RuntimeException('Unit price not found');
+        }
+
+        return (float) $unitPrice;
     }
 
     public function decrementStock(string $id, float $quantity): bool

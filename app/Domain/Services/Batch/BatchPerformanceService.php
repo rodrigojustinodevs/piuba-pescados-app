@@ -107,7 +107,7 @@ class BatchPerformanceService
         ?Biometry $biometry,
         float $feedPrice
     ): array {
-        if (!$biometry instanceof \App\Domain\Models\Biometry) {
+        if (! $biometry instanceof Biometry) {
             throw new RuntimeException('Biometry not found');
         }
 

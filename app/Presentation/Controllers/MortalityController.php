@@ -104,9 +104,10 @@ class MortalityController
     {
         try {
             $survivalRate = $useCase->execute($batchId);
+
             return ApiResponse::success($survivalRate->toArray(), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Error getting survival rate', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }   
+        }
     }
 }

@@ -46,7 +46,7 @@ interface StockRepositoryInterface
      * Get unit price for a stock by company and supply name.
      */
     public function getUnitPrice(string $companyId, string $supplyName): float;
-    
+
     /**
      * Decrement the stock quantity.
      */

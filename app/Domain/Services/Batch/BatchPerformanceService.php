@@ -6,18 +6,20 @@ namespace App\Domain\Services\Batch;
 
 use App\Domain\Models\Batch;
 use App\Domain\Models\Biometry;
+use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
-use App\Domain\Repositories\BiometryRepositoryInterface;
 use RuntimeException;
 
 class BatchPerformanceService
 {
     public function __construct(
-        private MortalityRepositoryInterface $mortalityRepository,
-        private FeedingRepositoryInterface $feedingRepository,
-        private BiometryRepositoryInterface $biometryRepository
-    ) {}
+        private readonly MortalityRepositoryInterface $mortalityRepository,
+        private readonly FeedingRepositoryInterface $feedingRepository,
+        private readonly BiometryRepositoryInterface $biometryRepository
+    ) {
+    }
+
     /**
      * Calculate the survival rate.
      * @param Batch $batch The batch to calculate the survival rate.
@@ -30,7 +32,7 @@ class BatchPerformanceService
         }
 
         $survivors = $this->getCurrentPopulation($batch);
-        
+
         $rate = ($survivors / $batch->initial_quantity) * 100;
 
         return round(max(0, $rate), 2);
@@ -44,7 +46,7 @@ class BatchPerformanceService
     public function getCurrentPopulation(Batch $batch): int
     {
         $totalMortalities = $this->mortalityRepository->totalMortalities($batch->id);
-        
+
         return max(0, $batch->initial_quantity - $totalMortalities);
     }
 
@@ -56,12 +58,14 @@ class BatchPerformanceService
     public function calculateFinancialLoss(Batch $batch, float $feedPrice, float $fingerlingPrice): float
     {
         $totalMortalities = $this->mortalityRepository->totalMortalities($batch->id);
-        
-        if ($totalMortalities <= 0) return 0.0;
+
+        if ($totalMortalities <= 0) {
+            return 0.0;
+        }
 
         $totalFeed = $this->feedingRepository->totalFeedConsumedUntilDate(
-            $batch->id, 
-            $batch->entry_date->format('Y-m-d'), 
+            $batch->id,
+            $batch->entry_date->format('Y-m-d'),
             now()->format('Y-m-d')
         );
 
@@ -74,18 +78,17 @@ class BatchPerformanceService
 
     public function calculateCurrentBiomass(Batch $batch): float
     {
-        $survivors = $this->getCurrentPopulation($batch);
+        $survivors      = $this->getCurrentPopulation($batch);
         $latestBiometry = $this->biometryRepository->findLatestByBatch($batch->id);
-        $latestWeight = $latestBiometry?->average_weight ?? 0.0;
+        $latestWeight   = $latestBiometry->average_weight ?? 0.0;
 
         return ($survivors * $latestWeight) / 1000; // Retorna em KG
     }
 
-    /** 
+    /**
      * Calculate the total financial cost invested in feed for the batch.
      * * @param Batch $batch
      * @param float $currentFeedPrice Current price of the feed per KG
-     * @return float
      */
     public function calculateTotalInvestedInFeed(Batch $batch, float $currentFeedPrice): float
     {
@@ -93,35 +96,37 @@ class BatchPerformanceService
 
         $totalCost = $totalFeedConsumed * $currentFeedPrice;
 
-        return round($totalCost, 2);    
+        return round($totalCost, 2);
     }
 
+    /**
+     * @return array<string, array<string, float|int|string|null>>
+     */
     public function buildPerformance(
         Batch $batch,
         ?Biometry $biometry,
         float $feedPrice
     ): array {
-    
-        if (!$biometry) {
+        if (!$biometry instanceof \App\Domain\Models\Biometry) {
             throw new RuntimeException('Biometry not found');
         }
-    
+
         if ($feedPrice <= 0) {
             throw new RuntimeException('Feed price not found');
         }
-    
+
         return [
             'identity' => [
-                'name' => $batch->name,
-                'species' => $batch->species,
+                'name'              => $batch->name,
+                'species'           => $batch->species,
                 'daysInCultivation' => $batch->entry_date->diffInDays(now()),
             ],
             'biologicalPerformance' => [
-                'survivalRate' => $this->calculateSurvivalRate($batch),
+                'survivalRate'      => $this->calculateSurvivalRate($batch),
                 'currentPopulation' => $this->getCurrentPopulation($batch),
-                'averageWeight' => $biometry->average_weight,
-                'currentFcr' => $biometry->fcr,
-                'biomassEstimated' => $biometry->biomass_estimated,
+                'averageWeight'     => $biometry->average_weight,
+                'currentFcr'        => $biometry->fcr,
+                'biomassEstimated'  => $biometry->biomass_estimated,
             ],
             'financialPerformance' => [
                 'estimated_loss' => $this->calculateFinancialLoss(

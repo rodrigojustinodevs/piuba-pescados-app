@@ -21,8 +21,8 @@ class SurvivalRateDTO
     public function toArray(): array
     {
         return [
-            'batchId'         => $this->batchId,
-            'initialQuantity' => $this->initialQuantity,
+            'batchId'          => $this->batchId,
+            'initialQuantity'  => $this->initialQuantity,
             'totalMortalities' => $this->totalMortalities,
             'currentSurvivors' => $this->currentSurvivors,
             'survivalRate'     => round($this->survivalRate, 2),

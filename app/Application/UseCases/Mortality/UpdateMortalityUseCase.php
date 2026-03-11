@@ -31,20 +31,21 @@ class UpdateMortalityUseCase
             $mappedData = MortalityMapper::fromRequest($data);
 
             $mortality = $this->mortalityRepository->showMortality('id', $id);
+
             if (! $mortality instanceof Mortality) {
                 throw new RuntimeException('Mortality not found');
             }
 
             $this->mortalityValidator->validate(
-                $mortality->batch, 
-                (int) $mappedData['quantity'], 
+                $mortality->batch,
+                (int) $mappedData['quantity'],
                 $id
             );
 
             $this->mortalityRepository->update($id, [
-                'quantity' => $mappedData['quantity'],
+                'quantity'       => $mappedData['quantity'],
                 'mortality_date' => $mappedData['mortality_date'],
-                'cause' => $data['cause'] ?? $mortality->cause,
+                'cause'          => $data['cause'] ?? $mortality->cause,
             ]);
 
             $this->mortalityService->checkAndDispatchIfCritical($mortality->batch);

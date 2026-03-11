@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 /**
  * @property string $id
  * @property string $batch_id
- * @property \Illuminate\Support\Carbon|null $mortality_date
+ * @property Carbon|null $mortality_date
  * @property int $quantity
  * @property string $cause
  * @property Carbon|null $created_at

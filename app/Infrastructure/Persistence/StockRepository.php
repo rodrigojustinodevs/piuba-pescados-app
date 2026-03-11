@@ -77,8 +77,8 @@ class StockRepository implements StockRepositoryInterface
     public function getUnitPrice(string $companyId, string $supplyName): float
     {
         $unitPrice = Stock::select('unit_price')->where('company_id', $companyId)
-        ->where('supply_name', $supplyName)
-        ->value('unit_price');
+            ->where('supply_name', $supplyName)
+            ->value('unit_price');
 
         if (! $unitPrice || ! is_numeric($unitPrice)) {
             throw new RuntimeException('Unit price not found');

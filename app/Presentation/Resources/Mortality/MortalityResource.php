@@ -26,10 +26,10 @@ class MortalityResource extends JsonResource
     #[\Override]
     public function toArray($request): array
     {
-        $mortalityDate = $this->mortality_date;
+        $mortalityDate          = $this->mortality_date;
         $mortalityDateFormatted = $mortalityDate instanceof \DateTimeInterface
             ? $mortalityDate->format('Y-m-d')
-            : ($mortalityDate ?? '');
+            : '';
 
         return [
             'id'            => $this->id,

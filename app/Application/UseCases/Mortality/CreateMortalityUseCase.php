@@ -33,6 +33,7 @@ class CreateMortalityUseCase
             $mappedData = MortalityMapper::fromRequest($data);
 
             $batch = $this->batchRepository->showBatch('id', $mappedData['batch_id']);
+
             if (! $batch instanceof Batch) {
                 throw new RuntimeException('Batch not found');
             }

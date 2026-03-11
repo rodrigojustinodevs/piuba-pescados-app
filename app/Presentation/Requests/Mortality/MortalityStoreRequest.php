@@ -38,12 +38,12 @@ class MortalityStoreRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'batchId'       => [
+            'batchId' => [
                 'required',
                 'uuid',
                 Rule::exists('batches', 'id')->where('status', 'active'),
@@ -65,15 +65,15 @@ class MortalityStoreRequest extends FormRequest
         return [
             'batchId.exists' => 'The batch informed does not exist or is not active. '
                 . 'Only active batches allow mortality.',
-            'mortalityDate.required'   => 'The mortality date is required.',
-            'mortalityDate.date'       => 'The mortality date must be a valid date.',
+            'mortalityDate.required'    => 'The mortality date is required.',
+            'mortalityDate.date'        => 'The mortality date must be a valid date.',
             'mortalityDate.date_format' => 'The mortality date must be in Y-m-d format.',
-            'quantity.required' => 'The quantity is required.',
-            'quantity.integer'  => 'The quantity must be an integer.',
-            'quantity.min'      => 'The quantity must be at least 1.',
-            'cause.required'    => 'The cause is required.',
-            'cause.string'      => 'The cause must be a valid text.',
-            'cause.max'         => 'The cause must not exceed 255 characters.',
+            'quantity.required'         => 'The quantity is required.',
+            'quantity.integer'          => 'The quantity must be an integer.',
+            'quantity.min'              => 'The quantity must be at least 1.',
+            'cause.required'            => 'The cause is required.',
+            'cause.string'              => 'The cause must be a valid text.',
+            'cause.max'                 => 'The cause must not exceed 255 characters.',
         ];
     }
 }

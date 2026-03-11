@@ -110,11 +110,11 @@ class FeedingRepository implements FeedingRepositoryInterface
 
         return (float) $sum;
     }
-    
+
     public function getTotalFeedConsumedByBatch(string $batchId): float
     {
         return (float) Feeding::query()
             ->where('batch_id', $batchId)
             ->sum('quantity_provided');
     }
-}   
+}

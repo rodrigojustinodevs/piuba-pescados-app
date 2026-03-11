@@ -77,7 +77,7 @@ class MortalityRepository implements MortalityRepositoryInterface
     public function totalMortalities(string $batchId, ?string $excludeMortalityId = null): int
     {
         return Mortality::where('batch_id', $batchId)
-            ->when($excludeMortalityId, function ($query) use ($excludeMortalityId) {
+            ->when($excludeMortalityId, function ($query) use ($excludeMortalityId): void {
                 $query->where('id', '!=', $excludeMortalityId);
             })
             ->sum('quantity');

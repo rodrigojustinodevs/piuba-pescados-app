@@ -55,8 +55,8 @@ class BatchFinishRequest extends FormRequest
     {
         return [
             'total_weight.required' => 'The total weight of the catch is mandatory.',
-            'total_weight.numeric' => 'The total weight must be a number.',
-            'total_weight.min'     => 'The total weight must be greater than or equal to zero.',
+            'total_weight.numeric'  => 'The total weight must be a number.',
+            'total_weight.min'      => 'The total weight must be greater than or equal to zero.',
 
             'price_per_kg.required' => 'The price per kg is mandatory.',
             'price_per_kg.numeric'  => 'The price per kg must be a number.',

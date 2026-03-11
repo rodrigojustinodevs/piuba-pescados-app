@@ -10,7 +10,6 @@ use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Services\Batch\BatchPerformanceService;
-use App\Domain\Models\Biometry;
 use Illuminate\Support\Facades\Cache;
 use RuntimeException;
 
@@ -22,11 +21,11 @@ class GetBatchPerformanceUseCase
     private const string CACHE_KEY_PREFIX = 'batch_performance:';
 
     public function __construct(
-        private BatchRepositoryInterface $batchRepository,
-        private BatchPerformanceService $performanceService,
-        private BiometryRepositoryInterface $biometryRepository,
-        private FeedingRepositoryInterface $feedingRepository,
-        private StockRepositoryInterface $stockRepository
+        private readonly BatchRepositoryInterface $batchRepository,
+        private readonly BatchPerformanceService $performanceService,
+        private readonly BiometryRepositoryInterface $biometryRepository,
+        private readonly FeedingRepositoryInterface $feedingRepository,
+        private readonly StockRepositoryInterface $stockRepository
     ) {
     }
 
@@ -40,7 +39,7 @@ class GetBatchPerformanceUseCase
         return Cache::remember(
             $cacheKey,
             self::CACHE_TTL_SECONDS,
-            fn () => $this->getPerformance($batchId)
+            fn (): array => $this->getPerformance($batchId)
         );
     }
 
@@ -67,7 +66,7 @@ class GetBatchPerformanceUseCase
             ->findLatestByBatch($batchId);
 
         $latestFeeding = $this->feedingRepository->findLatestByBatch($batchId);
-        $feedType = $latestFeeding?->feed_type ?? '';
+        $feedType      = $latestFeeding->feed_type ?? '';
 
         $feedPrice = $this->stockRepository->getUnitPrice(
             $batch->tank->company_id,

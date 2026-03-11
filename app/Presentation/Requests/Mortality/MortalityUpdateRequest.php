@@ -51,14 +51,14 @@ class MortalityUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'batchId.uuid'        => 'The batch ID must be a valid UUID.',
-            'batchId.exists'      => 'The batch ID must exist in the batches table.',
-            'mortalityDate.date'  => 'The mortality date must be a valid date.',
+            'batchId.uuid'              => 'The batch ID must be a valid UUID.',
+            'batchId.exists'            => 'The batch ID must exist in the batches table.',
+            'mortalityDate.date'        => 'The mortality date must be a valid date.',
             'mortalityDate.date_format' => 'The mortality date must be in Y-m-d format.',
-            'quantity.integer' => 'The quantity must be an integer.',
-            'quantity.min'     => 'The quantity must be at least 1.',
-            'cause.string'     => 'The cause must be a valid text.',
-            'cause.max'        => 'The cause must not exceed 255 characters.',
+            'quantity.integer'          => 'The quantity must be an integer.',
+            'quantity.min'              => 'The quantity must be at least 1.',
+            'cause.string'              => 'The cause must be a valid text.',
+            'cause.max'                 => 'The cause must not exceed 255 characters.',
         ];
     }
 }

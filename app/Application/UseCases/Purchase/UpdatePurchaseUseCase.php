@@ -32,11 +32,11 @@ class UpdatePurchaseUseCase
             ? $purchase->purchase_date
             : Carbon::parse($purchase->purchase_date);
 
-        $stocking = $purchase->stocking;
+        $stocking = $purchase->stocking;    
 
         return new PurchaseDTO(
             id: $purchase->id,
-            inputName: $purchase->input_name,
+            itemName: $purchase->item_name,
             quantity: $purchase->quantity,
             totalPrice: $purchase->total_price,
             purchaseDate: $purchaseDate->toDateString(),

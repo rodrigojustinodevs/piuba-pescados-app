@@ -30,7 +30,7 @@ class ShowStockUseCase
             currentQuantity: $stock->current_quantity,
             unit: $stock->unit,
             minimumStock: $stock->minimum_stock,
-            withdrawnQuantity: $stock->withdrawn_quantity,
+            withdrawnQuantity: $stock->withdrawal_quantity,
             company: [
                 'name' => $stock->company->name ?? '',
             ],

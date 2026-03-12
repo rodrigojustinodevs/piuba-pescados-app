@@ -27,9 +27,9 @@ class StockStoreRequest extends FormRequest
             'company_id'         => ['required', 'uuid', 'exists:companies,id'],
             'supply_name'        => ['required', 'string', 'max:255'],
             'current_quantity'   => ['required', 'numeric', 'min:0'],
-            'unit'               => ['required', 'string', 'max:50'],
-            'minimum_stock'      => ['required', 'numeric', 'min:0'],
-            'withdrawn_quantity' => ['nullable', 'numeric', 'min:0'],
+            'unit'                => ['required', 'string', 'max:50'],
+            'minimum_stock'       => ['required', 'numeric', 'min:0'],
+            'withdrawal_quantity' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

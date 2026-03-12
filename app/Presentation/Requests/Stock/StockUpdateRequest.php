@@ -25,10 +25,10 @@ class StockUpdateRequest extends FormRequest
     {
         return [
             'supply_name'        => ['sometimes', 'string', 'max:255'],
-            'current_quantity'   => ['sometimes', 'numeric', 'min:0'],
-            'unit'               => ['sometimes', 'string', 'max:50'],
-            'minimum_stock'      => ['sometimes', 'numeric', 'min:0'],
-            'withdrawn_quantity' => ['sometimes', 'numeric', 'min:0'],
+            'current_quantity'    => ['sometimes', 'numeric', 'min:0'],
+            'unit'                => ['sometimes', 'string', 'max:50'],
+            'minimum_stock'       => ['sometimes', 'numeric', 'min:0'],
+            'withdrawal_quantity' => ['sometimes', 'numeric', 'min:0'],
         ];
     }
 }

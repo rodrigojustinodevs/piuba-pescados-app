@@ -96,7 +96,7 @@ class StockRepository implements StockRepositoryInterface
         }
 
         $stock->decrement('current_quantity', $quantity);
-        $stock->increment('withdrawn_quantity', $quantity);
+        $stock->increment('withdrawal_quantity', $quantity);
 
         return $stock->save();
     }
@@ -110,7 +110,7 @@ class StockRepository implements StockRepositoryInterface
         }
 
         $stock->increment('current_quantity', $quantity);
-        $stock->decrement('withdrawn_quantity', $quantity);
+        $stock->decrement('withdrawal_quantity', $quantity);
 
         return $stock->save();
     }

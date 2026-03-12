@@ -28,7 +28,7 @@ class BatchUpdateRequest extends FormRequest
             'initialQuantity' => ['sometimes', 'integer', 'min:1'],
             'species'         => ['sometimes', 'string', 'max:255'],
             'status'          => ['sometimes', Rule::in(['active', 'finished'])],
-            'cultivation'     => ['sometimes', Rule::in(['daycare', 'nursery'])],
+            'cultivation'     => ['sometimes', Rule::in(['growout', 'nursery'])],
         ];
     }
 }

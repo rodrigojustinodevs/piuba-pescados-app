@@ -16,9 +16,9 @@ return new class () extends Migration
         Schema::create('water_qualities', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->uuid('tank_id');
-            $table->date('analysis_date');
+            $table->date('measured_at');
             $table->float('ph');
-            $table->float('oxygen');
+            $table->float('dissolved_oxygen');
             $table->float('temperature');
             $table->float('ammonia');
             $table->timestamps();

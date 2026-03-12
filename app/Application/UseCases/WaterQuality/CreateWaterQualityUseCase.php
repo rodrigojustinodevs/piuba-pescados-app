@@ -24,21 +24,21 @@ class CreateWaterQualityUseCase
         return DB::transaction(function () use ($data): WaterQualityDTO {
             $waterQuality = $this->waterQualityRepository->create($data);
 
-            $analysisDate = $waterQuality->analysis_date instanceof Carbon
-                ? $waterQuality->analysis_date
-                : Carbon::parse($waterQuality->analysis_date);
+            $measuredAt = $waterQuality->measured_at instanceof Carbon
+                ? $waterQuality->measured_at
+                : Carbon::parse($waterQuality->measured_at);
 
             return new WaterQualityDTO(
                 id: $waterQuality->id,
                 ph: (float) $waterQuality->ph,
-                oxygen: (float) $waterQuality->oxygen,
+                dissolvedOxygen: (float) $waterQuality->dissolved_oxygen,
                 temperature: (float) $waterQuality->temperature,
                 ammonia: (float) $waterQuality->ammonia,
                 tank: [
                     'id'   => $waterQuality->tank->id ?? '',
                     'name' => $waterQuality->tank->name ?? '',
                 ],
-                analysisDate: $analysisDate->toDateString(),
+                measuredAt: $measuredAt->toDateString(),
                 createdAt: $waterQuality->created_at?->toDateTimeString(),
                 updatedAt: $waterQuality->updated_at?->toDateTimeString()
             );

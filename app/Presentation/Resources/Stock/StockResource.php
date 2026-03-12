@@ -12,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read float $current_quantity
  * @property-read string $unit
  * @property-read float $minimum_stock
- * @property-read float $withdrawn_quantity
+ * @property-read float $withdrawal_quantity
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Company|null $company
@@ -34,7 +34,7 @@ class StockResource extends JsonResource
             'currentQuantity'   => $this->current_quantity,
             'unit'              => $this->unit,
             'minimumStock'      => $this->minimum_stock,
-            'withdrawnQuantity' => $this->withdrawn_quantity,
+            'withdrawnQuantity' => $this->withdrawal_quantity,
             'company'           => $this->whenLoaded('company', fn (): array => [
                 'name' => $this->company->name,
             ]),

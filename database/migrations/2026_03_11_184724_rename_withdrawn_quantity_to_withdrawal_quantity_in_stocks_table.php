@@ -6,19 +6,23 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration
-{
+return new class () extends Migration {
     public function up(): void
     {
         Schema::table('stocks', function (Blueprint $table): void {
-            $table->decimal('unit_price', 15, 2)->default(0.00)->after('current_quantity');
+            if (Schema::hasColumn('stocks', 'withdrawn_quantity')) {
+                $table->renameColumn('withdrawn_quantity', 'withdrawal_quantity');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('stocks', function (Blueprint $table): void {
-            $table->dropColumn('unit_price');
+            if (Schema::hasColumn('stocks', 'withdrawal_quantity')) {
+                $table->renameColumn('withdrawal_quantity', 'withdrawn_quantity');
+            }
         });
     }
 };
+

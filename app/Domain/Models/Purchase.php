@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
  * @property string $company_id
  * @property string $supplier_id
  * @property string|null $stocking_id
- * @property string $input_name
+ * @property string $item_name
  * @property float $quantity
  * @property float $total_price
  * @property Carbon|null $purchase_date
@@ -38,7 +38,7 @@ class Purchase extends BaseModel
         'company_id',
         'supplier_id',
         'stocking_id',
-        'input_name',
+        'item_name',
         'quantity',
         'total_price',
         'purchase_date',

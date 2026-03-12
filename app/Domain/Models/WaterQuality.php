@@ -11,9 +11,9 @@ use Illuminate\Support\Str;
 /**
  * @property string $id
  * @property string $tank_id
- * @property Carbon|null $analysis_date
+ * @property Carbon|null $measured_at
  * @property float $ph
- * @property float $oxygen
+ * @property float $dissolved_oxygen
  * @property float $temperature
  * @property float $ammonia
  * @property Carbon|null $created_at
@@ -30,16 +30,16 @@ class WaterQuality extends BaseModel
     protected $fillable = [
         'id',
         'tank_id',
-        'analysis_date',
+        'measured_at',
         'ph',
-        'oxygen',
+        'dissolved_oxygen',
         'temperature',
         'ammonia',
     ];
 
     /** @var array<string> */
     protected $dates = [
-        'analysis_date',
+        'measured_at',
         'created_at',
         'updated_at',
     ];

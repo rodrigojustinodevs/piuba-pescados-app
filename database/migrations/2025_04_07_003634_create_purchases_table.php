@@ -17,7 +17,7 @@ return new class () extends Migration
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('supplier_id');
-            $table->string('input_name');
+            $table->string('item_name');
             $table->float('quantity');
             $table->float('total_price');
             $table->date('purchase_date');

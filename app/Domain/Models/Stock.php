@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
  * @property string $unit
  * @property float $minimum_stock
  * @property Carbon|null $updated_at
- * @property float $withdrawn_quantity
+ * @property float $withdrawal_quantity
  * @property-read Company|null $company
  */
 class Stock extends BaseModel
@@ -38,7 +38,7 @@ class Stock extends BaseModel
         'unit',
         'minimum_stock',
         'updated_at',
-        'withdrawn_quantity',
+        'withdrawal_quantity',
     ];
 
     /** @var array<string> */

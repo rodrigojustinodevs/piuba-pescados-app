@@ -85,7 +85,7 @@ class FeedingService
 
         if ($stock instanceof \App\Domain\Models\Stock) {
             $stock->increment('current_quantity', $feeding->stock_reduction_quantity);
-            $stock->decrement('withdrawn_quantity', $feeding->stock_reduction_quantity);
+            $stock->decrement('withdrawal_quantity', $feeding->stock_reduction_quantity);
         }
     }
 

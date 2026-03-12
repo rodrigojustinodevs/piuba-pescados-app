@@ -33,7 +33,7 @@ class StockDTO
             currentQuantity: (float) $data['current_quantity'],
             unit: $data['unit'],
             minimumStock: (float) $data['minimum_stock'],
-            withdrawnQuantity: (float) $data['withdrawn_quantity'],
+            withdrawnQuantity: (float) $data['withdrawal_quantity'],
             company: isset($data['company']) ? [
                 'name' => $data['company']['name'] ?? null,
             ] : null,

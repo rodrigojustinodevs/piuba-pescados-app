@@ -12,7 +12,8 @@ class FeedingDTO
         public string $feedingDate,
         public float $quantityProvided,
         public string $feedType,
-        public float $stockReductionQuantity,
+        public ?string $stockId = null,
+        public float $stockReductionQuantity = 0.0,
         public ?string $createdAt = null,
         public ?string $updatedAt = null
     ) {
@@ -29,7 +30,8 @@ class FeedingDTO
             feedingDate: $data['feeding_date'],
             quantityProvided: (float) $data['quantity_provided'],
             feedType: $data['feed_type'],
-            stockReductionQuantity: (float) $data['stock_reduction_quantity'],
+            stockId: isset($data['stock_id']) ? (string) $data['stock_id'] : null,
+            stockReductionQuantity: (float) ($data['stock_reduction_quantity'] ?? 0),
             createdAt: $data['created_at'] ?? null,
             updatedAt: $data['updated_at'] ?? null
         );
@@ -46,6 +48,7 @@ class FeedingDTO
             'feedingDate'            => $this->feedingDate,
             'quantityProvided'       => $this->quantityProvided,
             'feedType'               => $this->feedType,
+            'stockId'                => $this->stockId,
             'stockReductionQuantity' => $this->stockReductionQuantity,
             'createdAt'              => $this->createdAt,
             'updatedAt'              => $this->updatedAt,

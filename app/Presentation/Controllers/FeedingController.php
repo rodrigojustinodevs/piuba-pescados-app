@@ -66,6 +66,7 @@ class FeedingController
                 'feeding_date'             => $validated['feedingDate'],
                 'quantity_provided'        => (float) $validated['quantityProvided'],
                 'feed_type'                => $validated['feedType'],
+                'stock_id'                 => $validated['stockId'] ?? null,
                 'stock_reduction_quantity' => (float) $validated['stockReductionQuantity'],
                 'created_at'               => null,
                 'updated_at'               => null,

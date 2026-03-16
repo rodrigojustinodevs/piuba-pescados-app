@@ -38,14 +38,21 @@ interface StockRepositoryInterface
     public function showStock(string $field, string | int $value): ?Stock;
 
     /**
-     * Find a stock by company and supply name.
+     * Find first stock by company and supplier.
      */
-    public function findByCompanyAndSupplyName(string $companyId, string $supplyName): ?Stock;
+    public function findByCompanyAndSupplier(string $companyId, string $supplierId): ?Stock;
 
     /**
-     * Get unit price for a stock by company and supply name.
+     * Find stocks by supplier ID.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, Stock>
      */
-    public function getUnitPrice(string $companyId, string $supplyName): float;
+    public function findBySupplier(string $supplierId): \Illuminate\Database\Eloquent\Collection;
+
+    /**
+     * Get unit price for a stock by ID.
+     */
+    public function getUnitPriceByStockId(string $stockId): float;
 
     /**
      * Decrement the stock quantity.

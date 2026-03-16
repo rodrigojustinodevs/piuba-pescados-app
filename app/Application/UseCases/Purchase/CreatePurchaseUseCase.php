@@ -32,7 +32,7 @@ class CreatePurchaseUseCase
 
             return new PurchaseDTO(
                 id: $purchase->id,
-                inputName: $purchase->input_name,
+                itemName: $purchase->item_name,
                 quantity: $purchase->quantity,
                 totalPrice: $purchase->total_price,
                 purchaseDate: $purchaseDate->toDateString(),

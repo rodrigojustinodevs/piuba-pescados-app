@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -20,6 +21,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read Company|null $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Stock> $stocks
  */
 class Supplier extends BaseModel
 {
@@ -60,6 +62,17 @@ class Supplier extends BaseModel
     {
         /** @var BelongsTo<Company, static> $relation */
         $relation = $this->belongsTo(Company::class, 'company_id');
+
+        return $relation;
+    }
+
+    /**
+     * @phpstan-return HasMany<Stock, static>
+     */
+    public function stocks(): HasMany
+    {
+        /** @var HasMany<Stock, static> $relation */
+        $relation = $this->hasMany(Stock::class, 'supplier_id');
 
         return $relation;
     }

@@ -46,6 +46,10 @@ class FeedingUpdateRequest extends FormRequest
             $merge['stockReductionQuantity'] = $this->input('stock_reduction_quantity');
         }
 
+        if (! $this->has('stockId') && $this->has('stock_id')) {
+            $merge['stockId'] = $this->input('stock_id');
+        }
+
         if ($merge !== []) {
             $this->merge($merge);
         }
@@ -68,6 +72,7 @@ class FeedingUpdateRequest extends FormRequest
             'feedingDate'            => ['sometimes', 'date'],
             'quantityProvided'       => ['sometimes', 'numeric', 'min:0'],
             'feedType'               => ['sometimes', 'string', 'max:100'],
+            'stockId'                => ['nullable', 'uuid', 'exists:stocks,id'],
             'stockReductionQuantity' => ['sometimes', 'numeric', 'min:0'],
         ];
     }

@@ -15,11 +15,13 @@ use Illuminate\Support\Str;
  * @property Carbon|null $feeding_date
  * @property float $quantity_provided
  * @property string $feed_type
+ * @property string|null $stock_id
  * @property float $stock_reduction_quantity
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read Batch|null $batch
+ * @property-read Stock|null $stock
  */
 class Feeding extends BaseModel
 {
@@ -35,6 +37,7 @@ class Feeding extends BaseModel
         'feeding_date',
         'quantity_provided',
         'feed_type',
+        'stock_id',
         'stock_reduction_quantity',
     ];
 
@@ -61,6 +64,17 @@ class Feeding extends BaseModel
     {
         /** @var BelongsTo<Batch, static> $relation */
         $relation = $this->belongsTo(Batch::class, 'batch_id');
+
+        return $relation;
+    }
+
+    /**
+     * @phpstan-return BelongsTo<Stock, static>
+     */
+    public function stock(): BelongsTo
+    {
+        /** @var BelongsTo<Stock, static> $relation */
+        $relation = $this->belongsTo(Stock::class, 'stock_id');
 
         return $relation;
     }

@@ -12,14 +12,15 @@ use Illuminate\Support\Str;
 /**
  * @property string $id
  * @property string $company_id
- * @property string $supply_name
+ * @property string|null $supplier_id
  * @property float $current_quantity
  * @property float $unit_price
  * @property string $unit
  * @property float $minimum_stock
  * @property Carbon|null $updated_at
- * @property float $withdrawn_quantity
+ * @property float $withdrawal_quantity
  * @property-read Company|null $company
+ * @property-read Supplier|null $supplier
  */
 class Stock extends BaseModel
 {
@@ -32,13 +33,13 @@ class Stock extends BaseModel
     protected $fillable = [
         'id',
         'company_id',
-        'supply_name',
+        'supplier_id',
         'current_quantity',
         'unit_price',
         'unit',
         'minimum_stock',
         'updated_at',
-        'withdrawn_quantity',
+        'withdrawal_quantity',
     ];
 
     /** @var array<string> */
@@ -63,6 +64,17 @@ class Stock extends BaseModel
     {
         /** @var BelongsTo<Company, static> $relation */
         $relation = $this->belongsTo(Company::class, 'company_id');
+
+        return $relation;
+    }
+
+    /**
+     * @phpstan-return BelongsTo<Supplier, static>
+     */
+    public function supplier(): BelongsTo
+    {
+        /** @var BelongsTo<Supplier, static> $relation */
+        $relation = $this->belongsTo(Supplier::class, 'supplier_id');
 
         return $relation;
     }

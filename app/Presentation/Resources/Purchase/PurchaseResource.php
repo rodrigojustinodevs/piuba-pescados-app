@@ -11,7 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string $company_id
  * @property-read string $supplier_id
  * @property-read string|null $stocking_id
- * @property-read string $input_name
+ * @property-read string $item_name
  * @property-read float $quantity
  * @property-read float $total_price
  * @property-read string $purchase_date
@@ -37,7 +37,7 @@ class PurchaseResource extends JsonResource
             'companyId'    => $this->company_id,
             'supplierId'   => $this->supplier_id,
             'stockingId'   => $this->stocking_id,
-            'inputName'    => $this->input_name,
+            'itemName'     => $this->item_name,
             'quantity'     => $this->quantity,
             'totalPrice'   => $this->total_price,
             'purchaseDate' => $this->purchase_date,

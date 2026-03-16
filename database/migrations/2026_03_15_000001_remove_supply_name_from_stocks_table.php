@@ -8,17 +8,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class () extends Migration
 {
+    /**
+     * Run the migrations.
+     * supply_name removido: o dado passa a vir do relacionamento com Supplier.
+     */
     public function up(): void
     {
         Schema::table('stocks', function (Blueprint $table): void {
-            $table->decimal('unit_price', 15, 2)->default(0.00)->after('current_quantity');
+            $table->dropColumn('supply_name');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::table('stocks', function (Blueprint $table): void {
-            $table->dropColumn('unit_price');
+            $table->string('supply_name', 255)->nullable()->after('supplier_id');
         });
     }
 };

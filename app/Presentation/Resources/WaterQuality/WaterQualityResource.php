@@ -9,9 +9,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @property-read string $id
  * @property-read string $tank_id
- * @property-read string $analysis_date
+ * @property-read string $measured_at
  * @property-read float $ph
- * @property-read float $oxygen
+ * @property-read float $dissolved_oxygen
  * @property-read float $temperature
  * @property-read float $ammonia
  * @property-read \Illuminate\Support\Carbon|null $created_at
@@ -30,13 +30,13 @@ class WaterQualityResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'           => $this->id,
-            'analysisDate' => $this->analysis_date,
-            'ph'           => $this->ph,
-            'oxygen'       => $this->oxygen,
-            'temperature'  => $this->temperature,
-            'ammonia'      => $this->ammonia,
-            'tank'         => $this->whenLoaded('tank', fn (): array => [
+            'id'              => $this->id,
+            'measuredAt'      => $this->measured_at,
+            'ph'              => $this->ph,
+            'dissolvedOxygen' => $this->dissolved_oxygen,
+            'temperature'     => $this->temperature,
+            'ammonia'         => $this->ammonia,
+            'tank'            => $this->whenLoaded('tank', fn (): array => [
                 'id'   => $this->tank->id,
                 'name' => $this->tank->name,
             ]),

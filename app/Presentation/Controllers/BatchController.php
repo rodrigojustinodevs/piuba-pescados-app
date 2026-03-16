@@ -121,7 +121,7 @@ class BatchController
      *             @OA\Property(
      *                 property="cultivation",
      *                 type="string",
-     *                 enum={"daycare","nursery"}
+     *                 enum={"growout","nursery"}
      *             )
      *         )
      *     ),
@@ -158,7 +158,7 @@ class BatchController
      *             @OA\Property(property="initialQuantity", type="integer", minimum=1),
      *             @OA\Property(property="species", type="string", maxLength=255),
      *             @OA\Property(property="status", type="string", enum={"active","finished"}),
-     *             @OA\Property(property="cultivation", type="string", enum={"daycare","nursery"})
+     *             @OA\Property(property="cultivation", type="string", enum={"growout","nursery"})
      *         )
      *     ),
      *     @OA\Response(response=200, description="Batch updated"),

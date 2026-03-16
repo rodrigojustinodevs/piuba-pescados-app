@@ -26,7 +26,7 @@ class BatchStoreRequest extends FormRequest
             'entryDate'       => ['required', 'date'],
             'initialQuantity' => ['required', 'integer', 'min:1'],
             'species'         => ['required', 'string', 'max:255'],
-            'cultivation'     => ['required', Rule::in(['daycare', 'nursery'])->__toString()],
+            'cultivation'     => ['required', Rule::in(['growout', 'nursery'])->__toString()],
         ];
     }
 }

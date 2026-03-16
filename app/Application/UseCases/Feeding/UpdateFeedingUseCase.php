@@ -44,7 +44,9 @@ class UpdateFeedingUseCase
 
             $updatedFeeding = $this->feedingRepository->update($id, $mappedData);
 
-            $this->feedingService->applyStockEffect($feeding, $companyId);
+            if ($updatedFeeding instanceof \App\Domain\Models\Feeding) {
+                $this->feedingService->applyStockEffect($updatedFeeding, $companyId);
+            }
 
             $latestBiometry = $this->biometryRepository->findLatestByBatch($batch->id);
             $this->alertService->checkRationDeviation(

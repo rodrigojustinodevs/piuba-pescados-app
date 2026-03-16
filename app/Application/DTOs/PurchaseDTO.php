@@ -13,7 +13,7 @@ class PurchaseDTO
      */
     public function __construct(
         public string $id,
-        public string $inputName,
+        public string $itemName,
         public float $quantity,
         public float $totalPrice,
         public string $purchaseDate,
@@ -33,7 +33,7 @@ class PurchaseDTO
     {
         return new self(
             id: $data['id'],
-            inputName: $data['input_name'],
+            itemName: $data['item_name'],
             quantity: $data['quantity'],
             totalPrice: $data['total_price'],
             purchaseDate: $data['purchase_date'],
@@ -61,7 +61,7 @@ class PurchaseDTO
     {
         return [
             'id'           => $this->id,
-            'inputName'    => $this->inputName,
+            'itemName'     => $this->itemName,
             'quantity'     => $this->quantity,
             'totalPrice'   => $this->totalPrice,
             'purchaseDate' => $this->purchaseDate,

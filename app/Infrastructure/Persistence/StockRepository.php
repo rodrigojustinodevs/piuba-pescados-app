@@ -7,6 +7,7 @@ namespace App\Infrastructure\Persistence;
 use App\Domain\Models\Stock;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use RuntimeException;
 
@@ -33,6 +34,7 @@ class StockRepository implements StockRepositoryInterface
 
         if ($stock) {
             $stock->update($data);
+            $stock->load(['company:id,name', 'supplier:id,name']);
 
             return $stock;
         }
@@ -48,6 +50,7 @@ class StockRepository implements StockRepositoryInterface
         /** @var LengthAwarePaginator<int, Stock> $paginator */
         $paginator = Stock::with([
             'company:id,name',
+            'supplier:id,name',
         ])->paginate($page);
 
         return new PaginationPresentr($paginator);
@@ -58,27 +61,27 @@ class StockRepository implements StockRepositoryInterface
      */
     public function showStock(string $field, string | int $value): ?Stock
     {
-        return Stock::where($field, $value)->first();
-    }
-
-    /**
-     * Find stock by company and supply name.
-     */
-    public function findByCompanyAndSupplyName(string $companyId, string $supplyName): ?Stock
-    {
-        return Stock::where('company_id', $companyId)
-            ->where('supply_name', $supplyName)
+        return Stock::with(['company:id,name', 'supplier:id,name'])
+            ->where($field, $value)
             ->first();
     }
 
     /**
-     * Get unit price for a stock by company and supply name.
+     * Find first stock by company and supplier.
      */
-    public function getUnitPrice(string $companyId, string $supplyName): float
+    public function findByCompanyAndSupplier(string $companyId, string $supplierId): ?Stock
     {
-        $unitPrice = Stock::select('unit_price')->where('company_id', $companyId)
-            ->where('supply_name', $supplyName)
-            ->value('unit_price');
+        return Stock::where('company_id', $companyId)
+            ->where('supplier_id', $supplierId)
+            ->first();
+    }
+
+    /**
+     * Get unit price for a stock by ID.
+     */
+    public function getUnitPriceByStockId(string $stockId): float
+    {
+        $unitPrice = Stock::where('id', $stockId)->value('unit_price');
 
         if (! $unitPrice || ! is_numeric($unitPrice)) {
             throw new RuntimeException('Unit price not found');
@@ -96,7 +99,7 @@ class StockRepository implements StockRepositoryInterface
         }
 
         $stock->decrement('current_quantity', $quantity);
-        $stock->increment('withdrawn_quantity', $quantity);
+        $stock->increment('withdrawal_quantity', $quantity);
 
         return $stock->save();
     }
@@ -110,7 +113,7 @@ class StockRepository implements StockRepositoryInterface
         }
 
         $stock->increment('current_quantity', $quantity);
-        $stock->decrement('withdrawn_quantity', $quantity);
+        $stock->decrement('withdrawal_quantity', $quantity);
 
         return $stock->save();
     }
@@ -124,5 +127,17 @@ class StockRepository implements StockRepositoryInterface
         }
 
         return (bool) $stock->delete();
+    }
+
+    /**
+     * Find stocks by supplier ID.
+     *
+     * @return Collection<int, Stock>
+     */
+    public function findBySupplier(string $supplierId): Collection
+    {
+        return Stock::with(['company:id,name', 'supplier:id,name'])
+            ->where('supplier_id', $supplierId)
+            ->get();
     }
 }

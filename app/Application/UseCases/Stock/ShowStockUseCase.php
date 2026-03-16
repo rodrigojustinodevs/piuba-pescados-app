@@ -7,6 +7,7 @@ namespace App\Application\UseCases\Stock;
 use App\Application\DTOs\StockDTO;
 use App\Domain\Models\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
+use App\Infrastructure\Mappers\StockMapper;
 use RuntimeException;
 
 class ShowStockUseCase
@@ -24,18 +25,6 @@ class ShowStockUseCase
             throw new RuntimeException('Stock not found');
         }
 
-        return new StockDTO(
-            id: $stock->id,
-            supplyName: $stock->supply_name,
-            currentQuantity: $stock->current_quantity,
-            unit: $stock->unit,
-            minimumStock: $stock->minimum_stock,
-            withdrawnQuantity: $stock->withdrawn_quantity,
-            company: [
-                'name' => $stock->company->name ?? '',
-            ],
-            createdAt: $stock->created_at?->toDateTimeString(),
-            updatedAt: $stock->updated_at?->toDateTimeString()
-        );
+        return StockMapper::toDTO($stock);
     }
 }

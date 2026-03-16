@@ -25,21 +25,21 @@ class ShowWaterQualityUseCase
             throw new RuntimeException('Water quality record not found');
         }
 
-        $analysisDate = $quality->analysis_date instanceof Carbon
-            ? $quality->analysis_date
-            : Carbon::parse($quality->analysis_date);
+        $measuredAt = $quality->measured_at instanceof Carbon
+            ? $quality->measured_at
+            : Carbon::parse($quality->measured_at);
 
         return new WaterQualityDTO(
             id: $quality->id,
             ph: $quality->ph,
-            oxygen: $quality->oxygen,
+            dissolvedOxygen: $quality->dissolved_oxygen,
             temperature: $quality->temperature,
             ammonia: $quality->ammonia,
             tank: [
                 'id'   => $quality->tank->id ?? '',
                 'name' => $quality->tank->name ?? '',
             ],
-            analysisDate: $analysisDate->toDateString(),
+            measuredAt: $measuredAt->toDateString(),
             createdAt: $quality->created_at?->toDateTimeString(),
             updatedAt: $quality->updated_at?->toDateTimeString()
         );

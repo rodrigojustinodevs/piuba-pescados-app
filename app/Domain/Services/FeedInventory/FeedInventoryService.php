@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Services\FeedInventoryService;
+namespace App\Domain\Services\FeedInventory;
 
 use App\Domain\Models\FeedInventory;
 

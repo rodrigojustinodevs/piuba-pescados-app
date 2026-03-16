@@ -60,10 +60,8 @@ class FeedingService
             ]);
         }
 
-        $stock = $this->stockRepository->findByCompanyAndSupplyName($companyId, $feeding->feed_type);
-
-        if ($stock instanceof \App\Domain\Models\Stock) {
-            $this->stockRepository->decrementStock($stock->id, (float) $feeding->stock_reduction_quantity);
+        if ($feeding->stock_id !== null) {
+            $this->stockRepository->decrementStock($feeding->stock_id, (float) $feeding->stock_reduction_quantity);
         }
     }
 
@@ -81,11 +79,11 @@ class FeedingService
             ]);
         }
 
-        $stock = $this->stockRepository->findByCompanyAndSupplyName($companyId, $feeding->feed_type);
-
-        if ($stock instanceof \App\Domain\Models\Stock) {
-            $stock->increment('current_quantity', $feeding->stock_reduction_quantity);
-            $stock->decrement('withdrawal_quantity', $feeding->stock_reduction_quantity);
+        if ($feeding->stock_id !== null) {
+            $stock = $this->stockRepository->showStock('id', $feeding->stock_id);
+            if ($stock instanceof \App\Domain\Models\Stock) {
+                $this->stockRepository->incrementStock($feeding->stock_id, (float) $feeding->stock_reduction_quantity);
+            }
         }
     }
 

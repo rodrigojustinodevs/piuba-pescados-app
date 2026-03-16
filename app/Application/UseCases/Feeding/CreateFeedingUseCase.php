@@ -11,8 +11,8 @@ use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\FeedInventoryRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Services\Alert\AlertService;
-use App\Domain\Services\FeedInventoryService\FeedInventoryService;
-use App\Domain\Services\FeedInventoryService\FeedInventoryValidatorService;
+use App\Domain\Services\FeedInventory\FeedInventoryService;
+use App\Domain\Services\FeedInventory\FeedInventoryValidatorService;
 use App\Infrastructure\Mappers\FeedingMapper;
 use Illuminate\Support\Facades\DB;
 
@@ -59,11 +59,9 @@ class CreateFeedingUseCase
                 ]
             ));
 
-            $stock = $this->stockRepository->findByCompanyAndSupplyName($companyId, $mappedData['feed_type']);
-
-            if ($stock instanceof \App\Domain\Models\Stock) {
+            if (! empty($mappedData['stock_id'])) {
                 $this->stockRepository->decrementStock(
-                    $stock->id,
+                    $mappedData['stock_id'],
                     (float) $mappedData['stock_reduction_quantity']
                 );
             }

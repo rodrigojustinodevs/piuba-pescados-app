@@ -8,14 +8,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property-read string $id
- * @property-read string $supply_name
  * @property-read float $current_quantity
  * @property-read string $unit
+ * @property-read float $unit_price
  * @property-read float $minimum_stock
  * @property-read float $withdrawal_quantity
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Company|null $company
+ * @property-read \App\Domain\Models\Supplier|null $supplier
  */
 class StockResource extends JsonResource
 {
@@ -30,16 +31,20 @@ class StockResource extends JsonResource
     {
         return [
             'id'                => $this->id,
-            'supplyName'        => $this->supply_name,
             'currentQuantity'   => $this->current_quantity,
             'unit'              => $this->unit,
+            'unitPrice'         => $this->unit_price,
             'minimumStock'      => $this->minimum_stock,
             'withdrawnQuantity' => $this->withdrawal_quantity,
             'company'           => $this->whenLoaded('company', fn (): array => [
                 'name' => $this->company->name,
             ]),
-            'created_at' => $this->created_at?->toDateTimeString(),
-            'updated_at' => $this->updated_at?->toDateTimeString(),
+            'supplier'          => $this->whenLoaded('supplier', fn (): array => [
+                'id'   => $this->supplier->id,
+                'name' => $this->supplier->name,
+            ]),
+            'createdAt' => $this->created_at?->toDateTimeString(),
+            'updatedAt' => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

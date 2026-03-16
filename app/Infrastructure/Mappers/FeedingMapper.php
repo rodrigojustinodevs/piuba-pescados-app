@@ -18,6 +18,7 @@ final class FeedingMapper
             feedingDate: self::formatFeedingDate($model->feeding_date),
             quantityProvided: (float) $model->quantity_provided,
             feedType: (string) $model->feed_type,
+            stockId: $model->stock_id !== null ? (string) $model->stock_id : null,
             stockReductionQuantity: (float) $model->stock_reduction_quantity,
             createdAt: $model->created_at?->toDateTimeString(),
             updatedAt: $model->updated_at?->toDateTimeString()
@@ -37,6 +38,7 @@ final class FeedingMapper
             'feeding_date'             => $dto->feedingDate,
             'quantity_provided'        => $dto->quantityProvided,
             'feed_type'                => $dto->feedType,
+            'stock_id'                 => $dto->stockId,
             'stock_reduction_quantity' => $dto->stockReductionQuantity,
         ];
     }
@@ -80,6 +82,12 @@ final class FeedingMapper
             $mapped['feed_type'] = (string) $data['feed_type'];
         }
 
+        if (isset($data['stockId'])) {
+            $mapped['stock_id'] = $data['stockId'];
+        } elseif (isset($data['stock_id'])) {
+            $mapped['stock_id'] = $data['stock_id'];
+        }
+
         if (isset($data['stockReductionQuantity'])) {
             $mapped['stock_reduction_quantity'] = (float) $data['stockReductionQuantity'];
         } elseif (isset($data['stock_reduction_quantity'])) {
@@ -100,6 +108,7 @@ final class FeedingMapper
             'feedingDate'            => self::formatFeedingDate($model->feeding_date),
             'quantityProvided'       => (float) $model->quantity_provided,
             'feedType'               => $model->feed_type,
+            'stockId'                => $model->stock_id !== null ? (string) $model->stock_id : null,
             'stockReductionQuantity' => (float) $model->stock_reduction_quantity,
             'createdAt'              => $model->created_at?->toDateTimeString(),
             'updatedAt'              => $model->updated_at?->toDateTimeString(),

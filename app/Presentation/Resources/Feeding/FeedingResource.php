@@ -11,6 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read \Illuminate\Support\Carbon|null $feeding_date
  * @property-read float $quantity_provided
  * @property-read string $feed_type
+ * @property-read string|null $stock_id
  * @property-read float $stock_reduction_quantity
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
@@ -42,6 +43,7 @@ class FeedingResource extends JsonResource
             'feedingDate'            => $feedingDate,
             'quantityProvided'       => $this->quantity_provided,
             'feedType'               => $this->feed_type,
+            'stockId'                => $this->stock_id ?? null,
             'stockReductionQuantity' => $this->stock_reduction_quantity,
             'createdAt'              => $this->created_at?->toDateTimeString(),
             'updatedAt'              => $this->updated_at?->toDateTimeString(),

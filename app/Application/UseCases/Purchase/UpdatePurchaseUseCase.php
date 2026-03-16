@@ -7,7 +7,7 @@ namespace App\Application\UseCases\Purchase;
 use App\Application\DTOs\PurchaseDTO;
 use App\Domain\Models\Purchase;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
-use Carbon\Carbon;
+use App\Infrastructure\Mappers\PurchaseMapper;
 use RuntimeException;
 
 class UpdatePurchaseUseCase
@@ -22,38 +22,14 @@ class UpdatePurchaseUseCase
      */
     public function execute(string $id, array $data): PurchaseDTO
     {
-        $purchase = $this->purchaseRepository->update($id, $data);
+        $payload = PurchaseMapper::fromRequest($data);
+        $purchase = $this->purchaseRepository->update($id, $payload);
 
         if (! $purchase instanceof Purchase) {
             throw new RuntimeException('Purchase not found');
         }
 
-        $purchaseDate = $purchase->purchase_date instanceof Carbon
-            ? $purchase->purchase_date
-            : Carbon::parse($purchase->purchase_date);
-
-        $stocking = $purchase->stocking;
-
-        return new PurchaseDTO(
-            id: $purchase->id,
-            itemName: $purchase->item_name,
-            quantity: $purchase->quantity,
-            totalPrice: $purchase->total_price,
-            purchaseDate: $purchaseDate->toDateString(),
-            supplier: [
-                'id'   => $purchase->supplier->id ?? '',
-                'name' => $purchase->supplier->name ?? '',
-            ],
-            company: [
-                'name' => $purchase->company->name ?? '',
-            ],
-            stockingId: $purchase->stocking_id,
-            stocking: $stocking ? [
-                'id'           => $stocking->id,
-                'stockingDate' => $stocking->stocking_date?->toDateString(),
-            ] : null,
-            createdAt: $purchase->created_at?->toDateTimeString(),
-            updatedAt: $purchase->updated_at?->toDateTimeString()
-        );
+        $purchase->load(['supplier:id,name', 'company:id,name', 'stocking:id,stocking_date']);
+        return PurchaseMapper::toDTO($purchase);
     }
 }

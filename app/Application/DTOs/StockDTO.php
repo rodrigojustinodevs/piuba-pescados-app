@@ -54,16 +54,16 @@ class StockDTO
     public function toArray(): array
     {
         return [
-            'id'                => $this->id,
-            'currentQuantity'   => $this->currentQuantity,
-            'unit'              => $this->unit,
-            'unitPrice'         => $this->unitPrice,
-            'minimumStock'      => $this->minimumStock,
+            'id'                 => $this->id,
+            'currentQuantity'    => $this->currentQuantity,
+            'unit'               => $this->unit,
+            'unitPrice'          => $this->unitPrice,
+            'minimumStock'       => $this->minimumStock,
             'withdrawalQuantity' => $this->withdrawalQuantity,
-            'company'           => $this->company,
-            'supplier'          => $this->supplier,
-            'createdAt'         => $this->createdAt,
-            'updatedAt'         => $this->updatedAt,
+            'company'            => $this->company,
+            'supplier'           => $this->supplier,
+            'createdAt'          => $this->createdAt,
+            'updatedAt'          => $this->updatedAt,
         ];
     }
 

@@ -37,7 +37,7 @@ class PurchaseResource extends JsonResource
             'companyId'    => $this->company_id,
             'supplierId'   => $this->supplier_id,
             'stockingId'   => $this->stocking_id,
-            'itemName'    => $this->item_name,
+            'itemName'     => $this->item_name,
             'quantity'     => $this->quantity,
             'totalPrice'   => $this->total_price,
             'purchaseDate' => $this->purchase_date,

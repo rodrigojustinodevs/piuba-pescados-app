@@ -61,7 +61,7 @@ class PurchaseDTO
     {
         return [
             'id'           => $this->id,
-            'itemName'    => $this->itemName,
+            'itemName'     => $this->itemName,
             'quantity'     => $this->quantity,
             'totalPrice'   => $this->totalPrice,
             'purchaseDate' => $this->purchaseDate,

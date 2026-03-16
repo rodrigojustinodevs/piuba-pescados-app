@@ -30,13 +30,13 @@ class WaterQualityResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'           => $this->id,
-            'measuredAt' => $this->measured_at,
-            'ph'           => $this->ph,
-            'dissolvedOxygen'       => $this->dissolved_oxygen,
-            'temperature'  => $this->temperature,
-            'ammonia'      => $this->ammonia,
-            'tank'         => $this->whenLoaded('tank', fn (): array => [
+            'id'              => $this->id,
+            'measuredAt'      => $this->measured_at,
+            'ph'              => $this->ph,
+            'dissolvedOxygen' => $this->dissolved_oxygen,
+            'temperature'     => $this->temperature,
+            'ammonia'         => $this->ammonia,
+            'tank'            => $this->whenLoaded('tank', fn (): array => [
                 'id'   => $this->tank->id,
                 'name' => $this->tank->name,
             ]),

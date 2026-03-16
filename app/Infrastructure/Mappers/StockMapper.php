@@ -36,12 +36,12 @@ final class StockMapper
     public static function toArray(StockDTO $dto): array
     {
         return [
-            'id'                 => $dto->id,
-            'current_quantity'   => $dto->currentQuantity,
-            'unit'               => $dto->unit,
-            'unit_price'         => $dto->unitPrice,
-            'minimum_stock'      => $dto->minimumStock,
-            'withdrawal_quantity'=> $dto->withdrawalQuantity,
+            'id'                  => $dto->id,
+            'current_quantity'    => $dto->currentQuantity,
+            'unit'                => $dto->unit,
+            'unit_price'          => $dto->unitPrice,
+            'minimum_stock'       => $dto->minimumStock,
+            'withdrawal_quantity' => $dto->withdrawalQuantity,
         ];
     }
 
@@ -111,22 +111,21 @@ final class StockMapper
     public static function modelToArray(Stock $model): array
     {
         return [
-            'id'                => $model->id,
-            'currentQuantity'   => (float) $model->current_quantity,
-            'unit'              => (string) $model->unit,
-            'unitPrice'         => (float) $model->unit_price,
-            'minimumStock'      => (float) $model->minimum_stock,
+            'id'                 => $model->id,
+            'currentQuantity'    => (float) $model->current_quantity,
+            'unit'               => (string) $model->unit,
+            'unitPrice'          => (float) $model->unit_price,
+            'minimumStock'       => (float) $model->minimum_stock,
             'withdrawalQuantity' => (float) $model->withdrawal_quantity,
-            'company'           => $model->relationLoaded('company') ? [
+            'company'            => $model->relationLoaded('company') ? [
                 'name' => $model->company->name ?? null,
             ] : null,
-            'supplier'          => $model->relationLoaded('supplier') ? [
+            'supplier' => $model->relationLoaded('supplier') ? [
                 'id'   => $model->supplier->id ?? null,
                 'name' => $model->supplier->name ?? null,
             ] : null,
-            'createdAt'         => $model->created_at?->toDateTimeString(),
-            'updatedAt'         => $model->updated_at?->toDateTimeString(),
+            'createdAt' => $model->created_at?->toDateTimeString(),
+            'updatedAt' => $model->updated_at?->toDateTimeString(),
         ];
     }
 }
-

@@ -24,12 +24,12 @@ class WaterQualityStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tank_id'       => ['required', 'uuid', 'exists:tanks,id'],
-            'measured_at' => ['required', 'date'],
-            'ph'            => ['required', 'numeric', 'between:0,14'],
-            'dissolved_oxygen'        => ['required', 'numeric', 'min:0'],
-            'temperature'   => ['required', 'numeric'],
-            'ammonia'       => ['required', 'numeric', 'min:0'],
+            'tank_id'          => ['required', 'uuid', 'exists:tanks,id'],
+            'measured_at'      => ['required', 'date'],
+            'ph'               => ['required', 'numeric', 'between:0,14'],
+            'dissolved_oxygen' => ['required', 'numeric', 'min:0'],
+            'temperature'      => ['required', 'numeric'],
+            'ammonia'          => ['required', 'numeric', 'min:0'],
         ];
     }
 
@@ -42,22 +42,22 @@ class WaterQualityStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'tank_id.required'       => 'The tank ID is required.',
-            'tank_id.uuid'           => 'The tank ID must be a valid UUID.',
-            'tank_id.exists'         => 'The tank ID must exist in the tanks table.',
-            'measured_at.required' => 'The measured at is required.',
-            'measured_at.date'     => 'The measured at must be a valid date.',
-            'ph.required'            => 'The pH value is required.',
-            'ph.numeric'             => 'The pH must be a numeric value.',
-            'ph.between'             => 'The pH must be between 0 and 14.',
-            'dissolved_oxygen.required'        => 'The dissolved oxygen level is required.',
-            'dissolved_oxygen.numeric'         => 'The dissolved oxygen level must be a numeric value.',
-            'dissolved_oxygen.min'             => 'The dissolved oxygen level must be at least 0.',
-            'temperature.required'   => 'The temperature is required.',
-            'temperature.numeric'    => 'The temperature must be a numeric value.',
-            'ammonia.required'       => 'The ammonia level is required.',
-            'ammonia.numeric'        => 'The ammonia level must be a numeric value.',
-            'ammonia.min'            => 'The ammonia level must be at least 0.',
+            'tank_id.required'          => 'The tank ID is required.',
+            'tank_id.uuid'              => 'The tank ID must be a valid UUID.',
+            'tank_id.exists'            => 'The tank ID must exist in the tanks table.',
+            'measured_at.required'      => 'The measured at is required.',
+            'measured_at.date'          => 'The measured at must be a valid date.',
+            'ph.required'               => 'The pH value is required.',
+            'ph.numeric'                => 'The pH must be a numeric value.',
+            'ph.between'                => 'The pH must be between 0 and 14.',
+            'dissolved_oxygen.required' => 'The dissolved oxygen level is required.',
+            'dissolved_oxygen.numeric'  => 'The dissolved oxygen level must be a numeric value.',
+            'dissolved_oxygen.min'      => 'The dissolved oxygen level must be at least 0.',
+            'temperature.required'      => 'The temperature is required.',
+            'temperature.numeric'       => 'The temperature must be a numeric value.',
+            'ammonia.required'          => 'The ammonia level is required.',
+            'ammonia.numeric'           => 'The ammonia level must be a numeric value.',
+            'ammonia.min'               => 'The ammonia level must be at least 0.',
         ];
     }
 }

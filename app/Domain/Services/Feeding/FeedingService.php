@@ -81,6 +81,7 @@ class FeedingService
 
         if ($feeding->stock_id !== null) {
             $stock = $this->stockRepository->showStock('id', $feeding->stock_id);
+
             if ($stock instanceof \App\Domain\Models\Stock) {
                 $this->stockRepository->incrementStock($feeding->stock_id, (float) $feeding->stock_reduction_quantity);
             }

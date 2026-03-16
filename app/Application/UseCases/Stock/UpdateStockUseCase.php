@@ -15,7 +15,8 @@ class UpdateStockUseCase
 {
     public function __construct(
         private readonly StockRepositoryInterface $stockRepository
-    ) {}
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data
@@ -23,8 +24,9 @@ class UpdateStockUseCase
     public function execute(string $id, array $data): StockDTO
     {
         return DB::transaction(function () use ($id, $data): StockDTO {
-            $stock = $this->stockRepository->showStock('id', $id);
+            $stock      = $this->stockRepository->showStock('id', $id);
             $mappedData = StockMapper::fromRequest($data);
+
             if (! $stock instanceof Stock) {
                 throw new RuntimeException('Stock not found');
             }

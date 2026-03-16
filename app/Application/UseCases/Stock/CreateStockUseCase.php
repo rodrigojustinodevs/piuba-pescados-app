@@ -12,8 +12,9 @@ use Illuminate\Support\Facades\DB;
 class CreateStockUseCase
 {
     public function __construct(
-        private StockService $stockService
-    ) {}
+        private readonly StockService $stockService
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data
@@ -22,7 +23,7 @@ class CreateStockUseCase
     {
         return DB::transaction(function () use ($data): StockDTO {
             $mappedData = StockMapper::fromRequest($data);
-            
+
             $stock = $this->stockService->addEntry(
                 companyId: $mappedData['company_id'],
                 quantity: (float) $mappedData['current_quantity'],

@@ -58,13 +58,13 @@ class StockStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'companyId'         => ['required', 'uuid', 'exists:companies,id'],
-            'currentQuantity'   => ['required', 'numeric', 'min:0'],
-            'unit'              => ['required', 'string', 'max:50'],
-            'unitPrice'         => ['required', 'numeric', 'min:0'],
-            'totalCost'         => ['nullable', 'numeric', 'min:0'],
-            'minimumStock'      => ['required', 'numeric', 'min:0'],
-            'supplierId'        => ['nullable', 'uuid', 'exists:suppliers,id'],
+            'companyId'       => ['required', 'uuid', 'exists:companies,id'],
+            'currentQuantity' => ['required', 'numeric', 'min:0'],
+            'unit'            => ['required', 'string', 'max:50'],
+            'unitPrice'       => ['required', 'numeric', 'min:0'],
+            'totalCost'       => ['nullable', 'numeric', 'min:0'],
+            'minimumStock'    => ['required', 'numeric', 'min:0'],
+            'supplierId'      => ['nullable', 'uuid', 'exists:suppliers,id'],
         ];
     }
 }

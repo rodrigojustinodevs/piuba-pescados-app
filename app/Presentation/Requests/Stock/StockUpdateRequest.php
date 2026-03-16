@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\Stock;
 
-use App\Domain\Models\Stock;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StockUpdateRequest extends FormRequest
@@ -55,11 +54,11 @@ class StockUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'currentQuantity'    => ['sometimes', 'numeric', 'min:0'],
-            'unit'               => ['sometimes', 'string', 'min:1', 'max:50'],
-            'unitPrice'          => ['sometimes', 'numeric', 'min:0'],
-            'minimumStock'       => ['sometimes', 'numeric', 'min:0'],
-            'supplierId'         => [
+            'currentQuantity' => ['sometimes', 'numeric', 'min:0'],
+            'unit'            => ['sometimes', 'string', 'min:1', 'max:50'],
+            'unitPrice'       => ['sometimes', 'numeric', 'min:0'],
+            'minimumStock'    => ['sometimes', 'numeric', 'min:0'],
+            'supplierId'      => [
                 'nullable',
                 'uuid',
                 'exists:suppliers,id',

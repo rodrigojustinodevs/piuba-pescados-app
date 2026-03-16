@@ -178,7 +178,13 @@ class StockController
      *         @OA\JsonContent(
      *             required={"companyId","currentQuantity","unit","minimumStock"},
      *             @OA\Property(property="companyId", type="string", format="uuid", description="Company ID"),
-     *             @OA\Property(property="supplierId", type="string", format="uuid", nullable=true, description="Supplier ID"),
+     *             @OA\Property(
+     *                 property="supplierId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 nullable=true,
+     *                 description="Supplier ID"
+     *             ),
      *             @OA\Property(
      *                 property="totalCost",
      *                 type="number",
@@ -297,7 +303,13 @@ class StockController
      *                 minimum=0,
      *                 description="Total withdrawn quantity"
      *             ),
-     *             @OA\Property(property="supplierId", type="string", format="uuid", nullable=true, description="Supplier ID")
+     *             @OA\Property(
+     *                 property="supplierId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 nullable=true,
+     *                 description="Supplier ID"
+     *             )
      *         )
      *     ),
      *     @OA\Response(

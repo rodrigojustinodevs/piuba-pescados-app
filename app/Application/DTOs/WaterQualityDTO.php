@@ -49,15 +49,15 @@ class WaterQualityDTO
     public function toArray(): array
     {
         return [
-            'id'           => $this->id,
-            'ph'           => $this->ph,
-            'dissolvedOxygen'       => $this->dissolvedOxygen,
-            'temperature'  => $this->temperature,
-            'ammonia'      => $this->ammonia,
-            'tank'         => $this->tank,
-            'measuredAt' => $this->measuredAt,
-            'createdAt'    => $this->createdAt,
-            'updatedAt'    => $this->updatedAt,
+            'id'              => $this->id,
+            'ph'              => $this->ph,
+            'dissolvedOxygen' => $this->dissolvedOxygen,
+            'temperature'     => $this->temperature,
+            'ammonia'         => $this->ammonia,
+            'tank'            => $this->tank,
+            'measuredAt'      => $this->measuredAt,
+            'createdAt'       => $this->createdAt,
+            'updatedAt'       => $this->updatedAt,
         ];
     }
 

@@ -39,7 +39,7 @@ class StockResource extends JsonResource
             'company'           => $this->whenLoaded('company', fn (): array => [
                 'name' => $this->company->name,
             ]),
-            'supplier'          => $this->whenLoaded('supplier', fn (): array => [
+            'supplier' => $this->whenLoaded('supplier', fn (): array => [
                 'id'   => $this->supplier->id,
                 'name' => $this->supplier->name,
             ]),

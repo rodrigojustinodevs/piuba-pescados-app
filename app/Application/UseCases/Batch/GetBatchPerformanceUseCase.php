@@ -67,6 +67,7 @@ class GetBatchPerformanceUseCase
 
         $latestFeeding = $this->feedingRepository->findLatestByBatch($batchId);
         $feedPrice     = 0.0;
+
         if ($latestFeeding?->stock_id !== null) {
             $feedPrice = $this->stockRepository->getUnitPriceByStockId($latestFeeding->stock_id);
         }

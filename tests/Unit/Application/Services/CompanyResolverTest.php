@@ -8,6 +8,7 @@ use App\Application\Exceptions\CompanyNotFoundException;
 use App\Application\Services\CompanyResolver;
 use App\Domain\Models\User;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
@@ -138,6 +139,13 @@ final class CompanyResolverTest extends TestCase
         $user->shouldReceive('getAttributes')
             ->andReturn(array_filter(['company_id' => $companyId]));
 
+        // Sem company_id direto, o resolver chama companies(); makePartial executaria o real e exigiria DB.
+        if ($companyId === null) {
+            $relation = Mockery::mock(BelongsToMany::class);
+            $relation->shouldReceive('value')->with('companies.id')->andReturn(null);
+            $user->shouldReceive('companies')->andReturn($relation);
+        }
+
         return $user;
     }
 
@@ -148,10 +156,10 @@ final class CompanyResolverTest extends TestCase
 
         $user->shouldReceive('getAttributes')->andReturn([]);
 
-        $query = Mockery::mock();
-        $query->shouldReceive('value')->with('companies.id')->andReturn($firstCompanyId);
+        $relation = Mockery::mock(BelongsToMany::class);
+        $relation->shouldReceive('value')->with('companies.id')->andReturn($firstCompanyId);
 
-        $user->shouldReceive('companies')->andReturn($query);
+        $user->shouldReceive('companies')->andReturn($relation);
 
         return $user;
     }

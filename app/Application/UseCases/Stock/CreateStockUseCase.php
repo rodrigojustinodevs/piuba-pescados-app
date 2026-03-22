@@ -4,37 +4,61 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Stock;
 
-use App\Application\DTOs\StockDTO;
-use App\Domain\Services\Stock\StockService;
-use App\Infrastructure\Mappers\StockMapper;
+use App\Application\Actions\Stock\RegisterStockTransactionAction;
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Application\DTOs\StockInputDTO;
+use App\Application\DTOs\StockTransactionDTO;
+use App\Domain\Exceptions\DuplicateStockException;
+use App\Domain\Enums\StockTransactionDirection;
+use App\Domain\Enums\StockTransactionReferenceType;
+use App\Domain\Models\Stock;
+use App\Domain\Repositories\StockRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class CreateStockUseCase
+final class CreateStockUseCase
 {
     public function __construct(
-        private readonly StockService $stockService
-    ) {
-    }
+        private readonly StockRepositoryInterface      $repository,
+        private readonly RegisterStockTransactionAction $registerTransaction,
+        private readonly CompanyResolverInterface       $companyResolver,
+    ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Dados validados pelo FormRequest
      */
-    public function execute(array $data): StockDTO
+    public function execute(array $data): Stock
     {
-        return DB::transaction(function () use ($data): StockDTO {
-            $mappedData = StockMapper::fromRequest($data);
+        $data['company_id'] = $this->companyResolver->resolve(
+            hint: $data['company_id'] ?? $data['companyId'] ?? null,
+        );
 
-            $stock = $this->stockService->addEntry(
-                companyId: $mappedData['company_id'],
-                quantity: (float) $mappedData['current_quantity'],
-                totalCost: (float) ($mappedData['total_cost'] ?? 0),
-                unitPrice: (float) ($mappedData['unit_price'] ?? 0),
-                unit: $mappedData['unit'] ?? 'kg',
-                minimumStock: (float) ($mappedData['minimum_stock'] ?? 0),
-                supplierId: $mappedData['supplier_id'] ?? null
+        $dto = StockInputDTO::fromArray($data);
+
+        return DB::transaction(function () use ($dto): Stock {
+            $existing = $this->repository->findBySupply(
+                companyId: $dto->companyId,
+                supplyId: $dto->supplyId
             );
 
-            return StockMapper::toDTO($stock);
+            if ($existing !== null) {
+                throw new DuplicateStockException($dto->companyId, $dto->supplyId);
+            }
+
+            $stock = $this->repository->create($dto);
+
+            $this->registerTransaction->execute(new StockTransactionDTO(
+                companyId:     $dto->companyId,
+                supplyId:      $dto->supplyId,
+                quantity:      $dto->quantity,
+                unitPrice:     $dto->unitPrice,
+                totalCost:     $dto->totalCost,
+                unit:          $dto->unit,
+                direction:     StockTransactionDirection::IN,
+                referenceId:   $dto->referenceId,
+                referenceType: StockTransactionReferenceType::PURCHASE_ITEM,
+            ));
+
+            return $stock->load(['supply', 'supplier']);
         });
     }
 }

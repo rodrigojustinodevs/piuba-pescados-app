@@ -8,9 +8,9 @@ use Illuminate\Foundation\Configuration\Middleware as MiddlewareConfig;
 
 $app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
+        web:      __DIR__ . '/../routes/web.php',
         commands: __DIR__ . '/../routes/console.php',
-        health: '/up',
+        health:   '/up',
     )
     ->withMiddleware(function (MiddlewareConfig $middleware): void {
         $middleware->use([
@@ -42,12 +42,15 @@ $app = Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (ExceptionsConfig $exceptions): void {
+        // Toda a lógica de tratamento de exceções está em:
+        // App\Presentation\Exceptions\Handler
     })
     ->create();
 
+// Handler customizado registrado aqui — toda exceção passa por ele
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
-    App\Presentation\Exceptions\Handler::class
+    App\Presentation\Exceptions\Handler::class,
 );
 
 return $app;

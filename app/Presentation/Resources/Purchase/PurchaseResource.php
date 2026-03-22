@@ -4,56 +4,62 @@ declare(strict_types=1);
 
 namespace App\Presentation\Resources\Purchase;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property-read string $id
- * @property-read string $company_id
- * @property-read string $supplier_id
- * @property-read string|null $stocking_id
- * @property-read string $item_name
- * @property-read float $quantity
- * @property-read float $total_price
- * @property-read string $purchase_date
- * @property-read \Illuminate\Support\Carbon|null $created_at
- * @property-read \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Domain\Models\Company|null $company
- * @property-read \App\Domain\Models\Supplier|null $supplier
- * @property-read \App\Domain\Models\Stocking|null $stocking
+ * @property-read string                                                           $id
+ * @property-read string                                                           $company_id
+ * @property-read string                                                           $supplier_id
+ * @property-read string|null                                                      $invoice_number
+ * @property-read string                                                           $total_price
+ * @property-read string                                                           $status
+ * @property-read \Illuminate\Support\Carbon|null                                  $purchase_date
+ * @property-read \Illuminate\Support\Carbon|null                                  $received_at
+ * @property-read \Illuminate\Support\Carbon|null                                  $created_at
+ * @property-read \Illuminate\Support\Carbon|null                                  $updated_at
+ * @property-read \App\Domain\Models\Company|null                                  $company
+ * @property-read \App\Domain\Models\Supplier|null                                 $supplier
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Domain\Models\PurchaseItem> $items
  */
-class PurchaseResource extends JsonResource
+final class PurchaseResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array<string, mixed>
-     */
     #[\Override]
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         return [
-            'id'           => $this->id,
-            'companyId'    => $this->company_id,
-            'supplierId'   => $this->supplier_id,
-            'stockingId'   => $this->stocking_id,
-            'itemName'     => $this->item_name,
-            'quantity'     => $this->quantity,
-            'totalPrice'   => $this->total_price,
-            'purchaseDate' => $this->purchase_date,
-            'company'      => $this->whenLoaded('company', fn (): array => [
-                'name' => $this->company->name ?? '',
+            'id'            => $this->id,
+            'companyId'     => $this->company_id,
+            'supplierId'    => $this->supplier_id,
+            'invoiceNumber' => $this->invoice_number,
+            'totalPrice'    => (float) $this->total_price,
+            'status'        => $this->status,
+            'purchaseDate'  => $this->purchase_date?->toDateString(),
+            'receivedAt'    => $this->received_at?->toDateTimeString(),
+            'createdAt'     => $this->created_at?->toDateTimeString(),
+            'updatedAt'     => $this->updated_at?->toDateTimeString(),
+
+            'company'  => $this->whenLoaded('company', fn (): array => [
+                'id'   => $this->company->id,
+                'name' => $this->company->name,
             ]),
+
             'supplier' => $this->whenLoaded('supplier', fn (): array => [
-                'id'   => $this->supplier->id ?? '',
-                'name' => $this->supplier->name ?? '',
+                'id'   => $this->supplier->id,
+                'name' => $this->supplier->name,
             ]),
-            'stocking' => $this->whenLoaded('stocking', fn (): array => [
-                'id'           => $this->stocking->id ?? '',
-                'stockingDate' => $this->stocking->stocking_date?->toDateString() ?? '',
-            ]),
-            'createdAt' => $this->created_at?->toDateTimeString(),
-            'updatedAt' => $this->updated_at?->toDateTimeString(),
+
+            'items' => $this->whenLoaded('items', fn (): array =>
+                $this->items->map(static fn ($item): array => [
+                    'id'         => $item->id,
+                    'supplyId'   => $item->supply_id,
+                    'supplyName' => $item->relationLoaded('supply') ? $item->supply->name : null,
+                    'quantity'   => (float) $item->quantity,
+                    'unit'       => $item->unit,
+                    'unitPrice'  => (float) $item->unit_price,
+                    'totalPrice' => (float) $item->total_price,
+                ])->all()
+            ),
         ];
     }
 }

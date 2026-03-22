@@ -4,30 +4,40 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Purchase;
 
+use App\Application\Actions\ApplyPurchaseToStockAction;
+use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\PurchaseDTO;
+use App\Domain\Models\Purchase;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
-use App\Infrastructure\Mappers\PurchaseMapper;
 use Illuminate\Support\Facades\DB;
 
-class CreatePurchaseUseCase
+final class CreatePurchaseUseCase
 {
     public function __construct(
-        protected PurchaseRepositoryInterface $purchaseRepository
-    ) {
-    }
+        private readonly PurchaseRepositoryInterface $repository,
+        private readonly ApplyPurchaseToStockAction  $applyToStock,
+        private readonly CompanyResolverInterface    $companyResolver,
+    ) {}
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Dados já validados pelo FormRequest
      */
-    public function execute(array $data): PurchaseDTO
+    public function execute(array $data): Purchase
     {
-        return DB::transaction(function () use ($data): PurchaseDTO {
-            $payload = PurchaseMapper::fromRequest($data);
-            $purchase = $this->purchaseRepository->create($payload);
+        $data['company_id'] = $this->companyResolver->resolve(
+            hint: $data['company_id'] ?? $data['companyId'] ?? null,
+        );
 
-            $purchase->load(['supplier:id,name', 'company:id,name', 'stocking:id,stocking_date']);
+        $dto = PurchaseDTO::fromArray($data);
 
-            return PurchaseMapper::toDTO($purchase);
+        return DB::transaction(function () use ($dto): Purchase {
+            $purchase = $this->repository->create($dto);
+
+            if ($dto->status->isReceived()) {
+                $this->applyToStock->execute($purchase);
+            }
+
+            return $purchase;
         });
     }
 }

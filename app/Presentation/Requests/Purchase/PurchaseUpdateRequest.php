@@ -5,92 +5,100 @@ declare(strict_types=1);
 namespace App\Presentation\Requests\Purchase;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PurchaseUpdateRequest extends FormRequest
 {
-    #[\Override]
-    protected function prepareForValidation(): void
-    {
-        $data = [];
-
-        if ($this->has('company_id') && ! $this->has('companyId')) {
-            $data['companyId'] = $this->input('company_id');
-        }
-
-        if ($this->has('supplier_id') && ! $this->has('supplierId')) {
-            $data['supplierId'] = $this->input('supplier_id');
-        }
-
-        if ($this->has('stocking_id') && ! $this->has('stockingId')) {
-            $data['stockingId'] = $this->input('stocking_id');
-        }
-
-        if ($this->has('input_name') && ! $this->has('inputName')) {
-            $data['inputName'] = $this->input('input_name');
-        }
-
-        if ($this->has('purchased_quantity') && ! $this->has('quantity')) {
-            $data['quantity'] = $this->input('purchased_quantity');
-        }
-
-        if ($this->has('total_price') && ! $this->has('totalPrice')) {
-            $data['totalPrice'] = $this->input('total_price');
-        }
-
-        if ($this->has('purchase_date') && ! $this->has('purchaseDate')) {
-            $data['purchaseDate'] = $this->input('purchase_date');
-        }
-
-        if ($data !== []) {
-            $this->merge($data);
-        }
-    }
-
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
-     */
     public function rules(): array
     {
         return [
-            'companyId'    => ['sometimes', 'uuid', 'exists:companies,id'],
-            'supplierId'   => ['sometimes', 'uuid', 'exists:suppliers,id'],
-            'stockingId'   => ['sometimes', 'nullable', 'uuid', 'exists:stockings,id'],
-            'inputName'    => ['sometimes', 'string', 'max:255'],
-            'quantity'     => ['sometimes', 'numeric', 'min:0'],
-            'totalPrice'   => ['sometimes', 'numeric', 'min:0'],
-            'purchaseDate' => ['sometimes', 'date'],
+            'supplierId' => ['required', 'uuid'],
+            'purchaseDate' => ['required', 'date'],
+
+            'status' => [
+                'nullable',
+                'string',
+                Rule::in(['draft', 'approved']) // ❗ não permitir 'received'
+            ],
+
+            'items' => ['required', 'array', 'min:1'],
+
+            'items.*.id' => ['nullable', 'uuid'],
+
+            'items.*.supplyId' => ['required', 'uuid'],
+
+            'items.*.quantity' => [
+                'required',
+                'numeric',
+                'gt:0'
+            ],
+
+            'items.*.unit' => [
+                'required',
+                'string',
+                'max:20'
+            ],
+
+            'items.*.unitPrice' => [
+                'required',
+                'numeric',
+                'gt:0'
+            ],
         ];
     }
 
-    /**
-     * Get custom error messages for validation rules.
-     *
-     * @return array<string, string>
-     */
-    #[\Override]
     public function messages(): array
     {
         return [
-            'companyId.uuid'    => 'The company ID must be a valid UUID.',
-            'companyId.exists'  => 'The company must exist.',
-            'supplierId.uuid'   => 'The supplier ID must be a valid UUID.',
-            'supplierId.exists' => 'The supplier must exist.',
-            'stockingId.uuid'   => 'The stocking ID must be a valid UUID.',
-            'stockingId.exists' => 'The selected stocking does not exist.',
-            'inputName.string'  => 'The input name must be a string.',
-            'quantity.numeric'  => 'The quantity must be numeric.',
-            'totalPrice.numeric'=> 'The total price must be numeric.',
-            'purchaseDate.date' => 'The purchase date must be a valid date.',
+            'supplierId.required' => 'Fornecedor é obrigatório.',
+            'supplierId.uuid' => 'Fornecedor inválido.',
+
+            'purchaseDate.required' => 'Data da compra é obrigatória.',
+            'purchaseDate.date' => 'Data inválida.',
+
+            'status.in' => 'Status inválido.',
+
+            'items.required' => 'Itens são obrigatórios.',
+            'items.array' => 'Itens deve ser um array.',
+            'items.min' => 'A compra deve possuir ao menos 1 item.',
+
+            'items.*.id.uuid' => 'ID do item inválido.',
+
+            'items.*.supplyId.required' => 'Insumo é obrigatório.',
+            'items.*.supplyId.uuid' => 'Insumo inválido.',
+
+            'items.*.quantity.required' => 'Quantidade é obrigatória.',
+            'items.*.quantity.numeric' => 'Quantidade deve ser numérica.',
+            'items.*.quantity.gt' => 'Quantidade deve ser maior que zero.',
+
+            'items.*.unit.required' => 'Unidade é obrigatória.',
+            'items.*.unit.max' => 'Unidade muito longa.',
+
+            'items.*.unitPrice.required' => 'Preço unitário é obrigatório.',
+            'items.*.unitPrice.numeric' => 'Preço deve ser numérico.',
+            'items.*.unitPrice.gt' => 'Preço deve ser maior que zero.',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('items')) {
+            $this->merge([
+                'items' => array_map(function ($item) {
+                    return [
+                        'id' => $item['id'] ?? null,
+                        'supplyId' => $item['supplyId'] ?? null,
+                        'quantity' => isset($item['quantity']) ? (float) $item['quantity'] : null,
+                        'unit' => $item['unit'] ?? null,
+                        'unitPrice' => isset($item['unitPrice']) ? (float) $item['unitPrice'] : null,
+                    ];
+                }, $this->input('items')),
+            ]);
+        }
     }
 }

@@ -11,92 +11,6 @@
         }
     ],
     "paths": {
-        "/login": {
-            "post": {
-                "tags": [
-                    "Authentication"
-                ],
-                "summary": "Authenticate user and get JWT token",
-                "operationId": "6fb6938846d197365630a548f95ac3a1",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "user@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "password123"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Authentication successful",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Authenticated successfully"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "token": {
-                                                    "type": "string",
-                                                    "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid credentials",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Invalid credentials"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/company/batches": {
             "get": {
                 "tags": [
@@ -229,7 +143,7 @@
                                     "cultivation": {
                                         "type": "string",
                                         "enum": [
-                                            "daycare",
+                                            "growout",
                                             "nursery"
                                         ]
                                     }
@@ -347,7 +261,7 @@
                                     "cultivation": {
                                         "type": "string",
                                         "enum": [
-                                            "daycare",
+                                            "growout",
                                             "nursery"
                                         ]
                                     }
@@ -1501,6 +1415,1464 @@
                     },
                     "400": {
                         "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/purchases": {
+            "get": {
+                "tags": [
+                    "Purchases"
+                ],
+                "summary": "List purchases",
+                "operationId": "d3dc0af1ed39e2578c67f959e47ab8f6",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of purchases",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Purchase"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/purchase/{id}": {
+            "get": {
+                "tags": [
+                    "Purchases"
+                ],
+                "summary": "Get purchase by ID",
+                "operationId": "457cad0ce953cd988b44c94fcc498bca",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Purchase ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Purchase found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/Purchase"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Purchase not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Purchases"
+                ],
+                "summary": "Update a purchase",
+                "operationId": "33b189fe67b426de8690004a9be8f396",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Purchase ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "companyId": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "supplierId": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "invoiceNumber": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "nullable": true
+                                    },
+                                    "totalPrice": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "purchaseDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "confirmed",
+                                            "received",
+                                            "cancelled"
+                                        ],
+                                        "nullable": true
+                                    },
+                                    "receivedAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Purchase updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/Purchase"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Purchase not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Purchases"
+                ],
+                "summary": "Delete a purchase",
+                "operationId": "55f613b50695740f95412f986a0cb76c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Purchase ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Purchase deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "response": {
+                                            "nullable": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Purchase deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Purchase not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/purchase": {
+            "post": {
+                "tags": [
+                    "Purchases"
+                ],
+                "summary": "Create a purchase",
+                "operationId": "fdc9d5da77021cdef571383cc9a1d0b9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "supplierId",
+                                    "purchaseDate",
+                                    "items"
+                                ],
+                                "properties": {
+                                    "companyId": {
+                                        "description": "Company ID",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "supplierId": {
+                                        "description": "Supplier ID",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "invoiceNumber": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "nullable": true
+                                    },
+                                    "purchaseDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-03-17"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "confirmed",
+                                            "received",
+                                            "cancelled"
+                                        ],
+                                        "nullable": true
+                                    },
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "supplyId",
+                                                "quantity",
+                                                "unitPrice"
+                                            ],
+                                            "properties": {
+                                                "supplyId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "quantity": {
+                                                    "description": "Quantidade (VO Quantity, > 0)",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "minimum": 1.0e-6
+                                                },
+                                                "unit": {
+                                                    "description": "Unidade (VO Unit: kg, g, unit)",
+                                                    "type": "string",
+                                                    "example": "kg",
+                                                    "nullable": true
+                                                },
+                                                "unitPrice": {
+                                                    "description": "Preço unitário (VO Money, >= 0)",
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "minimum": 0
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Purchase created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successfully created"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/Purchase"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/purchase/{id}/receive": {
+            "patch": {
+                "tags": [
+                    "Purchases"
+                ],
+                "summary": "Receive a purchase",
+                "operationId": "e0a2dc391411024ba734291027d77c2a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Purchase ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Purchase received",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/Purchase"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Purchase not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/stocks": {
+            "get": {
+                "tags": [
+                    "Stocks"
+                ],
+                "summary": "List stocks",
+                "operationId": "9e59508e4b63b84d05815e525ef94ee8",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of stocks",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "companyId": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "supplyId": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "supplierId": {
+                                                                "type": "string",
+                                                                "format": "uuid",
+                                                                "nullable": true
+                                                            },
+                                                            "currentQuantity": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 100.5
+                                                            },
+                                                            "unit": {
+                                                                "type": "string",
+                                                                "example": "kg"
+                                                            },
+                                                            "unitPrice": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 5.5
+                                                            },
+                                                            "minimumStock": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 50
+                                                            },
+                                                            "withdrawalQuantity": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 10
+                                                            },
+                                                            "isBelowMinimum": {
+                                                                "type": "boolean",
+                                                                "example": false
+                                                            },
+                                                            "supply": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string",
+                                                                        "format": "uuid"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "defaultUnit": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object",
+                                                                "nullable": true
+                                                            },
+                                                            "supplier": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "string",
+                                                                        "format": "uuid"
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object",
+                                                                "nullable": true
+                                                            },
+                                                            "createdAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            },
+                                                            "updatedAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/stock/{id}": {
+            "get": {
+                "tags": [
+                    "Stocks"
+                ],
+                "summary": "Get stock by ID",
+                "operationId": "655292e69d7dd11fbd1867841ccde413",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Stock ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Stock found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "companyId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "supplyId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "supplierId": {
+                                                    "type": "string",
+                                                    "format": "uuid",
+                                                    "nullable": true
+                                                },
+                                                "currentQuantity": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 100.5
+                                                },
+                                                "unit": {
+                                                    "type": "string",
+                                                    "example": "kg"
+                                                },
+                                                "unitPrice": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5.5
+                                                },
+                                                "minimumStock": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 50
+                                                },
+                                                "withdrawalQuantity": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 10
+                                                },
+                                                "isBelowMinimum": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "supply": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "defaultUnit": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "supplier": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Stock not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Stocks"
+                ],
+                "summary": "Update a stock",
+                "operationId": "9a80358e01c71b8a08eff1aa5f83a1a6",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Stock ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "currentQuantity": {
+                                        "description": "Current quantity",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "unit": {
+                                        "description": "Unit of measure",
+                                        "type": "string",
+                                        "maxLength": 50
+                                    },
+                                    "minimumStock": {
+                                        "description": "Minimum stock level",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "withdrawalQuantity": {
+                                        "description": "Total withdrawn quantity",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "supplierId": {
+                                        "description": "Supplier ID",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Stock updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "companyId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "supplyId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "supplierId": {
+                                                    "type": "string",
+                                                    "format": "uuid",
+                                                    "nullable": true
+                                                },
+                                                "currentQuantity": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 100.5
+                                                },
+                                                "unit": {
+                                                    "type": "string",
+                                                    "example": "kg"
+                                                },
+                                                "unitPrice": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5.5
+                                                },
+                                                "minimumStock": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 50
+                                                },
+                                                "withdrawalQuantity": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 10
+                                                },
+                                                "isBelowMinimum": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "supply": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "defaultUnit": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "supplier": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Stock not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Stocks"
+                ],
+                "summary": "Delete a stock",
+                "operationId": "7bf6c73fe89c857c7e209c96fb78f2b5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Stock ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Stock deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "response": {
+                                            "nullable": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Stock successfully deleted"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Stock not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/stock": {
+            "post": {
+                "tags": [
+                    "Stocks"
+                ],
+                "summary": "Create a stock",
+                "operationId": "2b916a60f5d73092d58711a66b8ed5b3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "supply_id",
+                                    "quantity",
+                                    "unit",
+                                    "unit_price"
+                                ],
+                                "properties": {
+                                    "companyId": {
+                                        "description": "Company ID",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "supplyId": {
+                                        "description": "Supply ID",
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "supplierId": {
+                                        "description": "Supplier ID",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "quantity": {
+                                        "description": "Initial quantity",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "unit": {
+                                        "description": "Unit of measure (kg, g, liter, ml, unit, box, piece)",
+                                        "type": "string",
+                                        "maxLength": 50
+                                    },
+                                    "unitPrice": {
+                                        "description": "Unit price",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "totalCost": {
+                                        "description": "Total cost (optional, overrides unitPrice when > 0)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "minimumStock": {
+                                        "description": "Minimum stock level",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "withdrawalQuantity": {
+                                        "description": "Withdrawal quantity",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "referenceId": {
+                                        "description": "Reference ID (e.g. purchase)",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Stock created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successfully created"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "companyId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "supplyId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "supplierId": {
+                                                    "type": "string",
+                                                    "format": "uuid",
+                                                    "nullable": true
+                                                },
+                                                "currentQuantity": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 100.5
+                                                },
+                                                "unit": {
+                                                    "type": "string",
+                                                    "example": "kg"
+                                                },
+                                                "unitPrice": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5.5
+                                                },
+                                                "minimumStock": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 50
+                                                },
+                                                "withdrawalQuantity": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 10
+                                                },
+                                                "isBelowMinimum": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "supply": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "defaultUnit": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "supplier": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/stock/{id}/adjust": {
+            "patch": {
+                "tags": [
+                    "Stocks"
+                ],
+                "summary": "Ajustar estoque (contagem física)",
+                "description": "Ajusta a quantidade do estoque com base na contagem física. Cria registro de ajuste de inventário e transação de auditoria.",
+                "operationId": "27d4a1f2051c813a51243712fd1eca53",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Stock ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "physicalQuantity"
+                                ],
+                                "properties": {
+                                    "physicalQuantity": {
+                                        "description": "Quantidade física contada no inventário",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "reason": {
+                                        "description": "Motivo do ajuste",
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estoque ajustado com sucesso. Retorna o stock atualizado.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "companyId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "supplyId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "supplierId": {
+                                                    "type": "string",
+                                                    "format": "uuid",
+                                                    "nullable": true
+                                                },
+                                                "currentQuantity": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 100.5
+                                                },
+                                                "unit": {
+                                                    "type": "string",
+                                                    "example": "kg"
+                                                },
+                                                "unitPrice": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 5.5
+                                                },
+                                                "minimumStock": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 50
+                                                },
+                                                "withdrawalQuantity": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 10
+                                                },
+                                                "isBelowMinimum": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "supply": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "defaultUnit": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "supplier": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "createdAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                },
+                                                "updatedAt": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Erro de validação ou delta zero (quantidade física igual ao sistema)"
+                    },
+                    "404": {
+                        "description": "Stock not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -3322,6 +4694,104 @@
         }
     },
     "components": {
+        "schemas": {
+            "PurchaseItem": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "supplyId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "quantity": {
+                        "description": "Quantidade do item (Value Object Quantity, > 0)",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "unit": {
+                        "description": "Unidade (Value Object Unit, ex: kg, g, unit)",
+                        "type": "string",
+                        "example": "kg"
+                    },
+                    "unitPrice": {
+                        "description": "Preço unitário (Value Object Money, >= 0)",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "totalPrice": {
+                        "description": "Total do item (quantity x unitPrice)",
+                        "type": "number",
+                        "format": "float"
+                    }
+                },
+                "type": "object"
+            },
+            "Purchase": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "companyId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "supplierId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "purchaseDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-03-17"
+                    },
+                    "totalPrice": {
+                        "description": "Soma dos totais dos itens (Value Object Money)",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "draft",
+                            "confirmed",
+                            "received",
+                            "cancelled"
+                        ]
+                    },
+                    "invoiceNumber": {
+                        "type": "string",
+                        "maxLength": 100,
+                        "nullable": true
+                    },
+                    "receivedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PurchaseItem"
+                        }
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
@@ -3334,10 +4804,6 @@
     },
     "tags": [
         {
-            "name": "Authentication",
-            "description": "Authentication"
-        },
-        {
             "name": "Batches",
             "description": "Batches"
         },
@@ -3348,6 +4814,14 @@
         {
             "name": "Clients",
             "description": "Clients"
+        },
+        {
+            "name": "Purchases",
+            "description": "Purchases"
+        },
+        {
+            "name": "Stocks",
+            "description": "Stocks"
         },
         {
             "name": "Stockings",

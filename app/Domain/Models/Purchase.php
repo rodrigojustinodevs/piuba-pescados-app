@@ -4,92 +4,91 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\Enums\PurchaseStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * @property string $id
- * @property string $company_id
- * @property string $supplier_id
- * @property string|null $stocking_id
- * @property string $item_name
- * @property float $quantity
- * @property float $total_price
- * @property Carbon|null $purchase_date
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property string              $id
+ * @property string              $company_id
+ * @property string              $supplier_id
+ * @property string|null         $invoice_number
+ * @property string              $purchase_date
+ * @property string              $status
+ * @property float               $total_price
+ * @property string|null         $received_at
+ * @property \Carbon\Carbon      $created_at
+ * @property \Carbon\Carbon      $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
  *
- * @property-read Company|null $company
- * @property-read Supplier|null $supplier
- * @property-read Stocking|null $stocking
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, PurchaseItem> $items
+ * @property-read Supplier $supplier
+ * @property-read Company  $company
  */
 class Purchase extends BaseModel
 {
     use SoftDeletes;
 
-    protected $keyType = 'string';
-
-    public $incrementing = false;
+    protected $keyType    = 'string';
+    public    $incrementing = false;
 
     protected $fillable = [
         'id',
         'company_id',
         'supplier_id',
-        'stocking_id',
-        'item_name',
-        'quantity',
+        'invoice_number',
+        'purchase_date',
         'total_price',
-        'purchase_date',
+        'status',
+        'received_at',
     ];
 
-    /** @var array<string> */
-    protected $dates = [
-        'purchase_date',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    protected $casts = [
+        'total_price'   => 'decimal:2',
+        'purchase_date' => 'date:Y-m-d',
+        'received_at'   => 'datetime',
     ];
 
-    #[\Override]
     protected static function booted(): void
     {
-        static::creating(function (Purchase $purchase): void {
-            $purchase->id = (string) Str::uuid();
+        static::creating(static function (Purchase $purchase): void {
+            $purchase->id     ??= (string) Str::uuid();
+            $purchase->status ??= PurchaseStatus::DRAFT->value;
         });
     }
 
-    /**
-     * @phpstan-return BelongsTo<Company, static>
-     */
+    // -------------------------------------------------------------------------
+    // Relacionamentos
+    // -------------------------------------------------------------------------
+
     public function company(): BelongsTo
     {
-        /** @var BelongsTo<Company, static> $relation */
-        $relation = $this->belongsTo(Company::class, 'company_id');
-
-        return $relation;
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
-    /**
-     * @phpstan-return BelongsTo<Supplier, static>
-     */
     public function supplier(): BelongsTo
     {
-        /** @var BelongsTo<Supplier, static> $relation */
-        $relation = $this->belongsTo(Supplier::class, 'supplier_id');
-
-        return $relation;
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
-    /**
-     * @phpstan-return BelongsTo<Stocking, static>
-     */
-    public function stocking(): BelongsTo
+    public function items(): HasMany
     {
-        /** @var BelongsTo<Stocking, static> $relation */
-        $relation = $this->belongsTo(Stocking::class, 'stocking_id');
+        return $this->hasMany(PurchaseItem::class, 'purchase_id');
+    }
 
-        return $relation;
+    // -------------------------------------------------------------------------
+    // Helpers de domínio (leitura apenas — sem mutação de estado)
+    // -------------------------------------------------------------------------
+
+    public function isReceived(): bool
+    {
+        return $this->status === PurchaseStatus::RECEIVED->value;
+    }
+
+    public function currentStatus(): PurchaseStatus
+    {
+        return PurchaseStatus::from($this->status);
     }
 }

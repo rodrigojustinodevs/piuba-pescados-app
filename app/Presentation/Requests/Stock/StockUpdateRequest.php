@@ -6,63 +6,51 @@ namespace App\Presentation\Requests\Stock;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StockUpdateRequest extends FormRequest
+final class StockUpdateRequest extends FormRequest
 {
-    #[\Override]
-    protected function prepareForValidation(): void
-    {
-        $data = [];
-
-        if ($this->has('current_quantity') && ! $this->has('currentQuantity')) {
-            $data['currentQuantity'] = $this->input('current_quantity');
-        }
-
-        if ($this->has('minimum_stock') && ! $this->has('minimumStock')) {
-            $data['minimumStock'] = $this->input('minimum_stock');
-        }
-
-        if ($this->has('withdrawal_quantity') && ! $this->has('withdrawalQuantity')) {
-            $data['withdrawalQuantity'] = $this->input('withdrawal_quantity');
-        }
-
-        if ($this->has('unit_price') && ! $this->has('unitPrice')) {
-            $data['unitPrice'] = $this->input('unit_price');
-        }
-
-        if ($this->has('supplier_id') && ! $this->has('supplierId')) {
-            $data['supplierId'] = $this->input('supplier_id');
-        }
-
-        if ($data !== []) {
-            $this->merge($data);
-        }
-    }
-
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
-     */
+    protected function prepareForValidation(): void
+    {
+        $map = [
+            'unitPrice'          => 'unit_price',
+            'minimumStock'       => 'minimum_stock',
+            'supplierId'         => 'supplier_id',
+            'withdrawalQuantity' => 'withdrawal_quantity',
+        ];
+
+        $normalized = [];
+        foreach ($map as $camel => $snake) {
+            if ($this->has($camel) && ! $this->has($snake)) {
+                $normalized[$snake] = $this->input($camel);
+            }
+        }
+
+        if ($normalized) {
+            $this->merge($normalized);
+        }
+    }
+
     public function rules(): array
     {
         return [
-            'currentQuantity' => ['sometimes', 'numeric', 'min:0'],
-            'unit'            => ['sometimes', 'string', 'min:1', 'max:50'],
-            'unitPrice'       => ['sometimes', 'numeric', 'min:0'],
-            'minimumStock'    => ['sometimes', 'numeric', 'min:0'],
-            'supplierId'      => [
-                'nullable',
-                'uuid',
-                'exists:suppliers,id',
-            ],
+            'unit'                => ['sometimes', 'string', 'max:20'],
+            'supplier_id'         => ['sometimes', 'uuid',    'exists:suppliers,id'],
+            'unit_price'          => ['sometimes', 'numeric', 'min:0'],
+            'minimum_stock'       => ['sometimes', 'numeric', 'min:0'],
+            'withdrawal_quantity' => ['sometimes', 'numeric', 'min:0'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'unit_price.min'      => 'The unit price cannot be negative.',
+            'minimum_stock.min'   => 'The minimum stock cannot be negative.',
+            'withdrawal_quantity.min' => 'The withdrawal quantity cannot be negative.',
         ];
     }
 }

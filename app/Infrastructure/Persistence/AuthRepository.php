@@ -7,6 +7,7 @@ namespace App\Infrastructure\Persistence;
 use App\Application\DTOs\LoginCredentialsDTO;
 use App\Domain\Models\User;
 use App\Domain\Repositories\AuthRepositoryInterface;
+use App\Domain\ValueObjects\Email;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -141,5 +142,10 @@ class AuthRepository implements AuthRepositoryInterface
             ->where('company_user_role.user_id', $user->id)
             ->where('company_user_role.company_id', $companyId)
             ->pluck('name');
+    }
+
+    public function findByEmail(Email $email): ?User
+    {
+        return User::where('email', $email->value())->first();
     }
 }

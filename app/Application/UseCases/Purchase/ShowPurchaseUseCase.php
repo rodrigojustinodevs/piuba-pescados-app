@@ -4,27 +4,17 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Purchase;
 
-use App\Application\DTOs\PurchaseDTO;
 use App\Domain\Models\Purchase;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
-use App\Infrastructure\Mappers\PurchaseMapper;
-use RuntimeException;
 
-class ShowPurchaseUseCase
+final class ShowPurchaseUseCase
 {
     public function __construct(
-        protected PurchaseRepositoryInterface $purchaseRepository
-    ) {
-    }
+        private readonly PurchaseRepositoryInterface $repository,
+    ) {}
 
-    public function execute(string $id): ?PurchaseDTO
+    public function execute(string $id): Purchase
     {
-        $purchase = $this->purchaseRepository->showPurchase('id', $id);
-
-        if (! $purchase instanceof Purchase) {
-            throw new RuntimeException('Purchase not found');
-        }
-
-        return PurchaseMapper::toDTO($purchase);
+        return $this->repository->findOrFail($id);
     }
 }

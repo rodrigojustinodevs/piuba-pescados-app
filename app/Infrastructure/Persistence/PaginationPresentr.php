@@ -10,23 +10,19 @@ use Illuminate\Pagination\LengthAwarePaginator;
 /**
  * @template T of \Illuminate\Database\Eloquent\Model
  */
-class PaginationPresentr implements PaginationInterface
+final class PaginationPresentr implements PaginationInterface
 {
-    /**
-     * @param LengthAwarePaginator<int, T> $paginator
-     */
-    public function __construct(protected LengthAwarePaginator $paginator)
-    {
-    }
+    /** @param LengthAwarePaginator<int, T> $paginator */
+    public function __construct(
+        private readonly LengthAwarePaginator $paginator,
+    ) {}
 
     public function total(): int
     {
         return (int) $this->paginator->total();
     }
 
-    /**
-     * @return array<T>
-     */
+    /** @return array<T> */
     public function items(): array
     {
         return $this->paginator->items();
@@ -44,7 +40,7 @@ class PaginationPresentr implements PaginationInterface
 
     public function firstPage(): int
     {
-        return (int) ($this->paginator->firstItem() ?? 1);
+        return 1;
     }
 
     public function lastPage(): int

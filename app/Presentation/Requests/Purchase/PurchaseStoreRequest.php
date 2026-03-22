@@ -8,94 +8,149 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PurchaseStoreRequest extends FormRequest
 {
-    #[\Override]
-    protected function prepareForValidation(): void
-    {
-        $data = [];
-
-        if ($this->has('company_id') && ! $this->has('companyId')) {
-            $data['companyId'] = $this->input('company_id');
-        }
-
-        if ($this->has('supplier_id') && ! $this->has('supplierId')) {
-            $data['supplierId'] = $this->input('supplier_id');
-        }
-
-        if ($this->has('stocking_id') && ! $this->has('stockingId')) {
-            $data['stockingId'] = $this->input('stocking_id');
-        }
-
-        if ($this->has('input_name') && ! $this->has('inputName')) {
-            $data['inputName'] = $this->input('input_name');
-        }
-
-        if ($this->has('total_price') && ! $this->has('totalPrice')) {
-            $data['totalPrice'] = $this->input('total_price');
-        }
-
-        if ($this->has('purchase_date') && ! $this->has('purchaseDate')) {
-            $data['purchaseDate'] = $this->input('purchase_date');
-        }
-
-        if ($data !== []) {
-            $this->merge($data);
-        }
-    }
-
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
-     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge($this->normalizeInput());
+    }
+
     public function rules(): array
     {
         return [
-            'companyId'    => ['required', 'uuid', 'exists:companies,id'],
-            'supplierId'   => ['required', 'uuid', 'exists:suppliers,id'],
-            'stockingId'   => ['nullable', 'uuid', 'exists:stockings,id'],
-            'inputName'    => ['required', 'string', 'max:255'],
-            'quantity'     => ['required', 'numeric', 'min:0'],
-            'totalPrice'   => ['required', 'numeric', 'min:0'],
-            'purchaseDate' => ['required', 'date'],
+            'companyId' => [
+                'sometimes',
+                'uuid',
+                'exists:companies,id'
+            ],
+
+            'supplierId' => [
+                'required',
+                'uuid',
+                'exists:suppliers,id'
+            ],
+
+            'invoiceNumber' => [
+                'nullable',
+                'string',
+                'max:100'
+            ],
+
+            'purchaseDate' => [
+                'required',
+                'date'
+            ],
+            'status' => [
+                'nullable',
+                'string',
+                'in:draft,confirmed,received,cancelled'
+            ],
+
+            'items' => [
+                'required',
+                'array',
+                'min:1'
+            ],
+
+            'items.*.supplyId' => [
+                'required',
+                'uuid',
+                'exists:supplies,id'
+            ],
+
+            'items.*.quantity' => [
+                'required',
+                'numeric',
+                'gt:0'
+            ],
+
+            'items.*.unit' => [
+                'nullable',
+                'string',
+                'max:50'
+            ],
+
+            'items.*.unitPrice' => [
+                'required',
+                'numeric',
+                'min:0'
+            ],
         ];
     }
 
-    /**
-     * Get custom error messages for validation rules.
-     *
-     * @return array<string, string>
-     */
-    #[\Override]
     public function messages(): array
     {
         return [
-            'companyId.required'    => 'The company ID is required.',
-            'companyId.uuid'        => 'The company ID must be a valid UUID.',
-            'companyId.exists'      => 'The selected company does not exist.',
-            'supplierId.required'   => 'The supplier ID is required.',
-            'supplierId.uuid'       => 'The supplier ID must be a valid UUID.',
-            'supplierId.exists'     => 'The selected supplier does not exist.',
-            'stockingId.uuid'       => 'The stocking ID must be a valid UUID.',
-            'stockingId.exists'     => 'The selected stocking does not exist.',
-            'inputName.required'    => 'The input name is required.',
-            'inputName.string'      => 'The input name must be a string.',
-            'inputName.max'         => 'The input name may not be greater than 255 characters.',
-            'quantity.required'      => 'The quantity is required.',
-            'quantity.numeric'       => 'The quantity must be a number.',
-            'quantity.min'           => 'The quantity must be at least 0.',
-            'totalPrice.required'   => 'The total price is required.',
-            'totalPrice.numeric'    => 'The total price must be a number.',
-            'totalPrice.min'        => 'The total price must be at least 0.',
+            'companyId.required' => 'The company ID is required.',
+            'companyId.uuid' => 'The company ID must be a valid UUID.',
+            'companyId.exists' => 'The selected company does not exist.',
+
+            'supplierId.required' => 'The supplier ID is required.',
+            'supplierId.uuid' => 'The supplier ID must be a valid UUID.',
+            'supplierId.exists' => 'The selected supplier does not exist.',
+
             'purchaseDate.required' => 'The purchase date is required.',
-            'purchaseDate.date'     => 'The purchase date must be a valid date.',
+            'purchaseDate.date' => 'The purchase date must be a valid date.',
+
+            'items.required' => 'At least one purchase item is required.',
+            'items.array' => 'Items must be an array.',
+
+            'items.*.supplyId.required' => 'Each item must have a supply.',
+            'items.*.supplyId.exists' => 'The selected supply does not exist.',
+
+            'items.*.quantity.required' => 'Item quantity is required.',
+            'items.*.quantity.gt' => 'Item quantity must be greater than zero.',
+
+            'items.*.unitPrice.required' => 'Item unit price is required.',
         ];
+    }
+
+    private function normalizeInput(): array
+    {
+        $data = [];
+
+        $map = [
+            'company_id' => 'companyId',
+            'supplier_id' => 'supplierId',
+            'invoice_number' => 'invoiceNumber',
+            'total_price' => 'totalPrice',
+            'purchase_date' => 'purchaseDate',
+        ];
+
+        foreach ($map as $snake => $camel) {
+            if ($this->has($snake) && ! $this->has($camel)) {
+                $data[$camel] = $this->input($snake);
+            }
+        }
+
+        if ($this->has('items')) {
+            $data['items'] = $this->normalizeItems($this->input('items'));
+        }
+
+        return $data;
+    }
+
+    private function normalizeItems(array $items): array
+    {
+        return array_map(function ($item) {
+
+            if (isset($item['supply_id']) && ! isset($item['supplyId'])) {
+                $item['supplyId'] = $item['supply_id'];
+            }
+
+            if (isset($item['unit_price']) && ! isset($item['unitPrice'])) {
+                $item['unitPrice'] = $item['unit_price'];
+            }
+
+            if (isset($item['total_price']) && ! isset($item['totalPrice'])) {
+                $item['totalPrice'] = $item['total_price'];
+            }
+
+            return $item;
+
+        }, $items);
     }
 }

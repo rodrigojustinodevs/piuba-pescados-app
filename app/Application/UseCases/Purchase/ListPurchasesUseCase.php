@@ -4,30 +4,31 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Purchase;
 
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
-use App\Presentation\Resources\Purchase\PurchaseResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ListPurchasesUseCase
+final class ListPurchasesUseCase
 {
     public function __construct(
-        protected PurchaseRepositoryInterface $purchaseRepository
-    ) {
-    }
+        private readonly PurchaseRepositoryInterface $purchaseRepository,
+        private readonly CompanyResolverInterface    $companyResolver,
+    ) {}
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array{
+     *     status?: string|null,
+     *     supplier_id?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     per_page?: int,
+     * } $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->purchaseRepository->paginate();
+        // company_id resolvido aqui — UseCase garante isolamento por empresa
+        $filters['company_id'] = $this->companyResolver->resolve();
 
-        return PurchaseResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->purchaseRepository->paginate($filters);
     }
 }

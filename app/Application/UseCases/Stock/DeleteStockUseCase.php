@@ -7,15 +7,18 @@ namespace App\Application\UseCases\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteStockUseCase
+final class DeleteStockUseCase
 {
     public function __construct(
-        protected StockRepositoryInterface $stockRepository
-    ) {
-    }
+        private readonly StockRepositoryInterface $repository,
+    ) {}
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->stockRepository->delete($id));
+        $this->repository->findOrFail($id);
+
+        DB::transaction(function () use ($id): void {
+            $this->repository->delete($id);
+        });
     }
 }

@@ -4,30 +4,29 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Stock;
 
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
-use App\Presentation\Resources\Stock\StockResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ListStocksUseCase
+final readonly class ListStocksUseCase
 {
     public function __construct(
-        protected StockRepositoryInterface $stockRepository
+        private StockRepositoryInterface $repository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array{
+     *     supply_id?: string|null,
+     *     supplier_id?: string|null,
+     *     per_page?: int,
+     * } $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->stockRepository->paginate();
+        $filters['company_id'] = $this->companyResolver->resolve();
 
-        return StockResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->repository->paginate($filters);
     }
 }

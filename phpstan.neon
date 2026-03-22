@@ -8,3 +8,9 @@ parameters:
         - app/
 
     level: 6
+
+    # Eloquent BelongsTo/HasMany: PHPDoc com genéricos gera erro de covariância ($this vs static).
+    # Ignorar missingType.generics só em Models evita os dois problemas.
+    ignoreErrors:
+        - identifier: missingType.generics
+          path: app/Domain/Models/*

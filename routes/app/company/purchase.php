@@ -12,4 +12,5 @@ Route::middleware(['permission:create-purchase|view-purchase|update-purchase|del
         Route::get('purchase/{id}', [PurchaseController::class, 'show']);
         Route::put('purchase/{id}', [PurchaseController::class, 'update']);
         Route::delete('purchase/{id}', [PurchaseController::class, 'destroy']);
+        Route::patch('purchase/{id}/receive', [PurchaseController::class, 'receive']);
     });

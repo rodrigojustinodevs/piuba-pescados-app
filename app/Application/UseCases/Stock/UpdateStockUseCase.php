@@ -4,40 +4,34 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Stock;
 
-use App\Application\DTOs\StockDTO;
 use App\Domain\Models\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
-use App\Infrastructure\Mappers\StockMapper;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class UpdateStockUseCase
+final readonly class UpdateStockUseCase
 {
     public function __construct(
-        private readonly StockRepositoryInterface $stockRepository
+        private StockRepositoryInterface $repository,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * Update only the configurable attributes of the stock (minimum_stock, withdrawal_quantity, unit, unit_price).
+     * The current_quantity is managed exclusively via transactions.
+     *
+     * @param array<string, mixed> $data Validated data from the FormRequest
      */
-    public function execute(string $id, array $data): StockDTO
+    public function execute(string $id, array $data): Stock
     {
-        return DB::transaction(function () use ($id, $data): StockDTO {
-            $stock      = $this->stockRepository->showStock('id', $id);
-            $mappedData = StockMapper::fromRequest($data);
+        return DB::transaction(function () use ($id, $data): Stock {
+            $updated = $this->repository->update($id, [
+                'minimum_stock'       => $data['minimum_stock'] ?? $data['minimumStock'] ?? null,
+                'withdrawal_quantity' => $data['withdrawal_quantity'] ?? $data['withdrawalQuantity'] ?? null,
+                'unit'                => $data['unit'] ?? null,
+                'unit_price'          => $data['unit_price'] ?? $data['unitPrice'] ?? null,
+            ]);
 
-            if (! $stock instanceof Stock) {
-                throw new RuntimeException('Stock not found');
-            }
-
-            $updatedStock = $this->stockRepository->update($id, $mappedData);
-
-            if (! $updatedStock instanceof Stock) {
-                throw new RuntimeException('Stock not found');
-            }
-
-            return StockMapper::toDTO($updatedStock);
+            return $updated->loadMissing(['supply', 'supplier']);
         });
     }
 }

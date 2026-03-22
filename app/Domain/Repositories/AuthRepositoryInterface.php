@@ -6,6 +6,7 @@ namespace App\Domain\Repositories;
 
 use App\Application\DTOs\LoginCredentialsDTO;
 use App\Domain\Models\User;
+use App\Domain\ValueObjects\Email;
 use Illuminate\Support\Collection;
 
 interface AuthRepositoryInterface
@@ -42,4 +43,6 @@ interface AuthRepositoryInterface
      * @return Collection<int, string>
      */
     public function getUserRolePermissionsByCompany(User $user, string $companyId): Collection;
+
+    public function findByEmail(Email $email): ?User;
 }

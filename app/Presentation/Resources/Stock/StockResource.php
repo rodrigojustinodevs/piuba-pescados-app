@@ -4,47 +4,60 @@ declare(strict_types=1);
 
 namespace App\Presentation\Resources\Stock;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property-read string $id
- * @property-read float $current_quantity
- * @property-read string $unit
- * @property-read float $unit_price
- * @property-read float $minimum_stock
- * @property-read float $withdrawal_quantity
- * @property-read \Illuminate\Support\Carbon|null $created_at
- * @property-read \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Domain\Models\Company|null $company
- * @property-read \App\Domain\Models\Supplier|null $supplier
+ * @mixin \App\Domain\Models\Stock
  */
-class StockResource extends JsonResource
+final class StockResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
      * @return array<string, mixed>
      */
     #[\Override]
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         return [
-            'id'                => $this->id,
-            'currentQuantity'   => $this->current_quantity,
-            'unit'              => $this->unit,
-            'unitPrice'         => $this->unit_price,
-            'minimumStock'      => $this->minimum_stock,
-            'withdrawnQuantity' => $this->withdrawal_quantity,
-            'company'           => $this->whenLoaded('company', fn (): array => [
-                'name' => $this->company->name,
+            'id'                 => $this->id,
+            'companyId'          => $this->company_id,
+            'supplyId'           => $this->supply_id,
+            'supplierId'         => $this->supplier_id,
+            'currentQuantity'    => (float) $this->current_quantity,
+            'unit'               => $this->unit,
+            'unitPrice'          => (float) $this->unit_price,
+            'minimumStock'       => (float) $this->minimum_stock,
+            'withdrawalQuantity' => (float) $this->withdrawal_quantity,
+
+            'isBelowMinimum' => $this->isBelowMinimum(),
+
+            'createdAt' => $this->created_at?->toDateTimeString(),
+            'updatedAt' => $this->updated_at?->toDateTimeString(),
+
+            'supply' => $this->whenLoaded('supply', fn (): array => [
+                'id'          => $this->supply->id,
+                'name'        => $this->supply->name,
+                'defaultUnit' => $this->supply->default_unit,
             ]),
+
             'supplier' => $this->whenLoaded('supplier', fn (): array => [
                 'id'   => $this->supplier->id,
                 'name' => $this->supplier->name,
             ]),
-            'createdAt' => $this->created_at?->toDateTimeString(),
-            'updatedAt' => $this->updated_at?->toDateTimeString(),
+
+            'transactions' => $this->whenLoaded(
+                'transactions',
+                fn (): array => $this->transactions->map(static fn ($t): array => [
+                    'id'            => $t->id,
+                    'direction'     => $t->direction,
+                    'quantity'      => (float) $t->quantity,
+                    'unitPrice'     => (float) $t->unit_price,
+                    'totalCost'     => (float) $t->total_cost,
+                    'referenceType' => $t->reference_type,
+                    'referenceId'   => $t->reference_id,
+                    'createdAt'     => $t->created_at?->toDateTimeString(),
+                ])->all(),
+            ),
         ];
     }
 }

@@ -8,60 +8,155 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PurchaseStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
-     */
+    #[\Override]
+    protected function prepareForValidation(): void
+    {
+        $this->merge($this->normalizeInput());
+    }
+
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
-            'company_id'    => ['required', 'uuid', 'exists:companies,id'],
-            'supplier_id'   => ['required', 'uuid', 'exists:suppliers,id'],
-            'stocking_id'   => ['nullable', 'uuid', 'exists:stockings,id'],
-            'item_name'     => ['required', 'string', 'max:255'],
-            'quantity'      => ['required', 'numeric', 'min:0'],
-            'total_price'   => ['required', 'numeric', 'min:0'],
-            'purchase_date' => ['required', 'date'],
+            'companyId' => [
+                'sometimes',
+                'uuid',
+                'exists:companies,id',
+            ],
+
+            'supplierId' => [
+                'required',
+                'uuid',
+                'exists:suppliers,id',
+            ],
+
+            'invoiceNumber' => [
+                'nullable',
+                'string',
+                'max:100',
+            ],
+
+            'purchaseDate' => [
+                'required',
+                'date',
+            ],
+            'status' => [
+                'nullable',
+                'string',
+                'in:draft,confirmed,received,cancelled',
+            ],
+
+            'items' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'items.*.supplyId' => [
+                'required',
+                'uuid',
+                'exists:supplies,id',
+            ],
+
+            'items.*.quantity' => [
+                'required',
+                'numeric',
+                'gt:0',
+            ],
+
+            'items.*.unit' => [
+                'nullable',
+                'string',
+                'max:50',
+            ],
+
+            'items.*.unitPrice' => [
+                'required',
+                'numeric',
+                'min:0',
+            ],
         ];
     }
 
-    /**
-     * Get custom error messages for validation rules.
-     *
-     * @return array<string, string>
-     */
     #[\Override]
     public function messages(): array
     {
         return [
-            'company_id.required'    => 'The company ID is required.',
-            'company_id.uuid'        => 'The company ID must be a valid UUID.',
-            'company_id.exists'      => 'The selected company does not exist.',
-            'supplier_id.required'   => 'The supplier ID is required.',
-            'supplier_id.uuid'       => 'The supplier ID must be a valid UUID.',
-            'supplier_id.exists'     => 'The selected supplier does not exist.',
-            'stocking_id.uuid'       => 'The stocking ID must be a valid UUID.',
-            'stocking_id.exists'     => 'The selected stocking does not exist.',
-            'item_name.required'     => 'The item name is required.',
-            'item_name.string'       => 'The item name must be a string.',
-            'item_name.max'          => 'The item name may not be greater than 255 characters.',
-            'quantity.required'      => 'The quantity is required.',
-            'quantity.numeric'       => 'The quantity must be a number.',
-            'quantity.min'           => 'The quantity must be at least 0.',
-            'total_price.required'   => 'The total price is required.',
-            'total_price.numeric'    => 'The total price must be a number.',
-            'total_price.min'        => 'The total price must be at least 0.',
-            'purchase_date.required' => 'The purchase date is required.',
-            'purchase_date.date'     => 'The purchase date must be a valid date.',
+            'companyId.required' => 'The company ID is required.',
+            'companyId.uuid'     => 'The company ID must be a valid UUID.',
+            'companyId.exists'   => 'The selected company does not exist.',
+
+            'supplierId.required' => 'The supplier ID is required.',
+            'supplierId.uuid'     => 'The supplier ID must be a valid UUID.',
+            'supplierId.exists'   => 'The selected supplier does not exist.',
+
+            'purchaseDate.required' => 'The purchase date is required.',
+            'purchaseDate.date'     => 'The purchase date must be a valid date.',
+
+            'items.required' => 'At least one purchase item is required.',
+            'items.array'    => 'Items must be an array.',
+
+            'items.*.supplyId.required' => 'Each item must have a supply.',
+            'items.*.supplyId.exists'   => 'The selected supply does not exist.',
+
+            'items.*.quantity.required' => 'Item quantity is required.',
+            'items.*.quantity.gt'       => 'Item quantity must be greater than zero.',
+
+            'items.*.unitPrice.required' => 'Item unit price is required.',
         ];
+    }
+
+    /** @return array<string, mixed> */
+    private function normalizeInput(): array
+    {
+        $data = [];
+
+        $map = [
+            'company_id'     => 'companyId',
+            'supplier_id'    => 'supplierId',
+            'invoice_number' => 'invoiceNumber',
+            'total_price'    => 'totalPrice',
+            'purchase_date'  => 'purchaseDate',
+        ];
+
+        foreach ($map as $snake => $camel) {
+            if ($this->has($snake) && ! $this->has($camel)) {
+                $data[$camel] = $this->input($snake);
+            }
+        }
+
+        if ($this->has('items')) {
+            $data['items'] = $this->normalizeItems($this->input('items'));
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $items
+     * @return array<int, array<string, mixed>>
+     */
+    private function normalizeItems(array $items): array
+    {
+        return array_map(function (array $item): array {
+            if (isset($item['supply_id']) && ! isset($item['supplyId'])) {
+                $item['supplyId'] = $item['supply_id'];
+            }
+
+            if (isset($item['unit_price']) && ! isset($item['unitPrice'])) {
+                $item['unitPrice'] = $item['unit_price'];
+            }
+
+            if (isset($item['total_price']) && ! isset($item['totalPrice'])) {
+                $item['totalPrice'] = $item['total_price'];
+            }
+
+            return $item;
+        }, $items);
     }
 }

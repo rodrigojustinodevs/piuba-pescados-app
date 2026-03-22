@@ -4,53 +4,41 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Purchase;
 
+use App\Application\Actions\ApplyPurchaseToStockAction;
+use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\PurchaseDTO;
+use App\Domain\Models\Purchase;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class CreatePurchaseUseCase
+final readonly class CreatePurchaseUseCase
 {
     public function __construct(
-        protected PurchaseRepositoryInterface $purchaseRepository
+        private PurchaseRepositoryInterface $repository,
+        private ApplyPurchaseToStockAction $applyToStock,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Dados já validados pelo FormRequest
      */
-    public function execute(array $data): PurchaseDTO
+    public function execute(array $data): Purchase
     {
-        return DB::transaction(function () use ($data): PurchaseDTO {
-            $purchase = $this->purchaseRepository->create($data);
+        $data['company_id'] = $this->companyResolver->resolve(
+            hint: $data['company_id'] ?? $data['companyId'] ?? null,
+        );
 
-            $purchaseDate = $purchase->purchase_date instanceof Carbon
-                ? $purchase->purchase_date
-                : Carbon::parse($purchase->purchase_date);
+        $dto = PurchaseDTO::fromArray($data);
 
-            $stocking = $purchase->stocking;
+        return DB::transaction(function () use ($dto): Purchase {
+            $purchase = $this->repository->create($dto);
 
-            return new PurchaseDTO(
-                id: $purchase->id,
-                itemName: $purchase->item_name,
-                quantity: $purchase->quantity,
-                totalPrice: $purchase->total_price,
-                purchaseDate: $purchaseDate->toDateString(),
-                supplier: [
-                    'id'   => $purchase->supplier->id ?? '',
-                    'name' => $purchase->supplier->name ?? '',
-                ],
-                company: [
-                    'name' => $purchase->company->name ?? '',
-                ],
-                stockingId: $purchase->stocking_id,
-                stocking: $stocking ? [
-                    'id'           => $stocking->id,
-                    'stockingDate' => $stocking->stocking_date?->toDateString(),
-                ] : null,
-                createdAt: $purchase->created_at?->toDateTimeString(),
-                updatedAt: $purchase->updated_at?->toDateTimeString()
-            );
+            if ($dto->status->isReceived()) {
+                $this->applyToStock->execute($purchase);
+            }
+
+            return $purchase;
         });
     }
 }

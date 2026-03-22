@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\DTOs\PurchaseDTO;
+use App\Application\DTOs\PurchaseItemDTO;
 use App\Domain\Models\Purchase;
 
 interface PurchaseRepositoryInterface
@@ -11,29 +13,50 @@ interface PurchaseRepositoryInterface
     /**
      * Create a new purchase record.
      *
-     * @param array<string, mixed> $data
      */
-    public function create(array $data): Purchase;
+    public function create(PurchaseDTO $dto): Purchase;
 
     /**
      * Update an existing purchase record.
      *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?Purchase;
+    public function update(string $id, array $attributes): Purchase;
+
+    /**
+     * Sync the collection of persisted items with the received DTOs:
+     * - remove items missing in the DTOs
+     * - update existing items
+     * - create new items
+     *
+     * @param PurchaseItemDTO[] $itemDTOs
+     */
+    public function syncItems(Purchase $purchase, array $itemDTOs): void;
 
     /**
      * Delete a purchase record.
-     */
+    */
     public function delete(string $id): bool;
 
     /**
-     * Paginate purchase records.
+     * @param array{
+     *     company_id: string,
+     *     status?: string|null,
+     *     supplier_id?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function paginate(int $page = 25): PaginationInterface;
+    public function paginate(array $filters): PaginationInterface;
 
     /**
      * Find a purchase by a specific field.
      */
     public function showPurchase(string $field, string | int $value): ?Purchase;
+
+    /**
+     * Find a purchase by ID.
+     */
+    public function findOrFail(string $id): Purchase;
 }

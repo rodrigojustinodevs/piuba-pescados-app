@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Providers;
 
+use App\Application\Contracts\Auth\PasswordHasherInterface;
+use App\Application\Contracts\Auth\TokenServiceInterface;
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Application\Contracts\UserResolverInterface;
+use App\Application\Services\CompanyResolver;
+use App\Application\Services\LoginAttemptLimiter;
+use App\Application\Services\UserResolver;
 use App\Domain\Enums\Can;
 use App\Domain\Models\User;
 use App\Domain\Repositories\AlertRepositoryInterface;
@@ -19,12 +26,14 @@ use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
 use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 use App\Domain\Repositories\GrowthCurveRepositoryInterface;
 use App\Domain\Repositories\HarvestRepositoryInterface;
+use App\Domain\Repositories\InventoryAdjustmentRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
+use App\Domain\Repositories\StockTransactionRepositoryInterface;
 use App\Domain\Repositories\SubscriptionRepositoryInterface;
 use App\Domain\Repositories\SupplierRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
@@ -43,18 +52,24 @@ use App\Infrastructure\Persistence\FinancialCategoryRepository;
 use App\Infrastructure\Persistence\FinancialTransactionRepository;
 use App\Infrastructure\Persistence\GrowthCurveRepository;
 use App\Infrastructure\Persistence\HarvestRepository;
+use App\Infrastructure\Persistence\InventoryAdjustmentRepository;
 use App\Infrastructure\Persistence\MortalityRepository;
 use App\Infrastructure\Persistence\PurchaseRepository;
 use App\Infrastructure\Persistence\SaleRepository;
 use App\Infrastructure\Persistence\SensorRepository;
 use App\Infrastructure\Persistence\StockingRepository;
 use App\Infrastructure\Persistence\StockRepository;
+use App\Infrastructure\Persistence\StockTransactionRepository;
 use App\Infrastructure\Persistence\SubscriptionRepository;
 use App\Infrastructure\Persistence\SupplierRepository;
 use App\Infrastructure\Persistence\TankRepository;
 use App\Infrastructure\Persistence\TransferRepository;
 use App\Infrastructure\Persistence\WaterQualityRepository;
+use App\Infrastructure\Security\BcryptPasswordHasher;
+use App\Infrastructure\Security\JwtTokenService;
 use Carbon\CarbonImmutable;
+use Illuminate\Cache\RateLimiter;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
@@ -74,6 +89,17 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
+
+        $this->app->bind(TokenServiceInterface::class, JwtTokenService::class);
+
+        $this->app->bind(PasswordHasherInterface::class, BcryptPasswordHasher::class);
+
+        $this->app->bind(
+            LoginAttemptLimiter::class,
+            static fn ($app): LoginAttemptLimiter => new LoginAttemptLimiter(
+                limiter: $app->make(RateLimiter::class),
+            ),
+        );
         $this->app->bind(AlertRepositoryInterface::class, AlertRepository::class);
         $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
         $this->app->bind(TankRepositoryInterface::class, TankRepository::class);
@@ -98,11 +124,28 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SaleRepositoryInterface::class, SaleRepository::class);
         $this->app->bind(SensorRepositoryInterface::class, SensorRepository::class);
         $this->app->bind(StockingRepositoryInterface::class, StockingRepository::class);
+        $this->app->bind(
+            InventoryAdjustmentRepositoryInterface::class,
+            InventoryAdjustmentRepository::class,
+        );
         $this->app->bind(StockRepositoryInterface::class, StockRepository::class);
+        $this->app->bind(StockTransactionRepositoryInterface::class, StockTransactionRepository::class);
         $this->app->bind(SubscriptionRepositoryInterface::class, SubscriptionRepository::class);
         $this->app->bind(SupplierRepositoryInterface::class, SupplierRepository::class);
         $this->app->bind(WaterQualityRepositoryInterface::class, WaterQualityRepository::class);
         $this->app->bind(TransferRepositoryInterface::class, TransferRepository::class);
+        $this->app->bind(
+            UserResolverInterface::class,
+            static fn ($app): UserResolver => new UserResolver(
+                auth: $app->make(Guard::class),
+            ),
+        );
+        $this->app->bind(
+            CompanyResolverInterface::class,
+            static fn ($app): CompanyResolver => new CompanyResolver(
+                auth: $app->make(Guard::class),
+            ),
+        );
     }
 
     /**

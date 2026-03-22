@@ -10,3 +10,4 @@ Route::get('stocks', [StockController::class, 'index']);
 Route::get('stock/{id}', [StockController::class, 'show']);
 Route::put('stock/{id}', [StockController::class, 'update']);
 Route::delete('stock/{id}', [StockController::class, 'destroy']);
+Route::patch('stock/{id}/adjust', [StockController::class, 'adjust']);

@@ -4,54 +4,75 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\StockInputDTO;
 use App\Domain\Models\Stock;
+use App\Domain\Models\Supply;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use RuntimeException;
 
 class StockRepository implements StockRepositoryInterface
 {
     /**
      * Create a new stock.
-     *
-     * @param array<string, mixed> $data
      */
-    public function create(array $data): Stock
+    public function create(StockInputDTO $dto): Stock
     {
-        return Stock::create($data);
+        $supplyId = $dto->supplyId;
+
+        if ($supplyId === null || $supplyId === '') {
+            $supply = Supply::create([
+                'company_id'   => $dto->companyId,
+                'name'         => 'Estoque legado ' . substr((string) \Illuminate\Support\Str::uuid(), 0, 8),
+                'default_unit' => $dto->unit,
+            ]);
+            $supplyId = $supply->id;
+        }
+
+        /** @var Stock */
+        return Stock::create([
+            'company_id'          => $dto->companyId,
+            'supply_id'           => $supplyId,
+            'supplier_id'         => $dto->supplierId,
+            'current_quantity'    => $dto->quantity,
+            'unit'                => $dto->unit,
+            'unit_price'          => $dto->unitPrice,
+            'minimum_stock'       => $dto->minimumStock,
+            'withdrawal_quantity' => $dto->withdrawalQuantity,
+        ]);
     }
 
     /**
      * Update an existing stock.
      *
-     * @param array<string, mixed> $data
      */
-    public function update(string $id, array $data): ?Stock
+    public function update(string $id, array $attributes): Stock
     {
-        $stock = Stock::find($id);
+        $stock = $this->findOrFail($id);
 
-        if ($stock) {
-            $stock->update($data);
-            $stock->load(['company:id,name', 'supplier:id,name']);
+        $stock->update(array_filter($attributes, static fn ($v): bool => $v !== null));
 
-            return $stock;
-        }
-
-        return null;
+        return $stock->refresh();
     }
 
     /**
      * Get paginated .
      */
-    public function paginate(int $page = 25): PaginationInterface
+    public function paginate(array $filters): PaginationInterface
     {
-        /** @var LengthAwarePaginator<int, Stock> $paginator */
-        $paginator = Stock::with([
-            'company:id,name',
-            'supplier:id,name',
-        ])->paginate($page);
+        $paginator = Stock::with(['supply:id,name,default_unit', 'supplier:id,name'])
+            ->where('company_id', $filters['company_id'])
+            ->when(
+                ! empty($filters['supply_id']),
+                static fn ($q) => $q->where('supply_id', $filters['supply_id']),
+            )
+            ->when(
+                ! empty($filters['supplier_id']),
+                static fn ($q) => $q->where('supplier_id', $filters['supplier_id']),
+            )
+            ->latest()
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
@@ -66,9 +87,19 @@ class StockRepository implements StockRepositoryInterface
             ->first();
     }
 
-    /**
-     * Find first stock by company and supplier.
-     */
+    public function findOrFail(string $id): Stock
+    {
+        return Stock::with(['company:id,name', 'supplier:id,name'])
+            ->findOrFail($id);
+    }
+
+    public function findBySupply(string $companyId, string $supplyId): ?Stock
+    {
+        return Stock::where('company_id', $companyId)
+            ->where('supply_id', $supplyId)
+            ->first();
+    }
+
     public function findByCompanyAndSupplier(string $companyId, string $supplierId): ?Stock
     {
         return Stock::where('company_id', $companyId)
@@ -76,9 +107,13 @@ class StockRepository implements StockRepositoryInterface
             ->first();
     }
 
-    /**
-     * Get unit price for a stock by ID.
-     */
+    public function findByCompanyAndSupply(string $companyId, string $supplyId): ?Stock
+    {
+        return Stock::where('company_id', $companyId)
+            ->where('supply_id', $supplyId)
+            ->first();
+    }
+
     public function getUnitPriceByStockId(string $stockId): float
     {
         $unitPrice = Stock::where('id', $stockId)->value('unit_price');
@@ -90,54 +125,38 @@ class StockRepository implements StockRepositoryInterface
         return (float) $unitPrice;
     }
 
-    public function decrementStock(string $id, float $quantity): bool
+    public function incrementQuantity(string $id, float $quantity): Stock
     {
-        $stock = Stock::find($id);
-
-        if (! $stock) {
-            return false;
-        }
-
-        $stock->decrement('current_quantity', $quantity);
-        $stock->increment('withdrawal_quantity', $quantity);
-
-        return $stock->save();
-    }
-
-    public function incrementStock(string $id, float $quantity): bool
-    {
-        $stock = Stock::find($id);
-
-        if (! $stock) {
-            return false;
-        }
+        $stock = $this->findOrFail($id);
 
         $stock->increment('current_quantity', $quantity);
-        $stock->decrement('withdrawal_quantity', $quantity);
 
-        return $stock->save();
+        return $stock->refresh();
+    }
+
+    public function decrementQuantity(string $id, float $quantity): Stock
+    {
+        $stock = $this->findOrFail($id);
+
+        $stock->decrement('current_quantity', $quantity);
+
+        return $stock->refresh();
     }
 
     public function delete(string $id): bool
     {
-        $stock = Stock::find($id);
-
-        if (! $stock) {
-            return false;
-        }
-
-        return (bool) $stock->delete();
+        return (bool) $this->findOrFail($id)->delete();
     }
 
     /**
-     * Find stocks by supplier ID.
-     *
      * @return Collection<int, Stock>
      */
     public function findBySupplier(string $supplierId): Collection
     {
-        return Stock::with(['company:id,name', 'supplier:id,name'])
+        $items = Stock::with(['company:id,name', 'supplier:id,name'])
             ->where('supplier_id', $supplierId)
             ->get();
+
+        return new Collection($items->all());
     }
 }

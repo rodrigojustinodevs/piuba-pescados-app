@@ -5,55 +5,101 @@ declare(strict_types=1);
 namespace App\Presentation\Requests\Purchase;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PurchaseUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
-     */
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
-            'company_id'         => ['sometimes', 'uuid', 'exists:companies,id'],
-            'supplier_id'        => ['sometimes', 'uuid', 'exists:suppliers,id'],
-            'stocking_id'        => ['sometimes', 'nullable', 'uuid', 'exists:stockings,id'],
-            'item_name'          => ['sometimes', 'string', 'max:255'],
-            'purchased_quantity' => ['sometimes', 'numeric', 'min:0'],
-            'total_price'        => ['sometimes', 'numeric', 'min:0'],
-            'purchase_date'      => ['sometimes', 'date'],
+            'supplierId'   => ['required', 'uuid'],
+            'purchaseDate' => ['required', 'date'],
+
+            'status' => [
+                'nullable',
+                'string',
+                Rule::in(['draft', 'approved']), // ❗ não permitir 'received'
+            ],
+
+            'items' => ['required', 'array', 'min:1'],
+
+            'items.*.id' => ['nullable', 'uuid'],
+
+            'items.*.supplyId' => ['required', 'uuid'],
+
+            'items.*.quantity' => [
+                'required',
+                'numeric',
+                'gt:0',
+            ],
+
+            'items.*.unit' => [
+                'required',
+                'string',
+                'max:20',
+            ],
+
+            'items.*.unitPrice' => [
+                'required',
+                'numeric',
+                'gt:0',
+            ],
         ];
     }
 
-    /**
-     * Get custom error messages for validation rules.
-     *
-     * @return array<string, string>
-     */
     #[\Override]
     public function messages(): array
     {
         return [
-            'company_id.uuid'            => 'The company ID must be a valid UUID.',
-            'company_id.exists'          => 'The company must exist.',
-            'supplier_id.uuid'           => 'The supplier ID must be a valid UUID.',
-            'supplier_id.exists'         => 'The supplier must exist.',
-            'stocking_id.uuid'           => 'The stocking ID must be a valid UUID.',
-            'stocking_id.exists'         => 'The selected stocking does not exist.',
-            'item_name.string'           => 'The item name must be a string.',
-            'item_name.max'              => 'The item name may not be greater than 255 characters.',
-            'purchased_quantity.numeric' => 'The purchased quantity must be numeric.',
-            'total_price.numeric'        => 'The total price must be numeric.',
-            'purchase_date.date'         => 'The purchase date must be a valid date.',
+            'supplierId.required' => 'Fornecedor é obrigatório.',
+            'supplierId.uuid'     => 'Fornecedor inválido.',
+
+            'purchaseDate.required' => 'Data da compra é obrigatória.',
+            'purchaseDate.date'     => 'Data inválida.',
+
+            'status.in' => 'Status inválido.',
+
+            'items.required' => 'Itens são obrigatórios.',
+            'items.array'    => 'Itens deve ser um array.',
+            'items.min'      => 'A compra deve possuir ao menos 1 item.',
+
+            'items.*.id.uuid' => 'ID do item inválido.',
+
+            'items.*.supplyId.required' => 'Insumo é obrigatório.',
+            'items.*.supplyId.uuid'     => 'Insumo inválido.',
+
+            'items.*.quantity.required' => 'Quantidade é obrigatória.',
+            'items.*.quantity.numeric'  => 'Quantidade deve ser numérica.',
+            'items.*.quantity.gt'       => 'Quantidade deve ser maior que zero.',
+
+            'items.*.unit.required' => 'Unidade é obrigatória.',
+            'items.*.unit.max'      => 'Unidade muito longa.',
+
+            'items.*.unitPrice.required' => 'Preço unitário é obrigatório.',
+            'items.*.unitPrice.numeric'  => 'Preço deve ser numérico.',
+            'items.*.unitPrice.gt'       => 'Preço deve ser maior que zero.',
         ];
+    }
+
+    #[\Override]
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('items')) {
+            $this->merge([
+                'items' => array_map(fn(array $item): array => [
+                    'id'        => $item['id'] ?? null,
+                    'supplyId'  => $item['supplyId'] ?? null,
+                    'quantity'  => isset($item['quantity']) ? (float) $item['quantity'] : null,
+                    'unit'      => $item['unit'] ?? null,
+                    'unitPrice' => isset($item['unitPrice']) ? (float) $item['unitPrice'] : null,
+                ], $this->input('items')),
+            ]);
+        }
     }
 }

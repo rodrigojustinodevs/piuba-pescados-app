@@ -6,23 +6,24 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final readonly class Email
+final readonly class Email implements \Stringable
 {
-    public function __construct(
-        private string $value
-    ) {
-        $this->validate();
+    private string $value;
+
+    public function __construct(string $value)
+    {
+        $normalized = mb_strtolower(trim($value));
+
+        if (! filter_var($normalized, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException("Invalid email address: [{$value}]");
+        }
+
+        $this->value = $normalized;
     }
 
-    private function validate(): void
+    public static function of(string $value): self
     {
-        if ($this->value === '' || $this->value === '0') {
-            throw new InvalidArgumentException('Email cannot be empty.');
-        }
-
-        if (! filter_var($this->value, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Invalid email format: {$this->value}");
-        }
+        return new self($value);
     }
 
     public function value(): string
@@ -35,13 +36,8 @@ final readonly class Email
         return $this->value === $other->value;
     }
 
-    public function toString(): string
+    public function __toString(): string
     {
         return $this->value;
-    }
-
-    public static function fromString(string $value): self
-    {
-        return new self($value);
     }
 }

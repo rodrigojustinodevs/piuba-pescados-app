@@ -9,11 +9,12 @@ use App\Domain\Exceptions\InvalidPurchaseStatusTransitionException;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class DeletePurchaseUseCase
+final readonly class DeletePurchaseUseCase
 {
     public function __construct(
-        private readonly PurchaseRepositoryInterface $repository,
-    ) {}
+        private PurchaseRepositoryInterface $repository,
+    ) {
+    }
 
     public function execute(string $id): void
     {
@@ -31,4 +32,4 @@ final class DeletePurchaseUseCase
             $this->repository->delete($id);
         });
     }
-}   
+}

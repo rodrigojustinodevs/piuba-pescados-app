@@ -12,6 +12,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class StockResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function toArray(Request $request): array
     {
@@ -26,7 +29,7 @@ final class StockResource extends JsonResource
             'minimumStock'       => (float) $this->minimum_stock,
             'withdrawalQuantity' => (float) $this->withdrawal_quantity,
 
-            'isBelowMinimum'     => $this->isBelowMinimum(),
+            'isBelowMinimum' => $this->isBelowMinimum(),
 
             'createdAt' => $this->created_at?->toDateTimeString(),
             'updatedAt' => $this->updated_at?->toDateTimeString(),

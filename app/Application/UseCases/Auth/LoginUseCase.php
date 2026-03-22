@@ -12,19 +12,23 @@ use App\Application\DTOs\UserContextDTO;
 use App\Domain\Exceptions\InvalidCredentialsException;
 use App\Domain\Repositories\AuthRepositoryInterface;
 
-final class LoginUseCase
+final readonly class LoginUseCase
 {
     public function __construct(
-        private readonly AuthRepositoryInterface $authRepository,
-        private readonly PasswordHasherInterface $passwordHasher,
-        private readonly TokenServiceInterface   $tokenService,
-    ) {}
+        private AuthRepositoryInterface $authRepository,
+        private PasswordHasherInterface $passwordHasher,
+        private TokenServiceInterface $tokenService,
+    ) {
+    }
 
     public function execute(LoginInputDTO $input): LoginOutputDTO
     {
         $user = $this->authRepository->findByEmail($input->email);
 
-        if ($user === null || ! $this->passwordHasher->check($input->password, (string) $user->password)) {
+        $validUser = $user instanceof \App\Domain\Models\User;
+        $validPassword = $validUser
+            && $this->passwordHasher->check($input->password, (string) $user->password);
+        if (!$validUser || !$validPassword) {
             throw new InvalidCredentialsException();
         }
 

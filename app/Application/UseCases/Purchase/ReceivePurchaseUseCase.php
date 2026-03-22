@@ -11,12 +11,13 @@ use App\Domain\Models\Purchase;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class ReceivePurchaseUseCase
+final readonly class ReceivePurchaseUseCase
 {
     public function __construct(
-        private readonly PurchaseRepositoryInterface $repository,
-        private readonly ApplyPurchaseToStockAction  $applyToStock,
-    ) {}
+        private PurchaseRepositoryInterface $repository,
+        private ApplyPurchaseToStockAction $applyToStock,
+    ) {
+    }
 
     public function execute(string $id): Purchase
     {

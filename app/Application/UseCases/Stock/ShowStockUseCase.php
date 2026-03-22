@@ -7,11 +7,12 @@ namespace App\Application\UseCases\Stock;
 use App\Domain\Models\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
 
-final class ShowStockUseCase
+final readonly class ShowStockUseCase
 {
     public function __construct(
-        private readonly StockRepositoryInterface $repository,
-    ) {}
+        private StockRepositoryInterface $repository,
+    ) {
+    }
 
     public function execute(string $id): Stock
     {

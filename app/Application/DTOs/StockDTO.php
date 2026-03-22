@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-final class StockDTO
+final readonly class StockDTO
 {
     public function __construct(
-        public readonly string  $id,
-        public readonly string  $companyId,
-        public readonly string  $supplyId,
-        public readonly float   $currentQuantity,
-        public readonly string  $unit,
-        public readonly float   $unitPrice,
-        public readonly float   $minimumStock,
-        public readonly float   $withdrawalQuantity,
-        public readonly ?string $supplierId = null,
-        public readonly ?string $createdAt  = null,
-        public readonly ?string $updatedAt  = null,
-    ) {}
+        public string $id,
+        public string $companyId,
+        public string $supplyId,
+        public float $currentQuantity,
+        public string $unit,
+        public float $unitPrice,
+        public float $minimumStock,
+        public float $withdrawalQuantity,
+        public ?string $supplierId = null,
+        public ?string $createdAt = null,
+        public ?string $updatedAt = null,
+    ) {
+    }
 
     /** @return array<string, mixed> */
     public function toArray(): array

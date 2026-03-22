@@ -6,12 +6,11 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+return new class () extends Migration
 {
     public function up(): void
     {
         Schema::create('inventory_adjustments', static function (Blueprint $table): void {
-
             // ── Identificação ────────────────────────────────────────────────
             $table->uuid('id')->primary();
 
@@ -73,7 +72,7 @@ return new class extends Migration
 
             // ── Índices ──────────────────────────────────────────────────────
             // Consultas mais comuns: ajustes por stock + filtro de status
-            $table->index(['stock_id', 'status'],       'ia_stock_status_idx');
+            $table->index(['stock_id', 'status'], 'ia_stock_status_idx');
 
             // Listagem por empresa com paginação
             $table->index(['company_id', 'created_at'], 'ia_company_created_idx');

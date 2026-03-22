@@ -8,8 +8,8 @@ use App\Application\Contracts\Auth\PasswordHasherInterface;
 use App\Application\Contracts\Auth\TokenServiceInterface;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\Contracts\UserResolverInterface;
-use App\Application\Services\LoginAttemptLimiter;
 use App\Application\Services\CompanyResolver;
+use App\Application\Services\LoginAttemptLimiter;
 use App\Application\Services\UserResolver;
 use App\Domain\Enums\Can;
 use App\Domain\Models\User;
@@ -69,6 +69,7 @@ use App\Infrastructure\Security\BcryptPasswordHasher;
 use App\Infrastructure\Security\JwtTokenService;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiter;
+use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
@@ -76,7 +77,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Contracts\Auth\Guard;
 use Opcodes\LogViewer\Facades\LogViewer;
 use Override;
 
@@ -88,13 +88,12 @@ class AppServiceProvider extends ServiceProvider
     #[Override]
     public function register(): void
     {
-
         $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
- 
+
         $this->app->bind(TokenServiceInterface::class, JwtTokenService::class);
- 
+
         $this->app->bind(PasswordHasherInterface::class, BcryptPasswordHasher::class);
- 
+
         $this->app->bind(
             LoginAttemptLimiter::class,
             static fn ($app): LoginAttemptLimiter => new LoginAttemptLimiter(
@@ -128,7 +127,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             InventoryAdjustmentRepositoryInterface::class,
             InventoryAdjustmentRepository::class,
-        );        
+        );
         $this->app->bind(StockRepositoryInterface::class, StockRepository::class);
         $this->app->bind(StockTransactionRepositoryInterface::class, StockTransactionRepository::class);
         $this->app->bind(SubscriptionRepositoryInterface::class, SubscriptionRepository::class);

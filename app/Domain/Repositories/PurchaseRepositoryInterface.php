@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
-use App\Domain\Models\Purchase;
 use App\Application\DTOs\PurchaseDTO;
 use App\Application\DTOs\PurchaseItemDTO;
+use App\Domain\Models\Purchase;
 
 interface PurchaseRepositoryInterface
 {
@@ -19,6 +19,7 @@ interface PurchaseRepositoryInterface
     /**
      * Update an existing purchase record.
      *
+     * @param array<string, mixed> $attributes
      */
     public function update(string $id, array $attributes): Purchase;
 

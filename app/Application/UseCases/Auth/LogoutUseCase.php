@@ -8,11 +8,12 @@ use App\Application\Contracts\Auth\TokenServiceInterface;
 use App\Domain\Exceptions\UnauthorizedException;
 use Throwable;
 
-final class LogoutUseCase
+final readonly class LogoutUseCase
 {
     public function __construct(
-        private readonly TokenServiceInterface $tokenService,
-    ) {}
+        private TokenServiceInterface $tokenService,
+    ) {
+    }
 
     public function execute(): void
     {

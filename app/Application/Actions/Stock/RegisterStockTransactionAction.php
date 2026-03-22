@@ -8,11 +8,12 @@ use App\Application\DTOs\StockTransactionDTO;
 use App\Domain\Models\StockTransaction;
 use App\Domain\Repositories\StockTransactionRepositoryInterface;
 
-final class RegisterStockTransactionAction
+final readonly class RegisterStockTransactionAction
 {
     public function __construct(
-        private readonly StockTransactionRepositoryInterface $transactionRepository,
-    ) {}
+        private StockTransactionRepositoryInterface $transactionRepository,
+    ) {
+    }
 
     public function execute(StockTransactionDTO $dto): StockTransaction
     {

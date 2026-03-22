@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\StockDTO;
 use App\Application\UseCases\Stock\AdjustStockUseCase;
 use App\Application\UseCases\Stock\CreateStockUseCase;
 use App\Application\UseCases\Stock\DeleteStockUseCase;
 use App\Application\UseCases\Stock\ListStocksUseCase;
 use App\Application\UseCases\Stock\ShowStockUseCase;
 use App\Application\UseCases\Stock\UpdateStockSettingsUseCase;
-use App\Application\UseCases\Stock\UpdateStockUseCase;
 use App\Presentation\Requests\Stock\StockAdjustRequest;
 use App\Presentation\Requests\Stock\StockStoreRequest;
 use App\Presentation\Requests\Stock\StockUpdateRequest;
@@ -20,7 +18,6 @@ use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Throwable;
 
 class StockController
 {
@@ -109,7 +106,7 @@ class StockController
         $pagination = $useCase->execute(
             filters: $request->only(['supply_id', 'supplier_id', 'per_page']),
         );
- 
+
         return ApiResponse::success(
             data:       StockResource::collection($pagination->items()),
             pagination: [
@@ -183,7 +180,7 @@ class StockController
         ShowStockUseCase $useCase,
     ): JsonResponse {
         $stock = $useCase->execute($id);
- 
+
         return ApiResponse::success(
             data: new StockResource($stock->loadMissing(['supply', 'supplier'])),
         );
@@ -199,9 +196,26 @@ class StockController
      *         required=true,
      *         @OA\JsonContent(
      *             required={"supply_id","quantity","unit","unit_price"},
-     *             @OA\Property(property="companyId", type="string", format="uuid", nullable=true, description="Company ID"),
-     *             @OA\Property(property="supplyId", type="string", format="uuid", description="Supply ID"),
-     *             @OA\Property(property="supplierId", type="string", format="uuid", nullable=true, description="Supplier ID"),
+     *             @OA\Property(
+     *                 property="companyId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 nullable=true,
+     *                 description="Company ID"
+     *             ),
+     *             @OA\Property(
+     *                 property="supplyId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 description="Supply ID"
+     *             ),
+     *             @OA\Property(
+     *                 property="supplierId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 nullable=true,
+     *                 description="Supplier ID"
+     *             ),
      *             @OA\Property(
      *                 property="quantity",
      *                 type="number",
@@ -209,7 +223,12 @@ class StockController
      *                 minimum=0,
      *                 description="Initial quantity"
      *             ),
-     *             @OA\Property(property="unit", type="string", maxLength=50, description="Unit of measure (kg, g, liter, ml, unit, box, piece)"),
+     *             @OA\Property(
+     *                 property="unit",
+     *                 type="string",
+     *                 maxLength=50,
+     *                 description="Unit of measure (kg, g, liter, ml, unit, box, piece)"
+     *             ),
      *             @OA\Property(
      *                 property="unitPrice",
      *                 type="number",
@@ -225,9 +244,29 @@ class StockController
      *                 nullable=true,
      *                 description="Total cost (optional, overrides unitPrice when > 0)"
      *             ),
-     *             @OA\Property(property="minimumStock", type="number", format="float", minimum=0, nullable=true, description="Minimum stock level"),
-     *             @OA\Property(property="withdrawalQuantity", type="number", format="float", minimum=0, nullable=true, description="Withdrawal quantity"),
-     *             @OA\Property(property="referenceId", type="string", format="uuid", nullable=true, description="Reference ID (e.g. purchase)")
+     *             @OA\Property(
+     *                 property="minimumStock",
+     *                 type="number",
+     *                 format="float",
+     *                 minimum=0,
+     *                 nullable=true,
+     *                 description="Minimum stock level"
+     *             ),
+     *             @OA\Property(
+     *                 property="withdrawalQuantity",
+     *                 type="number",
+     *                 format="float",
+     *                 minimum=0,
+     *                 nullable=true,
+     *                 description="Withdrawal quantity"
+     *             ),
+     *             @OA\Property(
+     *                 property="referenceId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 nullable=true,
+     *                 description="Reference ID (e.g. purchase)"
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -278,7 +317,7 @@ class StockController
         CreateStockUseCase $useCase,
     ): JsonResponse {
         $stock = $useCase->execute($request->validated());
- 
+
         return ApiResponse::created(
             data:    new StockResource($stock),
             message: 'Stock entry created successfully.',
@@ -382,13 +421,13 @@ class StockController
         UpdateStockSettingsUseCase $useCase,
     ): JsonResponse {
         $stock = $useCase->execute($id, $request->validated());
- 
+
         return ApiResponse::success(
             data:    new StockResource($stock),
             message: 'Stock settings updated successfully.',
         );
     }
-    
+
     /**
      * @OA\Delete(
      *     path="/company/stock/{id}",
@@ -420,7 +459,7 @@ class StockController
         DeleteStockUseCase $useCase,
     ): JsonResponse {
         $useCase->execute($id);
- 
+
         return ApiResponse::success(message: 'Stock deleted successfully.');
     }
 
@@ -428,7 +467,7 @@ class StockController
      * @OA\Patch(
      *     path="/company/stock/{id}/adjust",
      *     summary="Ajustar estoque (contagem física)",
-     *     description="Ajusta a quantidade do estoque com base na contagem física. Cria registro de ajuste de inventário e transação de auditoria.",
+     *     description="Ajuste por contagem física; registra inventário e transação de auditoria.",
      *     tags={"Stocks"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -497,7 +536,10 @@ class StockController
      *             )
      *         )
      *     ),
-     *     @OA\Response(response=400, description="Erro de validação ou delta zero (quantidade física igual ao sistema)"),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Erro de validação ou delta zero (quantidade física igual ao sistema)"
+     *     ),
      *     @OA\Response(response=404, description="Stock not found"),
      *     @OA\Response(response=401, description="Unauthorized")
      * )
@@ -508,6 +550,7 @@ class StockController
         AdjustStockUseCase $useCase,
     ): JsonResponse {
         $result = $useCase->execute($id, $request->validated());
+
         return ApiResponse::success(data: new StockResource($result->stock));
     }
 }

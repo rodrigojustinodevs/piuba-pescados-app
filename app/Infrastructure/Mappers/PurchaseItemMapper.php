@@ -63,7 +63,7 @@ final class PurchaseItemMapper
     public function toDTOCollection(iterable $items): array
     {
         return array_map(
-            fn (PurchaseItem $item): PurchaseItemDTO => $this->toDTO($item),
+            $this->toDTO(...),
             is_array($items) ? $items : iterator_to_array($items),
         );
     }

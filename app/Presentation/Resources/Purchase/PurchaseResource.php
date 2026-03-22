@@ -24,6 +24,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class PurchaseResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function toArray(Request $request): array
     {
@@ -39,7 +42,7 @@ final class PurchaseResource extends JsonResource
             'createdAt'     => $this->created_at?->toDateTimeString(),
             'updatedAt'     => $this->updated_at?->toDateTimeString(),
 
-            'company'  => $this->whenLoaded('company', fn (): array => [
+            'company' => $this->whenLoaded('company', fn (): array => [
                 'id'   => $this->company->id,
                 'name' => $this->company->name,
             ]),
@@ -49,16 +52,21 @@ final class PurchaseResource extends JsonResource
                 'name' => $this->supplier->name,
             ]),
 
-            'items' => $this->whenLoaded('items', fn (): array =>
-                $this->items->map(static fn ($item): array => [
-                    'id'         => $item->id,
-                    'supplyId'   => $item->supply_id,
-                    'supplyName' => $item->relationLoaded('supply') ? $item->supply->name : null,
-                    'quantity'   => (float) $item->quantity,
-                    'unit'       => $item->unit,
-                    'unitPrice'  => (float) $item->unit_price,
-                    'totalPrice' => (float) $item->total_price,
-                ])->all()
+            'items' => $this->whenLoaded(
+                'items',
+                fn (): array => $this->items->map(static function (\App\Domain\Models\PurchaseItem $item): array {
+                    $supply = $item->relationLoaded('supply') ? $item->supply : null;
+
+                    return [
+                        'id'         => $item->id,
+                        'supplyId'   => $item->supply_id,
+                        'supplyName' => $supply instanceof \App\Domain\Models\Supply ? $supply->name : null,
+                        'quantity'   => (float) $item->quantity,
+                        'unit'       => $item->unit,
+                        'unitPrice'  => (float) $item->unit_price,
+                        'totalPrice' => (float) $item->total_price,
+                    ];
+                })->all()
             ),
         ];
     }

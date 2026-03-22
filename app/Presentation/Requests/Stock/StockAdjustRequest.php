@@ -13,6 +13,7 @@ final class StockAdjustRequest extends FormRequest
         return true;
     }
 
+    #[\Override]
     protected function prepareForValidation(): void
     {
         if ($this->has('physicalQuantity') && ! $this->has('new_physical_quantity')) {
@@ -20,6 +21,7 @@ final class StockAdjustRequest extends FormRequest
         }
     }
 
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
@@ -28,6 +30,7 @@ final class StockAdjustRequest extends FormRequest
         ];
     }
 
+    #[\Override]
     public function messages(): array
     {
         return [
@@ -37,6 +40,8 @@ final class StockAdjustRequest extends FormRequest
         ];
     }
 
+    /** @return array<string, mixed> */
+    #[\Override]
     public function validated($key = null, $default = null): array
     {
         return array_merge(parent::validated($key, $default), [

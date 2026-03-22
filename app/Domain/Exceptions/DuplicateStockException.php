@@ -17,4 +17,3 @@ final class DuplicateStockException extends RuntimeException
         );
     }
 }
-

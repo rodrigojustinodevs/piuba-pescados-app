@@ -20,8 +20,9 @@ use Illuminate\Support\Str;
  */
 class PurchaseItem extends BaseModel
 {
-    protected $keyType    = 'string';
-    public    $incrementing = false;
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
@@ -39,6 +40,7 @@ class PurchaseItem extends BaseModel
         'total_price' => 'decimal:2',
     ];
 
+    #[\Override]
     protected static function booted(): void
     {
         static::creating(static function (PurchaseItem $item): void {

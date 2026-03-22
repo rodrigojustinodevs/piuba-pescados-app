@@ -60,7 +60,7 @@ class CreateFeedingUseCase
             ));
 
             if (! empty($mappedData['stock_id'])) {
-                $this->stockRepository->decrementStock(
+                $this->stockRepository->decrementQuantity(
                     $mappedData['stock_id'],
                     (float) $mappedData['stock_reduction_quantity']
                 );

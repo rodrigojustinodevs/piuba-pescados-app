@@ -61,7 +61,7 @@ class FeedingService
         }
 
         if ($feeding->stock_id !== null) {
-            $this->stockRepository->decrementStock($feeding->stock_id, (float) $feeding->stock_reduction_quantity);
+            $this->stockRepository->decrementQuantity($feeding->stock_id, (float) $feeding->stock_reduction_quantity);
         }
     }
 
@@ -83,7 +83,10 @@ class FeedingService
             $stock = $this->stockRepository->showStock('id', $feeding->stock_id);
 
             if ($stock instanceof \App\Domain\Models\Stock) {
-                $this->stockRepository->incrementStock($feeding->stock_id, (float) $feeding->stock_reduction_quantity);
+                $this->stockRepository->incrementQuantity(
+                    $feeding->stock_id,
+                    (float) $feeding->stock_reduction_quantity,
+                );
             }
         }
     }

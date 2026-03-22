@@ -27,8 +27,9 @@ use Illuminate\Support\Str;
  */
 class StockTransaction extends BaseModel
 {
-    protected $keyType    = 'string';
-    public    $incrementing = false;
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     // Transações são imutáveis — sem SoftDeletes, sem update
     public $timestamps = true;
@@ -53,6 +54,7 @@ class StockTransaction extends BaseModel
         'total_cost' => 'decimal:2',
     ];
 
+    #[\Override]
     protected static function booted(): void
     {
         static::creating(static function (StockTransaction $t): void {

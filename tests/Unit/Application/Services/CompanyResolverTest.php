@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 final class CompanyResolverTest extends TestCase
 {
     private Guard $guard;
+
     private CompanyResolver $resolver;
 
     protected function setUp(): void
@@ -40,7 +41,7 @@ final class CompanyResolverTest extends TestCase
         $hint = 'company-uuid-123';
 
         // Guard nunca deve ser chamado quando hint é informado
-        $this->guardMock()->shouldNotReceive('user');
+        $this->guard->shouldNotReceive('user');
 
         $result = $this->resolver->resolve($hint);
 
@@ -51,7 +52,7 @@ final class CompanyResolverTest extends TestCase
     {
         $user = $this->makeUser(companyId: 'company-from-user');
 
-        $this->guardMock()->shouldReceive('user')->once()->andReturn($user);
+        $this->guard->shouldReceive('user')->once()->andReturn($user);
 
         $result = $this->resolver->resolve();
 
@@ -62,7 +63,7 @@ final class CompanyResolverTest extends TestCase
     {
         $user = $this->makeUserWithRelation(firstCompanyId: 'company-from-relation');
 
-        $this->guardMock()->shouldReceive('user')->once()->andReturn($user);
+        $this->guard->shouldReceive('user')->once()->andReturn($user);
 
         $result = $this->resolver->resolve();
 
@@ -75,7 +76,7 @@ final class CompanyResolverTest extends TestCase
 
     public function test_resolve_throws_when_no_user_authenticated(): void
     {
-        $this->guardMock()->shouldReceive('user')->once()->andReturn(null);
+        $this->guard->shouldReceive('user')->once()->andReturn(null);
 
         $this->expectException(CompanyNotFoundException::class);
 
@@ -86,7 +87,7 @@ final class CompanyResolverTest extends TestCase
     {
         $user = $this->makeUser(companyId: null);
 
-        $this->guardMock()->shouldReceive('user')->once()->andReturn($user);
+        $this->guard->shouldReceive('user')->once()->andReturn($user);
 
         $this->expectException(CompanyNotFoundException::class);
 
@@ -98,7 +99,7 @@ final class CompanyResolverTest extends TestCase
         // Hint vazio — deve tratar como ausente e tentar fallback
         $user = $this->makeUser(companyId: null);
 
-        $this->guardMock()->shouldReceive('user')->once()->andReturn($user);
+        $this->guard->shouldReceive('user')->once()->andReturn($user);
 
         $this->expectException(CompanyNotFoundException::class);
 
@@ -111,7 +112,7 @@ final class CompanyResolverTest extends TestCase
 
     public function test_try_resolve_returns_null_when_no_company_found(): void
     {
-        $this->guardMock()->shouldReceive('user')->once()->andReturn(null);
+        $this->guard->shouldReceive('user')->once()->andReturn(null);
 
         $result = $this->resolver->tryResolve();
 
@@ -153,13 +154,5 @@ final class CompanyResolverTest extends TestCase
         $user->shouldReceive('companies')->andReturn($query);
 
         return $user;
-    }
-
-    /**
-     * @return Guard&MockInterface
-     */
-    private function guardMock(): Guard
-    {
-        return $this->guard;
     }
 }

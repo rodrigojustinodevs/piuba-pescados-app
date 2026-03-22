@@ -16,13 +16,14 @@ use App\Domain\Repositories\InventoryAdjustmentRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Repositories\StockTransactionRepositoryInterface;
 
-final class InventoryAdjustmentService
+final readonly class InventoryAdjustmentService
 {
     public function __construct(
-        private readonly StockRepositoryInterface               $stockRepository,
-        private readonly InventoryAdjustmentRepositoryInterface $adjustmentRepository,
-        private readonly StockTransactionRepositoryInterface    $transactionRepository,
-    ) {}
+        private StockRepositoryInterface $stockRepository,
+        private InventoryAdjustmentRepositoryInterface $adjustmentRepository,
+        private StockTransactionRepositoryInterface $transactionRepository,
+    ) {
+    }
 
     /**
      * @throws ZeroDeltaException
@@ -35,7 +36,7 @@ final class InventoryAdjustmentService
     }
 
     public function apply(
-        Stock              $stock,
+        Stock $stock,
         AdjustInventoryDTO $dto,
     ): InventoryAdjustmentResultDTO {
         $previousQuantity = (float) $stock->current_quantity;
@@ -61,8 +62,8 @@ final class InventoryAdjustmentService
         ]);
 
         $transaction = $this->transactionRepository->create(new StockTransactionDTO(
-            supplyId:      $stock->supply_id,
             companyId:     $stock->company_id,
+            supplyId:      $stock->supply_id,
             quantity:      $absoluteDelta,
             unitPrice:     $unitPrice,
             totalCost:     round($absoluteDelta * $unitPrice, 2),

@@ -9,11 +9,12 @@ use App\Domain\Exceptions\UnauthorizedException;
 use App\Domain\Models\User;
 use Illuminate\Contracts\Auth\Guard;
 
-final class MeUseCase
+final readonly class MeUseCase
 {
     public function __construct(
-        private readonly Guard $auth,
-    ) {}
+        private Guard $auth,
+    ) {
+    }
 
     public function execute(): UserContextDTO
     {

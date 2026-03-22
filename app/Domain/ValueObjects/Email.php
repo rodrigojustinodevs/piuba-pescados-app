@@ -6,9 +6,9 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final class Email
+final readonly class Email implements \Stringable
 {
-    private readonly string $value;
+    private string $value;
 
     public function __construct(string $value)
     {

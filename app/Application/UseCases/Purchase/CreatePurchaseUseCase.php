@@ -11,13 +11,14 @@ use App\Domain\Models\Purchase;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class CreatePurchaseUseCase
+final readonly class CreatePurchaseUseCase
 {
     public function __construct(
-        private readonly PurchaseRepositoryInterface $repository,
-        private readonly ApplyPurchaseToStockAction  $applyToStock,
-        private readonly CompanyResolverInterface    $companyResolver,
-    ) {}
+        private PurchaseRepositoryInterface $repository,
+        private ApplyPurchaseToStockAction $applyToStock,
+        private CompanyResolverInterface $companyResolver,
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data Dados já validados pelo FormRequest

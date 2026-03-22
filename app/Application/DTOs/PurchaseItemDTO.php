@@ -4,20 +4,24 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-final class PurchaseItemDTO
+final readonly class PurchaseItemDTO
 {
     public function __construct(
-        public readonly string  $supplyId,
-        public readonly float   $quantity,
-        public readonly string  $unit,
-        public readonly float   $unitPrice,
-        public readonly ?string $id         = null,
-        public readonly ?float  $totalPrice = null,
-    ) {}
+        public string $supplyId,
+        public float $quantity,
+        public string $unit,
+        public float $unitPrice,
+        public ?string $id = null,
+        public ?float $totalPrice = null,
+    ) {
+    }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
-        $quantity  = (float) ($data['quantity']  ?? 0);
+        $quantity  = (float) ($data['quantity'] ?? 0);
         $unitPrice = (float) ($data['unitPrice'] ?? $data['unit_price'] ?? 0);
 
         return new self(

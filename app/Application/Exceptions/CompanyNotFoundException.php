@@ -18,7 +18,7 @@ final class CompanyNotFoundException extends RuntimeException
 
     public static function forHint(string $hint): self
     {
-        $instance = new self();
+        $instance          = new self();
         $instance->message = "Company [{$hint}] not found or not accessible by the current user.";
 
         return $instance;

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
-use App\Domain\Models\Purchase;
-use App\Domain\Repositories\PaginationInterface;
-use App\Domain\Repositories\PurchaseRepositoryInterface;
 use App\Application\DTOs\PurchaseDTO;
 use App\Application\DTOs\PurchaseItemDTO;
 use App\Domain\Enums\PurchaseStatus;
+use App\Domain\Models\Purchase;
+use App\Domain\Repositories\PaginationInterface;
+use App\Domain\Repositories\PurchaseRepositoryInterface;
 
 final class PurchaseRepository implements PurchaseRepositoryInterface
 {
@@ -25,21 +25,23 @@ final class PurchaseRepository implements PurchaseRepositoryInterface
             'total_price'    => $dto->totalPrice(),
             'received_at'    => $dto->receivedAt,
         ]);
- 
+
         foreach ($dto->items as $item) {
             $purchase->items()->create($item->toPersistence());
         }
- 
+
         return $purchase->load('items');
     }
 
-    
+    /**
+     * @param array<string, mixed> $attributes
+     */
     public function update(string $id, array $attributes): Purchase
     {
         $purchase = $this->findOrFail($id);
- 
+
         $purchase->update($attributes);
- 
+
         return $purchase->refresh();
     }
 
@@ -58,6 +60,7 @@ final class PurchaseRepository implements PurchaseRepositoryInterface
         foreach ($itemDTOs as $dto) {
             if ($dto->id !== null && $existing->has($dto->id)) {
                 $existing->get($dto->id)->update($dto->toPersistence());
+
                 continue;
             }
 
@@ -78,10 +81,10 @@ final class PurchaseRepository implements PurchaseRepositoryInterface
     public function paginate(array $filters): PaginationInterface
     {
         $paginator = Purchase::with([
-                'supplier:id,name',
-                'company:id,name',
-                'items.supply:id,name,default_unit',
-            ])
+            'supplier:id,name',
+            'company:id,name',
+            'items.supply:id,name,default_unit',
+        ])
             ->where('company_id', $filters['company_id'])
             ->when(
                 ! empty($filters['status']),
@@ -104,19 +107,19 @@ final class PurchaseRepository implements PurchaseRepositoryInterface
             )
             ->latest('purchase_date')
             ->paginate((int) ($filters['per_page'] ?? 25));
- 
+
         return new PaginationPresentr($paginator);
     }
 
-    public function showPurchase(string $field, string|int $value): ?Purchase
+    public function showPurchase(string $field, string | int $value): ?Purchase
     {
         return Purchase::with([
             'supplier:id,name',
             'company:id,name',
-            'items.supply:id,name,default_unit'
+            'items.supply:id,name,default_unit',
         ])
-        ->where($field, $value)
-        ->first();
+            ->where($field, $value)
+            ->first();
     }
 
     public function findOrFail(string $id): Purchase
@@ -124,7 +127,7 @@ final class PurchaseRepository implements PurchaseRepositoryInterface
         return Purchase::with([
             'supplier:id,name',
             'company:id,name',
-            'items.supply:id,name,default_unit'
+            'items.supply:id,name,default_unit',
         ])->findOrFail($id);
     }
 

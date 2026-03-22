@@ -9,11 +9,12 @@ use App\Application\DTOs\PurchaseItemDTO;
 use App\Domain\Models\Purchase;
 use DateTimeInterface;
 
-final class PurchaseMapper
+final readonly class PurchaseMapper
 {
     public function __construct(
-        private readonly PurchaseItemMapper $itemMapper,
-    ) {}
+        private PurchaseItemMapper $itemMapper,
+    ) {
+    }
 
     /**
      * Converte um Eloquent Model para DTO de resposta (saída da API).
@@ -21,7 +22,7 @@ final class PurchaseMapper
      */
     public function toResponseDTO(Purchase $purchase): PurchaseDTO
     {
-        $items = $purchase->items
+        $purchase->items
             ->map(static fn ($item): PurchaseItemDTO => new PurchaseItemDTO(
                 supplyId:   (string) $item->supply_id,
                 quantity:   (float)  $item->quantity,
@@ -44,13 +45,13 @@ final class PurchaseMapper
     }
 
     private function formatDate(
-        null|string|DateTimeInterface $date,
+        null | string | DateTimeInterface $date,
         string $format = 'Y-m-d H:i:s',
     ): ?string {
         if ($date instanceof DateTimeInterface) {
             return $date->format($format);
         }
 
-        return $date !== null && $date !== '' ? (string) $date : null;
+        return $date !== null && $date !== '' ? $date : null;
     }
 }

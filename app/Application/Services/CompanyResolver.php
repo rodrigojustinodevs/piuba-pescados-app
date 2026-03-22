@@ -9,11 +9,12 @@ use App\Application\Exceptions\CompanyNotFoundException;
 use App\Domain\Models\User;
 use Illuminate\Contracts\Auth\Guard;
 
-final class CompanyResolver implements CompanyResolverInterface
+final readonly class CompanyResolver implements CompanyResolverInterface
 {
     public function __construct(
-        private readonly Guard $auth,
-    ) {}
+        private Guard $auth,
+    ) {
+    }
 
     public function resolve(?string $hint = null): string
     {
@@ -37,12 +38,13 @@ final class CompanyResolver implements CompanyResolverInterface
 
         $user = $this->authenticatedUser();
 
-        if ($user === null) {
+        if (!$user instanceof \App\Domain\Models\User) {
             return null;
         }
 
         // 2. company_id diretamente no usuário (relação simples 1:N)
         $directId = $this->resolveDirectCompanyId($user);
+
         if ($this->isValidId($directId)) {
             return $directId;
         }
@@ -65,16 +67,14 @@ final class CompanyResolver implements CompanyResolverInterface
     private function resolveDirectCompanyId(User $user): ?string
     {
         $attributes = $user->getAttributes();
-        $id = $attributes['company_id'] ?? null;
+        $id         = $attributes['company_id'] ?? null;
 
         return is_string($id) && $id !== '' ? $id : null;
     }
 
     private function resolveFromRelation(User $user): ?string
     {
-        if (! method_exists($user, 'companies')) {
-            return null;
-        }
+        // User has companies() relation - always present
 
         $id = $user->companies()->value('companies.id');
 

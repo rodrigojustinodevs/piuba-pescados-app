@@ -8,20 +8,21 @@ use App\Application\Actions\Stock\RegisterStockTransactionAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\StockInputDTO;
 use App\Application\DTOs\StockTransactionDTO;
-use App\Domain\Exceptions\DuplicateStockException;
 use App\Domain\Enums\StockTransactionDirection;
 use App\Domain\Enums\StockTransactionReferenceType;
+use App\Domain\Exceptions\DuplicateStockException;
 use App\Domain\Models\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class CreateStockUseCase
+final readonly class CreateStockUseCase
 {
     public function __construct(
-        private readonly StockRepositoryInterface      $repository,
-        private readonly RegisterStockTransactionAction $registerTransaction,
-        private readonly CompanyResolverInterface       $companyResolver,
-    ) {}
+        private StockRepositoryInterface $repository,
+        private RegisterStockTransactionAction $registerTransaction,
+        private CompanyResolverInterface $companyResolver,
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data Dados validados pelo FormRequest
@@ -40,7 +41,7 @@ final class CreateStockUseCase
                 supplyId: $dto->supplyId
             );
 
-            if ($existing !== null) {
+            if ($existing instanceof \App\Domain\Models\Stock) {
                 throw new DuplicateStockException($dto->companyId, $dto->supplyId);
             }
 

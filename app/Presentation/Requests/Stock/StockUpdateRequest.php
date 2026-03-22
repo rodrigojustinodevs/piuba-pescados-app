@@ -13,6 +13,7 @@ final class StockUpdateRequest extends FormRequest
         return true;
     }
 
+    #[\Override]
     protected function prepareForValidation(): void
     {
         $map = [
@@ -23,17 +24,19 @@ final class StockUpdateRequest extends FormRequest
         ];
 
         $normalized = [];
+
         foreach ($map as $camel => $snake) {
             if ($this->has($camel) && ! $this->has($snake)) {
                 $normalized[$snake] = $this->input($camel);
             }
         }
 
-        if ($normalized) {
+        if ($normalized !== []) {
             $this->merge($normalized);
         }
     }
 
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
@@ -45,11 +48,12 @@ final class StockUpdateRequest extends FormRequest
         ];
     }
 
+    #[\Override]
     public function messages(): array
     {
         return [
-            'unit_price.min'      => 'The unit price cannot be negative.',
-            'minimum_stock.min'   => 'The minimum stock cannot be negative.',
+            'unit_price.min'          => 'The unit price cannot be negative.',
+            'minimum_stock.min'       => 'The minimum stock cannot be negative.',
             'withdrawal_quantity.min' => 'The withdrawal quantity cannot be negative.',
         ];
     }

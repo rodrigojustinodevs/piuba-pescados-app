@@ -12,12 +12,13 @@ use App\Domain\Models\User;
 use Illuminate\Contracts\Auth\Guard;
 use Throwable;
 
-final class RefreshTokenUseCase
+final readonly class RefreshTokenUseCase
 {
     public function __construct(
-        private readonly TokenServiceInterface $tokenService,
-        private readonly Guard                 $auth,
-    ) {}
+        private TokenServiceInterface $tokenService,
+        private Guard $auth,
+    ) {
+    }
 
     public function execute(): LoginOutputDTO
     {

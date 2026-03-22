@@ -14,13 +14,14 @@ use Illuminate\Support\Facades\DB;
 /**
  * Adjusts the stock quantity for a given stock ID.
  */
-final class AdjustStockUseCase
+final readonly class AdjustStockUseCase
 {
     public function __construct(
-        private readonly StockRepositoryInterface   $repository,
-        private readonly InventoryAdjustmentService $adjustmentService,
-        private readonly UserResolverInterface       $userResolver,
-    ) {}
+        private StockRepositoryInterface $repository,
+        private InventoryAdjustmentService $adjustmentService,
+        private UserResolverInterface $userResolver,
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data Dados validados pelo StockAdjustRequest
@@ -31,9 +32,12 @@ final class AdjustStockUseCase
         $userId = $this->userResolver->resolve(
             hint: $data['user_id'] ?? $data['userId'] ?? null,
         );
+        $newQty = $data['new_physical_quantity']
+            ?? $data['physicalQuantity']
+            ?? $data['physical_quantity'];
         $dto = new AdjustInventoryDTO(
             stockId:             $id,
-            newPhysicalQuantity: (float)  ($data['new_physical_quantity'] ?? $data['physicalQuantity'] ?? $data['physical_quantity']),
+            newPhysicalQuantity: (float) $newQty,
             userId:              $userId,
             reason:              $data['reason'] ?? null,
         );

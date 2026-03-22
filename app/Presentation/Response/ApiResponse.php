@@ -17,7 +17,7 @@ final class ApiResponse
      * @param JsonResource|ResourceCollection|array<string, mixed>|null $data
      */
     public static function created(
-        JsonResource|ResourceCollection|array|null $data = null,
+        JsonResource | ResourceCollection | array | null $data = null,
         string $message = 'Successfully created',
     ): JsonResponse {
         return response()->json([
@@ -34,10 +34,10 @@ final class ApiResponse
      * @param array<string, mixed>|null                                  $pagination
      */
     public static function success(
-        JsonResource|ResourceCollection|array|null $data = null,
+        JsonResource | ResourceCollection | array | null $data = null,
+        int $status = JsonResponse::HTTP_OK,
         string $message = 'Success',
         ?array $pagination = null,
-        int $status = JsonResponse::HTTP_OK,
     ): JsonResponse {
         $body = [
             'status'   => true,
@@ -87,7 +87,7 @@ final class ApiResponse
         // ✅ file e line nunca chegam ao cliente em produção
         $exceptionData = ($exception instanceof Throwable && config('app.debug'))
             ? [
-                'exception' => get_class($exception),
+                'exception' => $exception::class,
                 'message'   => $exception->getMessage(),
                 'file'      => $exception->getFile(),
                 'line'      => $exception->getLine(),
@@ -108,11 +108,19 @@ final class ApiResponse
     // Internals
     // -------------------------------------------------------------------------
 
+    /**
+     * @param JsonResource|ResourceCollection|array<string, mixed>|null $data
+     * @return array<string, mixed>|null
+     */
     private static function resolveData(
-        JsonResource|ResourceCollection|array|null $data,
-    ): mixed {
-        if ($data instanceof JsonResource || $data instanceof ResourceCollection) {
-            return $data->resolve();
+        JsonResource | ResourceCollection | array | null $data,
+    ): array | null {
+        // ResourceCollection extends JsonResource, so one check covers both
+        if ($data instanceof JsonResource) {
+            /** @var array<string, mixed> $resolved */
+            $resolved = $data->resolve();
+
+            return $resolved;
         }
 
         return $data;

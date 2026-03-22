@@ -15,7 +15,7 @@ final class JwtTokenService implements TokenServiceInterface
     {
         $token = JWTAuth::fromUser($user);
 
-        if (! is_string($token) || $token === '') {
+        if ($token === '') {
             throw new RuntimeException('Unable to issue token.');
         }
 
@@ -31,7 +31,7 @@ final class JwtTokenService implements TokenServiceInterface
     {
         $token = JWTAuth::parseToken()->refresh();
 
-        if (! is_string($token) || $token === '') {
+        if ($token === '') {
             throw new RuntimeException('Unable to refresh token.');
         }
 

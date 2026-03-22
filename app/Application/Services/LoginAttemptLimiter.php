@@ -8,14 +8,15 @@ use App\Domain\Exceptions\UnauthorizedException;
 use App\Domain\ValueObjects\Email;
 use Illuminate\Cache\RateLimiter;
 
-final class LoginAttemptLimiter
+final readonly class LoginAttemptLimiter
 {
-    private const MAX_ATTEMPTS  = 5;
-    private const DECAY_SECONDS = 60;
+    private const int MAX_ATTEMPTS  = 5;
+    private const int DECAY_SECONDS = 60;
 
     public function __construct(
-        private readonly RateLimiter $limiter,
-    ) {}
+        private RateLimiter $limiter,
+    ) {
+    }
 
     public function tooManyAttempts(Email $email): bool
     {

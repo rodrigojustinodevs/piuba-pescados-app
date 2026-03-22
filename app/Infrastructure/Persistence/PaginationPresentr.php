@@ -10,12 +10,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
 /**
  * @template T of \Illuminate\Database\Eloquent\Model
  */
-final class PaginationPresentr implements PaginationInterface
+final readonly class PaginationPresentr implements PaginationInterface
 {
     /** @param LengthAwarePaginator<int, T> $paginator */
     public function __construct(
-        private readonly LengthAwarePaginator $paginator,
-    ) {}
+        private LengthAwarePaginator $paginator,
+    ) {
+    }
 
     public function total(): int
     {

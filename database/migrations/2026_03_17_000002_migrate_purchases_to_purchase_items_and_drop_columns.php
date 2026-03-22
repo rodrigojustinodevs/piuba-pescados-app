@@ -16,51 +16,54 @@ return new class () extends Migration
      */
     public function up(): void
     {
-
         $distinctItems = DB::table('purchases')
             ->select('company_id', 'item_name')
             ->distinct()
             ->get();
 
         $supplyByKey = [];
+
         foreach ($distinctItems as $row) {
             $key = $row->company_id . '|' . $row->item_name;
+
             if (isset($supplyByKey[$key])) {
                 continue;
             }
             $id = (string) Str::uuid();
             DB::table('supplies')->insert([
-                'id' => $id,
-                'company_id' => $row->company_id,
-                'name' => $row->item_name,
-                'category' => null,
+                'id'           => $id,
+                'company_id'   => $row->company_id,
+                'name'         => $row->item_name,
+                'category'     => null,
                 'default_unit' => 'kg',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at'   => now(),
+                'updated_at'   => now(),
             ]);
             $supplyByKey[$key] = $id;
         }
 
         $purchases = DB::table('purchases')->get();
+
         foreach ($purchases as $purchase) {
-            $key = $purchase->company_id . '|' . $purchase->item_name;
+            $key      = $purchase->company_id . '|' . $purchase->item_name;
             $supplyId = $supplyByKey[$key] ?? null;
-            if (!$supplyId) {
+
+            if (! $supplyId) {
                 continue;
             }
-            $quantity = (float) $purchase->quantity;
+            $quantity   = (float) $purchase->quantity;
             $totalPrice = (float) $purchase->total_price;
-            $unitPrice = $quantity > 0 ? $totalPrice / $quantity : 0;
+            $unitPrice  = $quantity > 0 ? $totalPrice / $quantity : 0;
             DB::table('purchase_items')->insert([
-                'id' => (string) Str::uuid(),
+                'id'          => (string) Str::uuid(),
                 'purchase_id' => $purchase->id,
-                'supply_id' => $supplyId,
-                'quantity' => $quantity,
-                'unit' => $purchase->unit ?? 'kg',
-                'unit_price' => round($unitPrice, 4),
+                'supply_id'   => $supplyId,
+                'quantity'    => $quantity,
+                'unit'        => $purchase->unit ?? 'kg',
+                'unit_price'  => round($unitPrice, 4),
                 'total_price' => round($totalPrice, 2),
-                'created_at' => $purchase->created_at ?? now(),
-                'updated_at' => $purchase->updated_at ?? now(),
+                'created_at'  => $purchase->created_at ?? now(),
+                'updated_at'  => $purchase->updated_at ?? now(),
             ]);
         }
 
@@ -77,7 +80,7 @@ return new class () extends Migration
      */
     public function down(): void
     {
-        if (!Schema::hasColumn('purchases', 'item_name')) {
+        if (! Schema::hasColumn('purchases', 'item_name')) {
             Schema::table('purchases', function (Blueprint $table): void {
                 $table->string('item_name')->nullable()->after('stocking_id');
                 $table->foreign('stocking_id')->references('id')->on('stockings');
@@ -95,9 +98,9 @@ return new class () extends Migration
 
         foreach ($items as $item) {
             DB::table('purchases')->where('id', $item->purchase_id)->update([
-                'item_name' => $item->item_name,
-                'quantity' => $item->quantity,
-                'unit' => $item->unit,
+                'item_name'   => $item->item_name,
+                'quantity'    => $item->quantity,
+                'unit'        => $item->unit,
                 'total_price' => $item->total_price,
             ]);
         }

@@ -8,12 +8,13 @@ use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 
-final class ListPurchasesUseCase
+final readonly class ListPurchasesUseCase
 {
     public function __construct(
-        private readonly PurchaseRepositoryInterface $purchaseRepository,
-        private readonly CompanyResolverInterface    $companyResolver,
-    ) {}
+        private PurchaseRepositoryInterface $purchaseRepository,
+        private CompanyResolverInterface $companyResolver,
+    ) {
+    }
 
     /**
      * @param array{

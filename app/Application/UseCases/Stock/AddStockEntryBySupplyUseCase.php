@@ -13,12 +13,13 @@ use App\Domain\Models\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class AddStockEntryBySupplyUseCase
+final readonly class AddStockEntryBySupplyUseCase
 {
     public function __construct(
-        private readonly StockRepositoryInterface       $repository,
-        private readonly RegisterStockTransactionAction $registerTransaction,
-    ) {}
+        private StockRepositoryInterface $repository,
+        private RegisterStockTransactionAction $registerTransaction,
+    ) {
+    }
 
     /**
      * Add entry to the stock of a specific supply.
@@ -30,7 +31,7 @@ final class AddStockEntryBySupplyUseCase
         return DB::transaction(function () use ($dto): Stock {
             $stock = $this->repository->findBySupply($dto->companyId, $dto->supplyId);
 
-            if ($stock === null) {
+            if (!$stock instanceof \App\Domain\Models\Stock) {
                 $stock = $this->repository->create($dto);
             } else {
                 $stock = $this->repository->incrementQuantity($stock->id, $dto->quantity);

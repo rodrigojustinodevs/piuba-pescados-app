@@ -7,13 +7,17 @@ namespace App\Application\DTOs;
 use App\Domain\ValueObjects\Email;
 use App\Domain\ValueObjects\PlainPassword;
 
-final class LoginInputDTO
+final readonly class LoginInputDTO
 {
     public function __construct(
-        public readonly Email         $email,
-        public readonly PlainPassword $password,
-    ) {}
+        public Email $email,
+        public PlainPassword $password,
+    ) {
+    }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         return new self(

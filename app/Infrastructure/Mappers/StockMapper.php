@@ -27,12 +27,12 @@ final class StockMapper
         );
     }
 
-    private function formatDate(null|string|DateTimeInterface $date): ?string
+    private function formatDate(null | string | DateTimeInterface $date): ?string
     {
         if ($date instanceof DateTimeInterface) {
             return $date->format('Y-m-d H:i:s');
         }
 
-        return $date !== null && $date !== '' ? (string) $date : null;
+        return $date !== null && $date !== '' ? $date : null;
     }
 }

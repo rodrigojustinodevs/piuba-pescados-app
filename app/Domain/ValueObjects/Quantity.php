@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final class Quantity
+final readonly class Quantity
 {
     private float $value;
 

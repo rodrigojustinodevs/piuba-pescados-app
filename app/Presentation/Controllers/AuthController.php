@@ -9,19 +9,20 @@ use App\Application\UseCases\Auth\LoginUseCase;
 use App\Application\UseCases\Auth\LogoutUseCase;
 use App\Application\UseCases\Auth\MeUseCase;
 use App\Application\UseCases\Auth\RefreshTokenUseCase;
-use App\Infrastructure\Mappers\AuthMapper;
 use App\Domain\Exceptions\InvalidCredentialsException;
+use App\Infrastructure\Mappers\AuthMapper;
 use App\Presentation\Requests\Auth\LoginRequest;
 use App\Presentation\Requests\Auth\RefreshTokenRequest;
 use App\Presentation\Resources\Auth\AuthResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
-final class AuthController
+final readonly class AuthController
 {
     public function __construct(
-        private readonly AuthMapper $mapper,
-    ) {}
+        private AuthMapper $mapper,
+    ) {
+    }
 
     /**
      * POST /auth/login
@@ -46,6 +47,7 @@ final class AuthController
         } catch (InvalidCredentialsException $e) {
             // Increment the counter only on invalid credentials
             $limiter->increment($dto->email);
+
             throw $e;
         }
 
@@ -53,7 +55,7 @@ final class AuthController
         $limiter->clear($dto->email);
 
         return ApiResponse::success(
-            data:    (new AuthResource($result))->toArray($request),
+            data:    (new AuthResource($result))->toArray(),
             message: 'Login successful.',
         );
     }
@@ -87,7 +89,7 @@ final class AuthController
         $result = $useCase->execute();
 
         return ApiResponse::success(
-            data:    (new AuthResource($result))->toArray($request),
+            data:    (new AuthResource($result))->toArray(),
             message: 'Token refreshed successfully.',
         );
     }

@@ -59,17 +59,11 @@ class Supply extends BaseModel
         return $relation;
     }
 
-    /**
-     * @phpstan-return HasMany<Stock, static>
-     */
     public function stocks(): HasMany
     {
         return $this->hasMany(Stock::class, 'supply_id');
     }
 
-    /**
-     * @phpstan-return HasMany<PurchaseItem, static>
-     */
     public function purchaseItems(): HasMany
     {
         return $this->hasMany(PurchaseItem::class, 'supply_id');

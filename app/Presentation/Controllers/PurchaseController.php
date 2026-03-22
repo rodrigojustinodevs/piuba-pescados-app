@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\PurchaseDTO;
 use App\Application\UseCases\Purchase\CreatePurchaseUseCase;
 use App\Application\UseCases\Purchase\DeletePurchaseUseCase;
 use App\Application\UseCases\Purchase\ListPurchasesUseCase;
@@ -18,7 +17,6 @@ use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Throwable;
 
 /**
  * @OA\Schema(
@@ -157,7 +155,6 @@ class PurchaseController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-
     public function index(
         Request $request,
         ListPurchasesUseCase $useCase,
@@ -167,7 +164,7 @@ class PurchaseController
                 'status', 'supplier_id', 'date_from', 'date_to', 'per_page', 'page',
             ]),
         );
- 
+
         return ApiResponse::success(
             data:       PurchaseResource::collection($paginator->items()),
             pagination: [
@@ -214,7 +211,7 @@ class PurchaseController
         ShowPurchaseUseCase $useCase,
     ): JsonResponse {
         $purchase = $useCase->execute($id);
- 
+
         return ApiResponse::success(
             data: new PurchaseResource($purchase->loadMissing(['supplier', 'items'])),
         );
@@ -317,7 +314,7 @@ class PurchaseController
         CreatePurchaseUseCase $useCase,
     ): JsonResponse {
         $purchase = $useCase->execute($request->validated());
- 
+
         return ApiResponse::created(
             data:    new PurchaseResource($purchase->load(['supplier', 'items'])),
             message: 'Purchase created successfully.',
@@ -398,7 +395,7 @@ class PurchaseController
         UpdatePurchaseUseCase $useCase,
     ): JsonResponse {
         $purchase = $useCase->execute($id, $request->validated());
- 
+
         return ApiResponse::success(
             data:    new PurchaseResource($purchase->load(['supplier', 'items'])),
             message: 'Purchase updated successfully.',
@@ -440,7 +437,7 @@ class PurchaseController
         ReceivePurchaseUseCase $useCase,
     ): JsonResponse {
         $purchase = $useCase->execute($id);
- 
+
         return ApiResponse::success(
             data:    new PurchaseResource($purchase->load(['supplier', 'items'])),
             message: 'Purchase received successfully.',
@@ -478,7 +475,7 @@ class PurchaseController
         DeletePurchaseUseCase $useCase,
     ): JsonResponse {
         $useCase->execute($id);
- 
+
         return ApiResponse::success(message: 'Purchase deleted successfully.');
     }
 }

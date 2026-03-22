@@ -6,7 +6,7 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final class Money
+final readonly class Money
 {
     private int $amount;
 

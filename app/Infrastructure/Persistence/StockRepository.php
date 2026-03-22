@@ -6,25 +6,34 @@ namespace App\Infrastructure\Persistence;
 
 use App\Application\DTOs\StockInputDTO;
 use App\Domain\Models\Stock;
+use App\Domain\Models\Supply;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use RuntimeException;
 
 class StockRepository implements StockRepositoryInterface
 {
     /**
      * Create a new stock.
-     *
-     * @param StockInputDTO $dto
-     * @return Stock
      */
     public function create(StockInputDTO $dto): Stock
     {
+        $supplyId = $dto->supplyId;
+
+        if ($supplyId === null || $supplyId === '') {
+            $supply = Supply::create([
+                'company_id'   => $dto->companyId,
+                'name'         => 'Estoque legado ' . substr((string) \Illuminate\Support\Str::uuid(), 0, 8),
+                'default_unit' => $dto->unit,
+            ]);
+            $supplyId = $supply->id;
+        }
+
         /** @var Stock */
         return Stock::create([
             'company_id'          => $dto->companyId,
-            'supply_id'           => $dto->supplyId,
+            'supply_id'           => $supplyId,
             'supplier_id'         => $dto->supplierId,
             'current_quantity'    => $dto->quantity,
             'unit'                => $dto->unit,
@@ -41,9 +50,9 @@ class StockRepository implements StockRepositoryInterface
     public function update(string $id, array $attributes): Stock
     {
         $stock = $this->findOrFail($id);
- 
-        $stock->update(array_filter($attributes, static fn ($v) => $v !== null));
- 
+
+        $stock->update(array_filter($attributes, static fn ($v): bool => $v !== null));
+
         return $stock->refresh();
     }
 
@@ -64,7 +73,7 @@ class StockRepository implements StockRepositoryInterface
             )
             ->latest()
             ->paginate((int) ($filters['per_page'] ?? 25));
- 
+
         return new PaginationPresentr($paginator);
     }
 
@@ -119,18 +128,18 @@ class StockRepository implements StockRepositoryInterface
     public function incrementQuantity(string $id, float $quantity): Stock
     {
         $stock = $this->findOrFail($id);
- 
+
         $stock->increment('current_quantity', $quantity);
- 
+
         return $stock->refresh();
     }
- 
+
     public function decrementQuantity(string $id, float $quantity): Stock
     {
         $stock = $this->findOrFail($id);
- 
+
         $stock->decrement('current_quantity', $quantity);
- 
+
         return $stock->refresh();
     }
 
@@ -139,10 +148,15 @@ class StockRepository implements StockRepositoryInterface
         return (bool) $this->findOrFail($id)->delete();
     }
 
+    /**
+     * @return Collection<int, Stock>
+     */
     public function findBySupplier(string $supplierId): Collection
     {
-        return Stock::with(['company:id,name', 'supplier:id,name'])
+        $items = Stock::with(['company:id,name', 'supplier:id,name'])
             ->where('supplier_id', $supplierId)
             ->get();
+
+        return new Collection($items->all());
     }
 }

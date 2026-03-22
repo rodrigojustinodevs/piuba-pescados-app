@@ -7,15 +7,17 @@ namespace App\Domain\ValueObjects;
 use App\Domain\Enums\Unit as UnitEnum;
 use InvalidArgumentException;
 
-final class Unit
+final readonly class Unit
 {
     private function __construct(
-        private readonly UnitEnum $value
-    ) {}
+        private UnitEnum $value
+    ) {
+    }
 
     public static function from(string $value): self
     {
         $enum = UnitEnum::tryFrom($value);
+
         if ($enum === null) {
             throw new InvalidArgumentException("Invalid unit: {$value}");
         }

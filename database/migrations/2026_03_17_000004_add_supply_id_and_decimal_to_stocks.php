@@ -18,26 +18,28 @@ return new class () extends Migration
     {
         Schema::table('stocks', function (Blueprint $table): void {
             $table->uuid('supply_id')->nullable()->after('company_id');
-            if (!Schema::hasColumn('stocks', 'unit_price')) {
+
+            if (! Schema::hasColumn('stocks', 'unit_price')) {
                 $table->decimal('unit_price', 15, 4)->default(0)->after('current_quantity');
             }
         });
 
         $validUnits = ['kg', 'g', 'liter', 'ml', 'unit', 'box', 'piece'];
-        $stocks = DB::table('stocks')->get();
+        $stocks     = DB::table('stocks')->get();
+
         foreach ($stocks as $stock) {
-            $name = 'Estoque legado ' . str_replace('-', '', substr($stock->id, 0, 12));
-            $supplyId = (string) Str::uuid();
-            $unit = $stock->unit ?? 'kg';
+            $name        = 'Estoque legado ' . str_replace('-', '', substr((string) $stock->id, 0, 12));
+            $supplyId    = (string) Str::uuid();
+            $unit        = $stock->unit ?? 'kg';
             $defaultUnit = in_array($unit, $validUnits, true) ? $unit : 'kg';
             DB::table('supplies')->insert([
-                'id' => $supplyId,
-                'company_id' => $stock->company_id,
-                'name' => $name,
-                'category' => null,
+                'id'           => $supplyId,
+                'company_id'   => $stock->company_id,
+                'name'         => $name,
+                'category'     => null,
                 'default_unit' => $defaultUnit,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at'   => now(),
+                'updated_at'   => now(),
             ]);
             DB::table('stocks')->where('id', $stock->id)->update(['supply_id' => $supplyId]);
         }
@@ -68,13 +70,15 @@ return new class () extends Migration
     private function changeNumericColumnsToDecimal(): void
     {
         $columns = [
-            'current_quantity' => 'DECIMAL(15, 4) NOT NULL',
-            'minimum_stock' => 'DECIMAL(15, 4) NOT NULL DEFAULT 0',
+            'current_quantity'    => 'DECIMAL(15, 4) NOT NULL',
+            'minimum_stock'       => 'DECIMAL(15, 4) NOT NULL DEFAULT 0',
             'withdrawal_quantity' => 'DECIMAL(15, 4) NOT NULL DEFAULT 0',
         ];
+
         if (Schema::hasColumn('stocks', 'unit_price')) {
             $columns['unit_price'] = 'DECIMAL(15, 4) NOT NULL DEFAULT 0';
         }
+
         foreach ($columns as $col => $def) {
             if (Schema::hasColumn('stocks', $col)) {
                 DB::statement("ALTER TABLE stocks MODIFY {$col} {$def}");
@@ -85,10 +89,11 @@ return new class () extends Migration
     private function revertDecimalToFloat(): void
     {
         $columns = ['current_quantity', 'unit_price', 'minimum_stock', 'withdrawal_quantity'];
+
         foreach ($columns as $col) {
             if (Schema::hasColumn('stocks', $col)) {
-                $nullable = in_array($col, ['unit_price'], true) ? 'NULL' : 'NOT NULL';
-                $default = $col === 'unit_price' ? ' DEFAULT NULL' : ' NOT NULL DEFAULT 0';
+                $nullable = $col === 'unit_price' ? 'NULL' : 'NOT NULL';
+                $default  = $col === 'unit_price' ? ' DEFAULT NULL' : ' NOT NULL DEFAULT 0';
                 DB::statement("ALTER TABLE stocks MODIFY {$col} DOUBLE {$nullable}{$default}");
             }
         }

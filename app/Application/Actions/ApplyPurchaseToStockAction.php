@@ -6,14 +6,14 @@ namespace App\Application\Actions;
 
 use App\Application\DTOs\StockInputDTO;
 use App\Application\UseCases\Stock\AddStockEntryBySupplyUseCase;
-use App\Domain\Enums\Unit;
 use App\Domain\Models\Purchase;
 
-final class ApplyPurchaseToStockAction
+final readonly class ApplyPurchaseToStockAction
 {
     public function __construct(
-        private readonly AddStockEntryBySupplyUseCase $addStockEntry,
-    ) {}
+        private AddStockEntryBySupplyUseCase $addStockEntry,
+    ) {
+    }
 
     public function execute(Purchase $purchase): void
     {

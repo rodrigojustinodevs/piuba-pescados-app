@@ -28,8 +28,9 @@ use Illuminate\Support\Str;
  */
 class InventoryAdjustment extends BaseModel
 {
-    protected $keyType    = 'string';
-    public    $incrementing = false;
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
@@ -53,10 +54,11 @@ class InventoryAdjustment extends BaseModel
         'unit_price'        => 'decimal:2',
     ];
 
+    #[\Override]
     protected static function booted(): void
     {
         static::creating(static function (InventoryAdjustment $model): void {
-            $model->id     ??= (string) Str::uuid();
+            $model->id ??= (string) Str::uuid();
             $model->status ??= InventoryAdjustmentStatus::PENDING->value;
         });
     }

@@ -28,8 +28,9 @@ class Stock extends BaseModel
 {
     use SoftDeletes;
 
-    protected $keyType    = 'string';
-    public    $incrementing = false;
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
@@ -50,6 +51,7 @@ class Stock extends BaseModel
         'withdrawal_quantity' => 'float',
     ];
 
+    #[\Override]
     protected static function booted(): void
     {
         static::creating(static function (Stock $stock): void {

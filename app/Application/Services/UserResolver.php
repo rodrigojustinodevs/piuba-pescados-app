@@ -9,11 +9,12 @@ use App\Application\Exceptions\UserNotFoundException;
 use App\Domain\Models\User;
 use Illuminate\Contracts\Auth\Guard;
 
-final class UserResolver implements UserResolverInterface
+final readonly class UserResolver implements UserResolverInterface
 {
     public function __construct(
-        private readonly Guard $auth,
-    ) {}
+        private Guard $auth,
+    ) {
+    }
 
     public function resolve(?string $hint = null): string
     {
@@ -36,11 +37,12 @@ final class UserResolver implements UserResolverInterface
 
         $user = $this->authenticatedUser();
 
-        if ($user === null) {
+        if (!$user instanceof \App\Domain\Models\User) {
             return null;
         }
 
         $directId = $this->resolveDirectUserId($user);
+
         if ($this->isValidId($directId)) {
             return $directId;
         }
@@ -58,7 +60,7 @@ final class UserResolver implements UserResolverInterface
     private function resolveDirectUserId(User $user): ?string
     {
         $attributes = $user->getAttributes();
-        $id = $attributes['user_id'] ?? null;
+        $id         = $attributes['user_id'] ?? null;
 
         return is_string($id) && $id !== '' ? $id : null;
     }

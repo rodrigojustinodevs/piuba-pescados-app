@@ -6,18 +6,17 @@ use App\Presentation\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->name('auth.')->group(static function (): void {
- 
     Route::get('/ping', fn (): string => 'pong');
 
     // Public route — no authentication middleware
     Route::post('/login', [AuthController::class, 'login'])->name('login');
- 
+
     // Routes protected by JWT
     Route::middleware('auth:api')->group(static function (): void {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-        Route::get('/me',      [AuthController::class, 'me'])    ->name('me');
+        Route::get('/me', [AuthController::class, 'me'])    ->name('me');
     });
- 
+
     // Refresh uses its own middleware to validate expired token
     Route::middleware('auth:api')
         ->post('/refresh', [AuthController::class, 'refresh'])

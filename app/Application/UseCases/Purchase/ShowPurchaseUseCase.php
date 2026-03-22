@@ -7,11 +7,12 @@ namespace App\Application\UseCases\Purchase;
 use App\Domain\Models\Purchase;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 
-final class ShowPurchaseUseCase
+final readonly class ShowPurchaseUseCase
 {
     public function __construct(
-        private readonly PurchaseRepositoryInterface $repository,
-    ) {}
+        private PurchaseRepositoryInterface $repository,
+    ) {
+    }
 
     public function execute(string $id): Purchase
     {

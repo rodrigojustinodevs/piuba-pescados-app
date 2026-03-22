@@ -8,12 +8,13 @@ use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 
-final class ListStocksUseCase
+final readonly class ListStocksUseCase
 {
     public function __construct(
-        private readonly StockRepositoryInterface  $repository,
-        private readonly CompanyResolverInterface  $companyResolver,
-    ) {}
+        private StockRepositoryInterface $repository,
+        private CompanyResolverInterface $companyResolver,
+    ) {
+    }
 
     /**
      * @param array{

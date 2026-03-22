@@ -31,8 +31,9 @@ class Purchase extends BaseModel
 {
     use SoftDeletes;
 
-    protected $keyType    = 'string';
-    public    $incrementing = false;
+    protected $keyType = 'string';
+
+    public $incrementing = false;
 
     protected $fillable = [
         'id',
@@ -51,10 +52,11 @@ class Purchase extends BaseModel
         'received_at'   => 'datetime',
     ];
 
+    #[\Override]
     protected static function booted(): void
     {
         static::creating(static function (Purchase $purchase): void {
-            $purchase->id     ??= (string) Str::uuid();
+            $purchase->id ??= (string) Str::uuid();
             $purchase->status ??= PurchaseStatus::DRAFT->value;
         });
     }

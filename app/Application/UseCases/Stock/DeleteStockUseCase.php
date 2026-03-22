@@ -7,11 +7,12 @@ namespace App\Application\UseCases\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class DeleteStockUseCase
+final readonly class DeleteStockUseCase
 {
     public function __construct(
-        private readonly StockRepositoryInterface $repository,
-    ) {}
+        private StockRepositoryInterface $repository,
+    ) {
+    }
 
     public function execute(string $id): void
     {

@@ -9,11 +9,12 @@ use App\Domain\Models\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class UpdateStockSettingsUseCase
+final readonly class UpdateStockSettingsUseCase
 {
     public function __construct(
-        private readonly StockRepositoryInterface $repository,
-    ) {}
+        private StockRepositoryInterface $repository,
+    ) {
+    }
 
     /**
      * Update only the configurable attributes of the stock.
@@ -25,10 +26,8 @@ final class UpdateStockSettingsUseCase
     {
         $dto = StockSettingsDTO::fromArray($data);
 
-        return DB::transaction(function () use ($id, $dto): Stock {
-            return $this->repository
-                ->update($id, $dto->toPersistence())
-                ->loadMissing(['supply', 'supplier']);
-        });
+        return DB::transaction(fn(): Stock => $this->repository
+            ->update($id, $dto->toPersistence())
+            ->loadMissing(['supply', 'supplier']));
     }
 }

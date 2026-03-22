@@ -6,9 +6,9 @@ namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 
-final class PlainPassword
+final readonly class PlainPassword implements \Stringable
 {
-    private readonly string $value;
+    private string $value;
 
     public function __construct(string $value)
     {

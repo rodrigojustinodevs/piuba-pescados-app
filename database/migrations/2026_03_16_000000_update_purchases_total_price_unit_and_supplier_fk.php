@@ -45,7 +45,7 @@ return new class () extends Migration
             [config('database.connections.mysql.database')]
         );
 
-        if (!$fkExists) {
+        if (! $fkExists) {
             Schema::table('purchases', function (Blueprint $table): void {
                 $table->foreign('supplier_id')->references('id')->on('suppliers');
             });

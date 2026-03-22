@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-final class StockSettingsDTO
+final readonly class StockSettingsDTO
 {
     public function __construct(
-        public readonly ?float  $minimumStock       = null,
-        public readonly ?string $supplierId         = null,
-        public readonly ?float  $withdrawalQuantity = null,
-    ) {}
+        public ?float $minimumStock = null,
+        public ?string $supplierId = null,
+        public ?float $withdrawalQuantity = null,
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data Dados validados pelo FormRequest
@@ -21,11 +22,9 @@ final class StockSettingsDTO
             minimumStock:       isset($data['minimum_stock'])
                 ? (float) $data['minimum_stock']
                 : (isset($data['minimumStock']) ? (float) $data['minimumStock'] : null),
-
             supplierId:         isset($data['supplier_id'])
                 ? (string) $data['supplier_id']
                 : (isset($data['supplierId']) ? (string) $data['supplierId'] : null),
-
             withdrawalQuantity: isset($data['withdrawal_quantity'])
                 ? (float) $data['withdrawal_quantity']
                 : (isset($data['withdrawalQuantity']) ? (float) $data['withdrawalQuantity'] : null),
@@ -44,6 +43,6 @@ final class StockSettingsDTO
             'minimum_stock'       => $this->minimumStock,
             'supplier_id'         => $this->supplierId,
             'withdrawal_quantity' => $this->withdrawalQuantity,
-        ], static fn ($v) => $v !== null);
+        ], static fn (string|float|null $v): bool => $v !== null);
     }
 }

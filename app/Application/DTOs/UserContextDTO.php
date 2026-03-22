@@ -6,14 +6,15 @@ namespace App\Application\DTOs;
 
 use App\Domain\Models\User;
 
-final class UserContextDTO
+final readonly class UserContextDTO
 {
     public function __construct(
-        public readonly string  $id,
-        public readonly string  $name,
-        public readonly string  $email,
-        public readonly ?string $companyId,
-    ) {}
+        public string $id,
+        public string $name,
+        public string $email,
+        public ?string $companyId,
+    ) {
+    }
 
     public static function fromModel(User $user): self
     {
@@ -21,9 +22,11 @@ final class UserContextDTO
             id:        (string) $user->id,
             name:      (string) $user->name,
             email:     (string) $user->email,
-            companyId: isset($user->getAttributes()['company_id'])
-                ? (string) $user->company_id
-                : null,
+            companyId: (function () use ($user): ?string {
+                $attrs = $user->getAttributes();
+
+                return isset($attrs['company_id']) ? (string) $attrs['company_id'] : null;
+            })(),
         );
     }
 

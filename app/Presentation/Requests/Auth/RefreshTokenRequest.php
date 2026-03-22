@@ -13,6 +13,7 @@ final class RefreshTokenRequest extends FormRequest
         return true;
     }
 
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         // O token vem pelo header Authorization: Bearer <token>

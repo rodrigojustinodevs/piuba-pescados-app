@@ -13,6 +13,7 @@ final class StockStoreRequest extends FormRequest
         return true;
     }
 
+    #[\Override]
     protected function prepareForValidation(): void
     {
         $map = [
@@ -27,17 +28,19 @@ final class StockStoreRequest extends FormRequest
         ];
 
         $normalized = [];
+
         foreach ($map as $camel => $snake) {
             if ($this->has($camel) && ! $this->has($snake)) {
                 $normalized[$snake] = $this->input($camel);
             }
         }
 
-        if ($normalized) {
+        if ($normalized !== []) {
             $this->merge($normalized);
         }
     }
 
+    /** @return array<string, mixed> */
     public function rules(): array
     {
         return [
@@ -54,6 +57,7 @@ final class StockStoreRequest extends FormRequest
         ];
     }
 
+    #[\Override]
     public function messages(): array
     {
         return [

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Services\Stock;
 
+use App\Application\DTOs\StockInputDTO;
+use App\Application\DTOs\StockTransactionDTO;
 use App\Domain\Enums\StockTransactionDirection;
 use App\Domain\Enums\StockTransactionReferenceType;
 use App\Domain\Enums\Unit;
@@ -11,7 +13,6 @@ use App\Domain\Models\Stock;
 use App\Domain\Models\StockTransaction;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Repositories\StockTransactionRepositoryInterface;
-use Illuminate\Support\Facades\Auth;
 use RuntimeException;
 
 class StockService
@@ -41,8 +42,8 @@ class StockService
         if ($quantity <= 0) {
             throw new RuntimeException('Stock quantity must be greater than zero.');
         }
-        $item = $this->stockRepository->findByCompanyAndSupply($companyId, $supplyId);
-        $entryCost = $this->resolveEntryCost($quantity, $totalCost, $unitPrice);
+        $item          = $this->stockRepository->findByCompanyAndSupply($companyId, $supplyId);
+        $entryCost     = $this->resolveEntryCost($quantity, $totalCost, $unitPrice);
         $referenceType = StockTransactionReferenceType::PURCHASE_ITEM;
 
         if ($item instanceof Stock) {
@@ -61,7 +62,7 @@ class StockService
 
             return $updatedStock;
         }
-        
+
         $newStock = $this->createNewStockBySupply(
             $companyId,
             $supplyId,
@@ -139,7 +140,7 @@ class StockService
             throw new RuntimeException('Insufficient stock or stock not found.');
         }
 
-        $this->stockRepository->decrementStock($stockId, $amount);
+        $this->stockRepository->decrementQuantity($stockId, $amount);
     }
 
     private function resolveEntryCost(
@@ -210,7 +211,19 @@ class StockService
             $data['supplier_id'] = $supplierId;
         }
 
-        return $this->stockRepository->create($data);
+        $dto = new StockInputDTO(
+            companyId:          $companyId,
+            supplyId:           null,
+            quantity:           $quantity,
+            unit:               $unit,
+            unitPrice:          round($entryCost / $quantity, 2),
+            totalCost:          $entryCost,
+            minimumStock:       $minimumStock,
+            withdrawalQuantity: $withdrawalQuantity,
+            supplierId:         $supplierId,
+        );
+
+        return $this->stockRepository->create($dto);
     }
 
     private function updateExistingStockBySupply(
@@ -220,7 +233,7 @@ class StockService
         ?string $supplierId = null
     ): Stock {
         $newQuantity = $item->current_quantity + $quantity;
-        $newPrice = (
+        $newPrice    = (
             ((float) $item->current_quantity * (float) $item->unit_price)
             + $entryCost
         ) / $newQuantity;
@@ -234,7 +247,7 @@ class StockService
             $data['supplier_id'] = $supplierId;
         }
 
-        return $this->stockRepository->update($item->id, $data) ?? $item;
+        return $this->stockRepository->update($item->id, $data);
     }
 
     private function createNewStockBySupply(
@@ -247,21 +260,20 @@ class StockService
         float $withdrawalQuantity = 0.0,
         ?string $supplierId = null
     ): Stock {
-        $data = [
-            'company_id'          => $companyId,
-            'supply_id'           => $supplyId,
-            'current_quantity'    => $quantity,
-            'unit_price'          => round($entryCost / $quantity, 4),
-            'unit'                => $unit->value,
-            'minimum_stock'       => $minimumStock,
-            'withdrawal_quantity' => $withdrawalQuantity,
-        ];
+        $unitPrice = round($entryCost / $quantity, 4);
+        $dto       = new StockInputDTO(
+            companyId:          $companyId,
+            supplyId:           $supplyId,
+            quantity:           $quantity,
+            unit:               $unit->value,
+            unitPrice:          $unitPrice,
+            totalCost:          $entryCost,
+            minimumStock:       $minimumStock,
+            withdrawalQuantity: $withdrawalQuantity,
+            supplierId:         $supplierId,
+        );
 
-        if ($supplierId !== null) {
-            $data['supplier_id'] = $supplierId;
-        }
-
-        return $this->stockRepository->create($data);
+        return $this->stockRepository->create($dto);
     }
 
     private function createStockTransaction(
@@ -274,18 +286,20 @@ class StockService
         Unit $unit = Unit::KG,
         StockTransactionDirection $direction = StockTransactionDirection::IN,
     ): StockTransaction {
-        return $this->stockTransactionRepository->create(
-            [
-            'company_id' => $companyId,
-            'supply_id' => $supplyId,
-            'reference_type' => $referenceType,
-            'reference_id' => $referenceId,
-            'direction' => $direction,
-            'quantity' => $quantity,
-            'unit_price' => $unitPrice,
-            'unit' => $unit,
-            'created_by' => Auth::user()?->id ?? null
-            ]
+        $totalCost = $quantity * $unitPrice;
+
+        $dto = new StockTransactionDTO(
+            companyId:     $companyId,
+            supplyId:      $supplyId,
+            quantity:      $quantity,
+            unitPrice:     $unitPrice,
+            totalCost:     $totalCost,
+            unit:          $unit->value,
+            direction:     $direction,
+            referenceId:   $referenceId,
+            referenceType: $referenceType,
         );
+
+        return $this->stockTransactionRepository->create($dto);
     }
 }

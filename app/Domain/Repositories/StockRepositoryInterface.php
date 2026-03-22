@@ -12,17 +12,13 @@ interface StockRepositoryInterface
 {
     /**
      * Create a new stock record.
-     *
-     * @param StockInputDTO $dto
-     * @return Stock
      */
-    public function  create(StockInputDTO $dto): Stock;
+    public function create(StockInputDTO $dto): Stock;
 
     /**
      * Update an existing feeding record.
      *
      * @param array<string, mixed> $attributes
-     * @return Stock
      */
     public function update(string $id, array $attributes): Stock;
 
@@ -38,40 +34,33 @@ interface StockRepositoryInterface
      *     supplier_id?: string|null,
      *     per_page?: int,
      * } $filters
-     * @return PaginationInterface
      */
     public function paginate(array $filters): PaginationInterface;
 
     /**
      * Find a stock by a specific field.
-     * @param string $field
-     * @param string|int $value
-     * @return Stock|null
      */
     public function showStock(string $field, string | int $value): ?Stock;
 
     /**
      * Find a stock by ID.
-     * @param string $id
-     * @return Stock
      */
     public function findOrFail(string $id): Stock;
 
     /**
      * Find first stock by company and supplier.
-     * @param string $companyId
-     * @param string $supplierId
-     * @return Stock|null
      */
     public function findByCompanyAndSupplier(string $companyId, string $supplierId): ?Stock;
 
     /**
      * Find first stock by company and supply.
-     * @param string $companyId
-     * @param string $supplyId
-     * @return Stock|null
      */
     public function findBySupply(string $companyId, string $supplyId): ?Stock;
+
+    /**
+     * Alias for findBySupply. Find first stock by company and supply.
+     */
+    public function findByCompanyAndSupply(string $companyId, string $supplyId): ?Stock;
 
     /**
      * Find stocks by supplier ID.
@@ -90,12 +79,9 @@ interface StockRepositoryInterface
      * Increment current_quantity atomically (stock entry).
      */
     public function incrementQuantity(string $id, float $quantity): Stock;
- 
+
     /**
      * Decrement current_quantity atomically (stock exit).
      */
     public function decrementQuantity(string $id, float $quantity): Stock;
- 
-
-    
 }

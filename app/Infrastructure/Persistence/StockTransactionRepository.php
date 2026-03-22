@@ -13,8 +13,8 @@ use Illuminate\Support\Str;
 
 final class StockTransactionRepository implements StockTransactionRepositoryInterface
 {
-     public function create(StockTransactionDTO $dto): StockTransaction
-     {
+    public function create(StockTransactionDTO $dto): StockTransaction
+    {
         return StockTransaction::create([
             'id'             => (string) Str::uuid(),
             'company_id'     => $dto->companyId,
@@ -27,13 +27,16 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
             'reference_id'   => $dto->referenceId,
             'reference_type' => $dto->referenceType?->value,
         ]);
-     }
+    }
 
-    public function findBy(string $field, string|int $value): ?StockTransaction
+    public function findBy(string $field, string | int $value): ?StockTransaction
     {
         return StockTransaction::where($field, $value)->first();
     }
 
+    /**
+     * @param array<string, mixed> $filters
+     */
     public function paginate(array $filters): PaginationInterface
     {
         $paginator = StockTransaction::where('stock_id', $filters['stock_id'])
@@ -46,8 +49,7 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
             )
             ->latest()
             ->paginate((int) ($filters['per_page'] ?? 25));
- 
+
         return new PaginationPresentr($paginator);
     }
 }
-

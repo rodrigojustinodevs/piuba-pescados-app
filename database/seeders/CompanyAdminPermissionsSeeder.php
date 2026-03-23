@@ -133,6 +133,12 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'update-sensor',
             'delete-sensor',
 
+            // Permissões de leituras de sensor
+            'create-sensor-reading',
+            'view-sensor-reading',
+            'update-sensor-reading',
+            'delete-sensor-reading',
+
             // Permissões de Stocking (aquaculture: povoamento/estocagem)
             'create-stocking',
             'view-stocking',

@@ -2,25 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Application\UseCases\Sensor;
+namespace App\Application\UseCases\SensorReading;
 
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\PaginationInterface;
-use App\Domain\Repositories\SensorRepositoryInterface;
+use App\Domain\Repositories\SensorReadingRepositoryInterface;
 
-class ListSensorsUseCase
+final readonly class ListSensorReadingsUseCase
 {
     public function __construct(
-        protected SensorRepositoryInterface $sensorRepository,
-        protected CompanyResolverInterface $companyResolver,
+        private SensorReadingRepositoryInterface $sensorReadingRepository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
     /**
      * @param array{
+     *     sensor_id?: string|null,
      *     tank_id?: string|null,
-     *     sensor_type?: string|null,
-     *     status?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
      *     per_page?: int|string|null,
      *     page?: int|string|null,
      * } $filters
@@ -29,6 +30,6 @@ class ListSensorsUseCase
     {
         $filters['company_id'] = $this->companyResolver->resolve();
 
-        return $this->sensorRepository->paginate($filters);
+        return $this->sensorReadingRepository->paginate($filters);
     }
 }

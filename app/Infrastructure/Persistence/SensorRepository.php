@@ -4,50 +4,65 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\SensorDTO;
 use App\Domain\Models\Sensor;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class SensorRepository implements SensorRepositoryInterface
 {
     /**
      * Create a new sensor.
      *
-     * @param array<string, mixed> $data
      */
-    public function create(array $data): Sensor
+    public function create(SensorDTO $dto): Sensor
     {
-        return Sensor::create($data);
+        /** @var Sensor */
+        return Sensor::create($dto->toPersistence());
     }
 
     /**
      * Update an existing sensor.
      *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?Sensor
+    public function update(string $id, array $attributes): Sensor
     {
-        $sensor = Sensor::find($id);
+        $sensor = $this->findOrFail($id);
+        $sensor->update(array_filter($attributes, static fn ($v): bool => $v !== null));
 
-        if ($sensor) {
-            $sensor->update($data);
-
-            return $sensor;
-        }
-
-        return null;
+        return $sensor->refresh();
     }
 
     /**
-     * Get paginated .
+     * Get paginated records.
+     *
+     * @param array{
+     *     company_id: string,
+     *     tank_id?: string|null,
+     *     sensor_type?: string|null,
+     *     status?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function paginate(int $page = 25): PaginationInterface
+    public function paginate(array $filters): PaginationInterface
     {
-        /** @var LengthAwarePaginator<int, Sensor> $paginator */
-        $paginator = Sensor::with([
-            'tank:id,name',
-        ])->paginate($page);
+        $paginator = Sensor::with(['tank:id,name'])
+            ->whereHas('tank', static fn ($q) => $q->where('company_id', $filters['company_id']))
+            ->when(
+                ! empty($filters['tank_id']),
+                static fn ($q) => $q->where('tank_id', $filters['tank_id']),
+            )
+            ->when(
+                ! empty($filters['sensor_type']),
+                static fn ($q) => $q->where('sensor_type', $filters['sensor_type']),
+            )
+            ->when(
+                ! empty($filters['status']),
+                static fn ($q) => $q->where('status', $filters['status']),
+            )
+            ->latest()
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
@@ -60,14 +75,18 @@ class SensorRepository implements SensorRepositoryInterface
         return Sensor::where($field, $value)->first();
     }
 
+    public function findOrFail(string $id): Sensor
+    {
+        return Sensor::findOrFail($id);
+    }
+
+    public function findByCompany(string $companyId): ?Sensor
+    {
+        return Sensor::where('company_id', $companyId)->first();
+    }
+
     public function delete(string $id): bool
     {
-        $sensor = Sensor::find($id);
-
-        if (! $sensor) {
-            return false;
-        }
-
-        return (bool) $sensor->delete();
+        return (bool) $this->findOrFail($id)->delete();
     }
 }

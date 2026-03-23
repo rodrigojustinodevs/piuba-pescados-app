@@ -92,7 +92,7 @@ class PurchaseUpdateRequest extends FormRequest
     {
         if ($this->has('items')) {
             $this->merge([
-                'items' => array_map(fn(array $item): array => [
+                'items' => array_map(fn (array $item): array => [
                     'id'        => $item['id'] ?? null,
                     'supplyId'  => $item['supplyId'] ?? null,
                     'quantity'  => isset($item['quantity']) ? (float) $item['quantity'] : null,

@@ -4,50 +4,66 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\WaterQualityDTO;
 use App\Domain\Models\WaterQuality;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class WaterQualityRepository implements WaterQualityRepositoryInterface
 {
     /**
      * Create a new waterQuality.
      *
-     * @param array<string, mixed> $data
      */
-    public function create(array $data): WaterQuality
+    public function create(WaterQualityDTO $dto): WaterQuality
     {
-        return WaterQuality::create($data);
+        /** @var WaterQuality */
+        return WaterQuality::create($dto->toPersistence());
     }
 
     /**
      * Update an existing waterQuality.
      *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?WaterQuality
+    public function update(string $id, array $attributes): WaterQuality
     {
-        $waterQuality = WaterQuality::find($id);
+        $waterQuality = $this->findOrFail($id);
+        $waterQuality->update(array_filter($attributes, static fn ($v): bool => $v !== null));
 
-        if ($waterQuality) {
-            $waterQuality->update($data);
-
-            return $waterQuality;
-        }
-
-        return null;
+        return $waterQuality->refresh();
     }
 
     /**
-     * Get paginated .
+     * Get paginated records.
+     *
+     * @param array{
+     *     company_id: string,
+     *     tank_id?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function paginate(int $page = 25): PaginationInterface
+    public function paginate(array $filters): PaginationInterface
     {
-        /** @var LengthAwarePaginator<int, WaterQuality> $paginator */
-        $paginator = WaterQuality::with([
-            'tank:id,name',
-        ])->paginate($page);
+        $paginator = WaterQuality::with(['tank:id,name'])
+            // ✅ Multi-tenancy via tank.company_id
+            ->whereHas('tank', static fn ($q) => $q->where('company_id', $filters['company_id']))
+            ->when(
+                ! empty($filters['tank_id']),
+                static fn ($q) => $q->where('tank_id', $filters['tank_id']),
+            )
+            ->when(
+                ! empty($filters['date_from']),
+                static fn ($q) => $q->whereDate('measured_at', '>=', $filters['date_from']),
+            )
+            ->when(
+                ! empty($filters['date_to']),
+                static fn ($q) => $q->whereDate('measured_at', '<=', $filters['date_to']),
+            )
+            ->latest('measured_at')
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
@@ -62,12 +78,16 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
 
     public function delete(string $id): bool
     {
-        $waterQuality = WaterQuality::find($id);
+        return (bool) $this->findOrFail($id)->delete();
+    }
 
-        if (! $waterQuality) {
-            return false;
-        }
+    public function findOrFail(string $id): WaterQuality
+    {
+        return WaterQuality::findOrFail($id);
+    }
 
-        return (bool) $waterQuality->delete();
+    public function findByCompany(string $companyId): ?WaterQuality
+    {
+        return WaterQuality::where('company_id', $companyId)->first();
     }
 }

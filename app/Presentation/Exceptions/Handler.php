@@ -57,47 +57,54 @@ class Handler extends ExceptionHandler
         // Auth
         // -----------------------------------------------------------------------
         $this->renderable(
-            function (InvalidCredentialsException $e, Request $r): JsonResponse {
-                return $this->handleDomainException($e, JsonResponse::HTTP_UNAUTHORIZED);
-            }
+            fn (InvalidCredentialsException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNAUTHORIZED,
+            )
         );
         $this->renderable(
-            function (UnauthorizedException $e, Request $r): JsonResponse {
-                return $this->handleDomainException($e, JsonResponse::HTTP_UNAUTHORIZED);
-            }
+            fn (UnauthorizedException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNAUTHORIZED,
+            )
         );
 
         // -----------------------------------------------------------------------
         // Purchase
         // -----------------------------------------------------------------------
         $this->renderable(
-            function (InvalidPurchaseStatusTransitionException $e, Request $r): JsonResponse {
-                return $this->handleDomainException($e, JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
-            }
+            fn (InvalidPurchaseStatusTransitionException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
         );
         $this->renderable(
-            function (CompanyNotFoundException $e, Request $r): JsonResponse {
-                return $this->handleDomainException($e, JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
-            }
+            fn (CompanyNotFoundException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
         );
 
         // -----------------------------------------------------------------------
         // Stock
         // -----------------------------------------------------------------------
         $this->renderable(
-            function (DuplicateStockException $e, Request $r): JsonResponse {
-                return $this->handleDomainException($e, JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
-            }
+            fn (DuplicateStockException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
         );
         $this->renderable(
-            function (InsufficientStockException $e, Request $r): JsonResponse {
-                return $this->handleDomainException($e, JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
-            }
+            fn (InsufficientStockException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
         );
         $this->renderable(
-            function (StockNotFoundException $e, Request $r): JsonResponse {
-                return $this->handleDomainException($e, JsonResponse::HTTP_NOT_FOUND);
-            }
+            fn (StockNotFoundException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_NOT_FOUND,
+            )
         );
 
         // -----------------------------------------------------------------------
@@ -118,63 +125,73 @@ class Handler extends ExceptionHandler
         // HTTP / infraestrutura
         // -----------------------------------------------------------------------
         $this->renderable(
-            function (NotFoundHttpException $e, Request $r): JsonResponse {
-                return $this->handleException($e, 'Route not found.', JsonResponse::HTTP_NOT_FOUND, $r);
-            }
+            fn (NotFoundHttpException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Route not found.',
+                JsonResponse::HTTP_NOT_FOUND,
+                $r,
+            )
         );
         $this->renderable(
-            function (MethodNotAllowedHttpException $e, Request $r): JsonResponse {
-                return $this->handleException(
-                    $e,
-                    'Method not allowed.',
-                    JsonResponse::HTTP_METHOD_NOT_ALLOWED,
-                    $r,
-                );
-            }
+            fn (MethodNotAllowedHttpException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Method not allowed.',
+                JsonResponse::HTTP_METHOD_NOT_ALLOWED,
+                $r,
+            )
         );
         $this->renderable(
-            function (AuthenticationException $e, Request $r): JsonResponse {
-                return $this->handleException(
-                    $e,
-                    'User not authenticated.',
-                    JsonResponse::HTTP_UNAUTHORIZED,
-                    $r,
-                );
-            }
+            fn (AuthenticationException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'User not authenticated.',
+                JsonResponse::HTTP_UNAUTHORIZED,
+                $r,
+            )
         );
         $this->renderable(
-            function (AccessDeniedHttpException $e, Request $r): JsonResponse {
-                return $this->handleException($e, 'Access denied.', JsonResponse::HTTP_FORBIDDEN, $r);
-            }
+            fn (AccessDeniedHttpException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Access denied.',
+                JsonResponse::HTTP_FORBIDDEN,
+                $r,
+            )
         );
         $this->renderable(
-            function (ValidationException $e, Request $r): JsonResponse {
-                return $this->handleValidationException($e, $r);
-            }
+            fn (ValidationException $e, Request $r): JsonResponse => $this->handleValidationException($e, $r)
         );
         $this->renderable(
-            function (ZeroDeltaException $e, Request $r): JsonResponse {
-                return $this->handleDomainException($e, JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
-            }
+            fn (ZeroDeltaException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
         );
 
         // -----------------------------------------------------------------------
         // JWT
         // -----------------------------------------------------------------------
         $this->renderable(
-            function (TokenExpiredException $e, Request $r): JsonResponse {
-                return $this->handleException($e, 'Token expired.', JsonResponse::HTTP_UNAUTHORIZED, $r);
-            }
+            fn (TokenExpiredException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Token expired.',
+                JsonResponse::HTTP_UNAUTHORIZED,
+                $r,
+            )
         );
         $this->renderable(
-            function (TokenInvalidException $e, Request $r): JsonResponse {
-                return $this->handleException($e, 'Token invalid.', JsonResponse::HTTP_UNAUTHORIZED, $r);
-            }
+            fn (TokenInvalidException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'Token invalid.',
+                JsonResponse::HTTP_UNAUTHORIZED,
+                $r,
+            )
         );
         $this->renderable(
-            function (JWTException $e, Request $r): JsonResponse {
-                return $this->handleException($e, 'JWT error.', JsonResponse::HTTP_UNAUTHORIZED, $r);
-            }
+            fn (JWTException $e, Request $r): JsonResponse => $this->handleException(
+                $e,
+                'JWT error.',
+                JsonResponse::HTTP_UNAUTHORIZED,
+                $r,
+            )
         );
     }
 

@@ -11,11 +11,15 @@ use Illuminate\Support\Str;
 /**
  * @property string $id
  * @property string $tank_id
+ * @property string $company_id
  * @property Carbon|null $measured_at
  * @property float $ph
  * @property float $dissolved_oxygen
  * @property float $temperature
  * @property float $ammonia
+ * @property float $salinity
+ * @property float $turbidity
+ * @property string $notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -35,6 +39,9 @@ class WaterQuality extends BaseModel
         'dissolved_oxygen',
         'temperature',
         'ammonia',
+        'salinity',
+        'turbidity',
+        'notes',
     ];
 
     /** @var array<string> */

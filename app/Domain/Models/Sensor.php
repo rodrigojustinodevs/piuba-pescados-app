@@ -10,15 +10,16 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * @property string $id
- * @property string $tank_id
- * @property string $sensor_type
- * @property string $status
- * @property Carbon|null $installation_date
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property string            $id
+ * @property string            $tank_id
+ * @property string            $company_id
+ * @property string            $sensor_type
+ * @property string            $status
+ * @property Carbon|null       $installation_date
+ * @property string|null       $notes
  *
- * @property-read Tank|null $tank
+ * @property-read Tank|null    $tank
+ * @property-read Company|null $company
  */
 class Sensor extends BaseModel
 {
@@ -31,36 +32,37 @@ class Sensor extends BaseModel
     protected $fillable = [
         'id',
         'tank_id',
+        'company_id',
         'sensor_type',
-        'installation_date',
         'status',
+        'installation_date',
+        'notes',
     ];
 
-    /** @var array<string> */
-    protected $dates = [
-        'installation_date',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    protected $casts = [
+        'installation_date' => 'date',
     ];
 
     #[\Override]
     protected static function booted(): void
     {
-        static::creating(function (Sensor $sensor): void {
-            $sensor->id     = (string) Str::uuid();
-            $sensor->status = 'active';
+        static::creating(static function (Sensor $sensor): void {
+            $sensor->id ??= (string) Str::uuid();
         });
     }
 
-    /**
-     * @phpstan-return BelongsTo<Tank, static>
-     */
     public function tank(): BelongsTo
     {
-        /** @var BelongsTo<Tank, static> $relation */
-        $relation = $this->belongsTo(Tank::class, 'tank_id');
+        return $this->belongsTo(Tank::class, 'tank_id');
+    }
 
-        return $relation;
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
     }
 }

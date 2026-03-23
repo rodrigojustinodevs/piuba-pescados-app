@@ -64,6 +64,8 @@ Route::prefix('company')
 
         require base_path('routes/app/company/sensor.php');
 
+        require base_path('routes/app/company/sensorReading.php');
+
         require base_path('routes/app/company/stocking.php');
 
         require base_path('routes/app/company/stock.php');

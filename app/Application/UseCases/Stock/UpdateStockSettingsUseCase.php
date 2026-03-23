@@ -26,7 +26,7 @@ final readonly class UpdateStockSettingsUseCase
     {
         $dto = StockSettingsDTO::fromArray($data);
 
-        return DB::transaction(fn(): Stock => $this->repository
+        return DB::transaction(fn (): Stock => $this->repository
             ->update($id, $dto->toPersistence())
             ->loadMissing(['supply', 'supplier']));
     }

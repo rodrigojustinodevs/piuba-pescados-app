@@ -6,58 +6,72 @@ namespace App\Presentation\Requests\WaterQuality;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class WaterQualityStoreRequest extends FormRequest
+final class WaterQualityStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
+    #[\Override]
+    protected function prepareForValidation(): void
+    {
+        $map = [
+            'tankId'          => 'tank_id',
+            'measuredAt'      => 'measured_at',
+            'dissolvedOxygen' => 'dissolved_oxygen',
+        ];
+
+        $normalized = [];
+
+        foreach ($map as $camel => $snake) {
+            if ($this->has($camel) && ! $this->has($snake)) {
+                $normalized[$snake] = $this->input($camel);
+            }
+        }
+
+        if ($normalized !== []) {
+            $this->merge($normalized);
+        }
+    }
+
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
      */
     public function rules(): array
     {
         return [
-            'tank_id'          => ['required', 'uuid', 'exists:tanks,id'],
-            'measured_at'      => ['required', 'date'],
-            'ph'               => ['required', 'numeric', 'between:0,14'],
-            'dissolved_oxygen' => ['required', 'numeric', 'min:0'],
-            'temperature'      => ['required', 'numeric'],
-            'ammonia'          => ['required', 'numeric', 'min:0'],
+            'tank_id'     => ['required', 'uuid', 'exists:tanks,id'],
+            'measured_at' => ['required', 'date'],
+
+            'ph'               => ['nullable', 'numeric', 'between:0,14'],
+            'dissolved_oxygen' => ['nullable', 'numeric', 'min:0'],
+            'temperature'      => ['nullable', 'numeric', 'between:-10,50'],
+            'ammonia'          => ['nullable', 'numeric', 'min:0'],
+            'salinity'         => ['nullable', 'numeric', 'min:0'],
+            'turbidity'        => ['nullable', 'numeric', 'min:0'],
+            'notes'            => ['nullable', 'string', 'max:500'],
         ];
     }
 
     /**
-     * Get custom error messages for validation rules.
-     *
      * @return array<string, string>
      */
     #[\Override]
     public function messages(): array
     {
         return [
-            'tank_id.required'          => 'The tank ID is required.',
-            'tank_id.uuid'              => 'The tank ID must be a valid UUID.',
-            'tank_id.exists'            => 'The tank ID must exist in the tanks table.',
-            'measured_at.required'      => 'The measured at is required.',
-            'measured_at.date'          => 'The measured at must be a valid date.',
-            'ph.required'               => 'The pH value is required.',
-            'ph.numeric'                => 'The pH must be a numeric value.',
-            'ph.between'                => 'The pH must be between 0 and 14.',
-            'dissolved_oxygen.required' => 'The dissolved oxygen level is required.',
-            'dissolved_oxygen.numeric'  => 'The dissolved oxygen level must be a numeric value.',
-            'dissolved_oxygen.min'      => 'The dissolved oxygen level must be at least 0.',
-            'temperature.required'      => 'The temperature is required.',
-            'temperature.numeric'       => 'The temperature must be a numeric value.',
-            'ammonia.required'          => 'The ammonia level is required.',
-            'ammonia.numeric'           => 'The ammonia level must be a numeric value.',
-            'ammonia.min'               => 'The ammonia level must be at least 0.',
+            'tank_id.required'     => 'The tank is required.',
+            'tank_id.exists'       => 'The tank was not found.',
+            'measured_at.required' => 'The measurement date is required.',
+            'measured_at.date'     => 'Please enter a valid date and time.',
+            'ph.between'           => 'The pH must be between 0 and 14.',
+            'temperature.between'  => 'The temperature must be between -10°C and 50°C.',
+            'dissolved_oxygen.min' => 'The dissolved oxygen cannot be negative.',
+            'ammonia.min'          => 'The ammonia cannot be negative.',
+            'salinity.min'         => 'The salinity cannot be negative.',
+            'turbidity.min'        => 'The turbidity cannot be negative.',
+            'notes.max'            => 'The notes must be less than 500 characters.',
         ];
     }
 }

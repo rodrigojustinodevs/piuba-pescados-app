@@ -43,6 +43,6 @@ final readonly class StockSettingsDTO
             'minimum_stock'       => $this->minimumStock,
             'supplier_id'         => $this->supplierId,
             'withdrawal_quantity' => $this->withdrawalQuantity,
-        ], static fn (string|float|null $v): bool => $v !== null);
+        ], static fn (string | float | null $v): bool => $v !== null);
     }
 }

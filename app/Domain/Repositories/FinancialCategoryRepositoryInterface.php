@@ -4,36 +4,53 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\DTOs\FinancialCategoryInputDTO;
 use App\Domain\Models\FinancialCategory;
 
 interface FinancialCategoryRepositoryInterface
 {
     /**
      * Create a new financial category record.
-     *
-     * @param array<string, mixed> $data
      */
-    public function create(array $data): FinancialCategory;
+    public function create(FinancialCategoryInputDTO $dto): FinancialCategory;
 
     /**
      * Update an existing financial category record.
      *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?FinancialCategory;
+    public function update(string $id, array $attributes): FinancialCategory;
 
     /**
      * Delete a financial category record.
+     * Throws an exception if the category has linked transactions.
      */
     public function delete(string $id): bool;
 
     /**
-     * Paginate financial category records.
+     * Find a category by ID or throw ModelNotFoundException.
      */
-    public function paginate(int $page = 25): PaginationInterface;
+    public function findOrFail(string $id): FinancialCategory;
+
+    /**
+     * Paginate financial categories filtered by company.
+     *
+     * @param array{
+     *     company_id: string,
+     *     type?: string|null,
+     *     status?: string|null,
+     *     per_page?: int,
+     * } $filters
+     */
+    public function paginate(array $filters): PaginationInterface;
 
     /**
      * Find a financial category by a specific field.
      */
     public function showFinancialCategory(string $field, string | int $value): ?FinancialCategory;
+
+    /**
+     * Check whether the category has any linked financial transactions.
+     */
+    public function hasTransactions(string $id): bool;
 }

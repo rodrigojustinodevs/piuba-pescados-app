@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Purchase;
 
-use App\Application\Actions\ApplyPurchaseToStockAction;
+use App\Application\Actions\Purchase\ApplyPurchaseToStockAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\PurchaseDTO;
 use App\Domain\Models\Purchase;
@@ -21,7 +21,7 @@ final readonly class CreatePurchaseUseCase
     }
 
     /**
-     * @param array<string, mixed> $data Dados já validados pelo FormRequest
+     * @param array<string, mixed> $data Validated data from the FormRequest
      */
     public function execute(array $data): Purchase
     {

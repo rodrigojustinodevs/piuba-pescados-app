@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Purchase;
 
-use App\Application\Actions\ApplyPurchaseToStockAction;
+use App\Application\Actions\Purchase\ApplyPurchaseToStockAction;
 use App\Domain\Enums\PurchaseStatus;
 use App\Domain\Exceptions\InvalidPurchaseStatusTransitionException;
 use App\Domain\Models\Purchase;
@@ -15,7 +15,7 @@ final readonly class ReceivePurchaseUseCase
 {
     public function __construct(
         private PurchaseRepositoryInterface $repository,
-        private ApplyPurchaseToStockAction $applyToStock,
+        private ApplyPurchaseToStockAction $applyToStockAction,
     ) {
     }
 
@@ -37,7 +37,7 @@ final readonly class ReceivePurchaseUseCase
                 'received_at' => now()->toDateTimeString(),
             ]);
 
-            $this->applyToStock->execute($updated->load('items'));
+            $this->applyToStockAction->execute($updated->load('items'));
 
             return $updated;
         });

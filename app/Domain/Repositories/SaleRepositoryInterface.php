@@ -4,36 +4,51 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\DTOs\SaleInputDTO;
 use App\Domain\Models\Sale;
 
 interface SaleRepositoryInterface
 {
     /**
-     * Create a new Sale record.
-     *
-     * @param array<string, mixed> $data
+     * Create a new sale record.
      */
-    public function create(array $data): Sale;
+    public function create(SaleInputDTO $dto): Sale;
 
     /**
-     * Update an existing Sale record.
+     * Update an existing sale record.
      *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?Sale;
+    public function update(string $id, array $attributes): Sale;
 
     /**
-     * Delete a Sale record.
+     * Delete a sale record (soft delete).
      */
     public function delete(string $id): bool;
 
     /**
-     * Paginate Sale records.
+     * Find a sale by ID or throw ModelNotFoundException.
      */
-    public function paginate(int $page = 25): PaginationInterface;
+    public function findOrFail(string $id): Sale;
 
     /**
-     * Find a Sale by a specific field.
+     * Paginate sales filtered by company.
+     *
+     * @param array{
+     *     company_id: string,
+     *     client_id?: string|null,
+     *     batch_id?: string|null,
+     *     status?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function showSale(string $field, string | int $value): ?Sale;
+    public function paginate(array $filters): PaginationInterface;
+
+    /**
+     * Total kg already sold from a given stocking (excluding soft-deleted and cancelled records).
+     * Pass $excludeSaleId to omit the current sale when re-validating on update.
+     */
+    public function soldWeightByStocking(string $stockingId, ?string $excludeSaleId = null): float;
 }

@@ -4,49 +4,40 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\FinancialCategory;
 
+use App\Domain\Enums\FinancialType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class FinancialCategoryUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'company_id' => ['sometimes', 'uuid', 'exists:companies,id'],
-            'name'       => ['sometimes', 'string', 'max:100'],
-            'type'       => ['sometimes', 'string', 'in:income,expense'],
+            'name' => ['sometimes', 'string', 'max:100'],
+            'type' => ['sometimes', 'string', new Enum(FinancialType::class)],
         ];
     }
 
     /**
-     * Get custom error messages for validation rules.
-     *
      * @return array<string, string>
      */
     #[\Override]
     public function messages(): array
     {
         return [
-            'company_id.uuid'   => 'The company ID must be a valid UUID.',
-            'company_id.exists' => 'The selected company does not exist.',
-
             'name.string' => 'The financial category name must be a string.',
-            'name.max'    => 'The financial category name may not be greater than 100 characters.',
+            'name.max'    => 'The financial category name cannot exceed 100 characters.',
 
-            'type.string' => 'The category type must be a string.',
-            'type.in'     => 'The category type must be either "income" or "expense".',
+            'type.Illuminate\Validation\Rules\Enum' => 'The financial category type must be:  '
+                . 'revenue (Revenue), expense (Expense) or investment (Investment).',
         ];
     }
 }

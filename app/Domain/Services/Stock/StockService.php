@@ -290,12 +290,12 @@ class StockService
 
         $dto = new StockTransactionDTO(
             companyId:     $companyId,
-            supplyId:      $supplyId,
             quantity:      $quantity,
             unitPrice:     $unitPrice,
             totalCost:     $totalCost,
-            unit:          $unit->value,
+            unit:          $unit,
             direction:     $direction,
+            supplyId:      $supplyId,
             referenceId:   $referenceId,
             referenceType: $referenceType,
         );

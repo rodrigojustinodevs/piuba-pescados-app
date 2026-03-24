@@ -36,4 +36,19 @@ interface StockingRepositoryInterface
      * Find a stocking by a specific field.
      */
     public function showStocking(string $field, string | int $value): ?Stocking;
+
+    /**
+     * Adds amounts to accumulated_fixed_cost for multiple stockings in ONE query.
+     *
+     * @param array<string, float> $amountsByStockingId  stocking_id → amount to add
+     */
+    public function bulkIncrementFixedCost(array $amountsByStockingId): void;
+
+    /**
+     * Subtracts amounts from accumulated_fixed_cost for multiple stockings in ONE query.
+     * The column is floored at 0 to prevent negative values caused by floating-point drift.
+     *
+     * @param array<string, float> $amountsByStockingId  stocking_id → amount to subtract
+     */
+    public function bulkDecrementFixedCost(array $amountsByStockingId): void;
 }

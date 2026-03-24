@@ -4,64 +4,44 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\Sale;
 
+use App\Domain\Enums\SaleStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class SaleUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'company_id'    => ['sometimes', 'uuid', 'exists:companies,id'],
-            'client_id'     => ['sometimes', 'uuid', 'exists:clients,id'],
-            'batch_id'      => ['sometimes', 'uuid', 'exists:batches,id'],
-            'total_weight'  => ['sometimes', 'numeric', 'min:0'],
-            'price_per_kg'  => ['sometimes', 'numeric', 'min:0'],
-            'total_revenue' => ['sometimes', 'numeric', 'min:0'],
-            'sale_date'     => ['sometimes', 'date'],
+            'client_id'    => ['sometimes', 'uuid', 'exists:clients,id'],
+            'total_weight' => ['sometimes', 'numeric', 'min:0.001'],
+            'price_per_kg' => ['sometimes', 'numeric', 'min:0'],
+            'sale_date'    => ['sometimes', 'date'],
+            'status'       => ['sometimes', new Enum(SaleStatus::class)],
+            'notes'        => ['nullable', 'string'],
         ];
     }
 
     /**
-     * Get custom error messages for validation rules.
-     *
      * @return array<string, string>
      */
     #[\Override]
     public function messages(): array
     {
         return [
-            'company_id.uuid'   => 'The company ID must be a valid UUID.',
-            'company_id.exists' => 'The company must exist in the companies table.',
-
-            'client_id.uuid'   => 'The client ID must be a valid UUID.',
-            'client_id.exists' => 'The client must exist in the clients table.',
-
-            'batch_id.uuid'   => 'The batch ID must be a valid UUID.',
-            'batch_id.exists' => 'The batch must exist in the batches table.',
-
-            'total_weight.numeric' => 'The total weight must be a number.',
-            'total_weight.min'     => 'The total weight must be at least 0.',
-
-            'price_per_kg.numeric' => 'The price per kilogram must be a number.',
-            'price_per_kg.min'     => 'The price per kilogram must be at least 0.',
-
-            'total_revenue.numeric' => 'The total revenue must be a number.',
-            'total_revenue.min'     => 'The total revenue must be at least 0.',
-
-            'sale_date.date' => 'The sale date must be a valid date.',
+            'client_id.exists'                        => 'The selected customer does not exist.',
+            'total_weight.min'                        => 'The total weight must be greater than zero.',
+            'price_per_kg.min'                        => 'The price per kg must be greater than zero.',
+            'sale_date.date'                          => 'The sale date must be a valid date.',
+            'status.Illuminate\Validation\Rules\Enum' => 'The status must be: pending, confirmed or cancelled.',
         ];
     }
 }

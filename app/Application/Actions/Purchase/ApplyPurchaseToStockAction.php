@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Actions;
+namespace App\Application\Actions\Purchase;
 
 use App\Application\DTOs\StockInputDTO;
 use App\Application\UseCases\Stock\AddStockEntryBySupplyUseCase;

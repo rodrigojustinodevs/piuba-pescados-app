@@ -11,6 +11,7 @@ enum StockTransactionReferenceType: string
     case ADJUSTMENT    = 'adjustment';
     case TRANSFER      = 'transfer';
     case STOCKING      = 'stocking';
+    case SALE          = 'sale';
 
     public function label(): string
     {
@@ -20,6 +21,7 @@ enum StockTransactionReferenceType: string
             self::ADJUSTMENT    => 'Adjustment',
             self::TRANSFER      => 'Transfer',
             self::STOCKING      => 'Stocking',
+            self::SALE          => 'Sale',
         };
     }
 }

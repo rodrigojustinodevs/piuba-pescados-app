@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Purchase;
 
-use App\Application\Actions\ApplyPurchaseToStockAction;
+use App\Application\Actions\Purchase\ApplyPurchaseToStockAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\PurchaseDTO;
 use App\Domain\Enums\PurchaseStatus;
@@ -16,13 +16,13 @@ final readonly class UpdatePurchaseUseCase
 {
     public function __construct(
         private PurchaseRepositoryInterface $repository,
-        private ApplyPurchaseToStockAction $applyToStock,
+        private ApplyPurchaseToStockAction $applyToStockAction,
         private CompanyResolverInterface $companyResolver,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data Dados já validados pelo FormRequest
+     * @param array<string, mixed> $data Validated data from the FormRequest
      */
     public function execute(string $id, array $data): Purchase
     {
@@ -48,7 +48,7 @@ final readonly class UpdatePurchaseUseCase
             $this->repository->syncItems($updated, $dto->items);
 
             if (! $wasReceived && $dto->status->isReceived()) {
-                $this->applyToStock->execute($updated->load('items'));
+                $this->applyToStockAction->execute($updated);
             }
 
             return $updated->refresh();

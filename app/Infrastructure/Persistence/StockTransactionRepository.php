@@ -22,7 +22,7 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
             'quantity'       => $dto->quantity,
             'unit_price'     => $dto->unitPrice,
             'total_cost'     => $dto->totalCost,
-            'unit'           => $dto->unit,
+            'unit'           => $dto->unit->value,
             'direction'      => $dto->direction->value,
             'reference_id'   => $dto->referenceId,
             'reference_type' => $dto->referenceType?->value,

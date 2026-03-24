@@ -8,6 +8,7 @@ use App\Domain\Models\Stocking;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class StockingRepository implements StockingRepositoryInterface
 {
@@ -69,5 +70,61 @@ class StockingRepository implements StockingRepositoryInterface
         }
 
         return (bool) $stocking->delete();
+    }
+
+    public function bulkIncrementFixedCost(array $amountsByStockingId): void
+    {
+        if ($amountsByStockingId === []) {
+            return;
+        }
+
+        $this->bulkAdjustFixedCost($amountsByStockingId, '+');
+    }
+
+    public function bulkDecrementFixedCost(array $amountsByStockingId): void
+    {
+        if ($amountsByStockingId === []) {
+            return;
+        }
+
+        $this->bulkAdjustFixedCost($amountsByStockingId, '-');
+    }
+
+    /**
+     * Builds and executes a single CASE WHEN UPDATE for all stockings.
+     *
+     * Generated SQL (example with 2 rows):
+     *   UPDATE stockings
+     *   SET accumulated_fixed_cost = GREATEST(0, CASE id
+     *       WHEN ? THEN accumulated_fixed_cost + ?
+     *       WHEN ? THEN accumulated_fixed_cost + ?
+     *   END)
+     *   WHERE id IN (?, ?)
+     *
+     * @param array<string, float> $amountsByStockingId
+     * @param '+'|'-'              $operator
+     */
+    private function bulkAdjustFixedCost(array $amountsByStockingId, string $operator): void
+    {
+        $caseSql      = 'CASE id';
+        $caseBindings = [];
+
+        foreach ($amountsByStockingId as $stockingId => $amount) {
+            $caseSql .= ' WHEN ? THEN accumulated_fixed_cost ' . $operator . ' ?';
+            $caseBindings[] = $stockingId;
+            $caseBindings[] = abs($amount);
+        }
+
+        $caseSql .= ' END';
+
+        $ids      = array_keys($amountsByStockingId);
+        $inSql    = implode(', ', array_fill(0, count($ids), '?'));
+        $bindings = array_merge($caseBindings, $ids);
+
+        // GREATEST(0, ...) prevents the column from going negative on decrement
+        DB::statement(
+            "UPDATE stockings SET accumulated_fixed_cost = GREATEST(0, {$caseSql}) WHERE id IN ({$inSql})",
+            $bindings,
+        );
     }
 }

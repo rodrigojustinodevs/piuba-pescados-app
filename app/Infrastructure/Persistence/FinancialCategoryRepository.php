@@ -4,73 +4,104 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\FinancialCategoryInputDTO;
+use App\Domain\Enums\FinancialCategoryStatus;
+use App\Domain\Enums\FinancialType;
+use App\Domain\Exceptions\FinancialCategoryHasTransactionsException;
 use App\Domain\Models\FinancialCategory;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class FinancialCategoryRepository implements FinancialCategoryRepositoryInterface
+final class FinancialCategoryRepository implements FinancialCategoryRepositoryInterface
 {
-    /**
-     * Create a new financial category.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): FinancialCategory
+    public function create(FinancialCategoryInputDTO $dto): FinancialCategory
     {
-        return FinancialCategory::create($data);
+        /** @var FinancialCategory $category */
+        $category = FinancialCategory::create([
+            'company_id' => $dto->companyId,
+            'name'       => $dto->name,
+            'type'       => $dto->type->value,
+            'status'     => $dto->status->value,
+        ]);
+
+        return $category->load('company:id,name');
     }
 
     /**
-     * Update an existing financial category.
-     *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?FinancialCategory
+    public function update(string $id, array $attributes): FinancialCategory
     {
-        $financialCategory = FinancialCategory::find($id);
+        $category = $this->findOrFail($id);
 
-        if ($financialCategory) {
-            $financialCategory->update($data);
+        $category->update($attributes);
 
-            return $financialCategory;
+        return $category->refresh()->load('company:id,name');
+    }
+
+    /**
+     * Throws FinancialCategoryHasTransactionsException when the category has
+     * linked transactions instead of a hard delete.
+     */
+    public function delete(string $id): bool
+    {
+        $category = $this->findOrFail($id);
+
+        if ($this->hasTransactions($id)) {
+            throw new FinancialCategoryHasTransactionsException($id);
         }
 
-        return null;
+        return (bool) $category->delete();
+    }
+
+    public function findOrFail(string $id): FinancialCategory
+    {
+        return FinancialCategory::with('company:id,name')->findOrFail($id);
     }
 
     /**
-     * Get paginated financial categories.
+     * @param array{
+     *     company_id: string,
+     *     type?: string|null,
+     *     status?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function paginate(int $page = 25): PaginationInterface
+    public function paginate(array $filters): PaginationInterface
     {
-        /** @var LengthAwarePaginator<int, FinancialCategory> $paginator */
-        $paginator = FinancialCategory::with([
-            'company:id,name',
-        ])->paginate($page);
+        $paginator = FinancialCategory::with('company:id,name')
+            ->where('company_id', $filters['company_id'])
+            ->when(
+                ! empty($filters['type']),
+                static fn ($q) => $q->where(
+                    'type',
+                    FinancialType::from((string) $filters['type'])->value,
+                ),
+            )
+            ->when(
+                isset($filters['status']) && $filters['status'] !== '',
+                static fn ($q) => $q->where(
+                    'status',
+                    FinancialCategoryStatus::from((string) $filters['status'])->value,
+                ),
+            )
+            ->latest()
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show financial category by field and value.
-     */
     public function showFinancialCategory(string $field, string | int $value): ?FinancialCategory
     {
-        return FinancialCategory::where($field, $value)->first();
+        return FinancialCategory::with('company:id,name')
+            ->where($field, $value)
+            ->first();
     }
 
-    /**
-     * Delete a financial category.
-     */
-    public function delete(string $id): bool
+    public function hasTransactions(string $id): bool
     {
-        $financialCategory = FinancialCategory::find($id);
-
-        if (! $financialCategory) {
-            return false;
-        }
-
-        return (bool) $financialCategory->delete();
+        return FinancialCategory::where('id', $id)
+            ->whereHas('financialTransactions')
+            ->exists();
     }
 }

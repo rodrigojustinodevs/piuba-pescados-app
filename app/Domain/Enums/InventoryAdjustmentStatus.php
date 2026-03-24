@@ -13,9 +13,9 @@ enum InventoryAdjustmentStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::PENDING   => 'Pendente',
-            self::APPLIED   => 'Aplicado',
-            self::CANCELLED => 'Cancelado',
+            self::PENDING   => 'Pending',
+            self::APPLIED   => 'Applied',
+            self::CANCELLED => 'Cancelled',
         };
     }
 }

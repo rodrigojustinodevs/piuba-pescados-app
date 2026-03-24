@@ -4,47 +4,40 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\FinancialTransaction;
 
-use App\Application\DTOs\FinancialTransactionDTO;
-use App\Domain\Enums\FinancialType;
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Application\DTOs\FinancialTransactionInputDTO;
+use App\Application\Services\FinancialTransactionService;
+use App\Domain\Models\FinancialTransaction;
 use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class CreateFinancialTransactionUseCase
+final readonly class CreateFinancialTransactionUseCase
 {
     public function __construct(
-        protected FinancialTransactionRepositoryInterface $financialTransactionRepository
+        private FinancialTransactionRepositoryInterface $repository,
+        private CompanyResolverInterface $companyResolver,
+        private FinancialTransactionService $transactionService,
     ) {
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data Dados já validados pelo FormRequest
      */
-    public function execute(array $data): FinancialTransactionDTO
+    public function execute(array $data): FinancialTransaction
     {
-        return DB::transaction(function () use ($data): FinancialTransactionDTO {
-            $transaction = $this->financialTransactionRepository->create($data);
+        $data['company_id'] = $this->companyResolver->resolve(
+            hint: $data['company_id'] ?? $data['companyId'] ?? null,
+        );
 
-            $transactionDate = $transaction->transaction_date instanceof Carbon
-                ? $transaction->transaction_date
-                : Carbon::parse($transaction->transaction_date);
+        $dto = FinancialTransactionInputDTO::fromArray($data);
 
-            return new FinancialTransactionDTO(
-                id: $transaction->id,
-                type: FinancialType::from($transaction->type),
-                description: $transaction->description,
-                amount: (float) $transaction->amount,
-                transactionDate: $transactionDate->toDateString(),
-                company: [
-                    'name' => $transaction->company->name ?? '',
-                ],
-                category: [
-                    'id'   => $transaction->category->id ?? '',
-                    'name' => $transaction->category->name ?? '',
-                ],
-                createdAt: $transaction->created_at?->toDateTimeString(),
-                updatedAt: $transaction->updated_at?->toDateTimeString()
-            );
-        });
+        $this->transactionService->validateCategoryType(
+            categoryId:      $dto->financialCategoryId,
+            transactionType: $dto->type,
+        );
+
+        $dto = $this->transactionService->applyPaymentDateToDTO($dto);
+
+        return DB::transaction(fn (): FinancialTransaction => $this->repository->create($dto));
     }
 }

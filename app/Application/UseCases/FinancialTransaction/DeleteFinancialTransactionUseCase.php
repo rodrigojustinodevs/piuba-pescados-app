@@ -7,15 +7,19 @@ namespace App\Application\UseCases\FinancialTransaction;
 use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteFinancialTransactionUseCase
+final readonly class DeleteFinancialTransactionUseCase
 {
     public function __construct(
-        protected FinancialTransactionRepositoryInterface $financialTransactionRepository
+        private FinancialTransactionRepositoryInterface $repository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->financialTransactionRepository->delete($id));
+        $this->repository->findOrFail($id);
+
+        DB::transaction(function () use ($id): void {
+            $this->repository->delete($id);
+        });
     }
 }

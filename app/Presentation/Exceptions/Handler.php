@@ -5,11 +5,19 @@ declare(strict_types=1);
 namespace App\Presentation\Exceptions;
 
 use App\Application\Exceptions\CompanyNotFoundException;
+use App\Domain\Exceptions\AllocationAmountMismatchException;
+use App\Domain\Exceptions\CategoryTypeMismatchException;
+use App\Domain\Exceptions\ClosedStockingException;
 use App\Domain\Exceptions\DuplicateStockException;
+use App\Domain\Exceptions\FinancialCategoryHasTransactionsException;
+use App\Domain\Exceptions\InactiveStockingException;
+use App\Domain\Exceptions\InsufficientBiomassException;
 use App\Domain\Exceptions\InsufficientStockException;
 use App\Domain\Exceptions\InvalidCredentialsException;
 use App\Domain\Exceptions\InvalidPurchaseStatusTransitionException;
 use App\Domain\Exceptions\StockNotFoundException;
+use App\Domain\Exceptions\TransactionAlreadyAllocatedException;
+use App\Domain\Exceptions\TransactionAmountImmutableException;
 use App\Domain\Exceptions\UnauthorizedException;
 use App\Domain\Exceptions\ZeroDeltaException;
 use App\Presentation\Response\ApiResponse;
@@ -42,6 +50,18 @@ class Handler extends ExceptionHandler
         DuplicateStockException::class,
         InsufficientStockException::class,
         StockNotFoundException::class,
+        // FinancialCategory
+        FinancialCategoryHasTransactionsException::class,
+        // FinancialTransaction
+        TransactionAmountImmutableException::class,
+        CategoryTypeMismatchException::class,
+        // Sale
+        InsufficientBiomassException::class,
+        ClosedStockingException::class,
+        // CostAllocation
+        TransactionAlreadyAllocatedException::class,
+        AllocationAmountMismatchException::class,
+        InactiveStockingException::class,
     ];
 
     protected $dontFlash = [
@@ -104,6 +124,72 @@ class Handler extends ExceptionHandler
             fn (StockNotFoundException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_NOT_FOUND,
+            )
+        );
+
+        // -----------------------------------------------------------------------
+        // FinancialCategory
+        // -----------------------------------------------------------------------
+        $this->renderable(
+            fn (FinancialCategoryHasTransactionsException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        // -----------------------------------------------------------------------
+        // FinancialTransaction
+        // -----------------------------------------------------------------------
+        $this->renderable(
+            fn (TransactionAmountImmutableException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (CategoryTypeMismatchException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        // -----------------------------------------------------------------------
+        // Sale
+        // -----------------------------------------------------------------------
+        $this->renderable(
+            fn (InsufficientBiomassException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (ClosedStockingException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        // -----------------------------------------------------------------------
+        // CostAllocation
+        // -----------------------------------------------------------------------
+        $this->renderable(
+            fn (TransactionAlreadyAllocatedException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        $this->renderable(
+            fn (AllocationAmountMismatchException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        $this->renderable(
+            fn (InactiveStockingException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )
         );
 

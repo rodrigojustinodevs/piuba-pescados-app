@@ -31,6 +31,8 @@ class SaleStoreRequest extends FormRequest
             'sale_date'             => ['required', 'date'],
             'status'                => ['nullable', new Enum(SaleStatus::class)],
             'notes'                 => ['nullable', 'string'],
+            'is_total_harvest'      => ['nullable', 'boolean'],
+            'tolerance_percent'     => ['nullable', 'numeric', 'min:0', 'max:50'],
         ];
     }
 
@@ -41,28 +43,33 @@ class SaleStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'client_id.required' => 'O cliente é obrigatório.',
-            'client_id.exists'   => 'O cliente selecionado não existe.',
+            'client_id.required' => 'The customer is required.',
+            'client_id.exists'   => 'The selected customer does not exist.',
 
-            'batch_id.required' => 'O lote é obrigatório.',
-            'batch_id.exists'   => 'O lote selecionado não existe.',
+            'batch_id.required' => 'The batch is required.',
+            'batch_id.exists'   => 'The selected batch does not exist.',
 
-            'stocking_id.exists' => 'A estocagem selecionada não existe.',
+            'stocking_id.exists' => 'The selected stocking does not exist.',
 
-            'financial_category_id.exists' => 'A categoria financeira selecionada não existe.',
+            'financial_category_id.exists' => 'The selected financial category does not exist.',
 
-            'total_weight.required' => 'O peso total é obrigatório.',
-            'total_weight.numeric'  => 'O peso total deve ser numérico.',
-            'total_weight.min'      => 'O peso total deve ser maior que zero.',
+            'total_weight.required' => 'The total weight is required.',
+            'total_weight.numeric'  => 'The total weight must be numeric.',
+            'total_weight.min'      => 'The total weight must be greater than zero.',
 
-            'price_per_kg.required' => 'O preço por kg é obrigatório.',
-            'price_per_kg.numeric'  => 'O preço por kg deve ser numérico.',
-            'price_per_kg.min'      => 'O preço por kg não pode ser negativo.',
+            'price_per_kg.required' => 'The price per kg is required.',
+            'price_per_kg.numeric'  => 'The price per kg must be numeric.',
+            'price_per_kg.min'      => 'The price per kg must be greater than zero.',
 
-            'sale_date.required' => 'A data da venda é obrigatória.',
-            'sale_date.date'     => 'A data da venda deve ser uma data válida.',
+            'sale_date.required' => 'The sale date is required.',
+            'sale_date.date'     => 'The sale date must be a valid date.',
 
-            'status.Illuminate\Validation\Rules\Enum' => 'O status deve ser: pending, confirmed ou cancelled.',
+            'status.Illuminate\Validation\Rules\Enum' => 'The status must be: pending, confirmed or cancelled.',
+
+            'is_total_harvest.boolean'  => 'The total harvest field must be true or false.',
+            'tolerance_percent.numeric' => 'The tolerance percent must be numeric.',
+            'tolerance_percent.min'     => 'The tolerance percent must be greater than zero.',
+            'tolerance_percent.max'     => 'The tolerance percent must be less than or equal to 50.',
         ];
     }
 }

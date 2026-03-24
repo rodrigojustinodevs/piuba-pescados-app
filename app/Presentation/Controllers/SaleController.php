@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\UseCases\Sale\CreateSaleUseCase;
 use App\Application\UseCases\Sale\DeleteSaleUseCase;
 use App\Application\UseCases\Sale\ListSalesUseCase;
+use App\Application\UseCases\Sale\ProcessHarvestSaleUseCase;
 use App\Application\UseCases\Sale\ShowSaleUseCase;
 use App\Application\UseCases\Sale\UpdateSaleUseCase;
 use App\Presentation\Requests\Sale\SaleStoreRequest;
@@ -54,7 +54,7 @@ class SaleController
 
     public function store(
         SaleStoreRequest $request,
-        CreateSaleUseCase $useCase,
+        ProcessHarvestSaleUseCase $useCase,
     ): JsonResponse {
         $sale = $useCase->execute($request->validated());
 

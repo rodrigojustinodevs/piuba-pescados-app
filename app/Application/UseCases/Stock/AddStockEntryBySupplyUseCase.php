@@ -9,6 +9,7 @@ use App\Application\DTOs\StockInputDTO;
 use App\Application\DTOs\StockTransactionDTO;
 use App\Domain\Enums\StockTransactionDirection;
 use App\Domain\Enums\StockTransactionReferenceType;
+use App\Domain\Enums\Unit;
 use App\Domain\Models\Stock;
 use App\Domain\Repositories\StockRepositoryInterface;
 use Illuminate\Support\Facades\DB;
@@ -43,12 +44,12 @@ final readonly class AddStockEntryBySupplyUseCase
 
             $this->registerTransaction->execute(new StockTransactionDTO(
                 companyId:     $dto->companyId,
-                supplyId:      $dto->supplyId,
                 quantity:      $dto->quantity,
                 unitPrice:     $dto->unitPrice,
                 totalCost:     $dto->totalCost,
-                unit:          $dto->unit,
+                unit:          Unit::from($dto->unit),
                 direction:     StockTransactionDirection::IN,
+                supplyId:      $dto->supplyId,
                 referenceId:   $dto->referenceId,
                 referenceType: StockTransactionReferenceType::PURCHASE_ITEM,
             ));

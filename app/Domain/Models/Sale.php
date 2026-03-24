@@ -54,15 +54,17 @@ class Sale extends BaseModel
         'sale_date',
         'status',
         'notes',
+        'is_total_harvest',
     ];
 
     /** @var array<string, string|class-string> */
     protected $casts = [
-        'status'        => SaleStatus::class,
-        'total_weight'  => 'float',
-        'price_per_kg'  => 'decimal:2',
-        'total_revenue' => 'decimal:2',
-        'sale_date'     => 'date:Y-m-d',
+        'status'           => SaleStatus::class,
+        'total_weight'     => 'float',
+        'price_per_kg'     => 'decimal:2',
+        'total_revenue'    => 'decimal:2',
+        'sale_date'        => 'date:Y-m-d',
+        'is_total_harvest' => 'boolean',
     ];
 
     #[\Override]

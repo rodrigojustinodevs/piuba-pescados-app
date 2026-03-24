@@ -27,6 +27,7 @@ final class SaleRepository implements SaleRepositoryInterface
             'sale_date'             => $dto->saleDate,
             'status'                => $dto->status->value,
             'notes'                 => $dto->notes,
+            'is_total_harvest'      => $dto->isHarvestTotal,
         ]);
 
         return $sale->load(['company:id,name', 'client:id,name', 'batch:id,name', 'stocking']);

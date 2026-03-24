@@ -7,6 +7,7 @@ namespace App\Presentation\Exceptions;
 use App\Application\Exceptions\CompanyNotFoundException;
 use App\Domain\Exceptions\AllocationAmountMismatchException;
 use App\Domain\Exceptions\CategoryTypeMismatchException;
+use App\Domain\Exceptions\ClosedStockingException;
 use App\Domain\Exceptions\DuplicateStockException;
 use App\Domain\Exceptions\FinancialCategoryHasTransactionsException;
 use App\Domain\Exceptions\InactiveStockingException;
@@ -56,6 +57,7 @@ class Handler extends ExceptionHandler
         CategoryTypeMismatchException::class,
         // Sale
         InsufficientBiomassException::class,
+        ClosedStockingException::class,
         // CostAllocation
         TransactionAlreadyAllocatedException::class,
         AllocationAmountMismatchException::class,
@@ -156,6 +158,12 @@ class Handler extends ExceptionHandler
         // -----------------------------------------------------------------------
         $this->renderable(
             fn (InsufficientBiomassException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (ClosedStockingException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )

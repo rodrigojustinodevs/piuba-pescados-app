@@ -37,11 +37,11 @@ class SaleUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'client_id.exists'                        => 'O cliente selecionado não existe.',
-            'total_weight.min'                        => 'O peso total deve ser maior que zero.',
-            'price_per_kg.min'                        => 'O preço por kg não pode ser negativo.',
-            'sale_date.date'                          => 'A data da venda deve ser uma data válida.',
-            'status.Illuminate\Validation\Rules\Enum' => 'O status deve ser: pending, confirmed ou cancelled.',
+            'client_id.exists'                        => 'The selected customer does not exist.',
+            'total_weight.min'                        => 'The total weight must be greater than zero.',
+            'price_per_kg.min'                        => 'The price per kg must be greater than zero.',
+            'sale_date.date'                          => 'The sale date must be a valid date.',
+            'status.Illuminate\Validation\Rules\Enum' => 'The status must be: pending, confirmed or cancelled.',
         ];
     }
 }

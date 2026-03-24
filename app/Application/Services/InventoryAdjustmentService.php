@@ -10,6 +10,7 @@ use App\Application\DTOs\StockTransactionDTO;
 use App\Domain\Enums\InventoryAdjustmentStatus;
 use App\Domain\Enums\StockTransactionDirection;
 use App\Domain\Enums\StockTransactionReferenceType;
+use App\Domain\Enums\Unit;
 use App\Domain\Exceptions\ZeroDeltaException;
 use App\Domain\Models\Stock;
 use App\Domain\Repositories\InventoryAdjustmentRepositoryInterface;
@@ -63,12 +64,12 @@ final readonly class InventoryAdjustmentService
 
         $transaction = $this->transactionRepository->create(new StockTransactionDTO(
             companyId:     $stock->company_id,
-            supplyId:      $stock->supply_id,
             quantity:      $absoluteDelta,
             unitPrice:     $unitPrice,
             totalCost:     round($absoluteDelta * $unitPrice, 2),
-            unit:          $stock->unit,
+            unit:          Unit::from((string) $stock->unit),
             direction:     $direction,
+            supplyId:      $stock->supply_id,
             referenceId:   $adjustment->id,
             referenceType: StockTransactionReferenceType::ADJUSTMENT,
         ));

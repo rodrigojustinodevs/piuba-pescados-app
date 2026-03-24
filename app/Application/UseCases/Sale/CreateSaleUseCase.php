@@ -4,47 +4,46 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Sale;
 
-use App\Application\DTOs\SaleDTO;
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Application\DTOs\SaleInputDTO;
+use App\Application\Services\SaleService;
+use App\Domain\Models\Sale;
 use App\Domain\Repositories\SaleRepositoryInterface;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class CreateSaleUseCase
+final readonly class CreateSaleUseCase
 {
     public function __construct(
-        protected SaleRepositoryInterface $saleRepository
+        private SaleRepositoryInterface $repository,
+        private CompanyResolverInterface $companyResolver,
+        private SaleService $saleService,
     ) {
     }
 
     /**
-     * @param  array<string, mixed>  $data
+     * @param array<string, mixed> $data Data already validated by the FormRequest
      */
-    public function execute(array $data): SaleDTO
+    public function execute(array $data): Sale
     {
-        return DB::transaction(function () use ($data): SaleDTO {
-            $sale = $this->saleRepository->create($data);
+        $data['company_id'] = $this->companyResolver->resolve(
+            hint: $data['company_id'] ?? $data['companyId'] ?? null,
+        );
 
-            $saleDate = $sale->sale_date instanceof Carbon
-                ? $sale->sale_date
-                : Carbon::parse($sale->sale_date);
+        $dto = SaleInputDTO::fromArray($data);
 
-            return new SaleDTO(
-                id: $sale->id,
-                totalWeight: $sale->total_weight,
-                pricePerKg: $sale->price_per_kg,
-                totalRevenue: $sale->total_revenue,
-                saleDate: $saleDate->toDateString(),
-                company: [
-                    'name' => $sale->company->name ?? null,
-                ],
-                client: [
-                    'id'   => $sale->client->id ?? null,
-                    'name' => $sale->client->name ?? null,
-                ],
-                batchId: $sale->batch_id,
-                createdAt: $sale->created_at?->toDateTimeString(),
-                updatedAt: $sale->updated_at?->toDateTimeString()
-            );
+        return DB::transaction(function () use ($dto): Sale {
+            if ($dto->stockingId !== null) {
+                $this->saleService->guardBiomass(
+                    stockingId:      $dto->stockingId,
+                    requestedWeight: $dto->totalWeight,
+                );
+            }
+
+            $sale = $this->repository->create($dto);
+
+            $this->saleService->generateReceivable($dto, $sale);
+
+            return $sale;
         });
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\SaleDTO;
 use App\Application\UseCases\Sale\CreateSaleUseCase;
 use App\Application\UseCases\Sale\DeleteSaleUseCase;
 use App\Application\UseCases\Sale\ListSalesUseCase;
@@ -12,90 +11,78 @@ use App\Application\UseCases\Sale\ShowSaleUseCase;
 use App\Application\UseCases\Sale\UpdateSaleUseCase;
 use App\Presentation\Requests\Sale\SaleStoreRequest;
 use App\Presentation\Requests\Sale\SaleUpdateRequest;
+use App\Presentation\Resources\Sale\SaleResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use Throwable;
+use Illuminate\Http\Request;
 
 class SaleController
 {
-    /**
-     * Display a listing of sales.
-     */
-    public function index(ListSalesUseCase $useCase): JsonResponse
-    {
-        try {
-            $sales      = $useCase->execute();
-            $data       = $sales->toArray(request());
-            $pagination = $sales->additional['pagination'] ?? null;
+    public function index(
+        Request $request,
+        ListSalesUseCase $useCase,
+    ): JsonResponse {
+        $paginator = $useCase->execute(
+            filters: $request->only([
+                'client_id', 'batch_id', 'status',
+                'date_from', 'date_to', 'per_page', 'page',
+            ]),
+        );
 
-            return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception);
-        }
+        return ApiResponse::success(
+            data:       SaleResource::collection($paginator->items()),
+            pagination: [
+                'total'        => $paginator->total(),
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'first_page'   => $paginator->firstPage(),
+                'per_page'     => $paginator->perPage(),
+            ],
+        );
     }
 
-    /**
-     * Display the specified sale.
-     */
-    public function show(string $id, ShowSaleUseCase $useCase): JsonResponse
-    {
-        try {
-            $sale = $useCase->execute($id);
+    public function show(
+        string $id,
+        ShowSaleUseCase $useCase,
+    ): JsonResponse {
+        $sale = $useCase->execute($id);
 
-            if (! $sale instanceof SaleDTO || $sale->isEmpty()) {
-                return ApiResponse::error(null, 'Sale not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($sale->toArray(), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Sale not found', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(
+            data: new SaleResource($sale),
+        );
     }
 
-    /**
-     * Store a newly created sale.
-     */
-    public function store(SaleStoreRequest $request, CreateSaleUseCase $useCase): JsonResponse
-    {
-        try {
-            $sale = $useCase->execute($request->validated());
+    public function store(
+        SaleStoreRequest $request,
+        CreateSaleUseCase $useCase,
+    ): JsonResponse {
+        $sale = $useCase->execute($request->validated());
 
-            return ApiResponse::created($sale->toArray());
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::created(
+            data:    new SaleResource($sale),
+            message: 'Venda registrada com sucesso.',
+        );
     }
 
-    /**
-     * Update the specified sale.
-     */
-    public function update(SaleUpdateRequest $request, string $id, UpdateSaleUseCase $useCase): JsonResponse
-    {
-        try {
-            $sale = $useCase->execute($id, $request->validated());
+    public function update(
+        SaleUpdateRequest $request,
+        string $id,
+        UpdateSaleUseCase $useCase,
+    ): JsonResponse {
+        $sale = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($sale->toArray(), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::success(
+            data:    new SaleResource($sale),
+            message: 'Venda atualizada com sucesso.',
+        );
     }
 
-    /**
-     * Remove the specified sale.
-     */
-    public function destroy(string $id, DeleteSaleUseCase $useCase): JsonResponse
-    {
-        try {
-            $deleted = $useCase->execute($id);
+    public function destroy(
+        string $id,
+        DeleteSaleUseCase $useCase,
+    ): JsonResponse {
+        $useCase->execute($id);
 
-            if (! $deleted) {
-                return ApiResponse::error(null, 'Sale not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success(null, Response::HTTP_OK, 'Sale successfully deleted');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Error deleting sale', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(message: 'Venda excluída com sucesso.');
     }
 }

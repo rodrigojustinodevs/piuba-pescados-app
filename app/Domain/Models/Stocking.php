@@ -12,11 +12,12 @@ use Illuminate\Support\Str;
 /**
  * Stocking (povoamento/estocagem) – aquaculture term for introducing organisms into a batch.
  *
- * @property string $id
- * @property string $batch_id
+ * @property string     $id
+ * @property string     $batch_id
  * @property Carbon|null $stocking_date
- * @property int $quantity
- * @property float $average_weight
+ * @property int        $quantity
+ * @property float      $average_weight
+ * @property float      $accumulated_fixed_cost
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Batch|null $batch
@@ -37,6 +38,7 @@ class Stocking extends BaseModel
         'stocking_date',
         'quantity',
         'average_weight',
+        'accumulated_fixed_cost',
     ];
 
     /** @var array<string> */
@@ -53,6 +55,11 @@ class Stocking extends BaseModel
         static::creating(function (Stocking $stocking): void {
             $stocking->id = (string) Str::uuid();
         });
+    }
+
+    public function initialBiomass(): float
+    {
+        return (float) $this->quantity * (float) $this->average_weight;
     }
 
     /**

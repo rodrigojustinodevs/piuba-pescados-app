@@ -4,74 +4,117 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\FinancialTransactionInputDTO;
+use App\Domain\Enums\FinancialTransactionStatus;
+use App\Domain\Enums\FinancialType;
 use App\Domain\Models\FinancialTransaction;
 use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class FinancialTransactionRepository implements FinancialTransactionRepositoryInterface
+final class FinancialTransactionRepository implements FinancialTransactionRepositoryInterface
 {
-    /**
-     * Create a new financial category.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): FinancialTransaction
+    public function create(FinancialTransactionInputDTO $dto): FinancialTransaction
     {
-        return FinancialTransaction::create($data);
+        /** @var FinancialTransaction $transaction */
+        $transaction = FinancialTransaction::create([
+            'company_id'            => $dto->companyId,
+            'financial_category_id' => $dto->financialCategoryId,
+            'type'                  => $dto->type->value,
+            'status'                => $dto->status->value,
+            'amount'                => $dto->amount,
+            'due_date'              => $dto->dueDate,
+            'payment_date'          => $dto->paymentDate,
+            'description'           => $dto->description,
+            'notes'                 => $dto->notes,
+            'reference_type'        => $dto->referenceType?->value,
+            'reference_id'          => $dto->referenceId,
+        ]);
+
+        return $transaction->load(['company:id,name', 'category:id,name,type']);
     }
 
     /**
-     * Update an existing financial category.
-     *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?FinancialTransaction
+    public function update(string $id, array $attributes): FinancialTransaction
     {
-        $financialTransaction = FinancialTransaction::find($id);
+        $transaction = $this->findOrFail($id);
 
-        if ($financialTransaction) {
-            $financialTransaction->update($data);
+        $transaction->update($attributes);
 
-            return $financialTransaction;
-        }
+        return $transaction->refresh()->load(['company:id,name', 'category:id,name,type']);
+    }
 
-        return null;
+    public function delete(string $id): bool
+    {
+        return (bool) $this->findOrFail($id)->delete();
+    }
+
+    public function findOrFail(string $id): FinancialTransaction
+    {
+        return FinancialTransaction::with([
+            'company:id,name',
+            'category:id,name,type',
+        ])->findOrFail($id);
     }
 
     /**
-     * Get paginated financial categories.
+     * @param array{
+     *     company_id: string,
+     *     status?: string|null,
+     *     type?: string|null,
+     *     financial_category_id?: string|null,
+     *     due_date_from?: string|null,
+     *     due_date_to?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function paginate(int $page = 25): PaginationInterface
+    public function paginate(array $filters): PaginationInterface
     {
-        /** @var LengthAwarePaginator<int, FinancialTransaction> $paginator */
         $paginator = FinancialTransaction::with([
             'company:id,name',
-            'category:id,name',
-        ])->paginate($page);
+            'category:id,name,type',
+        ])
+            ->where('company_id', $filters['company_id'])
+            ->when(
+                ! empty($filters['status']),
+                static fn ($q) => $q->where(
+                    'status',
+                    FinancialTransactionStatus::from((string) $filters['status'])->value,
+                ),
+            )
+            ->when(
+                ! empty($filters['type']),
+                static fn ($q) => $q->where(
+                    'type',
+                    FinancialType::from((string) $filters['type'])->value,
+                ),
+            )
+            ->when(
+                ! empty($filters['financial_category_id']),
+                static fn ($q) => $q->where('financial_category_id', $filters['financial_category_id']),
+            )
+            ->when(
+                ! empty($filters['due_date_from']),
+                static fn ($q) => $q->whereDate('due_date', '>=', $filters['due_date_from']),
+            )
+            ->when(
+                ! empty($filters['due_date_to']),
+                static fn ($q) => $q->whereDate('due_date', '<=', $filters['due_date_to']),
+            )
+            ->latest('due_date')
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show financial category by field and value.
-     */
     public function showFinancialTransaction(string $field, string | int $value): ?FinancialTransaction
     {
-        return FinancialTransaction::where($field, $value)->first();
-    }
-
-    /**
-     * Delete a financial category.
-     */
-    public function delete(string $id): bool
-    {
-        $financialTransaction = FinancialTransaction::find($id);
-
-        if (! $financialTransaction) {
-            return false;
-        }
-
-        return (bool) $financialTransaction->delete();
+        return FinancialTransaction::with([
+            'company:id,name',
+            'category:id,name,type',
+        ])
+            ->where($field, $value)
+            ->first();
     }
 }

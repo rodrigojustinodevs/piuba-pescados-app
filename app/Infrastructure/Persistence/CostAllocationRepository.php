@@ -4,70 +4,95 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\CostAllocationInputDTO;
+use App\Domain\Enums\AllocationMethod;
 use App\Domain\Models\CostAllocation;
+use App\Domain\Models\CostAllocationItem;
 use App\Domain\Repositories\CostAllocationRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class CostAllocationRepository implements CostAllocationRepositoryInterface
+final class CostAllocationRepository implements CostAllocationRepositoryInterface
 {
     /**
-     * Create a new costAllocation.
-     *
-     * @param array<string, mixed> $data
+     * @param array<int, array{stocking_id: string, percentage: float, amount: float}> $items
      */
-    public function create(array $data): CostAllocation
-    {
-        return CostAllocation::create($data);
-    }
+    public function createWithItems(
+        CostAllocationInputDTO $dto,
+        float $totalAmount,
+        array $items,
+    ): CostAllocation {
+        /** @var CostAllocation $allocation */
+        $allocation = CostAllocation::create([
+            'company_id'               => $dto->companyId,
+            'financial_transaction_id' => $dto->financialTransactionId,
+            'allocation_method'        => $dto->allocationMethod->value,
+            'total_amount'             => $totalAmount,
+            'notes'                    => $dto->notes,
+        ]);
 
-    /**
-     * Update an existing costAllocation.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function update(string $id, array $data): ?CostAllocation
-    {
-        $costAllocation = CostAllocation::find($id);
-
-        if ($costAllocation) {
-            $costAllocation->update($data);
-
-            return $costAllocation;
+        foreach ($items as $item) {
+            CostAllocationItem::create([
+                'cost_allocation_id' => $allocation->id,
+                'stocking_id'        => $item['stocking_id'],
+                'percentage'         => $item['percentage'],
+                'amount'             => $item['amount'],
+            ]);
         }
 
-        return null;
+        return $allocation->load([
+            'company:id,name',
+            'financialTransaction',
+            'items.stocking',
+        ]);
+    }
+
+    public function findOrFail(string $id): CostAllocation
+    {
+        return CostAllocation::with([
+            'company:id,name',
+            'financialTransaction',
+            'items.stocking',
+        ])->findOrFail($id);
+    }
+
+    public function delete(string $id): void
+    {
+        $this->findOrFail($id)->delete();
     }
 
     /**
-     * Get paginated .
+     * @param array{
+     *     company_id: string,
+     *     financial_transaction_id?: string|null,
+     *     allocation_method?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function paginate(int $page = 25): PaginationInterface
+    public function paginate(array $filters): PaginationInterface
     {
-        /** @var LengthAwarePaginator<int, CostAllocation> $paginator */
         $paginator = CostAllocation::with([
             'company:id,name',
-        ])->paginate($page);
+            'financialTransaction',
+            'items.stocking',
+        ])
+            ->where('company_id', $filters['company_id'])
+            ->when(
+                ! empty($filters['financial_transaction_id']),
+                static fn ($q) => $q->where(
+                    'financial_transaction_id',
+                    $filters['financial_transaction_id'],
+                ),
+            )
+            ->when(
+                ! empty($filters['allocation_method']),
+                static fn ($q) => $q->where(
+                    'allocation_method',
+                    AllocationMethod::from((string) $filters['allocation_method'])->value,
+                ),
+            )
+            ->latest()
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
-    }
-
-    /**
-     * Show costAllocation by field and value.
-     */
-    public function showCostAllocation(string $field, string | int $value): ?CostAllocation
-    {
-        return CostAllocation::where($field, $value)->first();
-    }
-
-    public function delete(string $id): bool
-    {
-        $costAllocation = CostAllocation::find($id);
-
-        if (! $costAllocation) {
-            return false;
-        }
-
-        return (bool) $costAllocation->delete();
     }
 }

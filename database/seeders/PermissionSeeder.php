@@ -26,6 +26,7 @@ class PermissionSeeder extends Seeder
             'dashboard',
             'feeding',
             'feed-inventory',
+            'financial-category',
             'financial-transaction',
             'growth-curve',
             'harvest',

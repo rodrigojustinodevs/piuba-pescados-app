@@ -4,71 +4,65 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\Sale;
 
+use App\Domain\Enums\SaleStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class SaleStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'company_id'    => ['required', 'uuid', 'exists:companies,id'],
-            'client_id'     => ['required', 'uuid', 'exists:clients,id'],
-            'batch_id'      => ['required', 'uuid', 'exists:batches,id'],
-            'total_weight'  => ['required', 'numeric', 'min:0'],
-            'price_per_kg'  => ['required', 'numeric', 'min:0'],
-            'total_revenue' => ['required', 'numeric', 'min:0'],
-            'sale_date'     => ['required', 'date'],
+            'company_id'            => ['nullable', 'uuid', 'exists:companies,id'],
+            'client_id'             => ['required', 'uuid', 'exists:clients,id'],
+            'batch_id'              => ['required', 'uuid', 'exists:batches,id'],
+            'stocking_id'           => ['nullable', 'uuid', 'exists:stockings,id'],
+            'financial_category_id' => ['nullable', 'uuid', 'exists:financial_categories,id'],
+            'total_weight'          => ['required', 'numeric', 'min:0.001'],
+            'price_per_kg'          => ['required', 'numeric', 'min:0'],
+            'sale_date'             => ['required', 'date'],
+            'status'                => ['nullable', new Enum(SaleStatus::class)],
+            'notes'                 => ['nullable', 'string'],
         ];
     }
 
     /**
-     * Get custom error messages for validation rules.
-     *
      * @return array<string, string>
      */
     #[\Override]
     public function messages(): array
     {
         return [
-            'company_id.required' => 'The company ID is required.',
-            'company_id.uuid'     => 'The company ID must be a valid UUID.',
-            'company_id.exists'   => 'The company must exist in the companies table.',
+            'client_id.required' => 'O cliente é obrigatório.',
+            'client_id.exists'   => 'O cliente selecionado não existe.',
 
-            'client_id.required' => 'The client ID is required.',
-            'client_id.uuid'     => 'The client ID must be a valid UUID.',
-            'client_id.exists'   => 'The client must exist in the clients table.',
+            'batch_id.required' => 'O lote é obrigatório.',
+            'batch_id.exists'   => 'O lote selecionado não existe.',
 
-            'batch_id.required' => 'The batch ID is required.',
-            'batch_id.uuid'     => 'The batch ID must be a valid UUID.',
-            'batch_id.exists'   => 'The batch must exist in the batches table.',
+            'stocking_id.exists' => 'A estocagem selecionada não existe.',
 
-            'total_weight.required' => 'The total weight is required.',
-            'total_weight.numeric'  => 'The total weight must be a number.',
-            'total_weight.min'      => 'The total weight must be at least 0.',
+            'financial_category_id.exists' => 'A categoria financeira selecionada não existe.',
 
-            'price_per_kg.required' => 'The price per kilogram is required.',
-            'price_per_kg.numeric'  => 'The price per kilogram must be a number.',
-            'price_per_kg.min'      => 'The price per kilogram must be at least 0.',
+            'total_weight.required' => 'O peso total é obrigatório.',
+            'total_weight.numeric'  => 'O peso total deve ser numérico.',
+            'total_weight.min'      => 'O peso total deve ser maior que zero.',
 
-            'total_revenue.required' => 'The total revenue is required.',
-            'total_revenue.numeric'  => 'The total revenue must be a number.',
-            'total_revenue.min'      => 'The total revenue must be at least 0.',
+            'price_per_kg.required' => 'O preço por kg é obrigatório.',
+            'price_per_kg.numeric'  => 'O preço por kg deve ser numérico.',
+            'price_per_kg.min'      => 'O preço por kg não pode ser negativo.',
 
-            'sale_date.required' => 'The sale date is required.',
-            'sale_date.date'     => 'The sale date must be a valid date.',
+            'sale_date.required' => 'A data da venda é obrigatória.',
+            'sale_date.date'     => 'A data da venda deve ser uma data válida.',
+
+            'status.Illuminate\Validation\Rules\Enum' => 'O status deve ser: pending, confirmed ou cancelled.',
         ];
     }
 }

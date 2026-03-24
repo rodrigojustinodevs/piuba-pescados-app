@@ -4,30 +4,25 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Sale;
 
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
-use App\Presentation\Resources\Sale\SaleResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ListSalesUseCase
+final readonly class ListSalesUseCase
 {
     public function __construct(
-        protected SaleRepositoryInterface $purchaseRepository
+        private SaleRepositoryInterface $repository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array<string, mixed> $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->purchaseRepository->paginate();
+        $filters['company_id'] = $this->companyResolver->resolve();
 
-        return SaleResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->repository->paginate($filters);
     }
 }

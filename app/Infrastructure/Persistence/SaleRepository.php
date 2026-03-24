@@ -4,71 +4,117 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\SaleInputDTO;
+use App\Domain\Enums\SaleStatus;
 use App\Domain\Models\Sale;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class SaleRepository implements SaleRepositoryInterface
+final class SaleRepository implements SaleRepositoryInterface
 {
-    /**
-     * Create a new sale.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Sale
+    public function create(SaleInputDTO $dto): Sale
     {
-        return Sale::create($data);
+        /** @var Sale $sale */
+        $sale = Sale::create([
+            'company_id'            => $dto->companyId,
+            'client_id'             => $dto->clientId,
+            'batch_id'              => $dto->batchId,
+            'stocking_id'           => $dto->stockingId,
+            'financial_category_id' => $dto->financialCategoryId,
+            'total_weight'          => $dto->totalWeight,
+            'price_per_kg'          => $dto->pricePerKg,
+            'total_revenue'         => $dto->totalRevenue(),
+            'sale_date'             => $dto->saleDate,
+            'status'                => $dto->status->value,
+            'notes'                 => $dto->notes,
+        ]);
+
+        return $sale->load(['company:id,name', 'client:id,name', 'batch:id,name', 'stocking']);
     }
 
     /**
-     * Update an existing sale.
-     *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?Sale
+    public function update(string $id, array $attributes): Sale
     {
-        $sale = Sale::find($id);
+        $sale = $this->findOrFail($id);
 
-        if ($sale) {
-            $sale->update($data);
+        $sale->update($attributes);
 
-            return $sale;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get paginated .
-     */
-    public function paginate(int $page = 25): PaginationInterface
-    {
-        /** @var LengthAwarePaginator<int, Sale> $paginator */
-        $paginator = Sale::with([
-            'client:id,name',
-            'company:id,name',
-        ])->paginate($page);
-
-        return new PaginationPresentr($paginator);
-    }
-
-    /**
-     * Show sale by field and value.
-     */
-    public function showSale(string $field, string | int $value): ?Sale
-    {
-        return Sale::where($field, $value)->first();
+        return $sale->refresh()->load(['company:id,name', 'client:id,name', 'batch:id,name', 'stocking']);
     }
 
     public function delete(string $id): bool
     {
-        $sale = Sale::find($id);
+        return (bool) $this->findOrFail($id)->delete();
+    }
 
-        if (! $sale) {
-            return false;
-        }
+    public function findOrFail(string $id): Sale
+    {
+        return Sale::with([
+            'company:id,name',
+            'client:id,name',
+            'batch:id,name',
+            'stocking',
+        ])->findOrFail($id);
+    }
 
-        return (bool) $sale->delete();
+    /**
+     * @param array{
+     *     company_id: string,
+     *     client_id?: string|null,
+     *     batch_id?: string|null,
+     *     status?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     per_page?: int,
+     * } $filters
+     */
+    public function paginate(array $filters): PaginationInterface
+    {
+        $paginator = Sale::with([
+            'company:id,name',
+            'client:id,name',
+            'batch:id,name',
+        ])
+            ->where('company_id', $filters['company_id'])
+            ->when(
+                ! empty($filters['client_id']),
+                static fn ($q) => $q->where('client_id', $filters['client_id']),
+            )
+            ->when(
+                ! empty($filters['batch_id']),
+                static fn ($q) => $q->where('batch_id', $filters['batch_id']),
+            )
+            ->when(
+                ! empty($filters['status']),
+                static fn ($q) => $q->where(
+                    'status',
+                    SaleStatus::from((string) $filters['status'])->value,
+                ),
+            )
+            ->when(
+                ! empty($filters['date_from']),
+                static fn ($q) => $q->whereDate('sale_date', '>=', $filters['date_from']),
+            )
+            ->when(
+                ! empty($filters['date_to']),
+                static fn ($q) => $q->whereDate('sale_date', '<=', $filters['date_to']),
+            )
+            ->latest('sale_date')
+            ->paginate((int) ($filters['per_page'] ?? 25));
+
+        return new PaginationPresentr($paginator);
+    }
+
+    public function soldWeightByStocking(string $stockingId, ?string $excludeSaleId = null): float
+    {
+        return (float) Sale::where('stocking_id', $stockingId)
+            ->whereNotIn('status', [SaleStatus::CANCELLED->value])
+            ->when(
+                $excludeSaleId !== null,
+                static fn ($q) => $q->where('id', '!=', $excludeSaleId),
+            )
+            ->sum('total_weight');
     }
 }

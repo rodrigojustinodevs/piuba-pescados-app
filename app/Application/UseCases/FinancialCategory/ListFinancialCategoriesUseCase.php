@@ -4,30 +4,25 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\FinancialCategory;
 
+use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
-use App\Presentation\Resources\FinancialCategory\FinancialCategoryResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Domain\Repositories\PaginationInterface;
 
-class ListFinancialCategoriesUseCase
+final readonly class ListFinancialCategoriesUseCase
 {
     public function __construct(
-        protected FinancialCategoryRepositoryInterface $financialCategoryRepository
+        private FinancialCategoryRepositoryInterface $repository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array<string, mixed> $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->financialCategoryRepository->paginate();
+        $filters['company_id'] = $this->companyResolver->resolve();
 
-        return FinancialCategoryResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->repository->paginate($filters);
     }
 }

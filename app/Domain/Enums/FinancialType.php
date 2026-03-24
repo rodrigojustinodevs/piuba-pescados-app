@@ -6,6 +6,26 @@ namespace App\Domain\Enums;
 
 enum FinancialType: string
 {
-    case INCOME  = 'income';
-    case EXPENSE = 'expense';
+    case REVENUE    = 'revenue';
+    case EXPENSE    = 'expense';
+    case INVESTMENT = 'investment';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::REVENUE    => 'Revenue',
+            self::EXPENSE    => 'Expense',
+            self::INVESTMENT => 'Investment',
+        };
+    }
+
+    public function isRevenue(): bool
+    {
+        return $this === self::REVENUE;
+    }
+
+    public function isExpense(): bool
+    {
+        return $this === self::EXPENSE;
+    }
 }

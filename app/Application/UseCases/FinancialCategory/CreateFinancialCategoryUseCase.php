@@ -4,41 +4,30 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\FinancialCategory;
 
-use App\Application\DTOs\FinancialCategoryDTO;
-use App\Domain\Enums\FinancialType;
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Application\DTOs\FinancialCategoryInputDTO;
+use App\Domain\Models\FinancialCategory;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
-class CreateFinancialCategoryUseCase
+final readonly class CreateFinancialCategoryUseCase
 {
     public function __construct(
-        protected FinancialCategoryRepositoryInterface $financialCategoryRepository
+        private FinancialCategoryRepositoryInterface $repository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Dados já validados pelo FormRequest
      */
-    public function execute(array $data): FinancialCategoryDTO
+    public function execute(array $data): FinancialCategory
     {
-        return DB::transaction(function () use ($data): FinancialCategoryDTO {
-            $financialCategory = $this->financialCategoryRepository->create($data);
+        $data['company_id'] = $this->companyResolver->resolve(
+            hint: $data['company_id'] ?? $data['companyId'] ?? null,
+        );
 
-            $createdAt = $financialCategory->created_at instanceof Carbon
-                ? $financialCategory->created_at
-                : Carbon::parse($financialCategory->created_at);
+        $dto = FinancialCategoryInputDTO::fromArray($data);
 
-            return new FinancialCategoryDTO(
-                id: $financialCategory->id,
-                name: $financialCategory->name,
-                type: FinancialType::from($financialCategory->type),
-                company: [
-                    'name' => $financialCategory->company->name ?? '',
-                ],
-                createdAt: $createdAt->toDateTimeString(),
-                updatedAt: $financialCategory->updated_at?->toDateTimeString()
-            );
-        });
+        return $this->repository->create($dto);
     }
 }

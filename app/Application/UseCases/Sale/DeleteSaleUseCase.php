@@ -7,15 +7,19 @@ namespace App\Application\UseCases\Sale;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteSaleUseCase
+final readonly class DeleteSaleUseCase
 {
     public function __construct(
-        protected SaleRepositoryInterface $saleRepository
+        private SaleRepositoryInterface $repository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->saleRepository->delete($id));
+        $this->repository->findOrFail($id);
+
+        DB::transaction(function () use ($id): void {
+            $this->repository->delete($id);
+        });
     }
 }

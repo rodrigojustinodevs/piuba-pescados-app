@@ -4,36 +4,18 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\FinancialCategory;
 
-use App\Application\DTOs\FinancialCategoryDTO;
-use App\Domain\Enums\FinancialType;
 use App\Domain\Models\FinancialCategory;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
-use RuntimeException;
 
-class ShowFinancialCategoryUseCase
+final readonly class ShowFinancialCategoryUseCase
 {
     public function __construct(
-        protected FinancialCategoryRepositoryInterface $financialCategoryRepository
+        private FinancialCategoryRepositoryInterface $repository,
     ) {
     }
 
-    public function execute(string $id): ?FinancialCategoryDTO
+    public function execute(string $id): FinancialCategory
     {
-        $financialCategory = $this->financialCategoryRepository->showFinancialCategory('id', $id);
-
-        if (! $financialCategory instanceof FinancialCategory) {
-            throw new RuntimeException('Financial category not found');
-        }
-
-        return new FinancialCategoryDTO(
-            id: $financialCategory->id,
-            name: $financialCategory->name,
-            type: FinancialType::from($financialCategory->type),
-            company: [
-                'name' => $financialCategory->company->name ?? '',
-            ],
-            createdAt: $financialCategory->created_at?->toDateTimeString(),
-            updatedAt: $financialCategory->updated_at?->toDateTimeString()
-        );
+        return $this->repository->findOrFail($id);
     }
 }

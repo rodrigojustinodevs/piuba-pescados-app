@@ -4,39 +4,29 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\FinancialCategory;
 
-use App\Application\DTOs\FinancialCategoryDTO;
 use App\Domain\Enums\FinancialType;
 use App\Domain\Models\FinancialCategory;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
-use RuntimeException;
 
-class UpdateFinancialCategoryUseCase
+final readonly class UpdateFinancialCategoryUseCase
 {
     public function __construct(
-        protected FinancialCategoryRepositoryInterface $financialCategoryRepository
+        private FinancialCategoryRepositoryInterface $repository,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Dados já validados pelo FormRequest
      */
-    public function execute(string $id, array $data): FinancialCategoryDTO
+    public function execute(string $id, array $data): FinancialCategory
     {
-        $financialCategory = $this->financialCategoryRepository->update($id, $data);
+        $attributes = array_filter([
+            'name' => isset($data['name']) ? (string) $data['name'] : null,
+            'type' => isset($data['type'])
+                ? FinancialType::from((string) $data['type'])->value
+                : null,
+        ], static fn (?string $v): bool => $v !== null);
 
-        if (! $financialCategory instanceof FinancialCategory) {
-            throw new RuntimeException('Financial category not found');
-        }
-
-        return new FinancialCategoryDTO(
-            id: $financialCategory->id,
-            name: $financialCategory->name,
-            type: FinancialType::from($financialCategory->type),
-            company: [
-                'name' => $financialCategory->company->name ?? '',
-            ],
-            createdAt: $financialCategory->created_at?->toDateTimeString(),
-            updatedAt: $financialCategory->updated_at?->toDateTimeString()
-        );
+        return $this->repository->update($id, $attributes);
     }
 }

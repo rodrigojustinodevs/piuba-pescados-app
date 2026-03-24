@@ -41,7 +41,7 @@ final readonly class CreateStockUseCase
                 supplyId: $dto->supplyId
             );
 
-            if ($existing instanceof \App\Domain\Models\Stock) {
+            if ($existing instanceof Stock) {
                 throw new DuplicateStockException($dto->companyId, $dto->supplyId);
             }
 

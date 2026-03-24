@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\SensorDTO;
 use App\Application\UseCases\Sensor\CreateSensorUseCase;
 use App\Application\UseCases\Sensor\DeleteSensorUseCase;
 use App\Application\UseCases\Sensor\ListSensorsUseCase;
@@ -12,90 +11,223 @@ use App\Application\UseCases\Sensor\ShowSensorUseCase;
 use App\Application\UseCases\Sensor\UpdateSensorUseCase;
 use App\Presentation\Requests\Sensor\SensorStoreRequest;
 use App\Presentation\Requests\Sensor\SensorUpdateRequest;
+use App\Presentation\Resources\Sensor\SensorResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use Throwable;
+use Illuminate\Http\Request;
 
+/**
+ * @OA\Schema(
+ *     schema="Sensor",
+ *     type="object",
+ *     @OA\Property(property="id", type="string", format="uuid"),
+ *     @OA\Property(property="sensorType", type="string", example="temperature"),
+ *     @OA\Property(property="installationDate", type="string", format="date", nullable=true),
+ *     @OA\Property(property="status", type="string", example="active"),
+ *     @OA\Property(
+ *         property="tank",
+ *         type="object",
+ *         nullable=true,
+ *         @OA\Property(property="id", type="string", format="uuid"),
+ *         @OA\Property(property="name", type="string")
+ *     ),
+ *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
+ *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
+ * )
+ */
 class SensorController
 {
     /**
-     * Display a listing of sensors.
+     * @OA\Get(
+     *     path="/company/sensors",
+     *     summary="List sensors",
+     *     tags={"Sensors"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="page", in="query", @OA\Schema(type="integer", example=1)),
+     *     @OA\Parameter(name="per_page", in="query", @OA\Schema(type="integer", example=25)),
+     *     @OA\Parameter(name="tank_id", in="query", @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="sensor_type", in="query", @OA\Schema(type="string")),
+     *     @OA\Parameter(name="status", in="query", @OA\Schema(type="string")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Paginated list of sensors",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(
+     *                 property="response",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="data",
+     *                     type="array",
+     *                     @OA\Items(ref="#/components/schemas/Sensor")
+     *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="pagination",
+     *                 type="object",
+     *                 @OA\Property(property="total", type="integer", example=1),
+     *                 @OA\Property(property="current_page", type="integer", example=1),
+     *                 @OA\Property(property="last_page", type="integer", example=1),
+     *                 @OA\Property(property="first_page", type="integer", example=1),
+     *                 @OA\Property(property="per_page", type="integer", example=25)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
-    public function index(ListSensorsUseCase $useCase): JsonResponse
-    {
-        try {
-            $sensors    = $useCase->execute();
-            $data       = $sensors->toArray(request());
-            $pagination = $sensors->additional['pagination'] ?? null;
+    public function index(
+        Request $request,
+        ListSensorsUseCase $useCase,
+    ): JsonResponse {
+        $paginator = $useCase->execute(
+            filters: $request->only(['tank_id', 'sensor_type', 'status', 'per_page', 'page']),
+        );
 
-            return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception);
-        }
+        return ApiResponse::success(
+            data:       SensorResource::collection($paginator->items()),
+            pagination: [
+                'total'        => $paginator->total(),
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'first_page'   => $paginator->firstPage(),
+                'per_page'     => $paginator->perPage(),
+            ],
+        );
     }
 
     /**
-     * Display the specified sensor.
+     * @OA\Get(
+     *     path="/company/sensor/{id}",
+     *     summary="Get sensor by ID",
+     *     tags={"Sensors"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sensor found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(property="response", ref="#/components/schemas/Sensor")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Sensor not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
     public function show(string $id, ShowSensorUseCase $useCase): JsonResponse
     {
-        try {
-            $sensor = $useCase->execute($id);
+        $sensor = $useCase->execute($id);
 
-            if (! $sensor instanceof SensorDTO || $sensor->isEmpty()) {
-                return ApiResponse::error(null, 'Sensor not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($sensor->toArray(), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Sensor not found', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(
+            data: new SensorResource($sensor->loadMissing('tank')),
+        );
     }
 
     /**
-     * Store a newly created sensor.
+     * @OA\Post(
+     *     path="/company/sensor",
+     *     summary="Create a sensor",
+     *     tags={"Sensors"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"tank_id","sensor_type","installation_date","status"},
+     *             @OA\Property(property="tank_id", type="string", format="uuid"),
+     *             @OA\Property(property="sensor_type", type="string", example="temperature"),
+     *             @OA\Property(property="installation_date", type="string", format="date"),
+     *             @OA\Property(property="status", type="string", example="active")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Sensor created",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Successfully created"),
+     *             @OA\Property(property="response", ref="#/components/schemas/Sensor")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Validation error"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
     public function store(SensorStoreRequest $request, CreateSensorUseCase $useCase): JsonResponse
     {
-        try {
-            $sensor = $useCase->execute($request->validated());
+        $sensor = $useCase->execute($request->validated());
 
-            return ApiResponse::created($sensor->toArray());
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::created(
+            data:    new SensorResource($sensor),
+            message: 'Sensor created successfully.',
+        );
     }
 
     /**
-     * Update the specified sensor.
+     * @OA\Put(
+     *     path="/company/sensor/{id}",
+     *     summary="Update a sensor",
+     *     tags={"Sensors"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="sensor_type", type="string"),
+     *             @OA\Property(property="installation_date", type="string", format="date"),
+     *             @OA\Property(property="status", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sensor updated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(property="response", ref="#/components/schemas/Sensor")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Validation error"),
+     *     @OA\Response(response=404, description="Sensor not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
     public function update(SensorUpdateRequest $request, string $id, UpdateSensorUseCase $useCase): JsonResponse
     {
-        try {
-            $sensor = $useCase->execute($id, $request->validated());
+        $sensor = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($sensor->toArray(), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::success(
+            data:    new SensorResource($sensor),
+            message: 'Sensor updated successfully.',
+        );
     }
 
     /**
-     * Remove the specified sensor.
+     * @OA\Delete(
+     *     path="/company/sensor/{id}",
+     *     summary="Delete a sensor",
+     *     tags={"Sensors"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sensor deleted",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="response", nullable=true),
+     *             @OA\Property(property="message", type="string", example="Sensor deleted successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Sensor not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
     public function destroy(string $id, DeleteSensorUseCase $useCase): JsonResponse
     {
-        try {
-            $deleted = $useCase->execute($id);
+        $useCase->execute($id);
 
-            if (! $deleted) {
-                return ApiResponse::error(null, 'Sensor not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success(null, Response::HTTP_OK, 'Sensor successfully deleted');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Error deleting sensor', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(message: 'Sensor deleted successfully.');
     }
 }

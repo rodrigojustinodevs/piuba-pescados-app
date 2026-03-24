@@ -159,4 +159,25 @@ class StockRepository implements StockRepositoryInterface
 
         return new Collection($items->all());
     }
+
+    /** @return array<int, string> */
+    public function getLowStockAlerts(string $companyId): array
+    {
+        return Stock::query()
+            ->join('supplies', 'supplies.id', '=', 'stocks.supply_id')
+            ->where('stocks.company_id', $companyId)
+            ->whereColumn('stocks.current_quantity', '<', 'stocks.minimum_stock')
+            ->whereNull('stocks.deleted_at')
+            ->whereNull('supplies.deleted_at')
+            ->pluck('supplies.name')
+            ->toArray();
+    }
+
+    public function countStocksBelowMinimum(string $companyId): int
+    {
+        return Stock::where('company_id', $companyId)
+            ->whereColumn('current_quantity', '<', 'minimum_stock')
+            ->whereNull('deleted_at')
+            ->count();
+    }
 }

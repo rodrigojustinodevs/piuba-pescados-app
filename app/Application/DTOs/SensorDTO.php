@@ -4,55 +4,77 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-use App\Domain\Enums\SensorType;
-use App\Domain\Enums\Status;
+use App\Domain\Models\Sensor;
 
-class SensorDTO
+final readonly class SensorDTO
 {
     /**
-     * @param array{id?: string|null, name?: string|null}|null $tank
+     * @param array{id: string, name: string}|null $tank
      */
     public function __construct(
         public string $id,
-        public SensorType $sensorType,
-        public Status $status,
-        public ?array $tank = null,
+        public string $tankId,
+        public string $companyId,
+        public string $sensorType,
+        public string $status,
         public ?string $installationDate = null,
+        public ?string $notes = null,
+        public ?array $tank = null,
         public ?string $createdAt = null,
-        public ?string $updatedAt = null
+        public ?string $updatedAt = null,
     ) {
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
-    public static function fromArray(array $data): self
+    public static function fromModel(Sensor $sensor): self
     {
+        $installationStr = $sensor->installation_date?->toDateString();
+
+        $tank = $sensor->relationLoaded('tank') && $sensor->tank !== null
+            ? ['id' => $sensor->tank->id, 'name' => $sensor->tank->name]
+            : ['id' => '', 'name' => ''];
+
         return new self(
-            id: $data['id'],
-            sensorType: SensorType::from($data['sensor_type']),
-            status: Status::from($data['status']),
-            tank: isset($data['tank']) ? [
-                'id'   => $data['tank']['id'] ?? null,
-                'name' => $data['tank']['name'] ?? null,
-            ] : null,
-            installationDate: $data['installation_date'] ?? null,
-            createdAt: $data['created_at'] ?? null,
-            updatedAt: $data['updated_at'] ?? null
+            id:                 $sensor->id,
+            tankId:             $sensor->tank_id,
+            companyId:          $sensor->company_id,
+            sensorType:         $sensor->sensor_type,
+            status:             $sensor->status,
+            installationDate:   $installationStr,
+            notes:              $sensor->notes,
+            tank:               $tank,
+            createdAt: $sensor->created_at?->toDateTimeString(),
+            updatedAt: $sensor->updated_at?->toDateTimeString(),
         );
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    /** @param array<string, mixed> $data */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            id:                 (string) ($data['id'] ?? ''),
+            tankId:             (string) ($data['tank_id'] ?? $data['tankId'] ?? ''),
+            companyId:          (string) ($data['company_id'] ?? $data['companyId'] ?? ''),
+            sensorType:         (string) ($data['sensor_type'] ?? $data['sensorType'] ?? ''),
+            status:             (string) ($data['status'] ?? 'active'),
+            installationDate: isset($data['installation_date'])
+                ? (string) $data['installation_date']
+                : (isset($data['installationDate']) ? (string) $data['installationDate'] : null),
+            notes: isset($data['notes']) ? (string) $data['notes'] : null,
+        );
+    }
+
+    /** @return array<string, mixed> */
     public function toArray(): array
     {
         return [
             'id'               => $this->id,
-            'sensorType'       => $this->sensorType->value,
-            'status'           => $this->status->value,
-            'tank'             => $this->tank,
+            'tankId'           => $this->tankId,
+            'companyId'        => $this->companyId,
+            'sensorType'       => $this->sensorType,
+            'status'           => $this->status,
             'installationDate' => $this->installationDate,
+            'notes'            => $this->notes,
+            'tank'             => $this->tank ?? ['id' => '', 'name' => ''],
             'createdAt'        => $this->createdAt,
             'updatedAt'        => $this->updatedAt,
         ];
@@ -60,6 +82,19 @@ class SensorDTO
 
     public function isEmpty(): bool
     {
-        return $this->id === '' || $this->id === '0';
+        return $this->id === '';
+    }
+
+    /** @return array<string, mixed> */
+    public function toPersistence(): array
+    {
+        return array_filter([
+            'tank_id'           => $this->tankId,
+            'company_id'        => $this->companyId,
+            'sensor_type'       => $this->sensorType,
+            'status'            => $this->status,
+            'installation_date' => $this->installationDate,
+            'notes'             => $this->notes,
+        ], static fn (?string $v): bool => $v !== null);
     }
 }

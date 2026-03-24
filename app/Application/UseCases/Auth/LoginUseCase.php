@@ -25,10 +25,11 @@ final readonly class LoginUseCase
     {
         $user = $this->authRepository->findByEmail($input->email);
 
-        $validUser = $user instanceof \App\Domain\Models\User;
+        $validUser     = $user instanceof \App\Domain\Models\User;
         $validPassword = $validUser
             && $this->passwordHasher->check($input->password, (string) $user->password);
-        if (!$validUser || !$validPassword) {
+
+        if (! $validUser || ! $validPassword) {
             throw new InvalidCredentialsException();
         }
 

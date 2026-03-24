@@ -87,4 +87,18 @@ class TankRepository implements TankRepositoryInterface
 
         return (bool) $tank->delete();
     }
+
+    /** @return array<int, array<string, mixed>> */
+    public function findAllByCompany(string $companyId): array
+    {
+        return Tank::where('company_id', $companyId)->get()->toArray();
+    }
+
+    public function countActiveTanks(string $companyId): int
+    {
+        return Tank::where('company_id', $companyId)
+            ->where('status', 'active')
+            ->whereNull('deleted_at')
+            ->count();
+    }
 }

@@ -27,7 +27,8 @@ class SensorUpdateRequest extends FormRequest
             'tank_id'           => ['sometimes', 'uuid', 'exists:tanks,id'],
             'sensor_type'       => ['sometimes', 'string', 'in:ph,temperature,oxygen,ammonia'],
             'installation_date' => ['sometimes', 'date'],
-            'status'            => ['sometimes', 'string', 'in:active,inactive'],
+            'notes'             => ['sometimes', 'string', 'max:2000'],
+            'status'            => ['sometimes', 'string', 'in:active,inactive,maintenance'],
         ];
     }
 
@@ -45,8 +46,10 @@ class SensorUpdateRequest extends FormRequest
             'sensor_type.string'     => 'The sensor type must be a string.',
             'sensor_type.in'         => 'The sensor type must be one of: ph, temperature, oxygen, or ammonia.',
             'installation_date.date' => 'The installation date must be a valid date.',
+            'notes.string'           => 'The notes must be a string.',
+            'notes.max'              => 'The notes must not exceed 2000 characters.',
             'status.string'          => 'The status must be a string.',
-            'status.in'              => 'The status must be either active or inactive.',
+            'status.in'              => 'The status must be either active, inactive or maintenance.',
         ];
     }
 }

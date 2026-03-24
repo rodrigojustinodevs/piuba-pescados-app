@@ -37,7 +37,7 @@ final readonly class UserResolver implements UserResolverInterface
 
         $user = $this->authenticatedUser();
 
-        if (!$user instanceof \App\Domain\Models\User) {
+        if (! $user instanceof User) {
             return null;
         }
 

@@ -28,6 +28,7 @@ class SensorStoreRequest extends FormRequest
             'sensor_type'       => ['required', 'string', 'in:ph,temperature,oxygen,ammonia'],
             'installation_date' => ['required', 'date'],
             'status'            => ['required', 'string', 'in:active,inactive'],
+            'notes'             => ['nullable', 'string', 'max:2000'],
         ];
     }
 
@@ -51,6 +52,8 @@ class SensorStoreRequest extends FormRequest
             'status.required'            => 'The status is required.',
             'status.string'              => 'The status must be a string.',
             'status.in'                  => 'The status must be either active or inactive.',
+            'notes.string'               => 'The notes must be a string.',
+            'notes.max'                  => 'The notes must not exceed 2000 characters.',
         ];
     }
 }

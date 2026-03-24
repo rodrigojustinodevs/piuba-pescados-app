@@ -23,6 +23,7 @@ class PermissionSeeder extends Seeder
             'client',
             'company',
             'cost-allocation',
+            'dashboard',
             'feeding',
             'feed-inventory',
             'financial-transaction',
@@ -32,6 +33,7 @@ class PermissionSeeder extends Seeder
             'purchase',
             'sale',
             'sensor',
+            'sensor-reading',
             'stocking',
             'stock',
             'subscription',
@@ -39,6 +41,7 @@ class PermissionSeeder extends Seeder
             'tank',
             'transfer',
             'user',
+            'water-quality',
         ];
 
         $actions = ['create', 'update', 'delete', 'view'];

@@ -31,7 +31,7 @@ final readonly class AddStockEntryBySupplyUseCase
         return DB::transaction(function () use ($dto): Stock {
             $stock = $this->repository->findBySupply($dto->companyId, $dto->supplyId);
 
-            if (!$stock instanceof \App\Domain\Models\Stock) {
+            if (! $stock instanceof Stock) {
                 $stock = $this->repository->create($dto);
             } else {
                 $stock = $this->repository->incrementQuantity($stock->id, $dto->quantity);

@@ -4,44 +4,31 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Sensor;
 
+use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\SensorDTO;
-use App\Domain\Enums\SensorType;
-use App\Domain\Enums\Status;
+use App\Domain\Models\Sensor;
 use App\Domain\Repositories\SensorRepositoryInterface;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class CreateSensorUseCase
 {
     public function __construct(
-        protected SensorRepositoryInterface $sensorRepository
+        protected SensorRepositoryInterface $sensorRepository,
+        protected CompanyResolverInterface $companyResolver,
     ) {
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(array $data): SensorDTO
+    public function execute(array $data): Sensor
     {
-        return DB::transaction(function () use ($data): SensorDTO {
-            $sensor = $this->sensorRepository->create($data);
+        return DB::transaction(function () use ($data): Sensor {
+            $data['company_id'] = $this->companyResolver->resolve();
+            $dto                = SensorDTO::fromArray($data);
+            $sensor             = $this->sensorRepository->create($dto);
 
-            $installationDate = $sensor->installation_date instanceof Carbon
-                ? $sensor->installation_date
-                : Carbon::parse($sensor->installation_date);
-
-            return new SensorDTO(
-                id: $sensor->id,
-                sensorType: SensorType::from($sensor->sensor_type),
-                status: Status::from($sensor->status),
-                tank: [
-                    'id'   => $sensor->tank->id ?? '',
-                    'name' => $sensor->tank->name ?? '',
-                ],
-                installationDate: $installationDate->toDateString(),
-                createdAt: $sensor->created_at?->toDateTimeString(),
-                updatedAt: $sensor->updated_at?->toDateTimeString()
-            );
+            return $sensor->load('tank');
         });
     }
 }

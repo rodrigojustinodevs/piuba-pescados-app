@@ -73,6 +73,9 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'update-cost-allocation',
             'delete-cost-allocation',
 
+            // Permissões de Dashboard
+            'view-dashboard',
+
             // Permissões de Feeding
             'create-feeding',
             'view-feeding',
@@ -132,6 +135,12 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'view-sensor',
             'update-sensor',
             'delete-sensor',
+
+            // Permissões de leituras de sensor
+            'create-sensor-reading',
+            'view-sensor-reading',
+            'update-sensor-reading',
+            'delete-sensor-reading',
 
             // Permissões de Stocking (aquaculture: povoamento/estocagem)
             'create-stocking',

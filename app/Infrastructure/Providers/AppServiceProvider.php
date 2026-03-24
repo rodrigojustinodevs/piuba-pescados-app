@@ -30,6 +30,7 @@ use App\Domain\Repositories\InventoryAdjustmentRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
+use App\Domain\Repositories\SensorReadingRepositoryInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
@@ -56,6 +57,7 @@ use App\Infrastructure\Persistence\InventoryAdjustmentRepository;
 use App\Infrastructure\Persistence\MortalityRepository;
 use App\Infrastructure\Persistence\PurchaseRepository;
 use App\Infrastructure\Persistence\SaleRepository;
+use App\Infrastructure\Persistence\SensorReadingRepository;
 use App\Infrastructure\Persistence\SensorRepository;
 use App\Infrastructure\Persistence\StockingRepository;
 use App\Infrastructure\Persistence\StockRepository;
@@ -123,6 +125,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PurchaseRepositoryInterface::class, PurchaseRepository::class);
         $this->app->bind(SaleRepositoryInterface::class, SaleRepository::class);
         $this->app->bind(SensorRepositoryInterface::class, SensorRepository::class);
+        $this->app->bind(
+            SensorReadingRepositoryInterface::class,
+            SensorReadingRepository::class,
+        );
         $this->app->bind(StockingRepositoryInterface::class, StockingRepository::class);
         $this->app->bind(
             InventoryAdjustmentRepositoryInterface::class,

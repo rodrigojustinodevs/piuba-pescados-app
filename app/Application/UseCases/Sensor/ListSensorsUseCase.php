@@ -4,30 +4,31 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Sensor;
 
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
-use App\Presentation\Resources\Sensor\SensorResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ListSensorsUseCase
 {
     public function __construct(
-        protected SensorRepositoryInterface $sensorRepository
+        protected SensorRepositoryInterface $sensorRepository,
+        protected CompanyResolverInterface $companyResolver,
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array{
+     *     tank_id?: string|null,
+     *     sensor_type?: string|null,
+     *     status?: string|null,
+     *     per_page?: int|string|null,
+     *     page?: int|string|null,
+     * } $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->sensorRepository->paginate();
+        $filters['company_id'] = $this->companyResolver->resolve();
 
-        return SensorResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->sensorRepository->paginate($filters);
     }
 }

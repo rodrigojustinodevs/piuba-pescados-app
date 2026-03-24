@@ -9,10 +9,10 @@ use App\Domain\Models\User;
 use RuntimeException;
 use Tymon\JWTAuth\JWTAuth;
 
-final class JwtTokenService implements TokenServiceInterface
+final readonly class JwtTokenService implements TokenServiceInterface
 {
     public function __construct(
-        private readonly JWTAuth $jwt,
+        private JWTAuth $jwt,
     ) {
     }
 

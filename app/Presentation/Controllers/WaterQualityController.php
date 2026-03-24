@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\WaterQualityDTO;
 use App\Application\UseCases\WaterQuality\CreateWaterQualityUseCase;
 use App\Application\UseCases\WaterQuality\DeleteWaterQualityUseCase;
 use App\Application\UseCases\WaterQuality\ListWaterQualitiesUseCase;
@@ -12,27 +11,34 @@ use App\Application\UseCases\WaterQuality\ShowWaterQualityUseCase;
 use App\Application\UseCases\WaterQuality\UpdateWaterQualityUseCase;
 use App\Presentation\Requests\WaterQuality\WaterQualityStoreRequest;
 use App\Presentation\Requests\WaterQuality\WaterQualityUpdateRequest;
+use App\Presentation\Resources\WaterQuality\WaterQualityResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use Throwable;
+use Illuminate\Http\Request;
 
 class WaterQualityController
 {
     /**
      * Display a listing of water quality records.
      */
-    public function index(ListWaterQualitiesUseCase $useCase): JsonResponse
-    {
-        try {
-            $records    = $useCase->execute();
-            $data       = $records->toArray(request());
-            $pagination = $records->additional['pagination'] ?? null;
+    public function index(
+        Request $request,
+        ListWaterQualitiesUseCase $useCase,
+    ): JsonResponse {
+        $paginator = $useCase->execute(
+            filters: $request->only(['tank_id', 'date_from', 'date_to', 'per_page', 'page']),
+        );
 
-            return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception);
-        }
+        return ApiResponse::success(
+            data:       WaterQualityResource::collection($paginator->items()),
+            pagination: [
+                'total'        => $paginator->total(),
+                'current_page' => $paginator->currentPage(),
+                'last_page'    => $paginator->lastPage(),
+                'first_page'   => $paginator->firstPage(),
+                'per_page'     => $paginator->perPage(),
+            ],
+        );
     }
 
     /**
@@ -40,21 +46,11 @@ class WaterQualityController
      */
     public function show(string $id, ShowWaterQualityUseCase $useCase): JsonResponse
     {
-        try {
-            $record = $useCase->execute($id);
+        $record = $useCase->execute($id);
 
-            if (! $record instanceof WaterQualityDTO || $record->isEmpty()) {
-                return ApiResponse::error(null, 'Water quality record not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($record->toArray(), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error(
-                $exception,
-                'Water quality record not found',
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
+        return ApiResponse::success(
+            data: new WaterQualityResource($record->loadMissing('tank')),
+        );
     }
 
     /**
@@ -62,13 +58,12 @@ class WaterQualityController
      */
     public function store(WaterQualityStoreRequest $request, CreateWaterQualityUseCase $useCase): JsonResponse
     {
-        try {
-            $record = $useCase->execute($request->validated());
+        $record = $useCase->execute($request->validated());
 
-            return ApiResponse::created($record->toArray());
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::created(
+            data:    new WaterQualityResource($record),
+            message: 'Water quality record created successfully.',
+        );
     }
 
     /**
@@ -79,13 +74,12 @@ class WaterQualityController
         string $id,
         UpdateWaterQualityUseCase $useCase
     ): JsonResponse {
-        try {
-            $record = $useCase->execute($id, $request->validated());
+        $record = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($record->toArray(), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::success(
+            data:    new WaterQualityResource($record),
+            message: 'Water quality record updated successfully.',
+        );
     }
 
     /**
@@ -93,20 +87,8 @@ class WaterQualityController
      */
     public function destroy(string $id, DeleteWaterQualityUseCase $useCase): JsonResponse
     {
-        try {
-            $deleted = $useCase->execute($id);
+        $useCase->execute($id);
 
-            if (! $deleted) {
-                return ApiResponse::error(null, 'Water quality record not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success(null, Response::HTTP_OK, 'Water quality record successfully deleted');
-        } catch (Throwable $exception) {
-            return ApiResponse::error(
-                $exception,
-                'Error deleting water quality record',
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
+        return ApiResponse::success(message: 'Water quality record deleted successfully.');
     }
 }

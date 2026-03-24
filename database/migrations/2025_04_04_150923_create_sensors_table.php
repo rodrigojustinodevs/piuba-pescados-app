@@ -16,13 +16,27 @@ return new class () extends Migration
         Schema::create('sensors', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->uuid('tank_id');
-            $table->enum('sensor_type', ['ph', 'temperature', 'oxygen', 'ammonia']);
-            $table->timestamp('installation_date');
-            $table->enum('status', ['active', 'inactive']);
+            $table->foreignUuid('company_id')
+                ->constrained('companies')
+                ->restrictOnDelete();
+            $table->enum('sensor_type', ['ph', 'temperature', 'oxygen', 'ammonia'])
+                ->default('temperature')
+                ->comment('Type: temperature, ph, dissolved_oxygen, ammonia, etc.');
+            $table->timestamp('installation_date')
+                ->default(now())
+                ->comment('Installation date (YYYY-MM-DD)');
+            $table->enum('status', ['active', 'inactive', 'maintenance'])
+                ->default('active')
+                ->comment('Status: active, inactive, maintenance');
+
+            $table->text('notes')->nullable()->comment('Notes about the sensor');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('tank_id')->references('id')->on('tanks')->onDelete('cascade');
+            $table->index(['company_id', 'tank_id'], 'sensors_company_tank_idx');
+
+            // Filtro por tipo de sensor dentro de uma empresa
+            $table->index(['company_id', 'sensor_type'], 'sensors_company_type_idx');
         });
     }
 

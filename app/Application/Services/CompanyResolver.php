@@ -38,7 +38,7 @@ final readonly class CompanyResolver implements CompanyResolverInterface
 
         $user = $this->authenticatedUser();
 
-        if (!$user instanceof \App\Domain\Models\User) {
+        if (! $user instanceof User) {
             return null;
         }
 

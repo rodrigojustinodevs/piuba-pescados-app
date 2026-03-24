@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Presentation\Resources\Auth;
 
 use App\Application\DTOs\LoginOutputDTO;
-use Illuminate\Http\Request;
 
 /**
  * Does not extend JsonResource because the input data is a DTO,

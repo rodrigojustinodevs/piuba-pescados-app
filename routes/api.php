@@ -44,6 +44,8 @@ Route::prefix('company')
 
         require base_path('routes/app/company/costAllocation.php');
 
+        require base_path('routes/app/company/dashboard.php');
+
         require base_path('routes/app/company/feeding.php');
 
         require base_path('routes/app/company/feedInventory.php');

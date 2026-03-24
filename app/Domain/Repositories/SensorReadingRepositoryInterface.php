@@ -54,4 +54,9 @@ interface SensorReadingRepositoryInterface
      * Find a sensor reading by company ID.
      */
     public function findByCompany(string $companyId): ?SensorReading;
+
+    /**
+     * Count readings last 24 hours.
+     */
+    public function countReadingsLast24h(string $companyId): int;
 }

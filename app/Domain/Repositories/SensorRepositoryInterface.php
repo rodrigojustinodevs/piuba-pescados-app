@@ -54,4 +54,16 @@ interface SensorRepositoryInterface
      * Find a sensor by company ID.
      */
     public function findByCompany(string $companyId): ?Sensor;
+
+    /**
+     * Get the alert by tank.
+     *
+     * @return array<string, array<int, string>>
+     */
+    public function getAlertByTank(string $companyId): array;
+
+    /**
+     * Count inactive sensors.
+     */
+    public function countInactiveSensors(string $companyId): int;
 }

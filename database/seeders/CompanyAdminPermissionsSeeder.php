@@ -73,6 +73,9 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'update-cost-allocation',
             'delete-cost-allocation',
 
+            // Permissões de Dashboard
+            'view-dashboard',
+
             // Permissões de Feeding
             'create-feeding',
             'view-feeding',

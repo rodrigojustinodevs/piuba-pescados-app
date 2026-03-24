@@ -89,4 +89,30 @@ class SensorRepository implements SensorRepositoryInterface
     {
         return (bool) $this->findOrFail($id)->delete();
     }
+
+    /** @return array<string, array<int, string>> */
+    public function getAlertByTank(string $companyId): array
+    {
+        $sensors = Sensor::where('company_id', $companyId)
+            ->whereIn('status', ['inactive', 'maintenance'])
+            ->whereNull('deleted_at')
+            ->get();
+
+        return $sensors->groupBy('tank_id')
+            ->map(
+                static fn ($group) => $group
+                    ->map(static fn ($s): string => "{$s->sensor_type} ({$s->status})")
+                    ->values()
+                    ->toArray()
+            )
+            ->toArray();
+    }
+
+    public function countInactiveSensors(string $companyId): int
+    {
+        return Sensor::where('company_id', $companyId)
+            ->whereIn('status', ['inactive', 'maintenance'])
+            ->whereNull('deleted_at')
+            ->count();
+    }
 }

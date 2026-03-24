@@ -54,4 +54,25 @@ interface WaterQualityRepositoryInterface
      * Find a waterQuality by company ID.
      */
     public function findByCompany(string $companyId): ?WaterQuality;
+
+    /**
+     * Get the latest water quality by tank.
+     *
+     * @return array<string, object>
+     */
+    public function getLatestByTank(string $companyId): array;
+
+    /**
+     * Get the trends for a given company, parameter, date from, date to, granularity and tank id.
+     *
+     * @return array<int, object>
+     */
+    public function getTrends(
+        string $companyId,
+        string $parameter,
+        string $dateFrom,
+        string $dateTo,
+        string $granularity,
+        ?string $tankId = null
+    ): array;
 }

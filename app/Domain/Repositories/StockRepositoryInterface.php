@@ -84,4 +84,16 @@ interface StockRepositoryInterface
      * Decrement current_quantity atomically (stock exit).
      */
     public function decrementQuantity(string $id, float $quantity): Stock;
+
+    /**
+     * Get the low stock alerts.
+     *
+     * @return array<int, string>
+     */
+    public function getLowStockAlerts(string $companyId): array;
+
+    /**
+     * Count stocks below minimum.
+     */
+    public function countStocksBelowMinimum(string $companyId): int;
 }

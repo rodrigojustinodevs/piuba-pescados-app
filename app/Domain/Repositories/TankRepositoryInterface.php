@@ -41,4 +41,16 @@ interface TankRepositoryInterface
      * Find a tank by a specific field.
      */
     public function showTank(string $field, string | int $value): ?Tank;
+
+    /**
+     * Find all tanks by company ID.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function findAllByCompany(string $companyId): array;
+
+    /**
+     * Count active tanks.
+     */
+    public function countActiveTanks(string $companyId): int;
 }

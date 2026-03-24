@@ -23,6 +23,7 @@ class PermissionSeeder extends Seeder
             'client',
             'company',
             'cost-allocation',
+            'dashboard',
             'feeding',
             'feed-inventory',
             'financial-transaction',

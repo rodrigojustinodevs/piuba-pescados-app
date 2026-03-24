@@ -8,6 +8,7 @@ use App\Application\DTOs\WaterQualityDTO;
 use App\Domain\Models\WaterQuality;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
 class WaterQualityRepository implements WaterQualityRepositoryInterface
 {
@@ -89,5 +90,70 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
     public function findByCompany(string $companyId): ?WaterQuality
     {
         return WaterQuality::where('company_id', $companyId)->first();
+    }
+
+    /** @return array<string, object> */
+    public function getLatestByTank(string $companyId): array
+    {
+        return DB::table('water_qualities as wq')
+            ->join('tanks', 'tanks.id', '=', 'wq.tank_id')
+            ->whereIn('wq.id', function ($sub) use ($companyId): void {
+                $sub->from('water_qualities')
+                    ->selectRaw('MAX(id)')
+                    ->where('company_id', $companyId)
+                    ->whereNull('deleted_at')
+                    ->groupBy('tank_id');
+            })
+            ->select([
+                'wq.tank_id',
+                'tanks.name as tank_name',
+                'wq.ph',
+                'wq.dissolved_oxygen',
+                'wq.ammonia',
+                'wq.temperature',
+                'wq.measured_at',
+            ])
+            ->get()
+            ->keyBy('tank_id')
+            ->toArray();
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    public function getTrends(
+        string $companyId,
+        string $parameter,
+        string $dateFrom,
+        string $dateTo,
+        string $granularity,
+        ?string $tankId = null
+    ): array {
+        $periodExpression = $granularity === 'hour'
+            ? "DATE_FORMAT(wq.measured_at, '%Y-%m-%d %H:00:00')"
+            : 'DATE(wq.measured_at)';
+
+        return DB::table('water_qualities as wq')
+            ->join('tanks', 'tanks.id', '=', 'wq.tank_id')
+            ->where('wq.company_id', $companyId)
+            ->whereBetween('wq.measured_at', [$dateFrom, $dateTo])
+            ->when(
+                $tankId,
+                fn ($q) => $q->where('wq.tank_id', $tankId)
+            )
+            ->whereNotNull("wq.{$parameter}")
+            ->select([
+                'wq.tank_id',
+                'tanks.name as tank_name',
+                DB::raw("{$periodExpression} as period"),
+                DB::raw("AVG(wq.{$parameter}) as avg_value"),
+                DB::raw("MIN(wq.{$parameter}) as min_value"),
+                DB::raw("MAX(wq.{$parameter}) as max_value"),
+            ])
+            ->groupBy('wq.tank_id', 'tanks.name', DB::raw($periodExpression))
+            ->orderBy('wq.tank_id')
+            ->orderBy('period')
+            ->get()
+            ->all();
     }
 }

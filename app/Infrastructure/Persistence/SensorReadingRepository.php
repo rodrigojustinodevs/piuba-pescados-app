@@ -84,4 +84,12 @@ final class SensorReadingRepository implements SensorReadingRepositoryInterface
     {
         return (bool) $this->findOrFail($id)->delete();
     }
+
+    public function countReadingsLast24h(string $companyId): int
+    {
+        return SensorReading::where('company_id', $companyId)
+            ->where('measured_at', '>=', now()->subHours(24))
+            ->whereNull('deleted_at')
+            ->count();
+    }
 }

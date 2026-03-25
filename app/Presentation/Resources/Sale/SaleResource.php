@@ -50,7 +50,6 @@ class SaleResource extends JsonResource
             'batchId'      => $this->batch_id,
             'stockingId'   => $this->stocking_id,
             'company'      => $this->whenLoaded('company', fn (): array => [
-                'id'   => $this->company->id,
                 'name' => $this->company->name,
             ]),
             'client' => $this->whenLoaded('client', fn (): array => [

@@ -7,7 +7,7 @@ namespace App\Application\UseCases\Client;
 use App\Application\DTOs\ClientDTO;
 use App\Domain\Models\Client;
 use App\Domain\Repositories\ClientRepositoryInterface;
-use RuntimeException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ShowClientUseCase
 {
@@ -16,28 +16,14 @@ class ShowClientUseCase
     ) {
     }
 
-    public function execute(string $id): ?ClientDTO
+    public function execute(string $id): ClientDTO
     {
         $client = $this->clientRepository->showClient('id', $id);
 
         if (! $client instanceof Client) {
-            throw new RuntimeException('Client not found');
+            throw (new ModelNotFoundException())->setModel(Client::class, $id);
         }
 
-        return new ClientDTO(
-            id: $client->id,
-            name: $client->name,
-            contact: $client->contact,
-            phone: $client->phone,
-            email: $client->email,
-            personType: $client->person_type,
-            documentNumber: $client->document_number,
-            address: $client->address,
-            company: [
-                'name' => $client->company->name ?? null,
-            ],
-            createdAt: $client->created_at?->toDateTimeString(),
-            updatedAt: $client->updated_at?->toDateTimeString()
-        );
+        return ClientDTO::fromModel($client);
     }
 }

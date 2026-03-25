@@ -33,6 +33,7 @@ class SaleStoreRequest extends FormRequest
             'notes'                 => ['nullable', 'string'],
             'is_total_harvest'      => ['nullable', 'boolean'],
             'tolerance_percent'     => ['nullable', 'numeric', 'min:0', 'max:50'],
+            'needs_invoice'         => ['nullable', 'boolean'],
         ];
     }
 
@@ -66,10 +67,32 @@ class SaleStoreRequest extends FormRequest
 
             'status.Illuminate\Validation\Rules\Enum' => 'The status must be: pending, confirmed or cancelled.',
 
+            'needs_invoice.boolean'     => 'The needs invoice field must be true or false.',
             'is_total_harvest.boolean'  => 'The total harvest field must be true or false.',
             'tolerance_percent.numeric' => 'The tolerance percent must be numeric.',
             'tolerance_percent.min'     => 'The tolerance percent must be greater than zero.',
             'tolerance_percent.max'     => 'The tolerance percent must be less than or equal to 50.',
         ];
+    }
+
+    #[\Override]
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'company_id'            => $this->input('company_id', $this->input('companyId')),
+            'client_id'             => $this->input('client_id', $this->input('clientId')),
+            'batch_id'              => $this->input('batch_id', $this->input('batchId')),
+            'stocking_id'           => $this->input('stocking_id', $this->input('stockingId')),
+            'financial_category_id' => $this->input('financial_category_id', $this->input('financialCategoryId')),
+
+            'total_weight'      => $this->input('total_weight', $this->input('totalWeight')),
+            'price_per_kg'      => $this->input('price_per_kg', $this->input('pricePerKg')),
+            'sale_date'         => $this->input('sale_date', $this->input('saleDate')),
+            'status'            => $this->input('status'),
+            'notes'             => $this->input('notes'),
+            'is_total_harvest'  => $this->input('is_total_harvest', $this->input('isTotalHarvest')),
+            'tolerance_percent' => $this->input('tolerance_percent', $this->input('tolerancePercent')),
+            'needs_invoice'     => $this->input('needs_invoice', $this->input('needsInvoice')),
+        ]);
     }
 }

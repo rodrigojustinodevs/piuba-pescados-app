@@ -44,4 +44,17 @@ class SaleUpdateRequest extends FormRequest
             'status.Illuminate\Validation\Rules\Enum' => 'The status must be: pending, confirmed or cancelled.',
         ];
     }
+
+    #[\Override]
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'client_id'    => $this->input('client_id', $this->input('clientId')),
+            'total_weight' => $this->input('total_weight', $this->input('totalWeight')),
+            'price_per_kg' => $this->input('price_per_kg', $this->input('pricePerKg')),
+            'sale_date'    => $this->input('sale_date', $this->input('saleDate')),
+            'status'       => $this->input('status'),
+            'notes'        => $this->input('notes'),
+        ]);
+    }
 }

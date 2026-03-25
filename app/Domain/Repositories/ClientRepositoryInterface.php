@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\DTOs\ClientInputDTO;
 use App\Domain\Models\Client;
 
 interface ClientRepositoryInterface
 {
     /**
-     * Create a new financial transaction record.
-     *
-     * @param array<string, mixed> $data
+     * Persiste um novo cliente a partir do DTO de entrada.
      */
-    public function create(array $data): Client;
+    public function create(ClientInputDTO $dto): Client;
 
     /**
      * Update an existing financial transaction record.
@@ -36,4 +35,14 @@ interface ClientRepositoryInterface
      * Find a financial transaction by a specific field.
      */
     public function showClient(string $field, string | int $value): ?Client;
+
+    /**
+     * Verifica se o cliente possui vendas com transações financeiras pendentes ou em atraso.
+     */
+    public function hasPendingObligations(string $id): bool;
+
+    /**
+     * Anonimiza os dados sensíveis do cliente (LGPD), preservando id e nome.
+     */
+    public function anonymize(string $id): bool;
 }

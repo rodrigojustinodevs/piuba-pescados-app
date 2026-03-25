@@ -17,6 +17,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string|null $email
  * @property-read string|null $phone
  * @property-read string|null $contact
+ * @property-read float|null $credit_limit
+ * @property-read bool $is_defaulter
+ * @property-read \App\Domain\Enums\PriceGroup|null $price_group
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Company|null $company
@@ -41,6 +44,9 @@ class ClientResource extends JsonResource
             'phone'          => $this->phone,
             'contact'        => $this->contact,
             'address'        => $this->address,
+            'creditLimit'    => $this->credit_limit,
+            'isDefaulter'    => (bool) $this->is_defaulter,
+            'priceGroup'     => $this->price_group?->value,
             'company'        => $this->whenLoaded('company', fn (): array => [
                 'name' => $this->company->name,
             ]),

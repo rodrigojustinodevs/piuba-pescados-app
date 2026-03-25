@@ -78,5 +78,9 @@ Route::prefix('company')
 
         require base_path('routes/app/company/tank.php');
 
+        require base_path('routes/app/company/tankHistory.php');
+
+        require base_path('routes/app/company/stockingHistory.php');
+
         require base_path('routes/app/company/waterQuality.php');
     });

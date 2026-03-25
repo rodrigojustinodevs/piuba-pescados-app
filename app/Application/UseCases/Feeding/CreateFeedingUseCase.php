@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Feeding;
 
 use App\Application\DTOs\FeedingDTO;
+use App\Domain\Events\FeedingCreated;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
@@ -45,6 +46,8 @@ class CreateFeedingUseCase
                 ->validateStock($feedInventory, (float) $mappedData['stock_reduction_quantity']);
 
             $feeding = $this->feedingRepository->create($mappedData);
+
+            FeedingCreated::dispatch($feeding, (string) $companyId);
 
             $feedInventory->update(array_merge(
                 $this->feedInventoryService->calculateStockAfterFeedingOperations(

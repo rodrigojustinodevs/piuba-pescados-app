@@ -14,9 +14,9 @@ use Illuminate\Contracts\Validation\ValidationRule;
  *
  * Aceita somente dígitos (sem pontuação).
  */
-final class DocumentNumberRule implements ValidationRule
+final readonly class DocumentNumberRule implements ValidationRule
 {
-    public function __construct(private readonly ?string $personType)
+    public function __construct(private ?string $personType)
     {
     }
 

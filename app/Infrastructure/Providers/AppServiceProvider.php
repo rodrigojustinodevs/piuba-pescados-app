@@ -12,7 +12,9 @@ use App\Application\Services\CompanyResolver;
 use App\Application\Services\LoginAttemptLimiter;
 use App\Application\Services\UserResolver;
 use App\Domain\Enums\Can;
+use App\Domain\Models\Tank;
 use App\Domain\Models\User;
+use App\Domain\Observers\TankObserver;
 use App\Domain\Repositories\AlertRepositoryInterface;
 use App\Domain\Repositories\AuthRepositoryInterface;
 use App\Domain\Repositories\BatchRepositoryInterface;
@@ -32,11 +34,13 @@ use App\Domain\Repositories\PurchaseRepositoryInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use App\Domain\Repositories\SensorReadingRepositoryInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
+use App\Domain\Repositories\StockingHistoryRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Repositories\StockTransactionRepositoryInterface;
 use App\Domain\Repositories\SubscriptionRepositoryInterface;
 use App\Domain\Repositories\SupplierRepositoryInterface;
+use App\Domain\Repositories\TankHistoryRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
@@ -59,11 +63,13 @@ use App\Infrastructure\Persistence\PurchaseRepository;
 use App\Infrastructure\Persistence\SaleRepository;
 use App\Infrastructure\Persistence\SensorReadingRepository;
 use App\Infrastructure\Persistence\SensorRepository;
+use App\Infrastructure\Persistence\StockingHistoryRepository;
 use App\Infrastructure\Persistence\StockingRepository;
 use App\Infrastructure\Persistence\StockRepository;
 use App\Infrastructure\Persistence\StockTransactionRepository;
 use App\Infrastructure\Persistence\SubscriptionRepository;
 use App\Infrastructure\Persistence\SupplierRepository;
+use App\Infrastructure\Persistence\TankHistoryRepository;
 use App\Infrastructure\Persistence\TankRepository;
 use App\Infrastructure\Persistence\TransferRepository;
 use App\Infrastructure\Persistence\WaterQualityRepository;
@@ -105,6 +111,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AlertRepositoryInterface::class, AlertRepository::class);
         $this->app->bind(CompanyRepositoryInterface::class, CompanyRepository::class);
         $this->app->bind(TankRepositoryInterface::class, TankRepository::class);
+        $this->app->bind(TankHistoryRepositoryInterface::class, TankHistoryRepository::class);
+        $this->app->bind(StockingHistoryRepositoryInterface::class, StockingHistoryRepository::class);
         $this->app->bind(BatchRepositoryInterface::class, BatchRepository::class);
         $this->app->bind(BiometryRepositoryInterface::class, BiometryRepository::class);
         $this->app->bind(CostAllocationRepositoryInterface::class, CostAllocationRepository::class);
@@ -159,6 +167,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Tank::observe(TankObserver::class);
+
         $this->setupLogViewer();
         $this->configModels();
         $this->configCommands();

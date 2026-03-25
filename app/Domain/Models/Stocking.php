@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\StockingStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -17,13 +18,16 @@ use Illuminate\Support\Str;
  * @property string          $batch_id
  * @property Carbon|null     $stocking_date
  * @property int             $quantity
+ * @property int|null        $current_quantity
  * @property float           $average_weight
+ * @property float|null      $estimated_biomass
  * @property float           $accumulated_fixed_cost
  * @property StockingStatus  $status
  * @property Carbon|null     $closed_at
  * @property Carbon|null     $created_at
  * @property Carbon|null     $updated_at
  * @property-read Batch|null $batch
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockingHistory> $histories
  */
 class Stocking extends BaseModel
 {
@@ -40,7 +44,9 @@ class Stocking extends BaseModel
         'batch_id',
         'stocking_date',
         'quantity',
+        'current_quantity',
         'average_weight',
+        'estimated_biomass',
         'accumulated_fixed_cost',
         'status',
         'closed_at',
@@ -62,11 +68,13 @@ class Stocking extends BaseModel
     ];
 
     #[\Override]
-    protected static function booted()
+    protected static function booted(): void
     {
         static::creating(function (Stocking $stocking): void {
             $stocking->id ??= (string) Str::uuid();
             $stocking->status ??= StockingStatus::ACTIVE;
+            $stocking->current_quantity ??= $stocking->quantity;
+            $stocking->estimated_biomass ??= $stocking->initialBiomass();
         });
     }
 
@@ -108,12 +116,56 @@ class Stocking extends BaseModel
     }
 
     /**
+     * Calculates the attributes to update after a biometry reading.
+     * Persistence is the caller's responsibility (UseCase → Repository).
+     *
+     * @return array{average_weight: float, estimated_biomass: float}
+     */
+    public function biometryAttributes(float $averageWeight): array
+    {
+        $currentQty = (int) ($this->current_quantity ?? $this->quantity);
+
+        return [
+            'average_weight'    => $averageWeight,
+            'estimated_biomass' => round($currentQty * $averageWeight, 4),
+        ];
+    }
+
+    /**
+     * Calculates the attributes to update after registering mortality losses.
+     * Persistence is the caller's responsibility (UseCase → Repository).
+     *
+     * @return array{current_quantity: int, estimated_biomass: float}
+     */
+    public function mortalityAttributes(int $quantity): array
+    {
+        $currentQty = max(0, (int) ($this->current_quantity ?? $this->quantity) - $quantity);
+        $avgWeight  = (float) $this->average_weight;
+
+        return [
+            'current_quantity'  => $currentQty,
+            'estimated_biomass' => round($currentQty * $avgWeight, 4),
+        ];
+    }
+
+    /**
      * @phpstan-return BelongsTo<Batch, static>
      */
     public function batch(): BelongsTo
     {
         /** @var BelongsTo<Batch, static> $relation */
         $relation = $this->belongsTo(Batch::class, 'batch_id');
+
+        return $relation;
+    }
+
+    /**
+     * @phpstan-return HasMany<StockingHistory, static>
+     */
+    public function histories(): HasMany
+    {
+        /** @var HasMany<StockingHistory, static> $relation */
+        $relation = $this->hasMany(StockingHistory::class, 'stocking_id');
 
         return $relation;
     }

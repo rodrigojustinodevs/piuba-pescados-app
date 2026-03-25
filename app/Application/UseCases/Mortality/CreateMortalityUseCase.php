@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Mortality;
 
 use App\Application\DTOs\MortalityDTO;
+use App\Domain\Events\MortalityRecorded;
 use App\Domain\Models\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
@@ -41,6 +42,9 @@ class CreateMortalityUseCase
             $this->validatorService->validate($batch, (int) $mappedData['quantity']);
 
             $mortality = $this->mortalityRepository->create($mappedData);
+
+            $companyId = $batch->tank->company_id ?? $batch->tank()->value('company_id');
+            MortalityRecorded::dispatch($mortality, (string) $companyId);
 
             $this->mortalityService->checkAndDispatchIfCritical($batch);
 

@@ -51,4 +51,6 @@ interface StockingRepositoryInterface
      * @param array<string, float> $amountsByStockingId  stocking_id → amount to subtract
      */
     public function bulkDecrementFixedCost(array $amountsByStockingId): void;
+
+    public function findByCompanyOrFail(string $stockingId, string $companyId): Stocking;
 }

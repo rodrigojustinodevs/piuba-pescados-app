@@ -10,6 +10,7 @@ use App\Application\Actions\Sale\GuardBiomassAction;
 use App\Application\Actions\Sale\RegisterBiomassOutflowAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\HarvestSaleDTO;
+use App\Domain\Events\SaleProcessed;
 use App\Domain\Exceptions\ClientMissingFiscalDataException;
 use App\Domain\Exceptions\ClosedStockingException;
 use App\Domain\Models\Client;
@@ -106,6 +107,9 @@ final readonly class ProcessHarvestSaleUseCase
         // Passo 5: Gera Contas a Receber
         $this->generateReceivable->execute($dto->toSaleInputDTO(), $sale);
 
+        // Passo 6: Dispara evento para gerar histórico automático no lote
+        SaleProcessed::dispatch($sale);
+
         return $sale;
     }
 
@@ -120,6 +124,9 @@ final readonly class ProcessHarvestSaleUseCase
         $sale = $this->repository->create($dto->toSaleInputDTO());
 
         $this->generateReceivable->execute($dto->toSaleInputDTO(), $sale);
+
+        // Dispara mesmo sem stocking; o listener ignora quando stocking_id é null
+        SaleProcessed::dispatch($sale);
 
         return $sale;
     }

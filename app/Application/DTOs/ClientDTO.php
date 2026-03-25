@@ -31,11 +31,6 @@ final readonly class ClientDTO
     ) {
     }
 
-    /**
-     * Constrói o DTO a partir de um model Eloquent Client.
-     *
-     * @param \App\Domain\Models\Client $client
-     */
     public static function fromModel(\App\Domain\Models\Client $client): self
     {
         return new self(

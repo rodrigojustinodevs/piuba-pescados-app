@@ -1032,7 +1032,6 @@
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Page number",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -1042,7 +1041,6 @@
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Items per page",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -1052,30 +1050,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of clients",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "List of clients"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -1099,7 +1074,6 @@
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Client ID",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1109,27 +1083,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Client details",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Client details"
                     },
                     "404": {
                         "description": "Client not found"
@@ -1154,7 +1108,6 @@
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Client ID",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1168,53 +1121,50 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "company_id": {
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "example": "550e8400-e29b-41d4-a716-446655440000"
-                                    },
                                     "name": {
                                         "type": "string",
-                                        "maxLength": 255,
-                                        "example": "João Silva"
+                                        "maxLength": 255
                                     },
-                                    "contact": {
+                                    "personType": {
                                         "type": "string",
-                                        "maxLength": 255,
-                                        "example": "Maria Silva",
-                                        "nullable": true
+                                        "enum": [
+                                            "individual",
+                                            "company"
+                                        ]
                                     },
-                                    "phone": {
+                                    "documentNumber": {
                                         "type": "string",
-                                        "maxLength": 20,
-                                        "example": "(85) 99999-9999",
                                         "nullable": true
                                     },
                                     "email": {
                                         "type": "string",
                                         "format": "email",
-                                        "maxLength": 255,
-                                        "example": "joao@example.com",
                                         "nullable": true
                                     },
-                                    "person_type": {
+                                    "phone": {
                                         "type": "string",
-                                        "enum": [
-                                            "individual",
-                                            "company"
-                                        ],
-                                        "example": "individual"
+                                        "nullable": true
                                     },
-                                    "document_number": {
+                                    "contact": {
                                         "type": "string",
-                                        "pattern": "^\\\\d{11}|\\\\d{14}$",
-                                        "example": "12345678901",
                                         "nullable": true
                                     },
                                     "address": {
                                         "type": "string",
-                                        "maxLength": 255,
-                                        "example": "Rua Exemplo, 123",
+                                        "nullable": true
+                                    },
+                                    "creditLimit": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "nullable": true
+                                    },
+                                    "priceGroup": {
+                                        "type": "string",
+                                        "enum": [
+                                            "wholesale",
+                                            "retail",
+                                            "consumer"
+                                        ],
                                         "nullable": true
                                     }
                                 },
@@ -1225,29 +1175,9 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Client updated successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Client updated successfully"
                     },
-                    "400": {
+                    "422": {
                         "description": "Validation error"
                     },
                     "404": {
@@ -1267,13 +1197,12 @@
                 "tags": [
                     "Clients"
                 ],
-                "summary": "Delete a client",
+                "summary": "Soft-delete a client",
                 "operationId": "772d0586501b82bd2ecb706b75d9b9b9",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Client ID",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -1283,24 +1212,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Client deleted successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Client successfully deleted"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Client deleted successfully"
+                    },
+                    "422": {
+                        "description": "Client has pending obligations"
                     },
                     "404": {
                         "description": "Client not found"
@@ -1329,58 +1244,64 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "company_id",
+                                    "companyId",
                                     "name",
-                                    "person_type"
+                                    "personType"
                                 ],
                                 "properties": {
-                                    "company_id": {
+                                    "companyId": {
                                         "type": "string",
-                                        "format": "uuid",
-                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        "format": "uuid"
                                     },
                                     "name": {
                                         "type": "string",
                                         "maxLength": 255,
                                         "example": "João Silva"
                                     },
-                                    "contact": {
+                                    "personType": {
                                         "type": "string",
-                                        "maxLength": 255,
-                                        "example": "Maria Silva",
-                                        "nullable": true
+                                        "enum": [
+                                            "individual",
+                                            "company"
+                                        ]
                                     },
-                                    "phone": {
+                                    "documentNumber": {
                                         "type": "string",
-                                        "maxLength": 20,
-                                        "example": "(85) 99999-9999",
+                                        "example": "12345678901",
                                         "nullable": true
                                     },
                                     "email": {
                                         "type": "string",
                                         "format": "email",
-                                        "maxLength": 255,
-                                        "example": "joao@example.com",
                                         "nullable": true
                                     },
-                                    "person_type": {
+                                    "phone": {
                                         "type": "string",
-                                        "enum": [
-                                            "individual",
-                                            "company"
-                                        ],
-                                        "example": "individual"
+                                        "maxLength": 20,
+                                        "nullable": true
                                     },
-                                    "document_number": {
+                                    "contact": {
                                         "type": "string",
-                                        "pattern": "^\\\\d{11}|\\\\d{14}$",
-                                        "example": "12345678901",
+                                        "maxLength": 255,
                                         "nullable": true
                                     },
                                     "address": {
                                         "type": "string",
                                         "maxLength": 255,
-                                        "example": "Rua Exemplo, 123",
+                                        "nullable": true
+                                    },
+                                    "creditLimit": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "nullable": true
+                                    },
+                                    "priceGroup": {
+                                        "type": "string",
+                                        "enum": [
+                                            "wholesale",
+                                            "retail",
+                                            "consumer"
+                                        ],
                                         "nullable": true
                                     }
                                 },
@@ -1391,30 +1312,46 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Client created successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Client created successfully"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Client created successfully"
                     },
-                    "400": {
+                    "422": {
                         "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/client/{id}/anonymize": {
+            "delete": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Anonymize and soft-delete a client (LGPD)",
+                "operationId": "ed62fae152f8f1710ddaf372b45f0749",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Client anonymized and deleted"
+                    },
+                    "404": {
+                        "description": "Client not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -1714,10 +1651,14 @@
                         }
                     },
                     {
-                        "name": "is_active",
+                        "name": "status",
                         "in": "query",
                         "schema": {
-                            "type": "boolean"
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "inactive"
+                            ]
                         }
                     }
                 ],
@@ -1878,9 +1819,6 @@
                                             "expense",
                                             "investment"
                                         ]
-                                    },
-                                    "is_active": {
-                                        "type": "boolean"
                                     }
                                 },
                                 "type": "object"
@@ -1962,7 +1900,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Categoria financeira excluída com sucesso."
+                                            "example": "Category deleted successfully."
                                         }
                                     },
                                     "type": "object"
@@ -2021,8 +1959,12 @@
                                             "investment"
                                         ]
                                     },
-                                    "is_active": {
-                                        "type": "boolean",
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "active",
+                                            "inactive"
+                                        ],
                                         "nullable": true
                                     }
                                 },
@@ -2069,14 +2011,14 @@
                 ]
             }
         },
-        "/company/financial-category/{id}/deactivate": {
+        "/company/financial-category/{id}/inactive": {
             "patch": {
                 "tags": [
                     "Financial Categories"
                 ],
-                "summary": "Deactivate financial category",
+                "summary": "Set financial category to inactive",
                 "description": "Inactivates a category that has linked transactions, preserving history.",
-                "operationId": "4e01cdadb554a15582646095818eb49f",
+                "operationId": "7f8ca680b80083bf95a1179e399e71a3",
                 "parameters": [
                     {
                         "name": "id",
@@ -2101,7 +2043,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Categoria financeira inativada com sucesso."
+                                            "example": "Category deactivated successfully."
                                         },
                                         "response": {
                                             "$ref": "#/components/schemas/FinancialCategory"
@@ -2117,6 +2059,540 @@
                     },
                     "404": {
                         "description": "Financial category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/financial-category/{id}/active": {
+            "patch": {
+                "tags": [
+                    "Financial Categories"
+                ],
+                "summary": "Set financial category to active",
+                "operationId": "d2c2f233609c6365797fc84197b5fd03",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Financial category activated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category activated successfully."
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/FinancialCategory"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Financial category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/financial-transactions": {
+            "get": {
+                "tags": [
+                    "Financial Transactions"
+                ],
+                "summary": "List financial transactions",
+                "operationId": "0eaf41c5f50c39a583f55c1b2105b279",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "paid",
+                                "overdue",
+                                "cancelled"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "revenue",
+                                "expense",
+                                "investment"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "financial_category_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "due_date_from",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "due_date_to",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of financial transactions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/FinancialTransaction"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/financial-transaction/{id}": {
+            "get": {
+                "tags": [
+                    "Financial Transactions"
+                ],
+                "summary": "Get financial transaction by ID",
+                "operationId": "d1c069a352a4fe7fcb5ce95d702e2a05",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Financial transaction found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/FinancialTransaction"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Financial Transactions"
+                ],
+                "summary": "Update financial transaction",
+                "operationId": "0a93a3392e1c415410a81f918c01d51f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "financial_category_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "revenue",
+                                            "expense",
+                                            "investment"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "paid",
+                                            "overdue",
+                                            "cancelled"
+                                        ]
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "due_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "payment_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Financial transaction updated successfully."
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/FinancialTransaction"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Financial Transactions"
+                ],
+                "summary": "Delete financial transaction",
+                "operationId": "a3a9b5e3cc34375087960efcc4964f7b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Financial transaction deleted successfully."
+                                        },
+                                        "response": {
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/financial-transaction": {
+            "post": {
+                "tags": [
+                    "Financial Transactions"
+                ],
+                "summary": "Create financial transaction",
+                "description": "Internal reference fields only; not accepted from the API.",
+                "operationId": "f0217d9b0905afef470da10611520186",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "financial_category_id",
+                                    "type",
+                                    "amount",
+                                    "due_date"
+                                ],
+                                "properties": {
+                                    "company_id": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "financial_category_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "revenue",
+                                            "expense",
+                                            "investment"
+                                        ]
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "paid",
+                                            "overdue",
+                                            "cancelled"
+                                        ],
+                                        "nullable": true
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100.5
+                                    },
+                                    "due_date": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "payment_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Financial transaction successfully created."
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/FinancialTransaction"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -4892,6 +5368,163 @@
                 ]
             }
         },
+        "/company/stocking-histories": {
+            "get": {
+                "tags": [
+                    "Stocking History"
+                ],
+                "summary": "List stocking history events",
+                "operationId": "d42940950816ffb1c95f49cd3c629fab",
+                "parameters": [
+                    {
+                        "name": "stocking_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "event",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "biometry",
+                                "mortality",
+                                "transfer",
+                                "medication"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of stocking history events"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/stocking-history": {
+            "post": {
+                "tags": [
+                    "Stocking History"
+                ],
+                "summary": "Register a stocking history event",
+                "operationId": "aab59efc9c4f737d907a9e79112969d7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "stockingId",
+                                    "event",
+                                    "eventDate"
+                                ],
+                                "properties": {
+                                    "stockingId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "event": {
+                                        "type": "string",
+                                        "enum": [
+                                            "biometry",
+                                            "mortality",
+                                            "transfer",
+                                            "medication"
+                                        ]
+                                    },
+                                    "eventDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-03-25"
+                                    },
+                                    "quantity": {
+                                        "description": "Required for mortality and transfer",
+                                        "type": "integer",
+                                        "minimum": 1,
+                                        "nullable": true
+                                    },
+                                    "averageWeight": {
+                                        "description": "Required for biometry (g)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Stocking history event created"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Stocking not found"
+                    },
+                    "422": {
+                        "description": "Business rule violation (e.g. closed stocking)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/tanks": {
             "get": {
                 "tags": [
@@ -5535,6 +6168,151 @@
                     },
                     "401": {
                         "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/tank-histories": {
+            "get": {
+                "tags": [
+                    "Tank History"
+                ],
+                "summary": "List tank history events",
+                "operationId": "911b8484127798bcf881fbe0ae97ac71",
+                "parameters": [
+                    {
+                        "name": "tank_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "event",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "cleaning",
+                                "maintenance",
+                                "fallowing"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of tank history events"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/tank-history": {
+            "post": {
+                "tags": [
+                    "Tank History"
+                ],
+                "summary": "Register a tank history event",
+                "operationId": "e53845324540aa7bcf80d529465923a7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tankId",
+                                    "event",
+                                    "eventDate"
+                                ],
+                                "properties": {
+                                    "tankId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "event": {
+                                        "type": "string",
+                                        "enum": [
+                                            "cleaning",
+                                            "maintenance",
+                                            "fallowing"
+                                        ]
+                                    },
+                                    "eventDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-03-25"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "maxLength": 1000,
+                                        "nullable": true
+                                    },
+                                    "performedBy": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tank history event created"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Tank not found"
                     }
                 },
                 "security": [
@@ -6280,9 +7058,16 @@
                         "type": "string",
                         "example": "Expense"
                     },
-                    "isActive": {
-                        "type": "boolean",
-                        "example": true
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "inactive"
+                        ]
+                    },
+                    "statusLabel": {
+                        "type": "string",
+                        "example": "Ativa"
                     },
                     "company": {
                         "properties": {
@@ -6291,6 +7076,119 @@
                                 "format": "uuid"
                             },
                             "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "FinancialTransaction": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "revenue",
+                            "expense",
+                            "investment"
+                        ]
+                    },
+                    "typeLabel": {
+                        "type": "string",
+                        "example": "Revenue"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "paid",
+                            "overdue",
+                            "cancelled"
+                        ]
+                    },
+                    "statusLabel": {
+                        "type": "string",
+                        "example": "Pending"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 1500.5
+                    },
+                    "dueDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-03-25"
+                    },
+                    "paymentDate": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "referenceType": {
+                        "type": "string",
+                        "enum": [
+                            "sale",
+                            "purchase_item",
+                            "cost_allocation"
+                        ],
+                        "nullable": true
+                    },
+                    "referenceId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "company": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "category": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "type": {
+                                "type": "string"
+                            },
+                            "typeLabel": {
                                 "type": "string"
                             }
                         },
@@ -6513,6 +7411,114 @@
                     }
                 },
                 "type": "object"
+            },
+            "StockingHistory": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "companyId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "stockingId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "event": {
+                        "type": "string",
+                        "enum": [
+                            "biometry",
+                            "mortality",
+                            "transfer",
+                            "medication"
+                        ]
+                    },
+                    "eventLabel": {
+                        "type": "string",
+                        "example": "Biometria"
+                    },
+                    "eventDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "averageWeight": {
+                        "type": "number",
+                        "format": "float",
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TankHistory": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "companyId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "tankId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "event": {
+                        "type": "string",
+                        "enum": [
+                            "cleaning",
+                            "maintenance",
+                            "fallowing"
+                        ]
+                    },
+                    "eventLabel": {
+                        "type": "string",
+                        "example": "Limpeza"
+                    },
+                    "eventDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "performedBy": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -6547,6 +7553,10 @@
             "description": "Financial Categories"
         },
         {
+            "name": "Financial Transactions",
+            "description": "Financial Transactions"
+        },
+        {
             "name": "Purchases",
             "description": "Purchases"
         },
@@ -6567,8 +7577,16 @@
             "description": "Stockings"
         },
         {
+            "name": "Stocking History",
+            "description": "Stocking History"
+        },
+        {
             "name": "Tanks",
             "description": "Tanks"
+        },
+        {
+            "name": "Tank History",
+            "description": "Tank History"
         },
         {
             "name": "Transfers",

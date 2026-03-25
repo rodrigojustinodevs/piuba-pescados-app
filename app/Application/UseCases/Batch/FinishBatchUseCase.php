@@ -44,7 +44,7 @@ class FinishBatchUseCase
             }
 
             if ($batch->status === 'finished') {
-                throw new Exception("Este lote já foi finalizado.");
+                throw new Exception("This batch has already been finished.");
             }
 
             $totalRevenue = $harvestData['total_weight'] * $harvestData['price_per_kg'];

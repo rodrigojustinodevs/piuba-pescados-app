@@ -19,3 +19,6 @@ Route::middleware(['permission:update-client'])
 
 Route::middleware(['permission:delete-client'])
     ->delete('client/{id}', [ClientController::class, 'destroy']);
+
+Route::middleware(['permission:delete-client'])
+    ->delete('client/{id}/anonymize', [ClientController::class, 'anonymize']);

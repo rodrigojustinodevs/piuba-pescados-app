@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-class ClientDTO
+/**
+ * Representa os dados de um cliente na camada de saída (use case → controller → API).
+ * Construído a partir do model Eloquent Client após persistência.
+ */
+final readonly class ClientDTO
 {
     /**
      * @param array{name?: string|null}|null $company
@@ -12,12 +16,15 @@ class ClientDTO
     public function __construct(
         public string $id,
         public string $name,
-        public ?string $contact = null,
-        public ?string $phone = null,
-        public ?string $email = null,
         public ?string $personType = null,
         public ?string $documentNumber = null,
+        public ?string $email = null,
+        public ?string $phone = null,
+        public ?string $contact = null,
         public ?string $address = null,
+        public ?float $creditLimit = null,
+        public bool $isDefaulter = false,
+        public ?string $priceGroup = null,
         public ?array $company = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null,
@@ -25,24 +32,27 @@ class ClientDTO
     }
 
     /**
-     * @param array<string, mixed> $data
+     * Constrói o DTO a partir de um model Eloquent Client.
      */
-    public static function fromArray(array $data): self
+    public static function fromModel(\App\Domain\Models\Client $client): self
     {
         return new self(
-            id: $data['id'],
-            name: $data['name'],
-            contact: $data['contact'] ?? null,
-            phone: $data['phone'] ?? null,
-            email: $data['email'] ?? null,
-            personType: $data['person_type'] ?? null,
-            documentNumber: $data['document_number'] ?? null,
-            address: $data['address'] ?? null,
-            company: isset($data['company']) ? [
-                'name' => $data['company']['name'] ?? null,
+            id:             $client->id,
+            name:           $client->name,
+            personType:     $client->person_type,
+            documentNumber: $client->document_number,
+            email:          $client->email,
+            phone:          $client->phone,
+            contact:        $client->contact,
+            address:        $client->address,
+            creditLimit:    $client->credit_limit !== null ? (float) $client->credit_limit : null,
+            isDefaulter:    (bool) $client->is_defaulter,
+            priceGroup:     $client->price_group?->value,
+            company:        $client->relationLoaded('company') ? [
+                'name' => $client->company?->name,
             ] : null,
-            createdAt: $data['created_at'] ?? null,
-            updatedAt: $data['updated_at'] ?? null,
+            createdAt:      $client->created_at?->toDateTimeString(),
+            updatedAt:      $client->updated_at?->toDateTimeString(),
         );
     }
 
@@ -54,12 +64,15 @@ class ClientDTO
         return [
             'id'             => $this->id,
             'name'           => $this->name,
-            'contact'        => $this->contact,
-            'phone'          => $this->phone,
-            'email'          => $this->email,
             'personType'     => $this->personType,
             'documentNumber' => $this->documentNumber,
+            'email'          => $this->email,
+            'phone'          => $this->phone,
+            'contact'        => $this->contact,
             'address'        => $this->address,
+            'creditLimit'    => $this->creditLimit,
+            'isDefaulter'    => $this->isDefaulter,
+            'priceGroup'     => $this->priceGroup,
             'company'        => $this->company,
             'createdAt'      => $this->createdAt,
             'updatedAt'      => $this->updatedAt,

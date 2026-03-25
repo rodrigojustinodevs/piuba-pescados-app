@@ -25,6 +25,7 @@ final readonly class HarvestSaleDTO
         public SaleStatus $status = SaleStatus::PENDING,
         public ?string $notes = null,
         public float $tolerancePercent = 5.0,
+        public bool $needsInvoice = false,
     ) {
     }
 
@@ -64,6 +65,7 @@ final readonly class HarvestSaleDTO
                                : SaleStatus::PENDING,
             notes:               isset($data['notes']) ? (string) $data['notes'] : null,
             tolerancePercent:    (float) ($data['tolerance_percent'] ?? $data['tolerancePercent'] ?? 5.0),
+            needsInvoice:        (bool) ($data['needs_invoice'] ?? $data['needsInvoice'] ?? false),
         );
     }
 

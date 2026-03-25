@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Sale;
 
+use App\Application\Actions\Client\GuardClientCreditAction;
 use App\Application\Actions\Sale\GenerateReceivableAction;
 use App\Application\Actions\Sale\GuardBiomassAction;
 use App\Application\Actions\Sale\RegisterBiomassOutflowAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\HarvestSaleDTO;
+use App\Domain\Exceptions\ClientMissingFiscalDataException;
 use App\Domain\Exceptions\ClosedStockingException;
+use App\Domain\Models\Client;
 use App\Domain\Models\Sale;
 use App\Domain\Models\Stocking;
 use App\Domain\Repositories\SaleRepositoryInterface;
@@ -34,6 +37,7 @@ final readonly class ProcessHarvestSaleUseCase
         private GuardBiomassAction $guardBiomass,
         private RegisterBiomassOutflowAction $registerOutflow,
         private GenerateReceivableAction $generateReceivable,
+        private GuardClientCreditAction $guardClientCredit,
     ) {
     }
 
@@ -69,7 +73,13 @@ final readonly class ProcessHarvestSaleUseCase
             throw new ClosedStockingException($stocking->id);
         }
 
-        // Passo 1: Valida biomassa com tolerância configurável
+        // Passo 0: Valida dados fiscais se emissão de nota fiscal solicitada
+        $this->guardClientFiscalData($dto);
+
+        // Passo 1a: Valida limite de crédito do cliente
+        $this->guardClientCredit->execute($dto->clientId, $dto->totalRevenue());
+
+        // Passo 1b: Valida biomassa com tolerância configurável
         $this->guardBiomass->executeWithTolerance(
             stocking:         $stocking,
             requestedWeight:  $dto->totalWeight,
@@ -104,10 +114,36 @@ final readonly class ProcessHarvestSaleUseCase
      */
     private function processWithoutStocking(HarvestSaleDTO $dto): Sale
     {
+        $this->guardClientFiscalData($dto);
+        $this->guardClientCredit->execute($dto->clientId, $dto->totalRevenue());
+
         $sale = $this->repository->create($dto->toSaleInputDTO());
 
         $this->generateReceivable->execute($dto->toSaleInputDTO(), $sale);
 
         return $sale;
+    }
+
+    /**
+     * Se needs_invoice for true, exige que o cliente tenha document_number e address.
+     *
+     * @throws ClientMissingFiscalDataException
+     */
+    private function guardClientFiscalData(HarvestSaleDTO $dto): void
+    {
+        if (! $dto->needsInvoice) {
+            return;
+        }
+
+        /** @var Client|null $client */
+        $client = Client::find($dto->clientId);
+
+        if (
+            $client === null
+            || empty($client->document_number)
+            || empty($client->address)
+        ) {
+            throw new ClientMissingFiscalDataException($dto->clientId);
+        }
     }
 }

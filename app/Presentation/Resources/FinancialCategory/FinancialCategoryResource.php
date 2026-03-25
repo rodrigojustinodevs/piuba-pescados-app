@@ -34,7 +34,6 @@ class FinancialCategoryResource extends JsonResource
             'status'      => $this->status->value,
             'statusLabel' => $this->status->label(),
             'company'     => $this->whenLoaded('company', fn (): array => [
-                'id'   => $this->company->id,
                 'name' => $this->company->name,
             ]),
             'createdAt' => $this->created_at?->toDateTimeString(),

@@ -7,6 +7,10 @@ namespace App\Presentation\Exceptions;
 use App\Application\Exceptions\CompanyNotFoundException;
 use App\Domain\Exceptions\AllocationAmountMismatchException;
 use App\Domain\Exceptions\CategoryTypeMismatchException;
+use App\Domain\Exceptions\ClientCreditLimitExceededException;
+use App\Domain\Exceptions\ClientDocumentAlreadyExistsException;
+use App\Domain\Exceptions\ClientHasPendingObligationsException;
+use App\Domain\Exceptions\ClientMissingFiscalDataException;
 use App\Domain\Exceptions\ClosedStockingException;
 use App\Domain\Exceptions\DuplicateStockException;
 use App\Domain\Exceptions\FinancialCategoryHasTransactionsException;
@@ -46,6 +50,11 @@ class Handler extends ExceptionHandler
         // Purchase
         CompanyNotFoundException::class,
         InvalidPurchaseStatusTransitionException::class,
+        // Client
+        ClientHasPendingObligationsException::class,
+        ClientMissingFiscalDataException::class,
+        ClientCreditLimitExceededException::class,
+        ClientDocumentAlreadyExistsException::class,
         // Stock
         DuplicateStockException::class,
         InsufficientStockException::class,
@@ -86,6 +95,34 @@ class Handler extends ExceptionHandler
             fn (UnauthorizedException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNAUTHORIZED,
+            )
+        );
+
+        // -----------------------------------------------------------------------
+        // Client
+        // -----------------------------------------------------------------------
+        $this->renderable(
+            fn (ClientHasPendingObligationsException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (ClientMissingFiscalDataException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (ClientCreditLimitExceededException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (ClientDocumentAlreadyExistsException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )
         );
 

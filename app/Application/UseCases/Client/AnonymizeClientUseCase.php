@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Client;
 
-use App\Domain\Exceptions\ClientHasPendingObligationsException;
 use App\Domain\Models\Client;
 use App\Domain\Repositories\ClientRepositoryInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 
-class DeleteClientUseCase
+/**
+ * Anonimiza os dados sensíveis do cliente (LGPD) e realiza o soft-delete.
+ *
+ * Preserva id e nome para manter o histórico financeiro da fazenda íntegro.
+ * Campos mascarados: email, phone, address, contact, document_number.
+ */
+class AnonymizeClientUseCase
 {
     public function __construct(
         protected ClientRepositoryInterface $clientRepository
@@ -20,15 +25,13 @@ class DeleteClientUseCase
     public function execute(string $id): void
     {
         DB::transaction(function () use ($id): void {
-            if ($this->clientRepository->hasPendingObligations($id)) {
-                throw new ClientHasPendingObligationsException($id);
-            }
+            $anonymized = $this->clientRepository->anonymize($id);
 
-            $deleted = $this->clientRepository->delete($id);
-
-            if (! $deleted) {
+            if (! $anonymized) {
                 throw (new ModelNotFoundException())->setModel(Client::class, $id);
             }
+
+            $this->clientRepository->delete($id);
         });
     }
 }

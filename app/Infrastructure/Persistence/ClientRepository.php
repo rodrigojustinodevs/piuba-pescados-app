@@ -4,25 +4,29 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\ClientInputDTO;
+use App\Domain\Enums\FinancialTransactionStatus;
 use App\Domain\Models\Client;
 use App\Domain\Repositories\ClientRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class ClientRepository implements ClientRepositoryInterface
 {
     /**
-     * Create a new financial category.
-     *
-     * @param array<string, mixed> $data
+     * Persiste um novo cliente a partir do DTO de entrada.
      */
-    public function create(array $data): Client
+    public function create(ClientInputDTO $dto): Client
     {
-        return Client::create($data);
+        /** @var Client $client */
+        $client = Client::create($dto->toPersistence());
+
+        return $client->load('company');
     }
 
     /**
-     * Update an existing financial category.
+     * Atualiza um cliente e retorna o model atualizado com a relation company.
      *
      * @param array<string, mixed> $data
      */
@@ -30,13 +34,13 @@ class ClientRepository implements ClientRepositoryInterface
     {
         $client = Client::find($id);
 
-        if ($client) {
-            $client->update($data);
-
-            return $client;
+        if (! $client) {
+            return null;
         }
 
-        return null;
+        $client->update($data);
+
+        return $client->loadMissing('company:id,name');
     }
 
     /**
@@ -53,11 +57,11 @@ class ClientRepository implements ClientRepositoryInterface
     }
 
     /**
-     * Show financial category by field and value.
+     * Busca um cliente por campo/valor com a relation company carregada.
      */
     public function showClient(string $field, string | int $value): ?Client
     {
-        return Client::where($field, $value)->first();
+        return Client::with('company:id,name')->where($field, $value)->first();
     }
 
     /**
@@ -72,5 +76,45 @@ class ClientRepository implements ClientRepositoryInterface
         }
 
         return (bool) $client->delete();
+    }
+
+    /**
+     * Verifica se o cliente possui vendas com transações financeiras pendentes ou em atraso.
+     * O vínculo é: Client → Sales → FinancialTransactions (reference_type=sale, reference_id=sale.id).
+     */
+    public function hasPendingObligations(string $id): bool
+    {
+        return DB::table('financial_transactions')
+            ->join('sales', 'sales.id', '=', 'financial_transactions.reference_id')
+            ->where('sales.client_id', $id)
+            ->where('financial_transactions.reference_type', 'sale')
+            ->whereIn('financial_transactions.status', [
+                FinancialTransactionStatus::PENDING->value,
+                FinancialTransactionStatus::OVERDUE->value,
+            ])
+            ->whereNull('financial_transactions.deleted_at')
+            ->whereNull('sales.deleted_at')
+            ->exists();
+    }
+
+    /**
+     * Anonimiza os dados sensíveis do cliente (LGPD).
+     * Preserva id e nome para manter o histórico financeiro íntegro.
+     */
+    public function anonymize(string $id): bool
+    {
+        $client = Client::find($id);
+
+        if (! $client) {
+            return false;
+        }
+
+        $client->email           = null;
+        $client->phone           = null;
+        $client->address         = null;
+        $client->contact         = null;
+        $client->document_number = '[ANONIMIZADO]';
+
+        return $client->save();
     }
 }

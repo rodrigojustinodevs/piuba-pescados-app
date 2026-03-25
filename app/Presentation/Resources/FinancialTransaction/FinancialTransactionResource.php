@@ -53,7 +53,6 @@ class FinancialTransactionResource extends JsonResource
             'referenceType' => $this->reference_type?->value,
             'referenceId'   => $this->reference_id,
             'company'       => $this->whenLoaded('company', fn (): array => [
-                'id'   => $this->company->id,
                 'name' => $this->company->name,
             ]),
             'category' => $this->whenLoaded('category', fn (): array => [

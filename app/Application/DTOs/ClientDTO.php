@@ -33,6 +33,8 @@ final readonly class ClientDTO
 
     /**
      * Constrói o DTO a partir de um model Eloquent Client.
+     *
+     * @param \App\Domain\Models\Client $client
      */
     public static function fromModel(\App\Domain\Models\Client $client): self
     {
@@ -77,10 +79,5 @@ final readonly class ClientDTO
             'createdAt'      => $this->createdAt,
             'updatedAt'      => $this->updatedAt,
         ];
-    }
-
-    public function isEmpty(): bool
-    {
-        return ($this->id === '' || $this->id === '0') && ($this->name === '' || $this->name === '0');
     }
 }

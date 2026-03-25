@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\Enums\TankHistoryEvent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,6 +24,7 @@ use Illuminate\Support\Str;
  * @property-read TankType|null $tankType
  * @property-read Company|null $company
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Batch> $batches
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, TankHistory> $histories
  */
 class Tank extends BaseModel
 {
@@ -89,5 +91,25 @@ class Tank extends BaseModel
         $relation = $this->hasMany(Batch::class, 'tank_id');
 
         return $relation;
+    }
+
+    /**
+     * @phpstan-return HasMany<TankHistory, static>
+     */
+    public function histories(): HasMany
+    {
+        /** @var HasMany<TankHistory, static> $relation */
+        $relation = $this->hasMany(TankHistory::class, 'tank_id');
+
+        return $relation;
+    }
+
+    /**
+     * Returns the status value that should be applied when a history event occurs.
+     * Persistence is the caller's responsibility (UseCase → update).
+     */
+    public function statusForEvent(TankHistoryEvent $event): string
+    {
+        return $event->value;
     }
 }

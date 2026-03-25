@@ -127,4 +127,15 @@ class StockingRepository implements StockingRepositoryInterface
             $bindings,
         );
     }
+
+    public function findByCompanyOrFail(string $stockingId, string $companyId): Stocking
+    {
+        /** @var Stocking */
+        return Stocking::where('id', $stockingId)
+            ->whereHas(
+                'batch.tank',
+                static fn ($q) => $q->where('company_id', $companyId),
+            )
+            ->firstOrFail(); // lança ModelNotFoundException com mensagem padrão do Laravel
+    }
 }

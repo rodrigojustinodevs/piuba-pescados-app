@@ -14,7 +14,7 @@ return new class () extends Migration
             $table->char('id', 36)->primary();
             $table->char('company_id', 36)->index();
             $table->char('tank_id', 36)->index();
-            $table->enum('event', ['cleaning', 'maintenance', 'fallowing']);
+            $table->enum('event', ['cleaning', 'maintenance', 'fallowing', 'status_change']);
             $table->date('event_date');
             $table->text('description')->nullable();
             $table->string('performed_by')->nullable();

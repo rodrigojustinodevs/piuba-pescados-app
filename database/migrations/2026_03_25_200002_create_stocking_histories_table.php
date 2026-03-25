@@ -14,7 +14,7 @@ return new class () extends Migration
             $table->char('id', 36)->primary();
             $table->char('company_id', 36)->index();
             $table->char('stocking_id', 36)->index();
-            $table->enum('event', ['biometry', 'mortality', 'transfer', 'medication']);
+            $table->enum('event', ['biometry', 'mortality', 'transfer', 'medication', 'feeding', 'harvest']);
             $table->date('event_date');
             // Used for mortality and transfer events (number of fish)
             $table->unsignedInteger('quantity')->nullable();

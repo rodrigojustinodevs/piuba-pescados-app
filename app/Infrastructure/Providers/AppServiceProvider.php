@@ -12,7 +12,9 @@ use App\Application\Services\CompanyResolver;
 use App\Application\Services\LoginAttemptLimiter;
 use App\Application\Services\UserResolver;
 use App\Domain\Enums\Can;
+use App\Domain\Models\Tank;
 use App\Domain\Models\User;
+use App\Domain\Observers\TankObserver;
 use App\Domain\Repositories\AlertRepositoryInterface;
 use App\Domain\Repositories\AuthRepositoryInterface;
 use App\Domain\Repositories\BatchRepositoryInterface;
@@ -165,6 +167,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Tank::observe(TankObserver::class);
+
         $this->setupLogViewer();
         $this->configModels();
         $this->configCommands();

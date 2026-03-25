@@ -43,7 +43,9 @@ final readonly class CreateTankHistoryUseCase
             $history = $this->repository->create($dto);
 
             if ($dto->event->blocksNewAllocations()) {
-                $tank->update(['status' => $tank->statusForEvent($dto->event)]);
+                // updateQuietly() suppresses Eloquent events, preventing TankObserver
+                // from creating a duplicate status_change history entry here.
+                $tank->updateQuietly(['status' => $tank->statusForEvent($dto->event)]);
             }
 
             return $history;

@@ -2,54 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Services\Feeding;
+namespace App\Application\Services\Feeding;
 
 use App\Domain\Models\Feeding;
+use App\Domain\Models\FeedInventory;
+use App\Domain\Models\Stock;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\FeedInventoryRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 
-class FeedingService
+final readonly class FeedingService
 {
     public function __construct(
-        private readonly FeedInventoryRepositoryInterface $feedInventoryRepository,
-        private readonly FeedingRepositoryInterface $feedingRepository,
-        private readonly StockRepositoryInterface $stockRepository,
+        private FeedInventoryRepositoryInterface $feedInventoryRepository,
+        private FeedingRepositoryInterface $feedingRepository,
+        private StockRepositoryInterface $stockRepository,
     ) {
     }
 
-    /**
-     * @return array{stock_reduction_quantity: float, quantity_provided: float}
-     */
-    public function calculateStockAfterFeedingOperations(
-        Feeding $feeding,
-        float $quantity
-    ): array {
-        return [
-            'stock_reduction_quantity' => $feeding->stock_reduction_quantity - $quantity,
-            'quantity_provided'        => $feeding->quantity_provided + $quantity,
-        ];
-    }
-
-    /**
-     * @param array<string, mixed> $mappedData
-     */
-    public function calculateStockDelta(Feeding $feeding, array $mappedData): float
-    {
-        $oldStockReductionQuantity = (float) $feeding->stock_reduction_quantity;
-        $newStockReductionQuantity = (float) ($mappedData['stock_reduction_quantity'] ?? $oldStockReductionQuantity);
-
-        return round($newStockReductionQuantity - $oldStockReductionQuantity, 2);
-    }
-
-    /**
-         * Aplica o efeito de uma nova alimentação ou ajuste no estoque.
-         */
     public function applyStockEffect(Feeding $feeding, string $companyId): void
     {
         $inventory = $this->feedInventoryRepository->findByCompanyAndFeedType($companyId, $feeding->feed_type);
 
-        if ($inventory instanceof \App\Domain\Models\FeedInventory) {
+        if ($inventory instanceof FeedInventory) {
             $newDailyAvg = $this->feedingRepository
                 ->getDailyConsumptionAverage($companyId, $feeding->feed_type);
 
@@ -65,14 +40,11 @@ class FeedingService
         }
     }
 
-    /**
-     * Reverte o efeito de uma alimentação (estorno).
-     */
     public function revertStockEffect(Feeding $feeding, string $companyId): void
     {
         $inventory = $this->feedInventoryRepository->findByCompanyAndFeedType($companyId, $feeding->feed_type);
 
-        if ($inventory instanceof \App\Domain\Models\FeedInventory) {
+        if ($inventory instanceof FeedInventory) {
             $inventory->update([
                 'current_stock'     => $inventory->current_stock + $feeding->stock_reduction_quantity,
                 'total_consumption' => $inventory->total_consumption - $feeding->stock_reduction_quantity,
@@ -82,7 +54,7 @@ class FeedingService
         if ($feeding->stock_id !== null) {
             $stock = $this->stockRepository->showStock('id', $feeding->stock_id);
 
-            if ($stock instanceof \App\Domain\Models\Stock) {
+            if ($stock instanceof Stock) {
                 $this->stockRepository->incrementQuantity(
                     $feeding->stock_id,
                     (float) $feeding->stock_reduction_quantity,
@@ -108,12 +80,12 @@ class FeedingService
     public function getDailyRecommendation(float $averageWeight, int $totalQuantity): float
     {
         $percentageOfBodyWeight = match (true) {
-            $averageWeight < 10  => 0.10,  // 10% (Alevinos)
-            $averageWeight < 50  => 0.06,  // 6%
-            $averageWeight < 150 => 0.04,  // 4%
-            $averageWeight < 400 => 0.03,  // 3%
-            $averageWeight < 800 => 0.02,  // 2%
-            default              => 0.015, // 1.5% (Terminação/Abate)
+            $averageWeight < 10  => 0.10,
+            $averageWeight < 50  => 0.06,
+            $averageWeight < 150 => 0.04,
+            $averageWeight < 400 => 0.03,
+            $averageWeight < 800 => 0.02,
+            default              => 0.015,
         };
 
         $totalBiomassKg    = ($averageWeight / 1000) * $totalQuantity;

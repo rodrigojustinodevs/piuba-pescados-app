@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Biometry;
 
 use App\Application\DTOs\BiometryInputDTO;
+use App\Application\Services\Feeding\FeedingService;
 use App\Domain\Models\Biometry;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
@@ -12,7 +13,6 @@ use App\Domain\Repositories\GrowthCurveRepositoryInterface;
 use App\Domain\Services\Alert\AlertService;
 use App\Domain\Services\Biometry\BiometryFcrService;
 use App\Domain\Services\Biometry\BiometryValidatorService;
-use App\Domain\Services\Feeding\FeedingService;
 use Illuminate\Support\Facades\DB;
 
 class CreateBiometryUseCase

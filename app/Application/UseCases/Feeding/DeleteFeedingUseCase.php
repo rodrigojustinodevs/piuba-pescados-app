@@ -7,15 +7,17 @@ namespace App\Application\UseCases\Feeding;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteFeedingUseCase
+final readonly class DeleteFeedingUseCase
 {
     public function __construct(
-        protected FeedingRepositoryInterface $feedingRepository
+        private FeedingRepositoryInterface $repository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->feedingRepository->delete($id));
+        $this->repository->findOrFail($id);
+
+        DB::transaction(fn (): bool => $this->repository->delete($id));
     }
 }

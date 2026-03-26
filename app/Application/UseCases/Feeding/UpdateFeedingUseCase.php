@@ -5,59 +5,52 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Feeding;
 
 use App\Application\DTOs\FeedingInputDTO;
+use App\Application\Services\Feeding\FeedingService;
 use App\Domain\Models\Feeding;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Services\Alert\AlertService;
-use App\Domain\Services\Feeding\FeedingService;
 use Illuminate\Support\Facades\DB;
 
-class UpdateFeedingUseCase
+final readonly class UpdateFeedingUseCase
 {
     public function __construct(
-        private readonly FeedingRepositoryInterface $feedingRepository,
-        private readonly BatchRepositoryInterface $batchRepository,
-        private readonly BiometryRepositoryInterface $biometryRepository,
-        private readonly FeedingService $feedingService,
-        private readonly AlertService $alertService,
+        private FeedingRepositoryInterface $repository,
+        private BatchRepositoryInterface $batchRepository,
+        private BiometryRepositoryInterface $biometryRepository,
+        private FeedingService $feedingService,
+        private AlertService $alertService,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Validated data from the FormRequest
      */
     public function execute(string $id, array $data): Feeding
     {
-        return DB::transaction(function () use ($id, $data): Feeding {
-            $feeding = $this->feedingRepository->showFeeding('id', $id);
+        $feeding = $this->repository->findOrFail($id);
+        $dto     = FeedingInputDTO::fromArray($data);
+        $batch   = $this->batchRepository->findOrFail($dto->batchId);
+        $companyId = $batch->tank?->company_id;
 
-            if (! $feeding instanceof Feeding) {
-                throw new \RuntimeException('Feeding not found');
-            }
+        return DB::transaction(function () use ($id, $dto, $feeding, $batch, $companyId): Feeding {
+            $this->feedingService->revertStockEffect($feeding, (string) $companyId);
 
-            $dto       = FeedingInputDTO::fromArray($data);
-            $batch     = $this->batchRepository->showBatch('id', $dto->batchId);
-            $companyId = $batch->tank?->company_id;
+            $updated = $this->repository->update($id, $dto->toPersistence());
 
-            $this->feedingService->revertStockEffect($feeding, $companyId);
+            $this->feedingService->applyStockEffect($updated, (string) $companyId);
 
-            $updatedFeeding = $this->feedingRepository->update($id, $dto->toPersistence());
-
-            if ($updatedFeeding instanceof Feeding) {
-                $this->feedingService->applyStockEffect($updatedFeeding, $companyId);
-            }
-
-            $latestBiometry = $this->biometryRepository->findLatestByBatch($batch->id);
+            $latestBiometry = $this->biometryRepository->findLatestByBatch((string) $batch->id);
             $this->alertService->checkRationDeviation(
                 $batch,
                 $dto->quantityProvided,
                 $latestBiometry?->recommended_ration !== null
                     ? (float) $latestBiometry->recommended_ration
-                    : null
+                    : null,
             );
 
-            return $updatedFeeding;
+            return $updated;
         });
     }
 }

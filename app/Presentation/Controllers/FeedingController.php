@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\FeedingDTO;
 use App\Application\UseCases\Feeding\CreateFeedingUseCase;
 use App\Application\UseCases\Feeding\DeleteFeedingUseCase;
 use App\Application\UseCases\Feeding\ListFeedingsUseCase;
@@ -12,6 +11,7 @@ use App\Application\UseCases\Feeding\ShowFeedingUseCase;
 use App\Application\UseCases\Feeding\UpdateFeedingUseCase;
 use App\Presentation\Requests\Feeding\FeedingStoreRequest;
 use App\Presentation\Requests\Feeding\FeedingUpdateRequest;
+use App\Presentation\Resources\Feeding\FeedingResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -43,11 +43,7 @@ class FeedingController
         try {
             $feeding = $useCase->execute($id);
 
-            if (! $feeding instanceof FeedingDTO || $feeding->isEmpty()) {
-                return ApiResponse::error(null, 'Feeding not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($feeding->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new FeedingResource($feeding), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Feeding not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -59,21 +55,9 @@ class FeedingController
     public function store(FeedingStoreRequest $request, CreateFeedingUseCase $useCase): JsonResponse
     {
         try {
-            $validated = $request->validated();
-            $dto       = FeedingDTO::fromArray([
-                'id'                       => '',
-                'batch_id'                 => $validated['batchId'],
-                'feeding_date'             => $validated['feedingDate'],
-                'quantity_provided'        => (float) $validated['quantityProvided'],
-                'feed_type'                => $validated['feedType'],
-                'stock_id'                 => $validated['stockId'] ?? null,
-                'stock_reduction_quantity' => (float) $validated['stockReductionQuantity'],
-                'created_at'               => null,
-                'updated_at'               => null,
-            ]);
-            $feeding = $useCase->execute($dto);
+            $feeding = $useCase->execute($request->validated());
 
-            return ApiResponse::created($feeding->toArray());
+            return ApiResponse::created(new FeedingResource($feeding));
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -85,9 +69,9 @@ class FeedingController
     public function update(FeedingUpdateRequest $request, string $id, UpdateFeedingUseCase $useCase): JsonResponse
     {
         try {
-            $feeding = $useCase->execute($id, $request->validated());
+            $result = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($feeding->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new FeedingResource($result), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

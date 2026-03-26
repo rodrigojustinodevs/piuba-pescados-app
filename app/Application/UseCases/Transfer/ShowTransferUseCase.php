@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Transfer;
 
-use App\Application\DTOs\TransferDTO;
+use App\Domain\Models\Transfer;
 use App\Domain\Repositories\TransferRepositoryInterface;
-use App\Infrastructure\Mappers\TransferMapper;
 use RuntimeException;
 
 class ShowTransferUseCase
@@ -16,14 +15,14 @@ class ShowTransferUseCase
     ) {
     }
 
-    public function execute(string $id): ?TransferDTO
+    public function execute(string $id): Transfer
     {
         $transfer = $this->transferRepository->showTransfer('id', $id);
 
-        if (! $transfer instanceof \App\Domain\Models\Transfer) {
+        if (! $transfer instanceof Transfer) {
             throw new RuntimeException('Transfer not found');
         }
 
-        return TransferMapper::toDTO($transfer);
+        return $transfer;
     }
 }

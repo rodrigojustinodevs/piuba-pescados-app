@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Batch;
 
-use App\Application\DTOs\BatchDTO;
 use App\Domain\Models\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
-use App\Infrastructure\Mappers\BatchMapper;
 use RuntimeException;
 
 class ShowBatchUseCase
@@ -17,7 +15,7 @@ class ShowBatchUseCase
     ) {
     }
 
-    public function execute(string $id): ?BatchDTO
+    public function execute(string $id): Batch
     {
         $batch = $this->batchRepository->showBatch('id', $id);
 
@@ -25,6 +23,6 @@ class ShowBatchUseCase
             throw new RuntimeException('Batch not found');
         }
 
-        return BatchMapper::toDTO($batch);
+        return $batch;
     }
 }

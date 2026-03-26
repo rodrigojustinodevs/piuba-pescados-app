@@ -4,26 +4,21 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
+use App\Application\DTOs\LoginInputDTO;
 use App\Application\Services\LoginAttemptLimiter;
 use App\Application\UseCases\Auth\LoginUseCase;
 use App\Application\UseCases\Auth\LogoutUseCase;
 use App\Application\UseCases\Auth\MeUseCase;
 use App\Application\UseCases\Auth\RefreshTokenUseCase;
 use App\Domain\Exceptions\InvalidCredentialsException;
-use App\Infrastructure\Mappers\AuthMapper;
 use App\Presentation\Requests\Auth\LoginRequest;
 use App\Presentation\Requests\Auth\RefreshTokenRequest;
 use App\Presentation\Resources\Auth\AuthResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
-final readonly class AuthController
+final class AuthController
 {
-    public function __construct(
-        private AuthMapper $mapper,
-    ) {
-    }
-
     /**
      * POST /auth/login
      *
@@ -37,7 +32,7 @@ final readonly class AuthController
         LoginUseCase $useCase,
         LoginAttemptLimiter $limiter,
     ): JsonResponse {
-        $dto = $this->mapper->toLoginInput($request->validated());
+        $dto = LoginInputDTO::fromArray($request->validated());
 
         // Block after MAX_ATTEMPTS failures — throw UnauthorizedException
         $limiter->ensureNotLocked($dto->email);

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\BatchDTO;
 use App\Application\UseCases\Batch\CreateBatchUseCase;
 use App\Application\UseCases\Batch\DeleteBatchUseCase;
 use App\Application\UseCases\Batch\FinishBatchUseCase;
@@ -14,6 +13,7 @@ use App\Application\UseCases\Batch\UpdateBatchUseCase;
 use App\Presentation\Requests\Batch\BatchFinishRequest;
 use App\Presentation\Requests\Batch\BatchStoreRequest;
 use App\Presentation\Requests\Batch\BatchUpdateRequest;
+use App\Presentation\Resources\Batch\BatchResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -63,11 +63,7 @@ class BatchController
         try {
             $batch = $useCase->execute($id);
 
-            if (! $batch instanceof BatchDTO || $batch->isEmpty()) {
-                return ApiResponse::error(null, 'Batch not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($batch->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new BatchResource($batch), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Batch not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -135,7 +131,7 @@ class BatchController
         try {
             $batch = $useCase->execute($request->validated());
 
-            return ApiResponse::created($batch->toArray());
+            return ApiResponse::created(new BatchResource($batch));
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -172,7 +168,7 @@ class BatchController
         try {
             $batch = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($batch->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new BatchResource($batch), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

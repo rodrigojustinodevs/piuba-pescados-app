@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\MortalityDTO;
 use App\Application\UseCases\Mortality\CreateMortalityUseCase;
 use App\Application\UseCases\Mortality\DeleteMortalityUseCase;
 use App\Application\UseCases\Mortality\ListMortalitiesUseCase;
@@ -13,6 +12,7 @@ use App\Application\UseCases\Mortality\SurvivalRateUseCase;
 use App\Application\UseCases\Mortality\UpdateMortalityUseCase;
 use App\Presentation\Requests\Mortality\MortalityStoreRequest;
 use App\Presentation\Requests\Mortality\MortalityUpdateRequest;
+use App\Presentation\Resources\Mortality\MortalityResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -44,11 +44,7 @@ class MortalityController
         try {
             $mortality = $useCase->execute($id);
 
-            if (! $mortality instanceof MortalityDTO || $mortality->isEmpty()) {
-                return ApiResponse::error(null, 'Mortality not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($mortality->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new MortalityResource($mortality), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Mortality not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -62,7 +58,7 @@ class MortalityController
         try {
             $mortality = $useCase->execute($request->validated());
 
-            return ApiResponse::created($mortality->toArray());
+            return ApiResponse::created(new MortalityResource($mortality));
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -74,9 +70,9 @@ class MortalityController
     public function update(MortalityUpdateRequest $request, string $id, UpdateMortalityUseCase $useCase): JsonResponse
     {
         try {
-            $mortality = $useCase->execute($id, $request->validated());
+            $result = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($mortality->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new MortalityResource($result), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\CompanyDTO;
 use App\Application\UseCases\Company\CreateCompanyUseCase;
 use App\Application\UseCases\Company\DeleteCompanyUseCase;
 use App\Application\UseCases\Company\ShowAllCompaniesUseCase;
@@ -12,6 +11,7 @@ use App\Application\UseCases\Company\ShowCompanyUseCase;
 use App\Application\UseCases\Company\UpdateCompanyUseCase;
 use App\Presentation\Requests\Company\CompanyStoreRequest;
 use App\Presentation\Requests\Company\CompanyUpdateRequest;
+use App\Presentation\Resources\Company\CompanyResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,11 +49,11 @@ class CompanyController
         try {
             $company = $useCase->execute($id);
 
-            if (! $company instanceof CompanyDTO || $company->isEmpty()) {
+            if (!$company instanceof \App\Domain\Models\Company) {
                 return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);
             }
 
-            return ApiResponse::success($company->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new CompanyResource($company), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Company not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -67,7 +67,7 @@ class CompanyController
         try {
             $company = $useCase->execute($request->validated());
 
-            return ApiResponse::created($company->toArray());
+            return ApiResponse::created(new CompanyResource($company));
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -81,7 +81,7 @@ class CompanyController
         try {
             $company = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($company->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new CompanyResource($company), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

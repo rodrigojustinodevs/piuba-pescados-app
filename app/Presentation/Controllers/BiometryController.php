@@ -11,6 +11,7 @@ use App\Application\UseCases\Biometry\ShowBiometryUseCase;
 use App\Application\UseCases\Biometry\UpdateBiometryUseCase;
 use App\Presentation\Requests\Biometry\BiometryStoreRequest;
 use App\Presentation\Requests\Biometry\BiometryUpdateRequest;
+use App\Presentation\Resources\Biometry\BiometryResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -186,13 +187,9 @@ class BiometryController
     public function show(string $id, ShowBiometryUseCase $useCase): JsonResponse
     {
         try {
-            $biometry = $useCase->execute($id);
+            $result = $useCase->execute($id);
 
-            if ($biometry->isEmpty()) {
-                return ApiResponse::error(null, 'Biometry not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($biometry->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new BiometryResource($result), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Biometry not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -280,7 +277,7 @@ class BiometryController
         try {
             $biometry = $useCase->execute($request->validated());
 
-            return ApiResponse::created($biometry->toArray());
+            return ApiResponse::created(new BiometryResource($biometry));
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -372,7 +369,7 @@ class BiometryController
         try {
             $biometry = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($biometry->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new BiometryResource($biometry), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

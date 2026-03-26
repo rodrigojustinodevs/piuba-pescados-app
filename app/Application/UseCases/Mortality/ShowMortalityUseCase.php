@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Mortality;
 
-use App\Application\DTOs\MortalityDTO;
 use App\Domain\Models\Mortality;
 use App\Domain\Repositories\MortalityRepositoryInterface;
-use App\Infrastructure\Mappers\MortalityMapper;
 use RuntimeException;
 
 class ShowMortalityUseCase
@@ -17,7 +15,7 @@ class ShowMortalityUseCase
     ) {
     }
 
-    public function execute(string $id): ?MortalityDTO
+    public function execute(string $id): Mortality
     {
         $mortality = $this->mortalityRepository->showMortality('id', $id);
 
@@ -25,6 +23,6 @@ class ShowMortalityUseCase
             throw new RuntimeException('Mortality not found');
         }
 
-        return MortalityMapper::toDTO($mortality);
+        return $mortality;
     }
 }

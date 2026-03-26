@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Transfer;
 
-use App\Application\DTOs\TransferDTO;
+use App\Application\DTOs\TransferInputDTO;
+use App\Domain\Models\Transfer;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
-use App\Infrastructure\Mappers\TransferMapper;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -22,14 +22,14 @@ class CreateTransferUseCase
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(array $data): TransferDTO
+    public function execute(array $data): Transfer
     {
-        return DB::transaction(function () use ($data): TransferDTO {
-            $mappedData        = TransferMapper::fromRequest($data);
-            $originTankId      = (string) $mappedData['origin_tank_id'];
-            $destinationTankId = (string) $mappedData['destination_tank_id'];
-            $batchId           = (string) $mappedData['batch_id'];
-            $quantity          = (int) $mappedData['quantity'];
+        return DB::transaction(function () use ($data): Transfer {
+            $dto               = TransferInputDTO::fromArray($data);
+            $originTankId      = $dto->originTankId;
+            $destinationTankId = $dto->destinationTankId;
+            $batchId           = $dto->batchId;
+            $quantity          = $dto->quantity;
 
             $batch = $this->batchRepository->showBatch('id', $batchId);
 
@@ -45,11 +45,11 @@ class CreateTransferUseCase
                 throw new RuntimeException('Tank already has an active batch.');
             }
 
-            $transfer = $this->transferRepository->create($mappedData);
+            $transfer = $this->transferRepository->create($dto->toPersistence());
 
             $newQuantity  = $batch->initial_quantity - $quantity;
             $updatedBatch = $this->batchRepository->update($batchId, [
-                'tank_id'          => $mappedData['destination_tank_id'],
+                'tank_id'          => $dto->destinationTankId,
                 'initial_quantity' => $newQuantity,
             ]);
 
@@ -57,7 +57,7 @@ class CreateTransferUseCase
                 throw new RuntimeException('Error updating batch tank');
             }
 
-            return TransferMapper::toDTO($transfer);
+            return $transfer;
         });
     }
 }

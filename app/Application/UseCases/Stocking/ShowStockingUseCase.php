@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Stocking;
 
-use App\Application\DTOs\StockingDTO;
 use App\Domain\Models\Stocking;
 use App\Domain\Repositories\StockingRepositoryInterface;
-use App\Infrastructure\Mappers\StockingMapper;
 use RuntimeException;
 
 class ShowStockingUseCase
@@ -17,7 +15,7 @@ class ShowStockingUseCase
     ) {
     }
 
-    public function execute(string $id): ?StockingDTO
+    public function execute(string $id): Stocking
     {
         $stocking = $this->stockingRepository->showStocking('id', $id);
 
@@ -25,6 +23,6 @@ class ShowStockingUseCase
             throw new RuntimeException('Stocking not found');
         }
 
-        return StockingMapper::toDTO($stocking);
+        return $stocking;
     }
 }

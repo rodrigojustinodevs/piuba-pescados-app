@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Feeding;
 
-use App\Application\DTOs\FeedingDTO;
+use App\Application\DTOs\FeedingInputDTO;
+use App\Domain\Models\Feeding;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Services\Alert\AlertService;
 use App\Domain\Services\Feeding\FeedingService;
-use App\Infrastructure\Mappers\FeedingMapper;
 use Illuminate\Support\Facades\DB;
 
 class UpdateFeedingUseCase
@@ -27,37 +27,37 @@ class UpdateFeedingUseCase
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(string $id, array $data): FeedingDTO
+    public function execute(string $id, array $data): Feeding
     {
-        return DB::transaction(function () use ($id, $data): FeedingDTO {
+        return DB::transaction(function () use ($id, $data): Feeding {
             $feeding = $this->feedingRepository->showFeeding('id', $id);
 
-            if (! $feeding instanceof \App\Domain\Models\Feeding) {
+            if (! $feeding instanceof Feeding) {
                 throw new \RuntimeException('Feeding not found');
             }
 
-            $mappedData = FeedingMapper::fromRequest($data);
-            $batch      = $this->batchRepository->showBatch('id', $mappedData['batch_id']);
-            $companyId  = $batch->tank?->company_id;
+            $dto       = FeedingInputDTO::fromArray($data);
+            $batch     = $this->batchRepository->showBatch('id', $dto->batchId);
+            $companyId = $batch->tank?->company_id;
 
             $this->feedingService->revertStockEffect($feeding, $companyId);
 
-            $updatedFeeding = $this->feedingRepository->update($id, $mappedData);
+            $updatedFeeding = $this->feedingRepository->update($id, $dto->toPersistence());
 
-            if ($updatedFeeding instanceof \App\Domain\Models\Feeding) {
+            if ($updatedFeeding instanceof Feeding) {
                 $this->feedingService->applyStockEffect($updatedFeeding, $companyId);
             }
 
             $latestBiometry = $this->biometryRepository->findLatestByBatch($batch->id);
             $this->alertService->checkRationDeviation(
                 $batch,
-                (float) $mappedData['quantity_provided'],
+                $dto->quantityProvided,
                 $latestBiometry?->recommended_ration !== null
                     ? (float) $latestBiometry->recommended_ration
                     : null
             );
 
-            return FeedingMapper::toDTO($updatedFeeding);
+            return $updatedFeeding;
         });
     }
 }

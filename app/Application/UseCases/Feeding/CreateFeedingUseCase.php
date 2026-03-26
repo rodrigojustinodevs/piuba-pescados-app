@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Feeding;
 
-use App\Application\DTOs\FeedingDTO;
+use App\Application\DTOs\FeedingInputDTO;
 use App\Domain\Events\FeedingCreated;
+use App\Domain\Models\Feeding;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
@@ -14,7 +15,6 @@ use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Services\Alert\AlertService;
 use App\Domain\Services\FeedInventory\FeedInventoryService;
 use App\Domain\Services\FeedInventory\FeedInventoryValidatorService;
-use App\Infrastructure\Mappers\FeedingMapper;
 use Illuminate\Support\Facades\DB;
 
 class CreateFeedingUseCase
@@ -31,54 +31,57 @@ class CreateFeedingUseCase
     ) {
     }
 
-    public function execute(FeedingDTO $dto): FeedingDTO
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function execute(array $data): Feeding
     {
-        return DB::transaction(function () use ($dto): FeedingDTO {
-            $mappedData = FeedingMapper::fromRequest($dto->toArray());
+        return DB::transaction(function () use ($data): Feeding {
+            $dto = FeedingInputDTO::fromArray($data);
 
-            $batch     = $this->batchRepository->showBatch('id', $mappedData['batch_id']);
+            $batch     = $this->batchRepository->showBatch('id', $dto->batchId);
             $companyId = $batch->tank?->company_id;
 
             $feedInventory = $this->feedInventoryRepository
-                ->findByCompanyAndFeedType($companyId, $mappedData['feed_type']);
+                ->findByCompanyAndFeedType($companyId, $dto->feedType);
 
             $this->feedInventoryValidatorService
-                ->validateStock($feedInventory, (float) $mappedData['stock_reduction_quantity']);
+                ->validateStock($feedInventory, $dto->stockReductionQuantity);
 
-            $feeding = $this->feedingRepository->create($mappedData);
+            $feeding = $this->feedingRepository->create($dto->toPersistence());
 
             FeedingCreated::dispatch($feeding, (string) $companyId);
 
             $feedInventory->update(array_merge(
                 $this->feedInventoryService->calculateStockAfterFeedingOperations(
                     $feedInventory,
-                    (float) $mappedData['stock_reduction_quantity']
+                    $dto->stockReductionQuantity
                 ),
                 [
                     'daily_consumption' => $this->feedingRepository->getDailyConsumptionAverage(
                         $companyId,
-                        $mappedData['feed_type']
+                        $dto->feedType
                     ),
                 ]
             ));
 
-            if (! empty($mappedData['stock_id'])) {
+            if (!in_array($dto->stockId, [null, '', '0'], true)) {
                 $this->stockRepository->decrementQuantity(
-                    $mappedData['stock_id'],
-                    (float) $mappedData['stock_reduction_quantity']
+                    $dto->stockId,
+                    $dto->stockReductionQuantity
                 );
             }
 
             $latestBiometry = $this->biometryRepository->findLatestByBatch($batch->id);
             $this->alertService->checkRationDeviation(
                 $batch,
-                (float) $mappedData['quantity_provided'],
+                $dto->quantityProvided,
                 $latestBiometry?->recommended_ration !== null
                     ? (float) $latestBiometry->recommended_ration
                     : null
             );
 
-            return FeedingMapper::toDTO($feeding);
+            return $feeding;
         });
     }
 }

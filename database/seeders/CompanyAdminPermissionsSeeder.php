@@ -148,6 +148,18 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'update-stocking',
             'delete-stocking',
 
+            // Permissões de Stocking History
+            'create-stocking-history',
+            'view-stocking-history',
+            'update-stocking-history',
+            'delete-stocking-history',
+
+            // Permissões de Tank History
+            'create-tank-history',
+            'view-tank-history',
+            'update-tank-history',
+            'delete-tank-history',
+
             // Permissões de Stock
             'create-stock',
             'view-stock',

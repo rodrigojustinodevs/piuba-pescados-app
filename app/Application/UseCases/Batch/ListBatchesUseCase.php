@@ -5,29 +5,25 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Batch;
 
 use App\Domain\Repositories\BatchRepositoryInterface;
-use App\Presentation\Resources\Batch\BatchResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Domain\Repositories\PaginationInterface;
 
-class ListBatchesUseCase
+final readonly class ListBatchesUseCase
 {
     public function __construct(
-        protected BatchRepositoryInterface $batchRepository
+        private BatchRepositoryInterface $repository,
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array{
+     *     status?: string|null,
+     *     tank_id?: string|null,
+     *     species?: string|null,
+     *     per_page?: int,
+     * } $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->batchRepository->paginate();
-
-        return BatchResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->repository->paginate($filters);
     }
 }

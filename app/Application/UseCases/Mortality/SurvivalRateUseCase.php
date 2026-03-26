@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Mortality;
 
 use App\Application\DTOs\SurvivalRateDTO;
+use App\Application\Services\Batch\BatchPerformanceService;
 use App\Domain\Models\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
-use App\Domain\Services\Batch\BatchPerformanceService;
 
 final readonly class SurvivalRateUseCase
 {

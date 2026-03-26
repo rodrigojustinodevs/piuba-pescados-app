@@ -6,6 +6,7 @@ namespace App\Presentation\Exceptions;
 
 use App\Application\Exceptions\CompanyNotFoundException;
 use App\Domain\Exceptions\AllocationAmountMismatchException;
+use App\Domain\Exceptions\BatchAlreadyFinishedException;
 use App\Domain\Exceptions\CategoryTypeMismatchException;
 use App\Domain\Exceptions\ClientCreditLimitExceededException;
 use App\Domain\Exceptions\ClientDocumentAlreadyExistsException;
@@ -22,6 +23,7 @@ use App\Domain\Exceptions\InvalidPurchaseStatusTransitionException;
 use App\Domain\Exceptions\MortalityExceedsSurvivorsException;
 use App\Domain\Exceptions\MortalityNotFoundException;
 use App\Domain\Exceptions\StockNotFoundException;
+use App\Domain\Exceptions\TankAlreadyHasActiveBatchException;
 use App\Domain\Exceptions\TransactionAlreadyAllocatedException;
 use App\Domain\Exceptions\TransactionAmountImmutableException;
 use App\Domain\Exceptions\UnauthorizedException;
@@ -57,6 +59,9 @@ class Handler extends ExceptionHandler
         ClientMissingFiscalDataException::class,
         ClientCreditLimitExceededException::class,
         ClientDocumentAlreadyExistsException::class,
+        // Batch
+        BatchAlreadyFinishedException::class,
+        TankAlreadyHasActiveBatchException::class,
         // Mortality
         MortalityNotFoundException::class,
         MortalityExceedsSurvivorsException::class,
@@ -142,6 +147,22 @@ class Handler extends ExceptionHandler
         );
         $this->renderable(
             fn (CompanyNotFoundException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        // -----------------------------------------------------------------------
+        // Batch
+        // -----------------------------------------------------------------------
+        $this->renderable(
+            fn (BatchAlreadyFinishedException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (TankAlreadyHasActiveBatchException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )

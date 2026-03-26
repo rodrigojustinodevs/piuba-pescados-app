@@ -47,15 +47,11 @@ class CreateTransferUseCase
 
             $transfer = $this->transferRepository->create($dto->toPersistence());
 
-            $newQuantity  = $batch->initial_quantity - $quantity;
-            $updatedBatch = $this->batchRepository->update($batchId, [
+            $newQuantity = $batch->initial_quantity - $quantity;
+            $this->batchRepository->update($batchId, [
                 'tank_id'          => $dto->destinationTankId,
                 'initial_quantity' => $newQuantity,
             ]);
-
-            if (! $updatedBatch instanceof \App\Domain\Models\Batch) {
-                throw new RuntimeException('Error updating batch tank');
-            }
 
             return $transfer;
         });

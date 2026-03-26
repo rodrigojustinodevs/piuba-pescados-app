@@ -41,14 +41,10 @@ class DeleteTransferUseCase
                 }
 
                 $newQuantity = $batch->initial_quantity + (int) $transfer->quantity;
-                $updated     = $this->batchRepository->update($transfer->batch_id, [
+                $this->batchRepository->update($transfer->batch_id, [
                     'tank_id'          => $transfer->origin_tank_id,
                     'initial_quantity' => $newQuantity,
                 ]);
-
-                if (! $updated instanceof \App\Domain\Models\Batch) {
-                    throw new RuntimeException('Error reverting batch to origin tank');
-                }
             }
 
             return $this->transferRepository->delete($id);

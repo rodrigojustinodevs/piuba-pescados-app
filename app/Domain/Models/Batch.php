@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\Enums\BatchStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * @property string $id
- * @property string|null $name
- * @property string|null $description
- * @property Carbon|null $entry_date
- * @property int $initial_quantity
- * @property string $species
- * @property string $status
- * @property string $cultivation
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property string              $id
+ * @property string|null         $name
+ * @property string|null         $description
+ * @property string              $tank_id
+ * @property \Carbon\Carbon|null $entry_date
+ * @property int                 $initial_quantity
+ * @property float               $unit_cost
+ * @property string              $species
+ * @property string              $status
+ * @property string|null         $cultivation
+ * @property \Carbon\Carbon      $created_at
+ * @property \Carbon\Carbon      $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
  *
  * @property-read Tank|null $tank
  */
@@ -38,27 +41,30 @@ class Batch extends BaseModel
         'tank_id',
         'entry_date',
         'initial_quantity',
+        'unit_cost',
         'species',
         'status',
         'cultivation',
     ];
 
-    /** @var array<string> */
-    protected $dates = [
-        'entry_date',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    protected $casts = [
+        'entry_date'       => 'date:Y-m-d',
+        'initial_quantity' => 'integer',
+        'unit_cost'        => 'decimal:2',
     ];
 
     #[\Override]
-    protected static function booted()
+    protected static function booted(): void
     {
-        static::creating(function (Batch $batch): void {
-            $batch->id     = (string) Str::uuid();
-            $batch->status = 'active';
+        static::creating(static function (Batch $batch): void {
+            $batch->id ??= (string) Str::uuid();
+            $batch->status ??= BatchStatus::ACTIVE->value;
         });
     }
+
+    // -------------------------------------------------------------------------
+    // Relacionamentos
+    // -------------------------------------------------------------------------
 
     /**
      * @phpstan-return BelongsTo<Tank, static>
@@ -69,5 +75,24 @@ class Batch extends BaseModel
         $relation = $this->belongsTo(Tank::class, 'tank_id');
 
         return $relation;
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers de domínio (leitura apenas)
+    // -------------------------------------------------------------------------
+
+    public function isActive(): bool
+    {
+        return $this->status === BatchStatus::ACTIVE->value;
+    }
+
+    public function isFinished(): bool
+    {
+        return $this->status === BatchStatus::FINISHED->value;
+    }
+
+    public function currentStatus(): BatchStatus
+    {
+        return BatchStatus::from($this->status);
     }
 }

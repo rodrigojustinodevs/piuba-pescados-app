@@ -7,15 +7,17 @@ namespace App\Application\UseCases\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteBatchUseCase
+final readonly class DeleteBatchUseCase
 {
     public function __construct(
-        protected BatchRepositoryInterface $batchRepository
+        private BatchRepositoryInterface $repository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->batchRepository->delete($id));
+        $this->repository->findOrFail($id);
+
+        DB::transaction(fn (): bool => $this->repository->delete($id));
     }
 }

@@ -20,11 +20,11 @@ final readonly class CheckCriticalMortalityAction
 
     public function execute(Batch $batch): void
     {
-        $total = $this->mortalityRepository->totalMortalities((string) $batch->id);
-
         if ($batch->initial_quantity <= 0) {
             return;
         }
+
+        $total = $this->mortalityRepository->totalMortalities((string) $batch->id);
 
         $mortalityRate = ($total / $batch->initial_quantity) * 100;
 

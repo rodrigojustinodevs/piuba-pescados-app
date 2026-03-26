@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\FeedInventoryDTO;
 use App\Application\UseCases\FeedInventory\CreateFeedInventoryUseCase;
 use App\Application\UseCases\FeedInventory\DeleteFeedInventoryUseCase;
 use App\Application\UseCases\FeedInventory\ListFeedInventoriesUseCase;
@@ -12,101 +11,187 @@ use App\Application\UseCases\FeedInventory\ShowFeedInventoryUseCase;
 use App\Application\UseCases\FeedInventory\UpdateFeedInventoryUseCase;
 use App\Presentation\Requests\FeedInventory\FeedInventoryStoreRequest;
 use App\Presentation\Requests\FeedInventory\FeedInventoryUpdateRequest;
+use App\Presentation\Resources\FeedInventory\FeedInventoryResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Throwable;
 
-class FeedInventoryController
+/**
+ * @OA\Tag(name="FeedInventory", description="Operações de estoque de ração")
+ */
+final class FeedInventoryController
 {
     /**
-     * Display a listing of feed inventories.
+     * @OA\Get(
+     *     path="/company/feed-inventories",
+     *     summary="Listar estoques de ração",
+     *     tags={"FeedInventory"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="page", in="query", required=false, @OA\Schema(type="integer", example=1)),
+     *     @OA\Parameter(name="per_page", in="query", required=false, @OA\Schema(type="integer", example=15)),
+     *     @OA\Parameter(name="company_id", in="query", required=false, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="feed_type", in="query", required=false, @OA\Schema(type="string")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista paginada de estoques de ração",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/FeedInventoryResource")
+     *             ),
+     *             @OA\Property(property="pagination", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
-    public function index(ListFeedInventoriesUseCase $useCase): JsonResponse
+    public function index(Request $request, ListFeedInventoriesUseCase $useCase): JsonResponse
     {
-        try {
-            $feedInventories = $useCase->execute();
-            $data            = $feedInventories->toArray(request());
-            $pagination      = $feedInventories->additional['pagination'] ?? null;
+        $result     = $useCase->execute($request->all());
+        $collection = FeedInventoryResource::collection($result->items());
 
-            return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception);
-        }
+        return ApiResponse::success($collection, Response::HTTP_OK, 'Success', [
+            'total'        => $result->total(),
+            'current_page' => $result->currentPage(),
+            'last_page'    => $result->lastPage(),
+            'first_page'   => $result->firstPage(),
+            'per_page'     => $result->perPage(),
+        ]);
     }
 
     /**
-     * Display the specified feed inventory.
+     * @OA\Get(
+     *     path="/company/feed-inventory/{id}",
+     *     summary="Detalhar estoque de ração",
+     *     tags={"FeedInventory"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estoque de ração encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(property="data", ref="#/components/schemas/FeedInventoryResource")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="FeedInventory not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
     public function show(string $id, ShowFeedInventoryUseCase $useCase): JsonResponse
     {
-        try {
-            $feedInventory = $useCase->execute($id);
+        $feedInventory = $useCase->execute($id);
 
-            if (! $feedInventory instanceof FeedInventoryDTO || $feedInventory->isEmpty()) {
-                return ApiResponse::error(null, 'FeedInventory not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($feedInventory->toArray(), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'FeedInventory not found', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(new FeedInventoryResource($feedInventory), Response::HTTP_OK, 'Success');
     }
 
     /**
-     * Store a newly created feed inventory.
+     * @OA\Post(
+     *     path="/company/feed-inventory",
+     *     summary="Criar estoque de ração",
+     *     tags={"FeedInventory"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"company_id","feed_type","current_stock","minimum_stock","daily_consumption","total_consumption"},
+     *             @OA\Property(property="company_id", type="string", format="uuid"),
+     *             @OA\Property(property="feed_type", type="string", example="Ração Premium"),
+     *             @OA\Property(property="current_stock", type="number", format="float", example=500.0),
+     *             @OA\Property(property="minimum_stock", type="number", format="float", example=50.0),
+     *             @OA\Property(property="daily_consumption", type="number", format="float", example=10.0),
+     *             @OA\Property(property="total_consumption", type="number", format="float", example=100.0)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Estoque de ração criado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Successfully created"),
+     *             @OA\Property(property="data", ref="#/components/schemas/FeedInventoryResource")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Validation error"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
     public function store(FeedInventoryStoreRequest $request, CreateFeedInventoryUseCase $useCase): JsonResponse
     {
-        try {
-            $feedInventory = $useCase->execute($request->validated());
+        $feedInventory = $useCase->execute($request->validated());
 
-            return ApiResponse::created($feedInventory->toArray());
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::created(new FeedInventoryResource($feedInventory));
     }
 
     /**
-     * Update the specified feed inventory.
+     * @OA\Put(
+     *     path="/company/feed-inventory/{id}",
+     *     summary="Atualizar estoque de ração",
+     *     tags={"FeedInventory"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="feed_type", type="string"),
+     *             @OA\Property(property="current_stock", type="number", format="float"),
+     *             @OA\Property(property="minimum_stock", type="number", format="float"),
+     *             @OA\Property(property="daily_consumption", type="number", format="float"),
+     *             @OA\Property(property="total_consumption", type="number", format="float")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estoque de ração atualizado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(property="data", ref="#/components/schemas/FeedInventoryResource")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Validation error"),
+     *     @OA\Response(response=404, description="FeedInventory not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
     public function update(
         FeedInventoryUpdateRequest $request,
         string $id,
-        UpdateFeedInventoryUseCase $useCase
+        UpdateFeedInventoryUseCase $useCase,
     ): JsonResponse {
-        try {
-            $feedInventory = $useCase->execute($id, $request->validated());
+        $feedInventory = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($feedInventory->toArray(), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::success(new FeedInventoryResource($feedInventory), Response::HTTP_OK, 'Success');
     }
 
     /**
-     * Remove the specified feed inventory.
+     * @OA\Delete(
+     *     path="/company/feed-inventory/{id}",
+     *     summary="Excluir estoque de ração",
+     *     tags={"FeedInventory"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Estoque de ração excluído",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="FeedInventory successfully deleted")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="FeedInventory not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
      */
     public function destroy(string $id, DeleteFeedInventoryUseCase $useCase): JsonResponse
     {
-        try {
-            $deleted = $useCase->execute($id);
+        $useCase->execute($id);
 
-            if (! $deleted) {
-                return ApiResponse::error(null, 'FeedInventory not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success(
-                null,
-                Response::HTTP_OK,
-                'FeedInventory successfully deleted'
-            );
-        } catch (Throwable $exception) {
-            return ApiResponse::error(
-                $exception,
-                'Error deleting feed inventory',
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
+        return ApiResponse::success(null, Response::HTTP_OK, 'FeedInventory successfully deleted');
     }
 }

@@ -11,8 +11,8 @@ final class MortalityExceedsSurvivorsException extends RuntimeException
     public function __construct(int $survivors, int $requested)
     {
         parent::__construct(
-            "Operação inválida. O lote possui apenas {$survivors} peixes vivos, "
-            . "mas você tentou registrar {$requested} mortes."
+            "Operation invalid. The batch has only {$survivors} live fish, "
+            . "but you tried to register {$requested} deaths."
         );
     }
 }

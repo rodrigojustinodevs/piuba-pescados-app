@@ -5,29 +5,20 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Biometry;
 
 use App\Domain\Repositories\BiometryRepositoryInterface;
-use App\Presentation\Resources\Biometry\BiometryResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Domain\Repositories\PaginationInterface;
 
-class ListBiometriesUseCase
+final readonly class ListBiometriesUseCase
 {
     public function __construct(
-        private readonly BiometryRepositoryInterface $biometryRepository,
+        private BiometryRepositoryInterface $biometryRepository,
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array<string, mixed> $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->biometryRepository->paginate();
-
-        return BiometryResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->biometryRepository->paginate($filters);
     }
 }

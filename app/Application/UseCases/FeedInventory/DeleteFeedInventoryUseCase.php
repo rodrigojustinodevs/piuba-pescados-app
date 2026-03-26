@@ -7,15 +7,18 @@ namespace App\Application\UseCases\FeedInventory;
 use App\Domain\Repositories\FeedInventoryRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteFeedInventoryUseCase
+final readonly class DeleteFeedInventoryUseCase
 {
     public function __construct(
-        protected FeedInventoryRepositoryInterface $feedInventoryRepository
+        private FeedInventoryRepositoryInterface $repository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->feedInventoryRepository->delete($id));
+        DB::transaction(function () use ($id): void {
+            $this->repository->findOrFail($id);
+            $this->repository->delete($id);
+        });
     }
 }

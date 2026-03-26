@@ -4,28 +4,21 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Biometry;
 
-use App\Domain\Models\Biometry;
 use App\Domain\Repositories\BiometryRepositoryInterface;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class DeleteBiometryUseCase
+final readonly class DeleteBiometryUseCase
 {
     public function __construct(
-        private readonly BiometryRepositoryInterface $biometryRepository,
+        private BiometryRepositoryInterface $biometryRepository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(function () use ($id): bool {
-            $biometry = $this->biometryRepository->showBiometry('id', $id);
-
-            if (! $biometry instanceof Biometry) {
-                throw new RuntimeException('Biometry not found');
-            }
-
-            return $this->biometryRepository->delete($id);
+        DB::transaction(function () use ($id): void {
+            $this->biometryRepository->findOrFail($id);
+            $this->biometryRepository->delete($id);
         });
     }
 }

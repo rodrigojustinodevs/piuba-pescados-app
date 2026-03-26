@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Feeding;
 
+use App\Application\Actions\FeedInventory\ValidateFeedInventoryStockAction;
 use App\Application\DTOs\FeedingInputDTO;
+use App\Application\Services\FeedInventory\FeedInventoryService;
 use App\Domain\Events\FeedingCreated;
 use App\Domain\Models\Feeding;
 use App\Domain\Repositories\BatchRepositoryInterface;
@@ -13,8 +15,6 @@ use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\FeedInventoryRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Services\Alert\AlertService;
-use App\Domain\Services\FeedInventory\FeedInventoryService;
-use App\Domain\Services\FeedInventory\FeedInventoryValidatorService;
 use Illuminate\Support\Facades\DB;
 
 final readonly class CreateFeedingUseCase
@@ -25,7 +25,7 @@ final readonly class CreateFeedingUseCase
         private BiometryRepositoryInterface $biometryRepository,
         private FeedInventoryRepositoryInterface $feedInventoryRepository,
         private StockRepositoryInterface $stockRepository,
-        private FeedInventoryValidatorService $feedInventoryValidator,
+        private ValidateFeedInventoryStockAction $validateFeedInventoryStock,
         private FeedInventoryService $feedInventoryService,
         private AlertService $alertService,
     ) {
@@ -42,7 +42,7 @@ final readonly class CreateFeedingUseCase
         $feedInventory = $this->feedInventoryRepository
             ->findByCompanyAndFeedType($companyId, $dto->feedType);
 
-        $this->feedInventoryValidator->validateStock($feedInventory, $dto->stockReductionQuantity);
+        $this->validateFeedInventoryStock->execute($feedInventory, $dto->stockReductionQuantity);
 
         return DB::transaction(function () use ($dto, $batch, $companyId, $feedInventory): Feeding {
             $feeding = $this->repository->create($dto);

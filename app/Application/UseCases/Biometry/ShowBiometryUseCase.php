@@ -6,23 +6,16 @@ namespace App\Application\UseCases\Biometry;
 
 use App\Domain\Models\Biometry;
 use App\Domain\Repositories\BiometryRepositoryInterface;
-use RuntimeException;
 
-class ShowBiometryUseCase
+final readonly class ShowBiometryUseCase
 {
     public function __construct(
-        private readonly BiometryRepositoryInterface $biometryRepository,
+        private BiometryRepositoryInterface $biometryRepository,
     ) {
     }
 
     public function execute(string $id): Biometry
     {
-        $biometry = $this->biometryRepository->showBiometry('id', $id);
-
-        if (! $biometry instanceof Biometry) {
-            throw new RuntimeException('Biometry not found');
-        }
-
-        return $biometry;
+        return $this->biometryRepository->findOrFail($id);
     }
 }

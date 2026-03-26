@@ -36,6 +36,7 @@ final readonly class CreateMortalityUseCase
 
         $dto   = MortalityInputDTO::fromArray($data);
         $batch = $this->batchRepository->findOrFail($dto->batchId);
+
         $this->validateQuantity->execute($batch, $dto->quantity);
 
         return DB::transaction(function () use ($dto, $batch, $companyId): Mortality {

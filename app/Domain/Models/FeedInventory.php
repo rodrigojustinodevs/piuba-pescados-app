@@ -6,21 +6,20 @@ namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * Controle de estoque de ração (feed inventory).
+ * @property string              $id
+ * @property string              $company_id
+ * @property string              $feed_type
+ * @property float               $current_stock
+ * @property float               $minimum_stock
+ * @property float               $daily_consumption
+ * @property float               $total_consumption
+ * @property \Carbon\Carbon      $created_at
+ * @property \Carbon\Carbon      $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
  *
- * @property string $id
- * @property string $company_id
- * @property string $feed_type
- * @property float $current_stock
- * @property float $minimum_stock
- * @property float $daily_consumption
- * @property float $total_consumption
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
  * @property-read Company|null $company
  */
 class FeedInventory extends BaseModel
@@ -43,20 +42,24 @@ class FeedInventory extends BaseModel
         'updated_at',
     ];
 
-    /** @var array<string> */
-    protected $dates = [
-        'updated_at',
-        'created_at',
-        'deleted_at',
+    protected $casts = [
+        'current_stock'     => 'decimal:2',
+        'minimum_stock'     => 'decimal:2',
+        'daily_consumption' => 'decimal:2',
+        'total_consumption' => 'decimal:2',
     ];
 
     #[\Override]
-    protected static function booted()
+    protected static function booted(): void
     {
-        static::creating(function (FeedInventory $feedInventory): void {
-            $feedInventory->id = (string) Str::uuid();
+        static::creating(static function (FeedInventory $feedInventory): void {
+            $feedInventory->id ??= (string) Str::uuid();
         });
     }
+
+    // -------------------------------------------------------------------------
+    // Relacionamentos
+    // -------------------------------------------------------------------------
 
     /**
      * @phpstan-return BelongsTo<Company, static>

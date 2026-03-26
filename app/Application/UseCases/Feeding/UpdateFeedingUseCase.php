@@ -29,9 +29,9 @@ final readonly class UpdateFeedingUseCase
      */
     public function execute(string $id, array $data): Feeding
     {
-        $feeding = $this->repository->findOrFail($id);
-        $dto     = FeedingInputDTO::fromArray($data);
-        $batch   = $this->batchRepository->findOrFail($dto->batchId);
+        $feeding   = $this->repository->findOrFail($id);
+        $dto       = FeedingInputDTO::fromArray($data);
+        $batch     = $this->batchRepository->findOrFail($dto->batchId);
         $companyId = $batch->tank?->company_id;
 
         return DB::transaction(function () use ($id, $dto, $feeding, $batch, $companyId): Feeding {

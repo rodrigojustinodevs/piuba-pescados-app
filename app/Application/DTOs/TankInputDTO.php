@@ -45,6 +45,6 @@ final readonly class TankInputDTO
             'tank_type_id'    => $this->tankTypeId,
             'company_id'      => $this->companyId,
             'status'          => $this->status,
-        ], static fn (int|string|null $v): bool => $v !== null);
+        ], static fn (int | string | null $v): bool => $v !== null);
     }
 }

@@ -5,29 +5,26 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Mortality;
 
 use App\Domain\Repositories\MortalityRepositoryInterface;
-use App\Presentation\Resources\Mortality\MortalityResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Domain\Repositories\PaginationInterface;
 
-class ListMortalitiesUseCase
+final readonly class ListMortalitiesUseCase
 {
     public function __construct(
-        protected MortalityRepositoryInterface $mortalityRepository
+        private MortalityRepositoryInterface $repository,
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array{
+     *     batch_id?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     cause?: string|null,
+     *     per_page?: int,
+     * } $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->mortalityRepository->paginate();
-
-        return MortalityResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->repository->paginate($filters);
     }
 }

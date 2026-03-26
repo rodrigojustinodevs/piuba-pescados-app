@@ -4,49 +4,46 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Mortality;
 
+use App\Application\Actions\Mortality\CheckCriticalMortalityAction;
+use App\Application\Actions\Mortality\ValidateMortalityQuantityAction;
+use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\MortalityInputDTO;
 use App\Domain\Events\MortalityRecorded;
-use App\Domain\Models\Batch;
 use App\Domain\Models\Mortality;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
-use App\Domain\Services\Mortality\MortalityService;
-use App\Domain\Services\Mortality\MortalityValidatorService;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class CreateMortalityUseCase
+final readonly class CreateMortalityUseCase
 {
     public function __construct(
-        private readonly MortalityRepositoryInterface $mortalityRepository,
-        private readonly BatchRepositoryInterface $batchRepository,
-        private readonly MortalityValidatorService $validatorService,
-        private readonly MortalityService $mortalityService
+        private MortalityRepositoryInterface $repository,
+        private BatchRepositoryInterface $batchRepository,
+        private ValidateMortalityQuantityAction $validateQuantity,
+        private CheckCriticalMortalityAction $checkCritical,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Validated data from the FormRequest
      */
     public function execute(array $data): Mortality
     {
-        return DB::transaction(function () use ($data): Mortality {
-            $dto = MortalityInputDTO::fromArray($data);
+        $companyId = $this->companyResolver->resolve(
+            hint: $data['company_id'] ?? $data['companyId'] ?? null,
+        );
 
-            $batch = $this->batchRepository->showBatch('id', $dto->batchId);
+        $dto   = MortalityInputDTO::fromArray($data);
+        $batch = $this->batchRepository->findOrFail($dto->batchId);
+        $this->validateQuantity->execute($batch, $dto->quantity);
 
-            if (! $batch instanceof Batch) {
-                throw new RuntimeException('Batch not found');
-            }
+        return DB::transaction(function () use ($dto, $batch, $companyId): Mortality {
+            $mortality = $this->repository->create($dto);
 
-            $this->validatorService->validate($batch, $dto->quantity);
+            MortalityRecorded::dispatch($mortality, $companyId);
 
-            $mortality = $this->mortalityRepository->create($dto->toPersistence());
-
-            $companyId = $batch->tank->company_id ?? $batch->tank()->value('company_id');
-            MortalityRecorded::dispatch($mortality, (string) $companyId);
-
-            $this->mortalityService->checkAndDispatchIfCritical($batch);
+            $this->checkCritical->execute($batch);
 
             return $mortality;
         });

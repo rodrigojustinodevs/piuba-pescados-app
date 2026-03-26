@@ -38,6 +38,11 @@ interface BatchRepositoryInterface
     public function showBatch(string $field, string | int $value): ?Batch;
 
     /**
+     * Find a batch by ID.
+     */
+    public function findOrFail(string $id): Batch;
+
+    /**
      * Check if there is another active batch in the tank.
      * Used to enforce: one tank can only have one active batch at a time.
      */

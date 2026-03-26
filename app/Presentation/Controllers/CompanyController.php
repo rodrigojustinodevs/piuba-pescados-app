@@ -49,7 +49,7 @@ class CompanyController
         try {
             $company = $useCase->execute($id);
 
-            if (!$company instanceof \App\Domain\Models\Company) {
+            if (! $company instanceof \App\Domain\Models\Company) {
                 return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);
             }
 

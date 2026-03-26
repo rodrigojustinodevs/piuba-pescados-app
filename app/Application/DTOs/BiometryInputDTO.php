@@ -48,6 +48,6 @@ final readonly class BiometryInputDTO
             'sample_weight'     => $this->sampleWeight,
             'sample_quantity'   => $this->sampleQuantity,
             'biomass_estimated' => $this->biomassEstimated,
-        ], static fn (string|int|float|null $v): bool => $v !== null);
+        ], static fn (string | int | float | null $v): bool => $v !== null);
     }
 }

@@ -19,6 +19,8 @@ use App\Domain\Exceptions\InsufficientBiomassException;
 use App\Domain\Exceptions\InsufficientStockException;
 use App\Domain\Exceptions\InvalidCredentialsException;
 use App\Domain\Exceptions\InvalidPurchaseStatusTransitionException;
+use App\Domain\Exceptions\MortalityExceedsSurvivorsException;
+use App\Domain\Exceptions\MortalityNotFoundException;
 use App\Domain\Exceptions\StockNotFoundException;
 use App\Domain\Exceptions\TransactionAlreadyAllocatedException;
 use App\Domain\Exceptions\TransactionAmountImmutableException;
@@ -55,6 +57,9 @@ class Handler extends ExceptionHandler
         ClientMissingFiscalDataException::class,
         ClientCreditLimitExceededException::class,
         ClientDocumentAlreadyExistsException::class,
+        // Mortality
+        MortalityNotFoundException::class,
+        MortalityExceedsSurvivorsException::class,
         // Stock
         DuplicateStockException::class,
         InsufficientStockException::class,
@@ -137,6 +142,22 @@ class Handler extends ExceptionHandler
         );
         $this->renderable(
             fn (CompanyNotFoundException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        // -----------------------------------------------------------------------
+        // Mortality
+        // -----------------------------------------------------------------------
+        $this->renderable(
+            fn (MortalityNotFoundException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_NOT_FOUND,
+            )
+        );
+        $this->renderable(
+            fn (MortalityExceedsSurvivorsException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )

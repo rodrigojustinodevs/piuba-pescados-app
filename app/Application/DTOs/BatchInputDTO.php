@@ -59,6 +59,6 @@ final readonly class BatchInputDTO
             'tank_id'          => $this->tankId,
             'status'           => $this->status,
             'cultivation'      => $this->cultivation,
-        ], static fn (int|string|null $v): bool => $v !== null);
+        ], static fn (int | string | null $v): bool => $v !== null);
     }
 }

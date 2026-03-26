@@ -8,13 +8,12 @@ use App\Application\DTOs\SurvivalRateDTO;
 use App\Domain\Models\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Services\Batch\BatchPerformanceService;
-use RuntimeException;
 
-class SurvivalRateUseCase
+final readonly class SurvivalRateUseCase
 {
     public function __construct(
-        private readonly BatchRepositoryInterface $batchRepository,
-        private readonly BatchPerformanceService $performanceService
+        private BatchRepositoryInterface $batchRepository,
+        private BatchPerformanceService $performanceService,
     ) {
     }
 
@@ -23,7 +22,7 @@ class SurvivalRateUseCase
         $batch = $this->batchRepository->showBatch('id', $batchId);
 
         if (! $batch instanceof Batch) {
-            throw new RuntimeException('Batch not found');
+            throw new \RuntimeException('Batch not found');
         }
 
         $survivalRate     = $this->performanceService->calculateSurvivalRate($batch);
@@ -31,11 +30,11 @@ class SurvivalRateUseCase
         $totalMortalities = $batch->initial_quantity - $currentSurvivors;
 
         return new SurvivalRateDTO(
-            batchId: (string) $batch->id,
-            initialQuantity: (int) $batch->initial_quantity,
-            totalMortalities: (int) $totalMortalities,
+            batchId:          (string) $batch->id,
+            initialQuantity:  (int) $batch->initial_quantity,
+            totalMortalities: $totalMortalities,
             currentSurvivors: $currentSurvivors,
-            survivalRate: $survivalRate
+            survivalRate:     $survivalRate,
         );
     }
 }

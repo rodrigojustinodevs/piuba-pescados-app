@@ -4,81 +4,85 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\MortalityInputDTO;
 use App\Domain\Models\Mortality;
 use App\Domain\Repositories\MortalityRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class MortalityRepository implements MortalityRepositoryInterface
+final class MortalityRepository implements MortalityRepositoryInterface
 {
-    /**
-     * Create a new mortality.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Mortality
-    {
-        return Mortality::create($data);
-    }
+    private const array DEFAULT_RELATIONS = [
+        'batch:id,tank_id,initial_quantity,status',
+    ];
 
     /**
-     * Update an existing mortality.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     batch_id?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     cause?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function update(string $id, array $data): ?Mortality
+    public function paginate(array $filters): PaginationInterface
     {
-        $mortality = Mortality::find($id);
-
-        if ($mortality) {
-            $mortality->update($data);
-
-            return $mortality;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get paginated .
-     */
-    public function paginate(int $page = 25): PaginationInterface
-    {
-        /** @var LengthAwarePaginator<int, Mortality> $paginator */
-        $paginator = Mortality::with([
-            'batch:id',
-        ])->paginate($page);
+        $paginator = Mortality::with(self::DEFAULT_RELATIONS)
+            ->when(
+                ! empty($filters['batch_id']),
+                static fn ($q) => $q->where('batch_id', $filters['batch_id']),
+            )
+            ->when(
+                ! empty($filters['date_from']),
+                static fn ($q) => $q->whereDate('mortality_date', '>=', $filters['date_from']),
+            )
+            ->when(
+                ! empty($filters['date_to']),
+                static fn ($q) => $q->whereDate('mortality_date', '<=', $filters['date_to']),
+            )
+            ->when(
+                ! empty($filters['cause']),
+                static fn ($q) => $q->where('cause', 'like', '%' . $filters['cause'] . '%'),
+            )
+            ->latest('mortality_date')
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show mortality by field and value.
-     */
-    public function showMortality(string $field, string | int $value): ?Mortality
+    public function findOrFail(string $id): Mortality
     {
-        return Mortality::where($field, $value)->first();
+        return Mortality::with(self::DEFAULT_RELATIONS)->findOrFail($id);
+    }
+
+    public function create(MortalityInputDTO $dto): Mortality
+    {
+        /** @var Mortality $mortality */
+        $mortality = Mortality::create($dto->toPersistence());
+
+        return $mortality->load(self::DEFAULT_RELATIONS);
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): Mortality
+    {
+        $mortality = $this->findOrFail($id);
+        $mortality->update($attributes);
+
+        return $mortality->refresh();
     }
 
     public function delete(string $id): bool
     {
-        $mortality = Mortality::find($id);
-
-        if (! $mortality) {
-            return false;
-        }
-
-        return (bool) $mortality->delete();
+        return (bool) $this->findOrFail($id)->delete();
     }
 
-    /**
-     * Get the total number of mortalities for the given batch.
-     */
     public function totalMortalities(string $batchId, ?string $excludeMortalityId = null): int
     {
-        return Mortality::where('batch_id', $batchId)
-            ->when($excludeMortalityId, function ($query) use ($excludeMortalityId): void {
-                $query->where('id', '!=', $excludeMortalityId);
+        return (int) Mortality::where('batch_id', $batchId)
+            ->when($excludeMortalityId, static function ($query, string $id): void {
+                $query->where('id', '!=', $id);
             })
             ->sum('quantity');
     }

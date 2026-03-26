@@ -62,6 +62,13 @@ class BatchRepository implements BatchRepositoryInterface
         ])->where($field, $value)->first();
     }
 
+    public function findOrFail(string $id): Batch
+    {
+        return Batch::with([
+            'tank:id,name,company_id,capacity_liters',
+        ])->findOrFail($id);
+    }
+
     public function hasActiveBatchInTank(string $tankId, ?string $exceptBatchId = null): bool
     {
         $query = Batch::query()

@@ -6,23 +6,16 @@ namespace App\Application\UseCases\Mortality;
 
 use App\Domain\Models\Mortality;
 use App\Domain\Repositories\MortalityRepositoryInterface;
-use RuntimeException;
 
-class ShowMortalityUseCase
+final readonly class ShowMortalityUseCase
 {
     public function __construct(
-        protected MortalityRepositoryInterface $mortalityRepository
+        private MortalityRepositoryInterface $repository,
     ) {
     }
 
     public function execute(string $id): Mortality
     {
-        $mortality = $this->mortalityRepository->showMortality('id', $id);
-
-        if (! $mortality instanceof Mortality) {
-            throw new RuntimeException('Mortality not found');
-        }
-
-        return $mortality;
+        return $this->repository->findOrFail($id);
     }
 }

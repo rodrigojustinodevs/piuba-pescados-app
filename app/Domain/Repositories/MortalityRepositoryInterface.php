@@ -4,41 +4,35 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\DTOs\MortalityInputDTO;
 use App\Domain\Models\Mortality;
 
 interface MortalityRepositoryInterface
 {
     /**
-     * Create a new mortality record.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     batch_id?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     cause?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function create(array $data): Mortality;
+    public function paginate(array $filters): PaginationInterface;
+
+    public function findOrFail(string $id): Mortality;
+
+    public function create(MortalityInputDTO $dto): Mortality;
 
     /**
-     * Update an existing mortality record.
-     *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?Mortality;
+    public function update(string $id, array $attributes): Mortality;
 
-    /**
-     * Delete a mortality record.
-     */
     public function delete(string $id): bool;
 
     /**
-     * Paginate mortality records.
-     */
-    public function paginate(int $page = 25): PaginationInterface;
-
-    /**
-     * Find a mortality by a specific field.
-     */
-    public function showMortality(string $field, string | int $value): ?Mortality;
-
-    /**
-     * Get the total number of mortalities for the given batch.
+     * Sum of mortality quantities for a given batch, optionally excluding one record.
      */
     public function totalMortalities(string $batchId, ?string $excludeMortalityId = null): int;
 }

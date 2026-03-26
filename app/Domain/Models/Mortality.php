@@ -6,18 +6,18 @@ namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * @property string $id
- * @property string $batch_id
- * @property Carbon|null $mortality_date
- * @property int $quantity
- * @property string $cause
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Carbon|null $deleted_at
+ * @property string              $id
+ * @property string              $batch_id
+ * @property \Carbon\Carbon|null $mortality_date
+ * @property int                 $quantity
+ * @property string              $cause
+ * @property \Carbon\Carbon      $created_at
+ * @property \Carbon\Carbon      $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
+ *
  * @property-read Batch|null $batch
  */
 class Mortality extends BaseModel
@@ -36,21 +36,22 @@ class Mortality extends BaseModel
         'cause',
     ];
 
-    /** @var array<string> */
-    protected $dates = [
-        'mortality_date',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    protected $casts = [
+        'mortality_date' => 'date:Y-m-d',
+        'quantity'       => 'integer',
     ];
 
     #[\Override]
-    protected static function booted()
+    protected static function booted(): void
     {
-        static::creating(function (Mortality $mortality): void {
-            $mortality->id = (string) Str::uuid();
+        static::creating(static function (Mortality $mortality): void {
+            $mortality->id ??= (string) Str::uuid();
         });
     }
+
+    // -------------------------------------------------------------------------
+    // Relacionamentos
+    // -------------------------------------------------------------------------
 
     /**
      * @phpstan-return BelongsTo<Batch, static>

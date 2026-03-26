@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Services\Mortality;
+namespace App\Application\Actions\Mortality;
 
 use App\Domain\Models\Batch;
 use App\Domain\Repositories\MortalityRepositoryInterface;
 use App\Domain\Services\Alert\AlertService;
 
-class MortalityService
+final readonly class CheckCriticalMortalityAction
 {
     private const float CRITICAL_MORTALITY_RATE_THRESHOLD = 10.0;
 
     public function __construct(
-        private readonly MortalityRepositoryInterface $mortalityRepository,
-        private readonly AlertService $alertService
+        private MortalityRepositoryInterface $mortalityRepository,
+        private AlertService $alertService,
     ) {
     }
 
-    public function checkAndDispatchIfCritical(Batch $batch): void
+    public function execute(Batch $batch): void
     {
-        $total = $this->mortalityRepository->totalMortalities($batch->id);
+        $total = $this->mortalityRepository->totalMortalities((string) $batch->id);
 
         if ($batch->initial_quantity <= 0) {
             return;

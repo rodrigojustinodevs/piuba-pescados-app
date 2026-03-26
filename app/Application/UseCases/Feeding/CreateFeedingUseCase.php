@@ -65,7 +65,7 @@ class CreateFeedingUseCase
                 ]
             ));
 
-            if (!in_array($dto->stockId, [null, '', '0'], true)) {
+            if (! in_array($dto->stockId, [null, '', '0'], true)) {
                 $this->stockRepository->decrementQuantity(
                     $dto->stockId,
                     $dto->stockReductionQuantity

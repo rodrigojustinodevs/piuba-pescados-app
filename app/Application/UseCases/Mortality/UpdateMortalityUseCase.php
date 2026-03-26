@@ -4,53 +4,42 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Mortality;
 
-use App\Application\DTOs\MortalityDTO;
+use App\Application\Actions\Mortality\CheckCriticalMortalityAction;
+use App\Application\Actions\Mortality\ValidateMortalityQuantityAction;
+use App\Application\DTOs\MortalityInputDTO;
 use App\Domain\Models\Mortality;
 use App\Domain\Repositories\MortalityRepositoryInterface;
-use App\Domain\Services\Mortality\MortalityService;
-use App\Domain\Services\Mortality\MortalityValidatorService;
-use App\Infrastructure\Mappers\MortalityMapper;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class UpdateMortalityUseCase
+final readonly class UpdateMortalityUseCase
 {
     public function __construct(
-        protected MortalityRepositoryInterface $mortalityRepository,
-        protected MortalityValidatorService $mortalityValidator,
-        protected MortalityService $mortalityService
+        private MortalityRepositoryInterface $repository,
+        private ValidateMortalityQuantityAction $validateQuantity,
+        private CheckCriticalMortalityAction $checkCritical,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Validated data from the FormRequest
      */
-    public function execute(string $id, array $data): MortalityDTO
+    public function execute(string $id, array $data): Mortality
     {
-        return DB::transaction(function () use ($id, $data): MortalityDTO {
-            $mappedData = MortalityMapper::fromRequest($data);
+        $dto       = MortalityInputDTO::fromArray($data);
+        $mortality = $this->repository->findOrFail($id);
 
-            $mortality = $this->mortalityRepository->showMortality('id', $id);
+        $this->validateQuantity->execute($mortality->batch, $dto->quantity, $id);
 
-            if (! $mortality instanceof Mortality) {
-                throw new RuntimeException('Mortality not found');
-            }
-
-            $this->mortalityValidator->validate(
-                $mortality->batch,
-                (int) $mappedData['quantity'],
-                $id
-            );
-
-            $this->mortalityRepository->update($id, [
-                'quantity'       => $mappedData['quantity'],
-                'mortality_date' => $mappedData['mortality_date'],
-                'cause'          => $data['cause'] ?? $mortality->cause,
+        return DB::transaction(function () use ($id, $dto, $mortality): Mortality {
+            $updated = $this->repository->update($id, [
+                'quantity'       => $dto->quantity,
+                'mortality_date' => $dto->mortalityDate,
+                'cause'          => $dto->cause,
             ]);
 
-            $this->mortalityService->checkAndDispatchIfCritical($mortality->batch);
+            $this->checkCritical->execute($mortality->batch);
 
-            return MortalityMapper::toDTO($mortality);
+            return $updated;
         });
     }
 }

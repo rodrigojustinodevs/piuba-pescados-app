@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\TransferDTO;
 use App\Application\UseCases\Transfer\CreateTransferUseCase;
 use App\Application\UseCases\Transfer\DeleteTransferUseCase;
 use App\Application\UseCases\Transfer\ListTransfersUseCase;
@@ -12,6 +11,7 @@ use App\Application\UseCases\Transfer\ShowTransferUseCase;
 use App\Application\UseCases\Transfer\UpdateTransferUseCase;
 use App\Presentation\Requests\Transfer\TransferStoreRequest;
 use App\Presentation\Requests\Transfer\TransferUpdateRequest;
+use App\Presentation\Resources\Transfer\TransferResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -179,13 +179,9 @@ class TransferController
     public function show(string $id, ShowTransferUseCase $useCase): JsonResponse
     {
         try {
-            $transfer = $useCase->execute($id);
+            $result = $useCase->execute($id);
 
-            if (! $transfer instanceof TransferDTO || $transfer->isEmpty()) {
-                return ApiResponse::error(null, 'Transfer not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($transfer->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new TransferResource($result), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -264,7 +260,7 @@ class TransferController
         try {
             $transfer = $useCase->execute($request->validated());
 
-            return ApiResponse::created($transfer->toArray());
+            return ApiResponse::created(new TransferResource($transfer));
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -349,7 +345,7 @@ class TransferController
         try {
             $transfer = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($transfer->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new TransferResource($transfer), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

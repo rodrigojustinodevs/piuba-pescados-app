@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Batch;
 
-use App\Domain\Models\Batch;
+use App\Application\Actions\Batch\CalculateBatchFinalReportAction;
+use App\Domain\Enums\BatchStatus;
+use App\Domain\Exceptions\BatchAlreadyFinishedException;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\HarvestRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
-use App\Domain\Services\Batch\BatchClosingService;
-use Exception;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class FinishBatchUseCase
+final readonly class FinishBatchUseCase
 {
     public function __construct(
-        private readonly BatchRepositoryInterface $batchRepository,
-        private readonly HarvestRepositoryInterface $harvestRepository,
-        private readonly StockRepositoryInterface $stockRepository,
-        private readonly BatchClosingService $closingService,
-        private readonly FeedingRepositoryInterface $feedingRepository
+        private BatchRepositoryInterface $batchRepository,
+        private HarvestRepositoryInterface $harvestRepository,
+        private StockRepositoryInterface $stockRepository,
+        private FeedingRepositoryInterface $feedingRepository,
+        private CalculateBatchFinalReportAction $calculateReport,
     ) {
     }
 
@@ -32,21 +31,17 @@ class FinishBatchUseCase
      *     harvest_date?: string
      * } $harvestData
      *
-     * @return array<string, float|int>
+     * @return array<string, float>
      */
     public function execute(string $batchId, array $harvestData): array
     {
-        return DB::transaction(function () use ($batchId, $harvestData): array {
-            $batch = $this->batchRepository->showBatch('id', $batchId);
+        $batch = $this->batchRepository->findOrFail($batchId);
 
-            if (! $batch instanceof Batch) {
-                throw new RuntimeException('Batch not found');
-            }
+        if ($batch->isFinished()) {
+            throw new BatchAlreadyFinishedException((string) $batch->id);
+        }
 
-            if ($batch->status === 'finished') {
-                throw new Exception("This batch has already been finished.");
-            }
-
+        return DB::transaction(function () use ($batch, $harvestData): array {
             $totalRevenue = $harvestData['total_weight'] * $harvestData['price_per_kg'];
 
             $harvest = $this->harvestRepository->create([
@@ -57,22 +52,22 @@ class FinishBatchUseCase
                 'harvest_date'  => $harvestData['harvest_date'] ?? now()->toDateString(),
             ]);
 
-            $this->batchRepository->update($batch->id, [
-                'status' => 'finished',
+            $this->batchRepository->update((string) $batch->id, [
+                'status' => BatchStatus::FINISHED->value,
             ]);
 
-            $latestFeeding = $this->feedingRepository->findLatestByBatch($batchId);
+            $latestFeeding = $this->feedingRepository->findLatestByBatch((string) $batch->id);
             $feedPrice     = 0.0;
 
             if ($latestFeeding?->stock_id !== null) {
                 $feedPrice = $this->stockRepository->getUnitPriceByStockId($latestFeeding->stock_id);
             }
 
-            return $this->closingService->calculateFinalReport(
+            return $this->calculateReport->execute(
                 $batch,
                 (float) $harvest->total_weight,
                 (float) $harvest->price_per_kg,
-                $feedPrice
+                $feedPrice,
             );
         });
     }

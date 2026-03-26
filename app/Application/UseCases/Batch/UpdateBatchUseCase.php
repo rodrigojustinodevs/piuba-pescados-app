@@ -4,48 +4,35 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Batch;
 
-use App\Application\DTOs\BatchDTO;
+use App\Application\Actions\Batch\ValidateActiveBatchInTankAction;
+use App\Application\DTOs\BatchInputDTO;
+use App\Domain\Enums\BatchStatus;
 use App\Domain\Models\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
-use App\Infrastructure\Mappers\BatchMapper;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class UpdateBatchUseCase
+final readonly class UpdateBatchUseCase
 {
     public function __construct(
-        protected BatchRepositoryInterface $batchRepository
+        private BatchRepositoryInterface $repository,
+        private ValidateActiveBatchInTankAction $validateTank,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Validated data from the FormRequest
      */
-    public function execute(string $id, array $data): BatchDTO
+    public function execute(string $id, array $data): Batch
     {
-        return DB::transaction(function () use ($id, $data): BatchDTO {
-            $currentBatch = $this->batchRepository->showBatch('id', $id);
+        $currentBatch = $this->repository->findOrFail($id);
+        $dto          = BatchInputDTO::fromArray($data);
 
-            if (! $currentBatch instanceof Batch) {
-                throw new RuntimeException('Batch not found');
-            }
+        $targetStatus = $dto->status ?? $currentBatch->status;
 
-            $mappedData = BatchMapper::fromRequest($data);
+        if ($targetStatus === BatchStatus::ACTIVE->value) {
+            $this->validateTank->execute($dto->tankId, $id);
+        }
 
-            $targetTankId = (string) ($mappedData['tank_id'] ?? $currentBatch->tank_id);
-            $targetStatus = (string) ($mappedData['status'] ?? $currentBatch->status);
-
-            if ($targetStatus === 'active' && $this->batchRepository->hasActiveBatchInTank($targetTankId, $id)) {
-                throw new RuntimeException('Tank already has an active batch.');
-            }
-
-            $batch = $this->batchRepository->update($id, $mappedData);
-
-            if (! $batch instanceof Batch) {
-                throw new RuntimeException('Batch not found');
-            }
-
-            return BatchMapper::toDTO($batch);
-        });
+        return DB::transaction(fn (): Batch => $this->repository->update($id, $dto->toPersistence()));
     }
 }

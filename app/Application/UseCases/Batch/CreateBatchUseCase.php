@@ -4,41 +4,37 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Batch;
 
-use App\Application\DTOs\BatchDTO;
+use App\Application\Actions\Batch\ValidateActiveBatchInTankAction;
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Application\DTOs\BatchInputDTO;
+use App\Domain\Enums\BatchStatus;
+use App\Domain\Models\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
-use App\Infrastructure\Mappers\BatchMapper;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class CreateBatchUseCase
+final readonly class CreateBatchUseCase
 {
     public function __construct(
-        protected BatchRepositoryInterface $batchRepository
+        private BatchRepositoryInterface $repository,
+        private ValidateActiveBatchInTankAction $validateTank,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Validated data from the FormRequest
      */
-    public function execute(array $data): BatchDTO
+    public function execute(array $data): Batch
     {
-        return DB::transaction(function () use ($data): BatchDTO {
-            $mappedData = BatchMapper::fromRequest($data);
+        $dto       = BatchInputDTO::fromArray($data);
+        $companyId = $this->companyResolver->resolve(
+            hint: $data['company_id'] ?? $data['companyId'] ?? null,
+        );
 
-            $tankId = (string) ($mappedData['tank_id'] ?? '');
-            $status = (string) ($mappedData['status'] ?? 'active');
+        if ($dto->status === BatchStatus::ACTIVE->value) {
+            $this->validateTank->execute($dto->tankId, $companyId);
+        }
 
-            if ($tankId === '') {
-                throw new RuntimeException('Invalid batch payload');
-            }
-
-            if ($status === 'active' && $this->batchRepository->hasActiveBatchInTank($tankId)) {
-                throw new RuntimeException('Tank already has an active batch.');
-            }
-
-            $batch = $this->batchRepository->create($mappedData);
-
-            return BatchMapper::toDTO($batch);
-        });
+        return DB::transaction(fn (): Batch => $this->repository->create($dto));
     }
 }

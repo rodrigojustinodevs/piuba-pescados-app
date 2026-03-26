@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\TankDTO;
 use App\Application\UseCases\Tank\CreateTankUseCase;
 use App\Application\UseCases\Tank\DeleteTankUseCase;
 use App\Application\UseCases\Tank\GetTankTypesUseCase;
@@ -14,6 +13,7 @@ use App\Application\UseCases\Tank\ShowTankUseCase;
 use App\Application\UseCases\Tank\UpdateTankUseCase;
 use App\Presentation\Requests\Tank\TankStoreRequest;
 use App\Presentation\Requests\Tank\TankUpdateRequest;
+use App\Presentation\Resources\Tank\TankResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -196,11 +196,7 @@ class TankController
         try {
             $tank = $useCase->execute($id);
 
-            if (! $tank instanceof TankDTO || $tank->isEmpty()) {
-                return ApiResponse::error(null, 'Tank not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($tank->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new TankResource($tank), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Tank not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -287,7 +283,7 @@ class TankController
         try {
             $tank = $useCase->execute($request->validated());
 
-            return ApiResponse::created($tank->toArray());
+            return ApiResponse::created(new TankResource($tank));
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -381,7 +377,7 @@ class TankController
         try {
             $tank = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($tank->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new TankResource($tank), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

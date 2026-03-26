@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\StockingDTO;
 use App\Application\UseCases\Stocking\CreateStockingUseCase;
 use App\Application\UseCases\Stocking\DeleteStockingUseCase;
 use App\Application\UseCases\Stocking\ListStockingsUseCase;
@@ -12,6 +11,7 @@ use App\Application\UseCases\Stocking\ShowStockingUseCase;
 use App\Application\UseCases\Stocking\UpdateStockingUseCase;
 use App\Presentation\Requests\Stocking\StockingStoreRequest;
 use App\Presentation\Requests\Stocking\StockingUpdateRequest;
+use App\Presentation\Resources\Stocking\StockingResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -147,11 +147,7 @@ class StockingController
         try {
             $stocking = $useCase->execute($id);
 
-            if (! $stocking instanceof StockingDTO || $stocking->isEmpty()) {
-                return ApiResponse::error(null, 'Stocking not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success($stocking->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new StockingResource($stocking), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, 'Stocking not found', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -220,7 +216,7 @@ class StockingController
         try {
             $stocking = $useCase->execute($request->validated());
 
-            return ApiResponse::created($stocking->toArray());
+            return ApiResponse::created(new StockingResource($stocking));
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -275,9 +271,9 @@ class StockingController
     public function update(StockingUpdateRequest $request, string $id, UpdateStockingUseCase $useCase): JsonResponse
     {
         try {
-            $stocking = $useCase->execute($id, $request->validated());
+            $result = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success($stocking->toArray(), Response::HTTP_OK, 'Success');
+            return ApiResponse::success(new StockingResource($result), Response::HTTP_OK, 'Success');
         } catch (Throwable $exception) {
             return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
         }

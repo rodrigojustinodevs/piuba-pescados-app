@@ -4,41 +4,41 @@ declare(strict_types=1);
 
 namespace App\Presentation\Resources\Mortality;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property-read string $id
- * @property-read string $batch_id
+ * @property-read string                         $id
+ * @property-read string                         $batch_id
  * @property-read \Illuminate\Support\Carbon|null $mortality_date
- * @property int $quantity
- * @property string $cause
+ * @property-read int                            $quantity
+ * @property-read string                         $cause
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Domain\Models\Batch|null  $batch
  */
-class MortalityResource extends JsonResource
+final class MortalityResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
      * @return array<string, mixed>
      */
     #[\Override]
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
-        $mortalityDate          = $this->mortality_date;
-        $mortalityDateFormatted = $mortalityDate instanceof \DateTimeInterface
-            ? $mortalityDate->format('Y-m-d')
-            : '';
-
         return [
             'id'            => $this->id,
             'batchId'       => $this->batch_id,
-            'mortalityDate' => $mortalityDateFormatted,
+            'mortalityDate' => $this->mortality_date?->toDateString(),
             'quantity'      => $this->quantity,
             'cause'         => $this->cause,
             'createdAt'     => $this->created_at?->toDateTimeString(),
             'updatedAt'     => $this->updated_at?->toDateTimeString(),
+
+            'batch' => $this->whenLoaded('batch', fn (): array => [
+                'id'              => $this->batch->id,
+                'initialQuantity' => $this->batch->initial_quantity,
+                'status'          => $this->batch->status,
+            ]),
         ];
     }
 }

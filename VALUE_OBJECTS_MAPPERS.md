@@ -270,7 +270,7 @@ $mappedData = TankMapper::fromRequest($requestData);
 // {
 //   'name' => 'Tanque 1',
 //   'company_id' => '550e8400-e29b-41d4-a716-446655440000',
-//   'tank_types_id' => '660e8400-e29b-41d4-a716-446655440001',
+//   'tank_type_id' => '660e8400-e29b-41d4-a716-446655440001',
 //   'capacity_liters' => 1000,
 //   'location' => 'Setor A - Bloco 3',
 //   'status' => 'active'
@@ -430,7 +430,7 @@ final class TankMapper
             'capacity_liters' => $capacity->value(),
             'location' => $location->value(),
             'company_id' => $data['companyId'], // Converte camelCase para snake_case
-            'tank_types_id' => $data['tankTypeId'],
+            'tank_type_id' => $data['tankTypeId'],
             'status' => $data['status'] ?? 'active',
         ];
     }
@@ -544,7 +544,7 @@ test('email compara corretamente', function () {
 
 **Campos convertidos pelo Mapper:**
 - `companyId` → `company_id`
-- `tankTypeId` → `tank_types_id`
+- `tankTypeId` → `tank_type_id`
 - `capacityLiters` → `capacity_liters`
 
 **Validações aplicadas pelos Value Objects:**

@@ -4,85 +4,91 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\BatchInputDTO;
+use App\Domain\Enums\BatchStatus;
 use App\Domain\Models\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class BatchRepository implements BatchRepositoryInterface
+final class BatchRepository implements BatchRepositoryInterface
 {
-    /**
-     * Create a new batch.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Batch
-    {
-        return Batch::create($data);
-    }
+    private const array DEFAULT_RELATIONS = [
+        'tank:id,name,company_id,capacity_liters',
+    ];
 
     /**
-     * Update an existing batch.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     status?: string|null,
+     *     tank_id?: string|null,
+     *     species?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function update(string $id, array $data): ?Batch
+    public function paginate(array $filters = []): PaginationInterface
     {
-        $batch = Batch::find($id);
-
-        if ($batch) {
-            $batch->update($data);
-
-            return $batch;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get paginated batches.
-     */
-    public function paginate(int $page = 25): PaginationInterface
-    {
-        /** @var LengthAwarePaginator<int, Batch> $paginator */
-        $paginator = Batch::with([
-            'tank:id,name',
-        ])->paginate($page);
+        $paginator = Batch::with(self::DEFAULT_RELATIONS)
+            ->when(
+                ! empty($filters['status']),
+                static fn ($q) => $q->where('status', BatchStatus::from($filters['status'])->value),
+            )
+            ->when(
+                ! empty($filters['tank_id']),
+                static fn ($q) => $q->where('tank_id', $filters['tank_id']),
+            )
+            ->when(
+                ! empty($filters['species']),
+                static fn ($q) => $q->where('species', 'like', '%' . $filters['species'] . '%'),
+            )
+            ->latest('entry_date')
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show batch by field and value.
-     */
-    public function showBatch(string $field, string | int $value): ?Batch
+    public function findOrFail(string $id): Batch
     {
-        return Batch::with([
-            'tank:id,name,company_id,capacity_liters',
-        ])->where($field, $value)->first();
+        return Batch::with(self::DEFAULT_RELATIONS)->findOrFail($id);
     }
 
-    public function hasActiveBatchInTank(string $tankId, ?string $exceptBatchId = null): bool
+    public function showBatch(string $field, string | int $value): ?Batch
     {
-        $query = Batch::query()
-            ->where('tank_id', $tankId)
-            ->where('status', 'active');
+        return Batch::with(self::DEFAULT_RELATIONS)
+            ->where($field, $value)
+            ->first();
+    }
 
-        if ($exceptBatchId !== null && $exceptBatchId !== '') {
-            $query->where('id', '!=', $exceptBatchId);
-        }
+    public function create(BatchInputDTO $dto): Batch
+    {
+        /** @var Batch $batch */
+        $batch = Batch::create($dto->toPersistence());
 
-        return $query->exists();
+        return $batch->load(self::DEFAULT_RELATIONS);
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): Batch
+    {
+        $batch = $this->findOrFail($id);
+        $batch->update($attributes);
+
+        return $batch->refresh();
     }
 
     public function delete(string $id): bool
     {
-        $batch = Batch::find($id);
+        return (bool) $this->findOrFail($id)->delete();
+    }
 
-        if (! $batch) {
-            return false;
-        }
-
-        return (bool) $batch->delete();
+    public function hasActiveBatchInTank(string $tankId, ?string $exceptBatchId = null): bool
+    {
+        return Batch::query()
+            ->where('tank_id', $tankId)
+            ->where('status', BatchStatus::ACTIVE->value)
+            ->when($exceptBatchId, static function ($query, string $id): void {
+                $query->where('id', '!=', $id);
+            })
+            ->exists();
     }
 }

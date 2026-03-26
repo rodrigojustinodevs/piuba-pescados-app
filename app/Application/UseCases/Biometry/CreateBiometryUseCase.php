@@ -4,81 +4,74 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Biometry;
 
-use App\Application\DTOs\BiometryDTO;
+use App\Application\Actions\Biometry\ValidateBatchHasFeedingsForBiometryAction;
+use App\Application\Actions\Biometry\ValidateBiometryAverageWeightAction;
+use App\Application\Actions\Biometry\ValidateBiometryDuplicateDateAction;
+use App\Application\DTOs\BiometryInputDTO;
+use App\Application\Services\Biometry\BiometryFcrService;
+use App\Application\Services\Feeding\FeedingService;
+use App\Domain\Models\Biometry;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
 use App\Domain\Repositories\GrowthCurveRepositoryInterface;
 use App\Domain\Services\Alert\AlertService;
-use App\Domain\Services\Biometry\BiometryFcrService;
-use App\Domain\Services\Biometry\BiometryValidatorService;
-use App\Domain\Services\Feeding\FeedingService;
-use App\Infrastructure\Mappers\BiometryMapper;
 use Illuminate\Support\Facades\DB;
 
-class CreateBiometryUseCase
+final readonly class CreateBiometryUseCase
 {
     public function __construct(
-        private readonly BiometryRepositoryInterface $biometryRepository,
-        private readonly BatchRepositoryInterface $batchRepository,
-        private readonly BiometryValidatorService $biometryValidator,
-        private readonly BiometryFcrService $biometryFcrService,
-        private readonly GrowthCurveRepositoryInterface $growthCurveRepository,
-        private readonly AlertService $alertService,
-        private readonly FeedingService $feedingService,
+        private BiometryRepositoryInterface $biometryRepository,
+        private BatchRepositoryInterface $batchRepository,
+        private ValidateBiometryAverageWeightAction $validateBiometryAverageWeight,
+        private ValidateBatchHasFeedingsForBiometryAction $validateBatchHasFeedingsForBiometry,
+        private ValidateBiometryDuplicateDateAction $validateBiometryDuplicateDate,
+        private BiometryFcrService $biometryFcrService,
+        private GrowthCurveRepositoryInterface $growthCurveRepository,
+        private AlertService $alertService,
+        private FeedingService $feedingService,
     ) {
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(array $data): BiometryDTO
+    public function execute(array $data): Biometry
     {
-        return DB::transaction(function () use ($data): BiometryDTO {
-            $mappedData = BiometryMapper::fromRequest($data);
-
-            $batch = $this->batchRepository->showBatch('id', $mappedData['batch_id']);
+        return DB::transaction(function () use ($data): Biometry {
+            $dto   = BiometryInputDTO::fromArray($data);
+            $batch = $this->batchRepository->findOrFail($dto->batchId);
 
             $averageWeight = $this->biometryFcrService->calculateAverageWeight(
-                (float) $mappedData['sample_weight'],
-                (int) $mappedData['sample_quantity'],
-                (float) $mappedData['average_weight']
+                (float) $dto->sampleWeight,
+                (int) $dto->sampleQuantity,
+                $dto->averageWeight,
             );
-
             $biomassEstimated = $averageWeight * (int) $batch->initial_quantity;
 
-            $this->biometryValidator->validateAverageWeight($averageWeight);
-            $this->biometryValidator->validateHasFeedings($batch->id);
-            $this->biometryValidator->validateNoDuplicateDate(
-                $batch->id,
-                $mappedData['biometry_date']
-            );
+            $this->validateBiometryAverageWeight->execute($averageWeight);
+            $this->validateBatchHasFeedingsForBiometry->execute($batch->id);
+            $this->validateBiometryDuplicateDate->execute($batch->id, $dto->biometryDate);
 
-            $fcr = $this->biometryFcrService->calculate(
-                $batch,
-                $averageWeight,
-                $mappedData['biometry_date']
-            );
+            $fcr = $this->biometryFcrService->calculate($batch, $averageWeight, $dto->biometryDate);
 
             $capacityLiters      = (int) ($batch->tank->capacity_liters ?? 0);
             $density             = $this->feedingService->calculateDensity($biomassEstimated, $capacityLiters);
             $dailyRecommendation = $this->feedingService->getDailyRecommendation(
                 $averageWeight,
-                $mappedData['sample_quantity']
+                $dto->sampleQuantity,
             );
 
-            $createPayload = [
+            $biometry = $this->biometryRepository->create([
                 'batch_id'           => $batch->id,
-                'biometry_date'      => $mappedData['biometry_date'],
+                'biometry_date'      => $dto->biometryDate,
                 'average_weight'     => $averageWeight,
                 'fcr'                => $fcr,
-                'sample_weight'      => $mappedData['sample_weight'],
-                'sample_quantity'    => $mappedData['sample_quantity'],
+                'sample_weight'      => $dto->sampleWeight,
+                'sample_quantity'    => $dto->sampleQuantity,
                 'biomass_estimated'  => $biomassEstimated,
                 'density_at_time'    => $density,
                 'recommended_ration' => $dailyRecommendation,
-            ];
-
-            $biometry = $this->biometryRepository->create($createPayload);
+            ]);
 
             $this->growthCurveRepository->create([
                 'batch_id'       => $batch->id,
@@ -88,7 +81,7 @@ class CreateBiometryUseCase
             $this->alertService->checkDensityAlert($batch, (float) $biometry->density_at_time);
             $this->alertService->checkHighFcr($batch, (float) $biometry->fcr);
 
-            return BiometryMapper::toDTO($biometry);
+            return $biometry;
         });
     }
 }

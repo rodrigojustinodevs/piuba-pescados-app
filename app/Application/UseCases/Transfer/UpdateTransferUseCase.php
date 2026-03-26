@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Transfer;
 
-use App\Application\DTOs\TransferDTO;
+use App\Application\DTOs\TransferInputDTO;
 use App\Domain\Models\Transfer;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
-use App\Infrastructure\Mappers\TransferMapper;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -23,24 +22,24 @@ class UpdateTransferUseCase
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(string $id, array $data): TransferDTO
+    public function execute(string $id, array $data): Transfer
     {
-        return DB::transaction(function () use ($id, $data): TransferDTO {
-            $mappedData = TransferMapper::fromRequest($data);
-            $current    = $this->transferRepository->showTransfer('id', $id);
+        return DB::transaction(function () use ($id, $data): Transfer {
+            $dto     = TransferInputDTO::fromArray($data);
+            $current = $this->transferRepository->showTransfer('id', $id);
 
             if (! $current instanceof Transfer) {
                 throw new RuntimeException('Transfer not found');
             }
 
-            $newOriginId      = $mappedData['origin_tank_id'] ?? $current->origin_tank_id;
-            $newDestinationId = $mappedData['destination_tank_id'] ?? $current->destination_tank_id;
+            $newOriginId      = $dto->originTankId ?: $current->origin_tank_id;
+            $newDestinationId = $dto->destinationTankId ?: $current->destination_tank_id;
 
             if ($newOriginId === $newDestinationId) {
                 throw new RuntimeException('The origin tank cannot be the same as the destination tank.');
             }
 
-            $destinationChanged = isset($mappedData['destination_tank_id'])
+            $destinationChanged = $dto->destinationTankId !== ''
                 && (string) $newDestinationId !== (string) $current->destination_tank_id;
 
             $destinationHasOtherBatch = $this->batchRepository->hasActiveBatchInTank(
@@ -52,21 +51,21 @@ class UpdateTransferUseCase
                 throw new RuntimeException('Tank already has an active batch.');
             }
 
-            $transfer = $this->transferRepository->update($id, $mappedData);
+            $transfer = $this->transferRepository->update($id, $dto->toPersistence());
 
             if (! $transfer instanceof Transfer) {
                 throw new RuntimeException('Transfer not found');
             }
 
-            if (isset($mappedData['batch_id']) || isset($mappedData['destination_tank_id'])) {
-                $batchIdToUpdate = $mappedData['batch_id'] ?? $transfer->batch_id;
+            if ($dto->batchId !== '' || $dto->destinationTankId !== '') {
+                $batchIdToUpdate = $dto->batchId !== '' ? $dto->batchId : $transfer->batch_id;
 
                 $this->batchRepository->update($batchIdToUpdate, [
                     'tank_id' => $transfer->destination_tank_id,
                 ]);
             }
 
-            return TransferMapper::toDTO($transfer);
+            return $transfer;
         });
     }
 }

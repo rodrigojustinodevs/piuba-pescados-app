@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Tank;
 
-use App\Application\DTOs\TankDTO;
+use App\Application\DTOs\TankInputDTO;
+use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
-use App\Infrastructure\Mappers\TankMapper;
 use Illuminate\Support\Facades\DB;
 
 class CreateTankUseCase
@@ -19,14 +19,12 @@ class CreateTankUseCase
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(array $data): TankDTO
+    public function execute(array $data): Tank
     {
-        return DB::transaction(function () use ($data): TankDTO {
-            $mappedData = TankMapper::fromRequest($data);
+        return DB::transaction(function () use ($data): Tank {
+            $dto = TankInputDTO::fromArray($data);
 
-            $tank = $this->tankRepository->create($mappedData);
-
-            return TankMapper::toDTO($tank);
+            return $this->tankRepository->create($dto->toPersistence());
         });
     }
 }

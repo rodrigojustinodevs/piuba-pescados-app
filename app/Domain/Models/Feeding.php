@@ -6,20 +6,20 @@ namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * @property string $id
- * @property string $batch_id
- * @property Carbon|null $feeding_date
- * @property float $quantity_provided
- * @property string $feed_type
- * @property string|null $stock_id
- * @property float $stock_reduction_quantity
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Carbon|null $deleted_at
+ * @property string              $id
+ * @property string              $batch_id
+ * @property \Carbon\Carbon|null $feeding_date
+ * @property float               $quantity_provided
+ * @property string              $feed_type
+ * @property string|null         $stock_id
+ * @property float               $stock_reduction_quantity
+ * @property \Carbon\Carbon      $created_at
+ * @property \Carbon\Carbon      $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
+ *
  * @property-read Batch|null $batch
  * @property-read Stock|null $stock
  */
@@ -41,21 +41,23 @@ class Feeding extends BaseModel
         'stock_reduction_quantity',
     ];
 
-    /** @var array<string> */
-    protected $dates = [
-        'feeding_date',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    protected $casts = [
+        'feeding_date'             => 'date:Y-m-d',
+        'quantity_provided'        => 'decimal:2',
+        'stock_reduction_quantity' => 'decimal:2',
     ];
 
     #[\Override]
-    protected static function booted()
+    protected static function booted(): void
     {
-        static::creating(function (Feeding $feeding): void {
-            $feeding->id = (string) Str::uuid();
+        static::creating(static function (Feeding $feeding): void {
+            $feeding->id ??= (string) Str::uuid();
         });
     }
+
+    // -------------------------------------------------------------------------
+    // Relacionamentos
+    // -------------------------------------------------------------------------
 
     /**
      * @phpstan-return BelongsTo<Batch, static>

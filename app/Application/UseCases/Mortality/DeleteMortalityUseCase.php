@@ -7,15 +7,17 @@ namespace App\Application\UseCases\Mortality;
 use App\Domain\Repositories\MortalityRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteMortalityUseCase
+final readonly class DeleteMortalityUseCase
 {
     public function __construct(
-        protected MortalityRepositoryInterface $mortalityRepository
+        private MortalityRepositoryInterface $repository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->mortalityRepository->delete($id));
+        $this->repository->findOrFail($id);
+
+        DB::transaction(fn (): bool => $this->repository->delete($id));
     }
 }

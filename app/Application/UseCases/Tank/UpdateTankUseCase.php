@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Tank;
 
-use App\Application\DTOs\TankDTO;
+use App\Application\DTOs\TankInputDTO;
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
-use App\Infrastructure\Mappers\TankMapper;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -21,18 +20,18 @@ class UpdateTankUseCase
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(string $id, array $data): TankDTO
+    public function execute(string $id, array $data): Tank
     {
-        return DB::transaction(function () use ($id, $data): TankDTO {
-            $mappedData = TankMapper::fromRequest($data);
+        return DB::transaction(function () use ($id, $data): Tank {
+            $dto = TankInputDTO::fromArray($data);
 
-            $tank = $this->tankRepository->update($id, $mappedData);
+            $tank = $this->tankRepository->update($id, $dto->toPersistence());
 
             if (! $tank instanceof Tank) {
                 throw new RuntimeException('Tank not found');
             }
 
-            return TankMapper::toDTO($tank);
+            return $tank;
         });
     }
 }

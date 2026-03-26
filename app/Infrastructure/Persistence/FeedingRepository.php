@@ -4,70 +4,84 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\FeedingInputDTO;
 use App\Domain\Models\Feeding;
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class FeedingRepository implements FeedingRepositoryInterface
+final class FeedingRepository implements FeedingRepositoryInterface
 {
-    /**
-     * Create a new feeding.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Feeding
-    {
-        return Feeding::create($data);
-    }
+    private const array DEFAULT_RELATIONS = [
+        'batch:id,name,tank_id,status',
+    ];
 
     /**
-     * Update an existing feeding.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     batch_id?: string|null,
+     *     feed_type?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function update(string $id, array $data): ?Feeding
+    public function paginate(array $filters = []): PaginationInterface
     {
-        $feeding = Feeding::find($id);
-
-        if ($feeding) {
-            $feeding->update($data);
-
-            return $feeding;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get paginated .
-     */
-    public function paginate(int $page = 25): PaginationInterface
-    {
-        /** @var LengthAwarePaginator<int, Feeding> $paginator */
-        $paginator = Feeding::with([
-            'batch:id,name',
-        ])->paginate($page);
+        $paginator = Feeding::with(self::DEFAULT_RELATIONS)
+            ->when(
+                ! empty($filters['batch_id']),
+                static fn ($q) => $q->where('batch_id', $filters['batch_id']),
+            )
+            ->when(
+                ! empty($filters['feed_type']),
+                static fn ($q) => $q->where('feed_type', $filters['feed_type']),
+            )
+            ->when(
+                ! empty($filters['date_from']),
+                static fn ($q) => $q->whereDate('feeding_date', '>=', $filters['date_from']),
+            )
+            ->when(
+                ! empty($filters['date_to']),
+                static fn ($q) => $q->whereDate('feeding_date', '<=', $filters['date_to']),
+            )
+            ->latest('feeding_date')
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show feeding by field and value.
-     */
-    public function showFeeding(string $field, string | int $value): ?Feeding
+    public function findOrFail(string $id): Feeding
     {
-        return Feeding::where($field, $value)->first();
+        return Feeding::with(self::DEFAULT_RELATIONS)->findOrFail($id);
+    }
+
+    public function create(FeedingInputDTO $dto): Feeding
+    {
+        /** @var Feeding $feeding */
+        $feeding = Feeding::create($dto->toPersistence());
+
+        return $feeding->load(self::DEFAULT_RELATIONS);
     }
 
     /**
-     * Get the average daily consumption for a company and feed type.
+     * @param array<string, mixed> $attributes
      */
+    public function update(string $id, array $attributes): Feeding
+    {
+        $feeding = $this->findOrFail($id);
+        $feeding->update($attributes);
+
+        return $feeding->refresh();
+    }
+
+    public function delete(string $id): bool
+    {
+        return (bool) $this->findOrFail($id)->delete();
+    }
+
     public function getDailyConsumptionAverage(string $companyId, string $feedType): float
     {
-        // Faz o agrupamento e média direto no Banco de Dados
         $average = Feeding::query()
-            ->whereHas('batch.tank', fn ($q) => $q->where('company_id', $companyId))
+            ->whereHas('batch.tank', static fn ($q) => $q->where('company_id', $companyId))
             ->where('feed_type', $feedType)
             ->selectRaw('DATE(feeding_date) as date, SUM(stock_reduction_quantity) as daily_total')
             ->groupBy('date')
@@ -75,17 +89,6 @@ class FeedingRepository implements FeedingRepositoryInterface
             ->avg('daily_total');
 
         return (float) ($average ?? 0.0);
-    }
-
-    public function delete(string $id): bool
-    {
-        $feeding = Feeding::find($id);
-
-        if (! $feeding) {
-            return false;
-        }
-
-        return (bool) $feeding->delete();
     }
 
     public function findLatestByBatch(string $batchId): ?Feeding
@@ -103,12 +106,10 @@ class FeedingRepository implements FeedingRepositoryInterface
 
     public function totalFeedConsumedUntilDate(string $batchId, string $startDate, string $endDate): float
     {
-        $sum = Feeding::query()
+        return (float) Feeding::query()
             ->where('batch_id', $batchId)
             ->whereBetween('feeding_date', [$startDate, $endDate])
             ->sum('stock_reduction_quantity');
-
-        return (float) $sum;
     }
 
     public function getTotalFeedConsumedByBatch(string $batchId): float

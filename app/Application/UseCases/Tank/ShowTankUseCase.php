@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Tank;
 
-use App\Application\DTOs\TankDTO;
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
-use App\Infrastructure\Mappers\TankMapper;
 use RuntimeException;
 
 class ShowTankUseCase
@@ -17,7 +15,7 @@ class ShowTankUseCase
     ) {
     }
 
-    public function execute(string $id): ?TankDTO
+    public function execute(string $id): Tank
     {
         $tank = $this->tankRepository->showTank('id', $id);
 
@@ -25,6 +23,6 @@ class ShowTankUseCase
             throw new RuntimeException('Tank not found');
         }
 
-        return TankMapper::toDTO($tank);
+        return $tank;
     }
 }

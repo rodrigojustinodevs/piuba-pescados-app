@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Resources\Tank;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -17,16 +18,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read \App\Domain\Models\TankType|null $tankType
  * @property-read \App\Domain\Models\Company|null $company
  */
-class TankResource extends JsonResource
+final class TankResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
      * @return array<string, mixed>
      */
     #[\Override]
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         return [
             'id'             => $this->id,
@@ -39,11 +37,10 @@ class TankResource extends JsonResource
                 'name' => $this->tankType->name,
             ]),
             'company' => $this->whenLoaded('company', fn (): array => [
-                'id'   => $this->company->id,
                 'name' => $this->company->name,
             ]),
-            'created_at' => $this->created_at?->toDateTimeString(),
-            'updated_at' => $this->updated_at?->toDateTimeString(),
+            'createdAt' => $this->created_at?->toDateTimeString(),
+            'updatedAt' => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

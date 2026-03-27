@@ -8,6 +8,24 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * @OA\Schema(
+ *     schema="SupplierResource",
+ *     @OA\Property(property="id", type="string", format="uuid"),
+ *     @OA\Property(property="companyId", type="string", format="uuid"),
+ *     @OA\Property(property="name", type="string"),
+ *     @OA\Property(property="contact", type="string", nullable=true),
+ *     @OA\Property(property="phone", type="string", nullable=true),
+ *     @OA\Property(property="email", type="string", nullable=true),
+ *     @OA\Property(
+ *         property="company",
+ *         type="object",
+ *         nullable=true,
+ *         @OA\Property(property="name", type="string")
+ *     ),
+ *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
+ *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
+ * )
+ *
  * @property-read string                           $id
  * @property-read string                           $company_id
  * @property-read string                           $name

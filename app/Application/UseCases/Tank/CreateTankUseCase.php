@@ -9,10 +9,10 @@ use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class CreateTankUseCase
+final readonly class CreateTankUseCase
 {
     public function __construct(
-        protected TankRepositoryInterface $tankRepository
+        private TankRepositoryInterface $tankRepository,
     ) {
     }
 
@@ -24,7 +24,7 @@ class CreateTankUseCase
         return DB::transaction(function () use ($data): Tank {
             $dto = TankInputDTO::fromArray($data);
 
-            return $this->tankRepository->create($dto->toPersistence());
+            return $this->tankRepository->create($dto);
         });
     }
 }

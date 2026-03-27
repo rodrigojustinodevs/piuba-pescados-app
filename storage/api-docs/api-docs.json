@@ -8192,7 +8192,7 @@
                 "tags": [
                     "Suppliers"
                 ],
-                "summary": "List suppliers",
+                "summary": "Listar fornecedores",
                 "operationId": "40d1a2c99e71f907deed13da22d835fc",
                 "parameters": [
                     {
@@ -8210,11 +8210,19 @@
                             "type": "integer",
                             "example": 25
                         }
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Paginated list of suppliers",
+                        "description": "Lista paginada",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8228,39 +8236,12 @@
                                             "example": "Success"
                                         },
                                         "response": {
-                                            "properties": {
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "$ref": "#/components/schemas/Supplier"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SupplierResource"
+                                            }
                                         },
                                         "pagination": {
-                                            "properties": {
-                                                "total": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "current_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "last_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "first_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "per_page": {
-                                                    "type": "integer",
-                                                    "example": 25
-                                                }
-                                            },
                                             "type": "object"
                                         }
                                     },
@@ -8285,7 +8266,7 @@
                 "tags": [
                     "Suppliers"
                 ],
-                "summary": "Get supplier by ID",
+                "summary": "Obter fornecedor por ID",
                 "operationId": "1ffa67932795e01ef078998097d272c4",
                 "parameters": [
                     {
@@ -8300,7 +8281,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Supplier found",
+                        "description": "Encontrado",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -8314,7 +8295,7 @@
                                             "example": "Success"
                                         },
                                         "response": {
-                                            "$ref": "#/components/schemas/Supplier"
+                                            "$ref": "#/components/schemas/SupplierResource"
                                         }
                                     },
                                     "type": "object"
@@ -8323,7 +8304,7 @@
                         }
                     },
                     "404": {
-                        "description": "Supplier not found"
+                        "description": "Not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -8339,7 +8320,7 @@
                 "tags": [
                     "Suppliers"
                 ],
-                "summary": "Update supplier",
+                "summary": "Atualizar fornecedor",
                 "operationId": "a0594a1c9a34a3040e7f265919772970",
                 "parameters": [
                     {
@@ -8353,12 +8334,11 @@
                     }
                 ],
                 "requestBody": {
-                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "company_id": {
+                                    "companyId": {
                                         "type": "string",
                                         "format": "uuid"
                                     },
@@ -8387,33 +8367,10 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Supplier updated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "response": {
-                                            "$ref": "#/components/schemas/Supplier"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Validation error"
+                        "description": "Atualizado"
                     },
                     "404": {
-                        "description": "Supplier not found"
+                        "description": "Not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -8429,7 +8386,7 @@
                 "tags": [
                     "Suppliers"
                 ],
-                "summary": "Delete supplier",
+                "summary": "Excluir fornecedor",
                 "operationId": "371ea9d7f75c4df4ba3364b44b8f9ea4",
                 "parameters": [
                     {
@@ -8444,30 +8401,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Supplier deleted",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Supplier successfully deleted"
-                                        },
-                                        "response": {
-                                            "nullable": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Excluído"
                     },
                     "404": {
-                        "description": "Supplier not found"
+                        "description": "Not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -8485,7 +8422,7 @@
                 "tags": [
                     "Suppliers"
                 ],
-                "summary": "Create supplier",
+                "summary": "Criar fornecedor",
                 "operationId": "b9cc95ab6fd2fadb574c5d9efe508e8c",
                 "requestBody": {
                     "required": true,
@@ -8493,14 +8430,14 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "company_id",
+                                    "companyId",
                                     "name",
                                     "contact",
                                     "phone",
                                     "email"
                                 ],
                                 "properties": {
-                                    "company_id": {
+                                    "companyId": {
                                         "type": "string",
                                         "format": "uuid"
                                     },
@@ -8529,27 +8466,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Supplier created",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Successfully created"
-                                        },
-                                        "response": {
-                                            "$ref": "#/components/schemas/Supplier"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Criado"
                     },
                     "400": {
                         "description": "Validation error"
@@ -8591,6 +8508,27 @@
                         "schema": {
                             "type": "integer",
                             "example": 15
+                        }
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "inactive"
+                            ]
                         }
                     }
                 ],
@@ -8685,6 +8623,27 @@
                         "schema": {
                             "type": "integer",
                             "example": 15
+                        }
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "active",
+                                "inactive"
+                            ]
                         }
                     }
                 ],
@@ -10918,51 +10877,6 @@
                 },
                 "type": "object"
             },
-            "Supplier": {
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "name": {
-                        "type": "string",
-                        "example": "Fornecedor Nordeste"
-                    },
-                    "contact": {
-                        "type": "string",
-                        "example": "Joao Silva"
-                    },
-                    "phone": {
-                        "type": "string",
-                        "example": "(85) 99999-0000"
-                    },
-                    "email": {
-                        "type": "string",
-                        "format": "email",
-                        "example": "contato@fornecedor.com"
-                    },
-                    "company": {
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            }
-                        },
-                        "type": "object",
-                        "nullable": true
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
-                    },
-                    "updatedAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
-                    }
-                },
-                "type": "object"
-            },
             "TankHistory": {
                 "properties": {
                     "id": {
@@ -11229,6 +11143,53 @@
                     }
                 },
                 "type": "object"
+            },
+            "SupplierResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "companyId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "contact": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "company": {
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -11257,6 +11218,14 @@
         {
             "name": "Stockings",
             "description": "Povoamentos (stockings)"
+        },
+        {
+            "name": "Suppliers",
+            "description": "Fornecedores"
+        },
+        {
+            "name": "Tanks",
+            "description": "Tanques"
         },
         {
             "name": "Batches",
@@ -11321,14 +11290,6 @@
         {
             "name": "Subscriptions",
             "description": "Subscriptions"
-        },
-        {
-            "name": "Suppliers",
-            "description": "Suppliers"
-        },
-        {
-            "name": "Tanks",
-            "description": "Tanks"
         },
         {
             "name": "Tank History",

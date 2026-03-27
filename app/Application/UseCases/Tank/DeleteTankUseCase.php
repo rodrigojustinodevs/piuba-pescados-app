@@ -7,15 +7,19 @@ namespace App\Application\UseCases\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteTankUseCase
+final readonly class DeleteTankUseCase
 {
     public function __construct(
-        protected TankRepositoryInterface $tankRepository
+        private TankRepositoryInterface $tankRepository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->tankRepository->delete($id));
+        $this->tankRepository->findOrFail($id);
+
+        DB::transaction(function () use ($id): void {
+            $this->tankRepository->delete($id);
+        });
     }
 }

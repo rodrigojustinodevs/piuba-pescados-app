@@ -8,7 +8,21 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin \App\Domain\Models\Stock
+ * @property string $id
+ * @property string $company_id
+ * @property string $supply_id
+ * @property string $supplier_id
+ * @property float $current_quantity
+ * @property string $unit
+ * @property float $unit_price
+ * @property float $minimum_stock
+ * @property float $withdrawal_quantity
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ * @property-read \App\Domain\Models\Supply|null $supply
+ * @property-read \App\Domain\Models\Supplier|null $supplier
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Domain\Models\StockTransaction[] $transactions
  */
 final class StockResource extends JsonResource
 {
@@ -28,11 +42,9 @@ final class StockResource extends JsonResource
             'unitPrice'          => (float) $this->unit_price,
             'minimumStock'       => (float) $this->minimum_stock,
             'withdrawalQuantity' => (float) $this->withdrawal_quantity,
-
-            'isBelowMinimum' => $this->isBelowMinimum(),
-
-            'createdAt' => $this->created_at?->toDateTimeString(),
-            'updatedAt' => $this->updated_at?->toDateTimeString(),
+            'isBelowMinimum'     => $this->resource->isBelowMinimum(),
+            'createdAt'          => $this->created_at?->toDateTimeString(),
+            'updatedAt'          => $this->updated_at?->toDateTimeString(),
 
             'supply' => $this->whenLoaded('supply', fn (): array => [
                 'id'          => $this->supply->id,

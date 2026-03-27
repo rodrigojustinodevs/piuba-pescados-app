@@ -116,9 +116,10 @@ final class StockingController
      */
     public function store(StockingStoreRequest $request, CreateStockingUseCase $useCase): JsonResponse
     {
-        $stocking = $useCase->execute($request->validated());
-
-        return ApiResponse::created(new StockingResource($stocking));
+        return ApiResponse::created(
+            data:    new StockingResource($useCase->execute($request->validated())),
+            message: 'Stocking created successfully.',
+        );
     }
 
     /**

@@ -4,30 +4,21 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Supplier;
 
+use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SupplierRepositoryInterface;
-use App\Presentation\Resources\Supplier\SupplierResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ListSuppliersUseCase
+final readonly class ListSuppliersUseCase
 {
     public function __construct(
-        protected SupplierRepositoryInterface $supplierRepository
+        private SupplierRepositoryInterface $supplierRepository,
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array<string, mixed> $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->supplierRepository->paginate();
-
-        return SupplierResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->supplierRepository->paginate($filters);
     }
 }

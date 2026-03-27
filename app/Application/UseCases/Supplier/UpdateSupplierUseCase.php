@@ -4,40 +4,45 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Supplier;
 
-use App\Application\DTOs\SupplierDTO;
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Application\DTOs\SupplierInputDTO;
 use App\Domain\Models\Supplier;
 use App\Domain\Repositories\SupplierRepositoryInterface;
-use RuntimeException;
+use Illuminate\Support\Facades\DB;
 
-class UpdateSupplierUseCase
+final readonly class UpdateSupplierUseCase
 {
     public function __construct(
-        protected SupplierRepositoryInterface $supplierRepository
+        private SupplierRepositoryInterface $supplierRepository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(string $id, array $data): SupplierDTO
+    public function execute(string $id, array $data): Supplier
     {
-        $supplier = $this->supplierRepository->update($id, $data);
+        $supplier = $this->supplierRepository->findOrFail($id);
 
-        if (! $supplier instanceof Supplier) {
-            throw new RuntimeException('Supplier not found');
-        }
-
-        return new SupplierDTO(
-            id: $supplier->id,
-            name: $supplier->name,
-            contact: $supplier->contact,
-            phone: $supplier->phone,
-            email: $supplier->email,
-            company: [
-                'name' => $supplier->company->name ?? '',
-            ],
-            createdAt: $supplier->created_at?->toDateTimeString(),
-            updatedAt: $supplier->updated_at?->toDateTimeString()
+        $data['company_id'] = $this->companyResolver->resolve(
+            $data['company_id']
+                ?? $data['companyId']
+                ?? (string) $supplier->company_id,
         );
+
+        return DB::transaction(function () use ($id, $data): Supplier {
+            $dto = SupplierInputDTO::fromArray($data);
+
+            $updated = $this->supplierRepository->update($id, [
+                'company_id' => $dto->companyId,
+                'name'       => $dto->name,
+                'contact'    => $dto->contact,
+                'phone'      => $dto->phone,
+                'email'      => $dto->email,
+            ]);
+
+            return $updated->refresh();
+        });
     }
 }

@@ -7,15 +7,17 @@ namespace App\Application\UseCases\Supplier;
 use App\Domain\Repositories\SupplierRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteSupplierUseCase
+final readonly class DeleteSupplierUseCase
 {
     public function __construct(
-        protected SupplierRepositoryInterface $supplierRepository
+        private SupplierRepositoryInterface $supplierRepository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->supplierRepository->delete($id));
+        DB::transaction(function () use ($id): void {
+            $this->supplierRepository->delete($id);
+        });
     }
 }

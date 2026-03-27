@@ -4,70 +4,67 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\SupplierInputDTO;
 use App\Domain\Models\Supplier;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SupplierRepositoryInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class SupplierRepository implements SupplierRepositoryInterface
+final class SupplierRepository implements SupplierRepositoryInterface
 {
-    /**
-     * Create a new supplier.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Supplier
-    {
-        return Supplier::create($data);
-    }
+    private const array DEFAULT_RELATIONS = [
+        'company:id,name',
+    ];
 
     /**
-     * Update an existing supplier.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     company_id?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function update(string $id, array $data): ?Supplier
+    public function paginate(array $filters = []): PaginationInterface
     {
-        $supplier = Supplier::find($id);
-
-        if ($supplier) {
-            $supplier->update($data);
-
-            return $supplier;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get paginated .
-     */
-    public function paginate(int $page = 25): PaginationInterface
-    {
-        /** @var LengthAwarePaginator<int, Supplier> $paginator */
-        $paginator = Supplier::with([
-            'company:id,name',
-        ])->paginate($page);
+        $paginator = Supplier::with(self::DEFAULT_RELATIONS)
+            ->when(
+                ! empty($filters['company_id']),
+                static fn ($q) => $q->where('company_id', $filters['company_id']),
+            )
+            ->latest()
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show supplier by field and value.
-     */
+    public function findOrFail(string $id): Supplier
+    {
+        return Supplier::with(self::DEFAULT_RELATIONS)->findOrFail($id);
+    }
+
     public function showSupplier(string $field, string | int $value): ?Supplier
     {
-        return Supplier::where($field, $value)->first();
+        return Supplier::with(self::DEFAULT_RELATIONS)->where($field, $value)->first();
+    }
+
+    public function create(SupplierInputDTO $dto): Supplier
+    {
+        /** @var Supplier $supplier */
+        $supplier = Supplier::create($dto->toPersistence());
+
+        return $supplier->load(self::DEFAULT_RELATIONS);
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): Supplier
+    {
+        $supplier = $this->findOrFail($id);
+        $supplier->update($attributes);
+
+        return $supplier->refresh();
     }
 
     public function delete(string $id): bool
     {
-        $supplier = Supplier::find($id);
-
-        if (! $supplier) {
-            return false;
-        }
-
-        return (bool) $supplier->delete();
+        return (bool) $this->findOrFail($id)->delete();
     }
 }

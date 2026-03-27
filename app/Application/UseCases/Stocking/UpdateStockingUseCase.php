@@ -24,7 +24,7 @@ final readonly class UpdateStockingUseCase
         $stocking = $this->stockingRepository->findOrFail($id);
         $dto      = StockingInputDTO::fromArray($data);
 
-        return DB::transaction(fn(): Stocking => $this->stockingRepository->update($stocking->id, [
+        return DB::transaction(fn (): Stocking => $this->stockingRepository->update($stocking->id, [
             'batch_id'       => $dto->batchId,
             'stocking_date'  => $dto->stockingDate,
             'quantity'       => $dto->quantity,

@@ -4,36 +4,33 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\DTOs\GrowthCurveInputDTO;
 use App\Domain\Models\GrowthCurve;
 
 interface GrowthCurveRepositoryInterface
 {
     /**
-     * Create a new GrowthCurve record.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     batch_id?: string|null,
+     *     company_id?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function create(array $data): GrowthCurve;
+    public function paginate(array $filters = []): PaginationInterface;
+
+    public function findOrFail(string $id): GrowthCurve;
+
+    public function create(GrowthCurveInputDTO $dto): GrowthCurve;
 
     /**
-     * Update an existing GrowthCurve record.
-     *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?GrowthCurve;
+    public function update(string $id, array $attributes): GrowthCurve;
 
-    /**
-     * Delete a GrowthCurve record.
-     */
     public function delete(string $id): bool;
 
     /**
-     * Paginate GrowthCurve records.
-     */
-    public function paginate(int $page = 25): PaginationInterface;
-
-    /**
-     * Find a GrowthCurve by a specific field.
+     * Find a growth curve by a specific field.
      */
     public function showGrowthCurve(string $field, string | int $value): ?GrowthCurve;
 }

@@ -4,32 +4,18 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\GrowthCurve;
 
-use App\Application\DTOs\GrowthCurveDTO;
 use App\Domain\Models\GrowthCurve;
 use App\Domain\Repositories\GrowthCurveRepositoryInterface;
-use RuntimeException;
 
-class ShowGrowthCurveUseCase
+final readonly class ShowGrowthCurveUseCase
 {
     public function __construct(
-        protected GrowthCurveRepositoryInterface $growthCurveRepository
+        private GrowthCurveRepositoryInterface $growthCurveRepository,
     ) {
     }
 
-    public function execute(string $id): ?GrowthCurveDTO
+    public function execute(string $id): GrowthCurve
     {
-        $growthCurve = $this->growthCurveRepository->showGrowthCurve('id', $id);
-
-        if (! $growthCurve instanceof GrowthCurve) {
-            throw new RuntimeException('GrowthCurve not found');
-        }
-
-        return new GrowthCurveDTO(
-            id: $growthCurve->id,
-            averageWeight: $growthCurve->average_weight,
-            batchId: $growthCurve->batch_id,
-            createdAt: $growthCurve->created_at?->toDateTimeString(),
-            updatedAt: $growthCurve->updated_at?->toDateTimeString()
-        );
+        return $this->growthCurveRepository->findOrFail($id);
     }
 }

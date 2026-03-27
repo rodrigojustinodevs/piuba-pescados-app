@@ -4,68 +4,77 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\GrowthCurveInputDTO;
 use App\Domain\Models\GrowthCurve;
 use App\Domain\Repositories\GrowthCurveRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class GrowthCurveRepository implements GrowthCurveRepositoryInterface
+final class GrowthCurveRepository implements GrowthCurveRepositoryInterface
 {
-    /**
-     * Create a new growthCurve.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): GrowthCurve
-    {
-        return GrowthCurve::create($data);
-    }
+    private const array DEFAULT_RELATIONS = [
+        'batch:id,name,tank_id',
+    ];
 
     /**
-     * Update an existing growthCurve.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     batch_id?: string|null,
+     *     company_id?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function update(string $id, array $data): ?GrowthCurve
+    public function paginate(array $filters = []): PaginationInterface
     {
-        $growthCurve = GrowthCurve::find($id);
-
-        if ($growthCurve) {
-            $growthCurve->update($data);
-
-            return $growthCurve;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get paginated .
-     */
-    public function paginate(int $page = 25): PaginationInterface
-    {
-        /** @var LengthAwarePaginator<int, GrowthCurve> $paginator */
-        $paginator = GrowthCurve::paginate($page);
+        $paginator = GrowthCurve::with(self::DEFAULT_RELATIONS)
+            ->when(
+                ! empty($filters['batch_id']),
+                static fn ($q) => $q->where('batch_id', $filters['batch_id']),
+            )
+            ->when(
+                ! empty($filters['company_id']),
+                static function ($q) use ($filters): void {
+                    $q->whereHas(
+                        'batch.tank',
+                        static fn ($tq) => $tq->where('company_id', $filters['company_id']),
+                    );
+                },
+            )
+            ->latest()
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show growthCurve by field and value.
-     */
-    public function showGrowthCurve(string $field, string | int $value): ?GrowthCurve
+    public function findOrFail(string $id): GrowthCurve
     {
-        return GrowthCurve::where($field, $value)->first();
+        return GrowthCurve::with(self::DEFAULT_RELATIONS)->findOrFail($id);
+    }
+
+    public function create(GrowthCurveInputDTO $dto): GrowthCurve
+    {
+        /** @var GrowthCurve $growthCurve */
+        $growthCurve = GrowthCurve::create($dto->toPersistence());
+
+        return $growthCurve->load(self::DEFAULT_RELATIONS);
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): GrowthCurve
+    {
+        $growthCurve = $this->findOrFail($id);
+        $growthCurve->update($attributes);
+
+        return $growthCurve->refresh();
     }
 
     public function delete(string $id): bool
     {
-        $growthCurve = GrowthCurve::find($id);
+        return (bool) $this->findOrFail($id)->delete();
+    }
 
-        if (! $growthCurve) {
-            return false;
-        }
-
-        return (bool) $growthCurve->delete();
+    public function showGrowthCurve(string $field, string | int $value): ?GrowthCurve
+    {
+        return GrowthCurve::with(self::DEFAULT_RELATIONS)->where($field, $value)->first();
     }
 }

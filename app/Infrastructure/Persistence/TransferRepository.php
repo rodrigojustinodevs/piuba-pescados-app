@@ -4,72 +4,79 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\TransferInputDTO;
 use App\Domain\Models\Transfer;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class TransferRepository implements TransferRepositoryInterface
+final class TransferRepository implements TransferRepositoryInterface
 {
-    /**
-     * Create a new transfer.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Transfer
-    {
-        return Transfer::create($data);
-    }
+    private const array DEFAULT_RELATIONS = [
+        'batch:id,name',
+        'originTank:id,name',
+        'destinationTank:id,name',
+    ];
 
     /**
-     * Update an existing transfer.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     batch_id?: string|null,
+     *     origin_tank_id?: string|null,
+     *     destination_tank_id?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function update(string $id, array $data): ?Transfer
+    public function paginate(array $filters = []): PaginationInterface
     {
-        $transfer = Transfer::find($id);
-
-        if ($transfer) {
-            $transfer->update($data);
-
-            return $transfer;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get paginated .
-     */
-    public function paginate(int $page = 25): PaginationInterface
-    {
-        /** @var LengthAwarePaginator<int, Transfer> $paginator */
-        $paginator = Transfer::with([
-            'batch:id,name',
-            'originTank:id,name',
-            'destinationTank:id,name',
-        ])->paginate($page);
+        $paginator = Transfer::query()
+            ->with(self::DEFAULT_RELATIONS)
+            ->when(
+                ! empty($filters['batch_id']),
+                static fn ($q) => $q->where('batch_id', $filters['batch_id']),
+            )
+            ->when(
+                ! empty($filters['origin_tank_id']),
+                static fn ($q) => $q->where('origin_tank_id', $filters['origin_tank_id']),
+            )
+            ->when(
+                ! empty($filters['destination_tank_id']),
+                static fn ($q) => $q->where('destination_tank_id', $filters['destination_tank_id']),
+            )
+            ->latest()
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show transfer by field and value.
-     */
-    public function showTransfer(string $field, string | int $value): ?Transfer
+    public function findOrFail(string $id): Transfer
     {
-        return Transfer::where($field, $value)->first();
+        return Transfer::with(self::DEFAULT_RELATIONS)->findOrFail($id);
     }
 
-    public function delete(string $id): bool
+    public function create(TransferInputDTO $dto): Transfer
     {
-        $transfer = Transfer::find($id);
+        /** @var Transfer $transfer */
+        $transfer = Transfer::create($dto->toPersistence());
 
-        if (! $transfer) {
-            return false;
+        return $transfer->load(self::DEFAULT_RELATIONS);
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): Transfer
+    {
+        $transfer = $this->findOrFail($id);
+
+        if ($attributes !== []) {
+            $transfer->update($attributes);
+            $transfer->refresh();
         }
 
-        return (bool) $transfer->delete();
+        return $transfer->load(self::DEFAULT_RELATIONS);
+    }
+
+    public function delete(string $id): void
+    {
+        $this->findOrFail($id)->delete();
     }
 }

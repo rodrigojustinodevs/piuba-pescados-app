@@ -4,30 +4,31 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Transfer;
 
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
-use App\Presentation\Resources\Transfer\TransferResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class ListTransfersUseCase
+final readonly class ListTransfersUseCase
 {
     public function __construct(
-        protected TransferRepositoryInterface $transferRepository
+        private TransferRepositoryInterface $transferRepository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
-    public function execute(): AnonymousResourceCollection
+    /**
+     * @param array{
+     *     batch_id?: string|null,
+     *     origin_tank_id?: string|null,
+     *     destination_tank_id?: string|null,
+     *     per_page?: int,
+     * } $filters
+     */
+    public function execute(array $filters = []): PaginationInterface
     {
-        $response = $this->transferRepository->paginate();
+        // Multi-tenancy: garante isolamento por empresa
+        $filters['company_id'] = $this->companyResolver->resolve();
 
-        return TransferResource::collection($response->items())
-            ->additional([
-                'pagination' => [
-                    'total'        => $response->total(),
-                    'current_page' => $response->currentPage(),
-                    'last_page'    => $response->lastPage(),
-                    'first_page'   => $response->firstPage(),
-                    'per_page'     => $response->perPage(),
-                ],
-            ]);
+        return $this->transferRepository->paginate($filters);
     }
 }

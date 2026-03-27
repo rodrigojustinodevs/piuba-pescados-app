@@ -7,20 +7,14 @@ namespace App\Presentation\Requests\Tank;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class TankStoreRequest extends FormRequest
+final class TankStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     * Usa camelCase para não expor estrutura do banco de dados
-     *
      * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Contracts\Validation\Rule|\Illuminate\Validation\Rules\In|string>|string>
      */
     public function rules(): array

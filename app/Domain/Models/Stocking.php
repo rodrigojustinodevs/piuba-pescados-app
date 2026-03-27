@@ -8,24 +8,25 @@ use App\Domain\Enums\StockingStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
  * Stocking (povoamento/estocagem) – aquaculture term for introducing organisms into a batch.
  *
- * @property string          $id
- * @property string          $batch_id
- * @property Carbon|null     $stocking_date
- * @property int             $quantity
- * @property int|null        $current_quantity
- * @property float           $average_weight
- * @property float|null      $estimated_biomass
- * @property float           $accumulated_fixed_cost
- * @property StockingStatus  $status
- * @property Carbon|null     $closed_at
- * @property Carbon|null     $created_at
- * @property Carbon|null     $updated_at
+ * @property string              $id
+ * @property string              $batch_id
+ * @property \Carbon\Carbon|null $stocking_date
+ * @property int                 $quantity
+ * @property int|null            $current_quantity
+ * @property float               $average_weight
+ * @property float|null          $estimated_biomass
+ * @property float               $accumulated_fixed_cost
+ * @property StockingStatus      $status
+ * @property \Carbon\Carbon|null $closed_at
+ * @property \Carbon\Carbon      $created_at
+ * @property \Carbon\Carbon      $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
+ *
  * @property-read Batch|null $batch
  * @property-read \Illuminate\Database\Eloquent\Collection<int, StockingHistory> $histories
  */
@@ -52,25 +53,21 @@ class Stocking extends BaseModel
         'closed_at',
     ];
 
-    /** @var array<string> */
-    protected $dates = [
-        'stocking_date',
-        'closed_at',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
-    /** @var array<string, string|class-string> */
     protected $casts = [
-        'status'    => StockingStatus::class,
-        'closed_at' => 'datetime',
+        'stocking_date'          => 'date:Y-m-d',
+        'closed_at'              => 'datetime',
+        'status'                 => StockingStatus::class,
+        'quantity'               => 'integer',
+        'current_quantity'       => 'integer',
+        'average_weight'         => 'decimal:4',
+        'estimated_biomass'      => 'decimal:4',
+        'accumulated_fixed_cost' => 'decimal:4',
     ];
 
     #[\Override]
     protected static function booted(): void
     {
-        static::creating(function (Stocking $stocking): void {
+        static::creating(static function (Stocking $stocking): void {
             $stocking->id ??= (string) Str::uuid();
             $stocking->status ??= StockingStatus::ACTIVE;
             $stocking->current_quantity ??= $stocking->quantity;

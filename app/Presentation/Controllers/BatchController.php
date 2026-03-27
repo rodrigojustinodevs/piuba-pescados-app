@@ -245,8 +245,7 @@ class BatchController
      * @OA\Post(
      *     path="/company/batch/{id}/finish",
      *     summary="Finish a batch (harvest)",
-     *     description="Records the harvest and finishes the batch."
-     *         " Returns a biological and financial performance report.",
+     *     description="Finishes the batch harvest and returns a biological and financial report.",
      *     tags={"Batches"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(

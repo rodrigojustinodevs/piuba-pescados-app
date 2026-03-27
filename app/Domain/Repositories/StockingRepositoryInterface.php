@@ -4,33 +4,42 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\DTOs\StockingInputDTO;
 use App\Domain\Models\Stocking;
 
 interface StockingRepositoryInterface
 {
     /**
-     * Create a new stocking record.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     batch_id?: string|null,
+     *     company_id?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     status?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function create(array $data): Stocking;
+    public function paginate(array $filters = []): PaginationInterface;
 
     /**
-     * Update an existing stocking record.
-     *
-     * @param array<string, mixed> $data
+     * Find a stocking by ID.
      */
-    public function update(string $id, array $data): ?Stocking;
+    public function findOrFail(string $id): Stocking;
+
+    /**
+     * Create a new stocking record.
+     */
+    public function create(StockingInputDTO $dto): Stocking;
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): Stocking;
 
     /**
      * Delete a stocking record.
      */
     public function delete(string $id): bool;
-
-    /**
-     * Paginate stocking records.
-     */
-    public function paginate(int $page = 25): PaginationInterface;
 
     /**
      * Find a stocking by a specific field.
@@ -52,5 +61,8 @@ interface StockingRepositoryInterface
      */
     public function bulkDecrementFixedCost(array $amountsByStockingId): void;
 
+    /**
+     * Find a stocking by company ID.
+     */
     public function findByCompanyOrFail(string $stockingId, string $companyId): Stocking;
 }

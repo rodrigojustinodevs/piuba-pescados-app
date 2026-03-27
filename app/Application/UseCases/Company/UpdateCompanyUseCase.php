@@ -8,12 +8,11 @@ use App\Application\DTOs\CompanyInputDTO;
 use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class UpdateCompanyUseCase
+final readonly class UpdateCompanyUseCase
 {
     public function __construct(
-        protected CompanyRepositoryInterface $companyRepository
+        private CompanyRepositoryInterface $companyRepository,
     ) {
     }
 
@@ -22,16 +21,12 @@ class UpdateCompanyUseCase
      */
     public function execute(string $id, array $data): Company
     {
-        return DB::transaction(function () use ($id, $data): Company {
-            $dto = CompanyInputDTO::fromArray($data);
+        $company = $this->companyRepository->findOrFail($id);
+        $dto     = CompanyInputDTO::fromArray($data);
 
-            $company = $this->companyRepository->update($id, $dto->toPersistence());
-
-            if (! $company instanceof Company) {
-                throw new RuntimeException('Company not found');
-            }
-
-            return $company;
+        return DB::transaction(function () use ($company, $dto): Company {
+            $updated = $this->companyRepository->update($company->id, $dto->toPersistence());
+            return $updated->refresh();
         });
     }
 }

@@ -9,10 +9,10 @@ use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class CreateCompanyUseCase
+final readonly class CreateCompanyUseCase
 {
     public function __construct(
-        protected CompanyRepositoryInterface $companyRepository
+        private CompanyRepositoryInterface $companyRepository,
     ) {
     }
 
@@ -21,10 +21,8 @@ class CreateCompanyUseCase
      */
     public function execute(array $data): Company
     {
-        return DB::transaction(function () use ($data): Company {
-            $dto = CompanyInputDTO::fromArray($data);
+        $dto = CompanyInputDTO::fromArray($data);
 
-            return $this->companyRepository->create($dto->toPersistence());
-        });
+        return DB::transaction(fn (): Company => $this->companyRepository->create($dto));
     }
 }

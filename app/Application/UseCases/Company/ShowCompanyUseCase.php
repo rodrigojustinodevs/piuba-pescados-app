@@ -7,15 +7,15 @@ namespace App\Application\UseCases\Company;
 use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 
-class ShowCompanyUseCase
+final readonly class ShowCompanyUseCase
 {
     public function __construct(
-        protected CompanyRepositoryInterface $companyRepository
+        private CompanyRepositoryInterface $companyRepository,
     ) {
     }
 
-    public function execute(string $id): ?Company
+    public function execute(string $id): Company
     {
-        return $this->companyRepository->showCompany('id', $id);
+        return $this->companyRepository->findOrFail($id);
     }
 }

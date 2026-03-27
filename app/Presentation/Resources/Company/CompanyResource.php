@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Resources\Company;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -23,16 +24,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  */
-class CompanyResource extends JsonResource
+final class CompanyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return array<string, mixed>
      */
     #[\Override]
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         return [
             'id'      => $this->id,
@@ -49,10 +49,10 @@ class CompanyResource extends JsonResource
                 'state'        => $this->address_state,
                 'zipCode'      => $this->address_zip_code,
             ],
-            'active'     => $this->status === 'active',
-            'status'     => $this->status,
-            'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
-            'updated_at' => $this->updated_at ? $this->updated_at->toDateTimeString() : null,
+            'active'    => $this->status === 'active',
+            'status'    => $this->status,
+            'createdAt' => $this->created_at?->toDateTimeString(),
+            'updatedAt' => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

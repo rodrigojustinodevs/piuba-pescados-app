@@ -4,39 +4,32 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\DTOs\CompanyInputDTO;
 use App\Domain\Models\Company;
 
 interface CompanyRepositoryInterface
 {
-    /**
-     * Create a new company record.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Company;
+    public function create(CompanyInputDTO $dto): Company;
 
     /**
-     * Update an existing company record.
-     *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?Company;
+    public function update(string $id, array $attributes): Company;
 
     /**
      * Delete a company record.
      */
-    public function delete(string $id): bool;
+    public function delete(string $id): void;
 
     /**
-     * Paginate company records.
-     *
-     * @param int         $perPage Number of items per page (limit).
-     * @param string|null $search  Optional search term (filters by name, cnpj, email).
+     * @param array{
+     *     per_page?: int,
+     *     search?: string|null,
+     * } $filters
      */
-    public function paginate(int $perPage = 25, ?string $search = null): PaginationInterface;
+    public function paginate(array $filters = []): PaginationInterface;
 
-    /**
-     * Find a company by a specific field.
-     */
+    public function findOrFail(string $id): Company;
+
     public function showCompany(string $field, string | int $value): ?Company;
 }

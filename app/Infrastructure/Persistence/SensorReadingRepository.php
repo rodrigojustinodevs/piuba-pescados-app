@@ -46,7 +46,12 @@ final class SensorReadingRepository implements SensorReadingRepositoryInterface
      */
     public function paginate(array $filters): PaginationInterface
     {
-        $paginator = SensorReading::with(['sensor:id,sensor_type,status,tank_id'])
+        $paginator = SensorReading::with([
+            'sensor' => static fn ($q) => $q->select('id', 'sensor_type', 'status', 'tank_id')
+                ->with([
+                    'tank' => static fn ($tankQuery) => $tankQuery->select('id', 'name'),
+                ]),
+        ])
             ->whereHas('sensor', static fn ($q) => $q->where('company_id', $filters['company_id']))
             ->when(
                 ! empty($filters['sensor_id']),

@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Financial Categories", description="Categorias financeiras")
  * @OA\Schema(
  *     schema="FinancialCategory",
  *     type="object",
@@ -39,7 +40,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class FinancialCategoryController
+final class FinancialCategoryController
 {
     /**
      * @OA\Get(

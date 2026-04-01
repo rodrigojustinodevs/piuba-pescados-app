@@ -14,6 +14,12 @@ use RuntimeException;
 
 class StockRepository implements StockRepositoryInterface
 {
+    private const array DEFAULT_RELATIONS = [
+        'company:id,name',
+        'supply:id,name,default_unit',
+        'supplier:id,name',
+    ];
+
     /**
      * Create a new stock.
      */
@@ -61,7 +67,7 @@ class StockRepository implements StockRepositoryInterface
      */
     public function paginate(array $filters): PaginationInterface
     {
-        $paginator = Stock::with(['supply:id,name,default_unit', 'supplier:id,name'])
+        $paginator = Stock::with(self::DEFAULT_RELATIONS)
             ->where('company_id', $filters['company_id'])
             ->when(
                 ! empty($filters['supply_id']),
@@ -82,14 +88,14 @@ class StockRepository implements StockRepositoryInterface
      */
     public function showStock(string $field, string | int $value): ?Stock
     {
-        return Stock::with(['company:id,name', 'supplier:id,name'])
+        return Stock::with(self::DEFAULT_RELATIONS)
             ->where($field, $value)
             ->first();
     }
 
     public function findOrFail(string $id): Stock
     {
-        return Stock::with(['company:id,name', 'supplier:id,name'])
+        return Stock::with(self::DEFAULT_RELATIONS)
             ->findOrFail($id);
     }
 
@@ -153,7 +159,7 @@ class StockRepository implements StockRepositoryInterface
      */
     public function findBySupplier(string $supplierId): Collection
     {
-        $items = Stock::with(['company:id,name', 'supplier:id,name'])
+        $items = Stock::with(self::DEFAULT_RELATIONS)
             ->where('supplier_id', $supplierId)
             ->get();
 

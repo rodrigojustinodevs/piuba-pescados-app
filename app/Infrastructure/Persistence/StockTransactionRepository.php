@@ -19,6 +19,7 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
             'id'             => (string) Str::uuid(),
             'company_id'     => $dto->companyId,
             'supply_id'      => $dto->supplyId,
+            'supplier_id'    => $dto->supplierId,
             'quantity'       => $dto->quantity,
             'unit_price'     => $dto->unitPrice,
             'total_cost'     => $dto->totalCost,
@@ -39,13 +40,22 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
      */
     public function paginate(array $filters): PaginationInterface
     {
-        $paginator = StockTransaction::where('stock_id', $filters['stock_id'])
+        $paginator = StockTransaction::query()
+            ->where('company_id', $filters['company_id'])
             ->when(
                 ! empty($filters['direction']),
                 static fn ($q) => $q->where(
                     'direction',
                     StockTransactionDirection::from($filters['direction'])->value,
                 ),
+            )
+            ->when(
+                ! empty($filters['reference_type']),
+                static fn ($q) => $q->where('reference_type', $filters['reference_type']),
+            )
+            ->when(
+                ! empty($filters['reference_id']),
+                static fn ($q) => $q->where('reference_id', $filters['reference_id']),
             )
             ->latest()
             ->paginate((int) ($filters['per_page'] ?? 25));

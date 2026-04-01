@@ -18,13 +18,14 @@ class PurchaseUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'supplierId'   => ['required', 'uuid'],
-            'purchaseDate' => ['required', 'date'],
+            'supplierId'    => ['required', 'uuid'],
+            'purchaseDate'  => ['required', 'date'],
+            'invoiceNumber' => ['sometimes', 'string', 'max:100'],
 
             'status' => [
                 'nullable',
                 'string',
-                Rule::in(['draft', 'approved']), // ❗ não permitir 'received'
+                Rule::in(['draft', 'confirmed']), // ❗ não permitir 'received'
             ],
 
             'items' => ['required', 'array', 'min:1'],

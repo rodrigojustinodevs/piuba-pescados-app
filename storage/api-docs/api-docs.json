@@ -5597,6 +5597,421 @@
                 ]
             }
         },
+        "/company/purchase/{id}/cancel": {
+            "patch": {
+                "tags": [
+                    "Purchases"
+                ],
+                "summary": "Cancel a purchase",
+                "operationId": "118169937421762354f1f06a0fa7f7e7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Purchase ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Purchase cancelled",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/Purchase"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Purchase not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sales": {
+            "get": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "List sales",
+                "operationId": "bc4eccc8b47d932bf3084fffe8b2c00c",
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "batch_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "confirmed",
+                                "cancelled"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of sales"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sale/{id}": {
+            "get": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Get sale by ID",
+                "operationId": "4f0a27b4ca01f590019330385ada39c1",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sale ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sale found"
+                    },
+                    "404": {
+                        "description": "Sale not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Update a sale",
+                "operationId": "9f828e63cc636983eed7faec42f4f1e3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sale ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "clientId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "totalWeight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0.001
+                                    },
+                                    "pricePerKg": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "saleDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "confirmed",
+                                            "cancelled"
+                                        ]
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sale updated"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Sale not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Delete a sale",
+                "operationId": "2f5806b93a9b2c85667720e28544a291",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sale ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sale deleted"
+                    },
+                    "404": {
+                        "description": "Sale not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sale": {
+            "post": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Create a sale",
+                "operationId": "eb0dab29c039e392c87a12b221981584",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "clientId",
+                                    "batchId",
+                                    "totalWeight",
+                                    "pricePerKg",
+                                    "saleDate"
+                                ],
+                                "properties": {
+                                    "companyId": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "clientId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "batchId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "stockingId": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "financialCategoryId": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "totalWeight": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0.001
+                                    },
+                                    "pricePerKg": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0
+                                    },
+                                    "saleDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "confirmed",
+                                            "cancelled"
+                                        ],
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "isTotalHarvest": {
+                                        "type": "boolean",
+                                        "nullable": true
+                                    },
+                                    "tolerancePercent": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "maximum": 50,
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "needsInvoice": {
+                                        "type": "boolean",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sale created"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Related entities not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/sensors": {
             "get": {
                 "tags": [
@@ -5790,10 +6205,14 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "sensor_type": {
+                                    "tankId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "sensorType": {
                                         "type": "string"
                                     },
-                                    "installation_date": {
+                                    "installationDate": {
                                         "type": "string",
                                         "format": "date"
                                     },
@@ -5914,21 +6333,21 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "tank_id",
-                                    "sensor_type",
-                                    "installation_date",
+                                    "tankId",
+                                    "sensorType",
+                                    "installationDate",
                                     "status"
                                 ],
                                 "properties": {
-                                    "tank_id": {
+                                    "tankId": {
                                         "type": "string",
                                         "format": "uuid"
                                     },
-                                    "sensor_type": {
+                                    "sensorType": {
                                         "type": "string",
                                         "example": "temperature"
                                     },
-                                    "installation_date": {
+                                    "installationDate": {
                                         "type": "string",
                                         "format": "date"
                                     },
@@ -7319,6 +7738,298 @@
                 ]
             }
         },
+        "/company/stock-transactions": {
+            "get": {
+                "tags": [
+                    "Stock Transactions"
+                ],
+                "summary": "List stock transactions (company)",
+                "operationId": "a487d32dbeabd5327843e15e8390e2f4",
+                "parameters": [
+                    {
+                        "name": "reference_type",
+                        "in": "query",
+                        "description": "Filter by reference type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "purchase_item",
+                                "feeding",
+                                "adjustment",
+                                "transfer",
+                                "stocking",
+                                "sale"
+                            ],
+                            "example": "adjustment"
+                        }
+                    },
+                    {
+                        "name": "reference_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of stock transactions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "direction": {
+                                                                "type": "string",
+                                                                "enum": [
+                                                                    "in",
+                                                                    "out"
+                                                                ],
+                                                                "example": "out"
+                                                            },
+                                                            "quantity": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 10.5
+                                                            },
+                                                            "unit": {
+                                                                "type": "string",
+                                                                "example": "kg"
+                                                            },
+                                                            "unitPrice": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 5.5
+                                                            },
+                                                            "totalCost": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 57.75
+                                                            },
+                                                            "referenceType": {
+                                                                "type": "string",
+                                                                "example": "adjustment"
+                                                            },
+                                                            "referenceId": {
+                                                                "type": "string",
+                                                                "format": "uuid"
+                                                            },
+                                                            "createdAt": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/stock/{id}/transactions": {
+            "get": {
+                "tags": [
+                    "Stock Transactions"
+                ],
+                "summary": "List stock transactions by stock ID",
+                "operationId": "ef182d4ab901cd01d9c7813ab568df99",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Reference ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "description": "Filter by direction (in|out)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "in",
+                                "out"
+                            ],
+                            "example": "out"
+                        }
+                    },
+                    {
+                        "name": "reference_type",
+                        "in": "query",
+                        "description": "Filter by reference type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "purchase_item",
+                                "feeding",
+                                "adjustment",
+                                "transfer",
+                                "stocking",
+                                "sale"
+                            ],
+                            "example": "adjustment"
+                        }
+                    },
+                    {
+                        "name": "reference_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of stock transactions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/stockings": {
             "get": {
                 "tags": [
@@ -8482,6 +9193,144 @@
                 ]
             }
         },
+        "/company/supplies": {
+            "get": {
+                "tags": [
+                    "Supplies"
+                ],
+                "summary": "Listar insumos",
+                "operationId": "2dd3a6307c64956c7d68ff81e30cfee4",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "companyId",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SupplyResource"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/supply/{id}": {
+            "get": {
+                "tags": [
+                    "Supplies"
+                ],
+                "summary": "Obter insumo por ID",
+                "operationId": "2eb1cf45e28f3eba556ff1796f9eb57a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Success"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/SupplyResource"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/tanks": {
             "get": {
                 "tags": [
@@ -9326,14 +10175,12 @@
                 "tags": [
                     "Transfers"
                 ],
-                "summary": "Listar transfers",
+                "summary": "Listar transferências",
                 "operationId": "94074103a0e8ef041c8034afbacf03a3",
                 "parameters": [
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Número da página",
-                        "required": false,
                         "schema": {
                             "type": "integer",
                             "example": 1
@@ -9342,17 +10189,39 @@
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Itens por página",
-                        "required": false,
                         "schema": {
                             "type": "integer",
                             "example": 25
+                        }
+                    },
+                    {
+                        "name": "batch_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "origin_tank_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "destination_tank_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lista paginada de transfers",
+                        "description": "Lista paginada de transferências",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9366,117 +10235,12 @@
                                             "example": "Success"
                                         },
                                         "response": {
-                                            "properties": {
-                                                "data": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "string",
-                                                                "format": "uuid"
-                                                            },
-                                                            "batchId": {
-                                                                "type": "string",
-                                                                "format": "uuid"
-                                                            },
-                                                            "batch": {
-                                                                "description": "Lote (quando carregado)",
-                                                                "properties": {
-                                                                    "id": {
-                                                                        "type": "string",
-                                                                        "format": "uuid"
-                                                                    },
-                                                                    "name": {
-                                                                        "type": "string",
-                                                                        "nullable": true
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "originTankId": {
-                                                                "type": "string",
-                                                                "format": "uuid"
-                                                            },
-                                                            "originTank": {
-                                                                "description": "Tanque de origem (quando carregado)",
-                                                                "properties": {
-                                                                    "id": {
-                                                                        "type": "string",
-                                                                        "format": "uuid"
-                                                                    },
-                                                                    "name": {
-                                                                        "type": "string",
-                                                                        "nullable": true
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "destinationTankId": {
-                                                                "type": "string",
-                                                                "format": "uuid"
-                                                            },
-                                                            "destinationTank": {
-                                                                "description": "Tanque de destino (quando carregado)",
-                                                                "properties": {
-                                                                    "id": {
-                                                                        "type": "string",
-                                                                        "format": "uuid"
-                                                                    },
-                                                                    "name": {
-                                                                        "type": "string",
-                                                                        "nullable": true
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            },
-                                                            "quantity": {
-                                                                "type": "integer",
-                                                                "example": 100
-                                                            },
-                                                            "description": {
-                                                                "type": "string",
-                                                                "example": "Transferência entre tanques"
-                                                            },
-                                                            "createdAt": {
-                                                                "type": "string",
-                                                                "format": "date-time",
-                                                                "nullable": true
-                                                            },
-                                                            "updatedAt": {
-                                                                "type": "string",
-                                                                "format": "date-time",
-                                                                "nullable": true
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                }
-                                            },
-                                            "type": "object"
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/TransferResource"
+                                            }
                                         },
                                         "pagination": {
-                                            "properties": {
-                                                "total": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "current_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "last_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "first_page": {
-                                                    "type": "integer",
-                                                    "example": 1
-                                                },
-                                                "per_page": {
-                                                    "type": "integer",
-                                                    "example": 25
-                                                }
-                                            },
                                             "type": "object"
                                         }
                                     },
@@ -9501,13 +10265,12 @@
                 "tags": [
                     "Transfers"
                 ],
-                "summary": "Detalhar um transfer",
+                "summary": "Obter transferência por ID",
                 "operationId": "fde20d69c0f323b7ca72ba843103821a",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID do transfer",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -9517,7 +10280,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Transfer encontrado",
+                        "description": "Transferência encontrada",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -9531,84 +10294,7 @@
                                             "example": "Success"
                                         },
                                         "response": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "batchId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "batch": {
-                                                    "description": "Lote (quando carregado)",
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "string",
-                                                            "format": "uuid"
-                                                        },
-                                                        "name": {
-                                                            "type": "string",
-                                                            "nullable": true
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "originTankId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "originTank": {
-                                                    "description": "Tanque de origem (quando carregado)",
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "string",
-                                                            "format": "uuid"
-                                                        },
-                                                        "name": {
-                                                            "type": "string",
-                                                            "nullable": true
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "destinationTankId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "destinationTank": {
-                                                    "description": "Tanque de destino (quando carregado)",
-                                                    "properties": {
-                                                        "id": {
-                                                            "type": "string",
-                                                            "format": "uuid"
-                                                        },
-                                                        "name": {
-                                                            "type": "string",
-                                                            "nullable": true
-                                                        }
-                                                    },
-                                                    "type": "object"
-                                                },
-                                                "quantity": {
-                                                    "type": "integer",
-                                                    "example": 100
-                                                },
-                                                "description": {
-                                                    "type": "string"
-                                                },
-                                                "createdAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                },
-                                                "updatedAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
+                                            "$ref": "#/components/schemas/TransferResource"
                                         }
                                     },
                                     "type": "object"
@@ -9617,7 +10303,7 @@
                         }
                     },
                     "404": {
-                        "description": "Transfer not found"
+                        "description": "Not found"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -9633,13 +10319,12 @@
                 "tags": [
                     "Transfers"
                 ],
-                "summary": "Atualizar um transfer",
+                "summary": "Atualizar transferência",
                 "operationId": "cbcdf02ac1deb2fdea8f9e9044208182",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID do transfer",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -9653,30 +10338,21 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "batchId": {
-                                        "description": "ID do lote (Batch)",
+                                    "batch_id": {
                                         "type": "string",
                                         "format": "uuid"
                                     },
-                                    "originTankId": {
-                                        "description": "ID do tanque de origem",
+                                    "origin_tank_id": {
                                         "type": "string",
                                         "format": "uuid"
                                     },
-                                    "destinationTankId": {
-                                        "description": "ID do tanque de destino",
+                                    "destination_tank_id": {
                                         "type": "string",
                                         "format": "uuid"
-                                    },
-                                    "quantity": {
-                                        "description": "Quantidade transferida",
-                                        "type": "integer",
-                                        "minimum": 1,
-                                        "example": 100
                                     },
                                     "description": {
-                                        "description": "Descrição da transferência",
-                                        "type": "string"
+                                        "type": "string",
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -9686,71 +10362,16 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Transfer atualizado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Success"
-                                        },
-                                        "response": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "batchId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "originTankId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "destinationTankId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "quantity": {
-                                                    "type": "integer",
-                                                    "example": 100
-                                                },
-                                                "description": {
-                                                    "type": "string"
-                                                },
-                                                "createdAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                },
-                                                "updatedAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Validation error"
-                    },
-                    "404": {
-                        "description": "Transfer not found"
+                        "description": "Transferência atualizada"
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "422": {
+                        "description": "Erro de validação/regra de negócio"
                     }
                 },
                 "security": [
@@ -9763,13 +10384,12 @@
                 "tags": [
                     "Transfers"
                 ],
-                "summary": "Remover um transfer",
+                "summary": "Excluir transferência",
                 "operationId": "4cd81f3626f7a20a5d2d9c9d05eb2957",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID do transfer",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -9779,33 +10399,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Transfer removido",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "response": {
-                                            "nullable": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Transfer successfully deleted"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Transfer not found"
+                        "description": "Transferência removida"
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Not found"
                     }
                 },
                 "security": [
@@ -9820,7 +10420,7 @@
                 "tags": [
                     "Transfers"
                 ],
-                "summary": "Criar um transfer",
+                "summary": "Criar transferência",
                 "operationId": "c97d39cc55f1651c25391acc95a48e78",
                 "requestBody": {
                     "required": true,
@@ -9828,38 +10428,26 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "batchId",
-                                    "originTankId",
-                                    "destinationTankId",
-                                    "quantity",
-                                    "description"
+                                    "batch_id",
+                                    "origin_tank_id",
+                                    "destination_tank_id"
                                 ],
                                 "properties": {
-                                    "batchId": {
-                                        "description": "ID do lote (Batch)",
+                                    "batch_id": {
                                         "type": "string",
                                         "format": "uuid"
                                     },
-                                    "originTankId": {
-                                        "description": "ID do tanque de origem",
+                                    "origin_tank_id": {
                                         "type": "string",
                                         "format": "uuid"
                                     },
-                                    "destinationTankId": {
-                                        "description": "ID do tanque de destino",
+                                    "destination_tank_id": {
                                         "type": "string",
                                         "format": "uuid"
-                                    },
-                                    "quantity": {
-                                        "description": "Quantidade transferida",
-                                        "type": "integer",
-                                        "minimum": 1,
-                                        "example": 100
                                     },
                                     "description": {
-                                        "description": "Descrição da transferência",
                                         "type": "string",
-                                        "example": "Transferência entre tanques"
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -9869,68 +10457,348 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Transfer criado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Successfully created"
-                                        },
-                                        "response": {
-                                            "properties": {
-                                                "id": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "batchId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "originTankId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "destinationTankId": {
-                                                    "type": "string",
-                                                    "format": "uuid"
-                                                },
-                                                "quantity": {
-                                                    "type": "integer",
-                                                    "example": 100
-                                                },
-                                                "description": {
-                                                    "type": "string"
-                                                },
-                                                "createdAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                },
-                                                "updatedAt": {
-                                                    "type": "string",
-                                                    "format": "date-time",
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
+                        "description": "Transferência criada"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Erro de validação/regra de negócio"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/water-qualities": {
+            "get": {
+                "tags": [
+                    "Water Qualities"
+                ],
+                "summary": "List water quality records",
+                "operationId": "de4d2a661ff23fe8c3c6f5aa48450e31",
+                "parameters": [
+                    {
+                        "name": "tank_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of water quality records"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/water-quality/{id}": {
+            "get": {
+                "tags": [
+                    "Water Qualities"
+                ],
+                "summary": "Get water quality record by ID",
+                "operationId": "02b83409becce082fcf12a3231fe7260",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Water quality record ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Water quality record found"
+                    },
+                    "404": {
+                        "description": "Water quality record not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Water Qualities"
+                ],
+                "summary": "Update a water quality record",
+                "operationId": "d1fe28a43a85ab43f0bd7337a08c6f59",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Water quality record ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "measuredAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "nullable": true
                                     },
-                                    "type": "object"
-                                }
+                                    "ph": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "maximum": 14,
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "dissolvedOxygen": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "temperature": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "maximum": 50,
+                                        "minimum": -10,
+                                        "nullable": true
+                                    },
+                                    "ammonia": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "salinity": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "turbidity": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Water quality record updated"
+                    },
+                    "400": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Water quality record not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Water Qualities"
+                ],
+                "summary": "Delete a water quality record",
+                "operationId": "82b32ddf51237876b948631fda10ddc2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Water quality record ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Water quality record deleted"
+                    },
+                    "404": {
+                        "description": "Water quality record not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/water-quality": {
+            "post": {
+                "tags": [
+                    "Water Qualities"
+                ],
+                "summary": "Create a water quality record",
+                "operationId": "7b7214b40653dbb3d5c7fc3cab814339",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tankId",
+                                    "measuredAt"
+                                ],
+                                "properties": {
+                                    "tankId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "measuredAt": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2026-03-30 08:00:00"
+                                    },
+                                    "ph": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "maximum": 14,
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "dissolvedOxygen": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "temperature": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "maximum": 50,
+                                        "minimum": -10,
+                                        "nullable": true
+                                    },
+                                    "ammonia": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "salinity": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "turbidity": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0,
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Water quality record created"
                     },
                     "400": {
                         "description": "Validation error"
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Tank not found"
                     }
                 },
                 "security": [
@@ -10661,6 +11529,118 @@
                 },
                 "type": "object"
             },
+            "Sale": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "totalWeight": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "pricePerKg": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "totalRevenue": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "saleDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "confirmed",
+                            "cancelled"
+                        ]
+                    },
+                    "statusLabel": {
+                        "type": "string",
+                        "example": "Pending"
+                    },
+                    "notes": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "batchId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "stockingId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "company": {
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "client": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "batch": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "stocking": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "quantity": {
+                                "type": "integer"
+                            },
+                            "averageWeight": {
+                                "type": "number",
+                                "format": "float"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "Sensor": {
                 "properties": {
                     "id": {
@@ -10765,6 +11745,32 @@
                         "type": "string",
                         "format": "date-time",
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Stocking": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "batchId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "stockingDate": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "averageWeight": {
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0
                     }
                 },
                 "type": "object"
@@ -10913,6 +11919,85 @@
                     },
                     "performedBy": {
                         "type": "string",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "WaterQuality": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "measuredAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "ph": {
+                        "type": "number",
+                        "format": "float",
+                        "maximum": 14,
+                        "minimum": 0,
+                        "nullable": true
+                    },
+                    "dissolvedOxygen": {
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "nullable": true
+                    },
+                    "temperature": {
+                        "type": "number",
+                        "format": "float",
+                        "maximum": 50,
+                        "minimum": -10,
+                        "nullable": true
+                    },
+                    "ammonia": {
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "nullable": true
+                    },
+                    "salinity": {
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "nullable": true
+                    },
+                    "turbidity": {
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "maxLength": 500,
+                        "nullable": true
+                    },
+                    "tank": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
                         "nullable": true
                     },
                     "createdAt": {
@@ -11190,6 +12275,126 @@
                     }
                 },
                 "type": "object"
+            },
+            "SupplyResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "companyId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "defaultUnit": {
+                        "type": "string"
+                    },
+                    "company": {
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TransferResource": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "batchId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "originTankId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "destinationTankId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "example": 1000
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "batch": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "originTank": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "destinationTank": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
             }
         },
         "securitySchemes": {
@@ -11204,20 +12409,76 @@
     },
     "tags": [
         {
+            "name": "Batches",
+            "description": "Lotes"
+        },
+        {
             "name": "Biometry",
             "description": "Operações de biometria"
+        },
+        {
+            "name": "Clients",
+            "description": "Clientes"
+        },
+        {
+            "name": "Companies",
+            "description": "Empresas"
         },
         {
             "name": "FeedInventory",
             "description": "Operações de estoque de ração"
         },
         {
+            "name": "Feedings",
+            "description": "Alimentações"
+        },
+        {
+            "name": "Financial Categories",
+            "description": "Categorias financeiras"
+        },
+        {
+            "name": "Financial Transactions",
+            "description": "Transações financeiras"
+        },
+        {
             "name": "Growth Curves",
             "description": "Curva de crescimento (registros por lote)"
         },
         {
+            "name": "Mortalities",
+            "description": "Mortes"
+        },
+        {
+            "name": "Purchases",
+            "description": "Compras"
+        },
+        {
+            "name": "Sales",
+            "description": "Vendas"
+        },
+        {
+            "name": "Sensors",
+            "description": "Sensores"
+        },
+        {
+            "name": "Stocks",
+            "description": "Estoques"
+        },
+        {
+            "name": "Stock Transactions",
+            "description": "Movimentações de estoque"
+        },
+        {
             "name": "Stockings",
             "description": "Povoamentos (stockings)"
+        },
+        {
+            "name": "Stocking History",
+            "description": "Histórico de povoamentos"
+        },
+        {
+            "name": "Subscriptions",
+            "description": "Assinaturas"
         },
         {
             "name": "Suppliers",
@@ -11228,16 +12489,16 @@
             "description": "Tanques"
         },
         {
-            "name": "Batches",
-            "description": "Batches"
+            "name": "Tank History",
+            "description": "Histórico de tanques"
         },
         {
-            "name": "Clients",
-            "description": "Clients"
+            "name": "Transfers",
+            "description": "Transferências de lote entre tanques"
         },
         {
-            "name": "Companies",
-            "description": "Companies"
+            "name": "Water Qualities",
+            "description": "Water quality measurements by tank"
         },
         {
             "name": "Cost Allocation",
@@ -11248,56 +12509,16 @@
             "description": "Dashboard"
         },
         {
-            "name": "Feedings",
-            "description": "Feedings"
-        },
-        {
-            "name": "Financial Categories",
-            "description": "Financial Categories"
-        },
-        {
-            "name": "Financial Transactions",
-            "description": "Financial Transactions"
-        },
-        {
             "name": "Harvest",
             "description": "Harvest"
-        },
-        {
-            "name": "Mortalities",
-            "description": "Mortalities"
-        },
-        {
-            "name": "Purchases",
-            "description": "Purchases"
-        },
-        {
-            "name": "Sensors",
-            "description": "Sensors"
         },
         {
             "name": "Sensor readings",
             "description": "Sensor readings"
         },
         {
-            "name": "Stocks",
-            "description": "Stocks"
-        },
-        {
-            "name": "Stocking History",
-            "description": "Stocking History"
-        },
-        {
-            "name": "Subscriptions",
-            "description": "Subscriptions"
-        },
-        {
-            "name": "Tank History",
-            "description": "Tank History"
-        },
-        {
-            "name": "Transfers",
-            "description": "Transfers"
+            "name": "Supplies",
+            "description": "Supplies"
         }
     ]
 }

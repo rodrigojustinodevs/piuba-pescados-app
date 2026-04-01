@@ -72,7 +72,11 @@ Route::prefix('company')
 
         require base_path('routes/app/company/stock.php');
 
+        require base_path('routes/app/company/stockTransaction.php');
+
         require base_path('routes/app/company/supplier.php');
+
+        require base_path('routes/app/company/supply.php');
 
         require base_path('routes/app/company/transfer.php');
 

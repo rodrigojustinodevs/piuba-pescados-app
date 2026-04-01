@@ -86,6 +86,15 @@ class FeedingStoreRequest extends FormRequest
         return [
             'batchId.exists' => 'The batch informed does not exist or is not active. '
                 . 'Only active batches allow feeding.',
+            'stockId.exists'                  => 'The stock informed does not exist.',
+            'stockReductionQuantity.min'      => 'The stock reduction quantity must be greater than 0.',
+            'stockReductionQuantity.required' => 'The stock reduction quantity is required.',
+            'stockReductionQuantity.numeric'  => 'The stock reduction quantity must be a number.',
+            'quantityProvided.required'       => 'The quantity provided is required.',
+            'quantityProvided.numeric'        => 'The quantity provided must be a number.',
+            'quantityProvided.gt'             => 'The quantity provided must be greater than 0.',
+            'feedingDate.required'            => 'The feeding date is required.',
+            'feedingDate.date'                => 'The feeding date must be a date.',
         ];
     }
 }

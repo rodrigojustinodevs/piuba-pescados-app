@@ -27,7 +27,6 @@ final class MortalityResource extends JsonResource
     {
         return [
             'id'            => $this->id,
-            'batchId'       => $this->batch_id,
             'mortalityDate' => $this->mortality_date?->toDateString(),
             'quantity'      => $this->quantity,
             'cause'         => $this->cause,
@@ -36,6 +35,7 @@ final class MortalityResource extends JsonResource
 
             'batch' => $this->whenLoaded('batch', fn (): array => [
                 'id'              => $this->batch->id,
+                'name'            => $this->batch->name,
                 'initialQuantity' => $this->batch->initial_quantity,
                 'status'          => $this->batch->status,
             ]),

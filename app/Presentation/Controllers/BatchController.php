@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Batches", description="Lotes")
  * @OA\Schema(
  *     schema="Batch",
  *     type="object",
@@ -34,7 +35,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class BatchController
+final class BatchController
 {
     /**
      * @OA\Get(

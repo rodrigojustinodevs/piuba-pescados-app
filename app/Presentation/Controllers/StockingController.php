@@ -19,6 +19,15 @@ use Illuminate\Http\Response;
 
 /**
  * @OA\Tag(name="Stockings", description="Povoamentos (stockings)")
+ * @OA\Schema(
+ *     schema="Stocking",
+ *     type="object",
+ *     @OA\Property(property="id", type="string", format="uuid"),
+ *     @OA\Property(property="batchId", type="string", format="uuid"),
+ *     @OA\Property(property="stockingDate", type="string", format="date"),
+ *     @OA\Property(property="quantity", type="integer", minimum=1),
+ *     @OA\Property(property="averageWeight", type="number", format="float", minimum=0)
+ * )
  */
 final class StockingController
 {

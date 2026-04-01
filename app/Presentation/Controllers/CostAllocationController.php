@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Cost Allocations", description="Rateios de custo")
  * @OA\Schema(
  *     schema="CostAllocation",
  *     type="object",
@@ -55,7 +56,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=true)
  * )
  */
-class CostAllocationController
+final class CostAllocationController
 {
     /**
      * @OA\Get(

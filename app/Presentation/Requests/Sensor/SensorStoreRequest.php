@@ -16,6 +16,28 @@ class SensorStoreRequest extends FormRequest
         return true;
     }
 
+    #[\Override]
+    protected function prepareForValidation(): void
+    {
+        $merge = [];
+
+        if (! $this->has('tankId') && $this->has('tank_id')) {
+            $merge['tankId'] = $this->input('tank_id');
+        }
+
+        if (! $this->has('sensorType') && $this->has('sensor_type')) {
+            $merge['sensorType'] = $this->input('sensor_type');
+        }
+
+        if (! $this->has('installationDate') && $this->has('installation_date')) {
+            $merge['installationDate'] = $this->input('installation_date');
+        }
+
+        if ($merge !== []) {
+            $this->merge($merge);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,11 +46,11 @@ class SensorStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tank_id'           => ['required', 'uuid', 'exists:tanks,id'],
-            'sensor_type'       => ['required', 'string', 'in:ph,temperature,oxygen,ammonia'],
-            'installation_date' => ['required', 'date'],
-            'status'            => ['required', 'string', 'in:active,inactive'],
-            'notes'             => ['nullable', 'string', 'max:2000'],
+            'tankId'           => ['required', 'uuid', 'exists:tanks,id'],
+            'sensorType'       => ['required', 'string', 'in:ph,temperature,oxygen,ammonia'],
+            'installationDate' => ['required', 'date'],
+            'status'           => ['required', 'string', 'in:active,inactive'],
+            'notes'            => ['nullable', 'string', 'max:2000'],
         ];
     }
 
@@ -41,19 +63,19 @@ class SensorStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'tank_id.required'           => 'The tank ID is required.',
-            'tank_id.uuid'               => 'The tank ID must be a valid UUID.',
-            'tank_id.exists'             => 'The tank ID must exist in the tanks table.',
-            'sensor_type.required'       => 'The sensor type is required.',
-            'sensor_type.string'         => 'The sensor type must be a string.',
-            'sensor_type.in'             => 'The sensor type must be one of: ph, temperature, oxygen, or ammonia.',
-            'installation_date.required' => 'The installation date is required.',
-            'installation_date.date'     => 'The installation date must be a valid date.',
-            'status.required'            => 'The status is required.',
-            'status.string'              => 'The status must be a string.',
-            'status.in'                  => 'The status must be either active or inactive.',
-            'notes.string'               => 'The notes must be a string.',
-            'notes.max'                  => 'The notes must not exceed 2000 characters.',
+            'tankId.required'           => 'The tank ID is required.',
+            'tankId.uuid'               => 'The tank ID must be a valid UUID.',
+            'tankId.exists'             => 'The tank ID must exist in the tanks table.',
+            'sensorType.required'       => 'The sensor type is required.',
+            'sensorType.string'         => 'The sensor type must be a string.',
+            'sensorType.in'             => 'The sensor type must be one of: ph, temperature, oxygen, or ammonia.',
+            'installationDate.required' => 'The installation date is required.',
+            'installationDate.date'     => 'The installation date must be a valid date.',
+            'status.required'           => 'The status is required.',
+            'status.string'             => 'The status must be a string.',
+            'status.in'                 => 'The status must be either active or inactive.',
+            'notes.string'              => 'The notes must be a string.',
+            'notes.max'                 => 'The notes must not exceed 2000 characters.',
         ];
     }
 }

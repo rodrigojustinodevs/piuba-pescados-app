@@ -22,6 +22,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *
  * @property-read \App\Domain\Models\Supply|null $supply
  * @property-read \App\Domain\Models\Supplier|null $supplier
+ * @property-read \App\Domain\Models\Company|null $company
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Domain\Models\StockTransaction[] $transactions
  */
 final class StockResource extends JsonResource
@@ -34,9 +35,6 @@ final class StockResource extends JsonResource
     {
         return [
             'id'                 => $this->id,
-            'companyId'          => $this->company_id,
-            'supplyId'           => $this->supply_id,
-            'supplierId'         => $this->supplier_id,
             'currentQuantity'    => (float) $this->current_quantity,
             'unit'               => $this->unit,
             'unitPrice'          => (float) $this->unit_price,
@@ -55,6 +53,10 @@ final class StockResource extends JsonResource
             'supplier' => $this->whenLoaded('supplier', fn (): array => [
                 'id'   => $this->supplier->id,
                 'name' => $this->supplier->name,
+            ]),
+
+            'company' => $this->whenLoaded('company', fn (): array => [
+                'name' => $this->company->name,
             ]),
 
             'transactions' => $this->whenLoaded(

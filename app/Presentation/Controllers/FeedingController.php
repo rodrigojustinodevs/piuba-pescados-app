@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Feedings", description="Alimentações")
  * @OA\Schema(
  *     schema="Feeding",
  *     type="object",
@@ -31,7 +32,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class FeedingController
+final class FeedingController
 {
     /**
      * @OA\Get(

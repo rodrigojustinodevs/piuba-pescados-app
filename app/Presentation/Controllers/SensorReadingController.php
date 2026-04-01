@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Sensor Readings", description="Leituras de sensores")
  * @OA\Schema(
  *     schema="SensorReading",
  *     type="object",

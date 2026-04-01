@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Stocking History", description="Histórico de povoamentos")
  * @OA\Schema(
  *     schema="StockingHistory",
  *     type="object",
@@ -29,7 +30,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class StockingHistoryController
+final class StockingHistoryController
 {
     /**
      * @OA\Get(

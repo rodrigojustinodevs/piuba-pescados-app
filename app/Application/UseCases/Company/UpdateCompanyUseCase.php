@@ -26,6 +26,7 @@ final readonly class UpdateCompanyUseCase
 
         return DB::transaction(function () use ($company, $dto): Company {
             $updated = $this->companyRepository->update($company->id, $dto->toPersistence());
+
             return $updated->refresh();
         });
     }

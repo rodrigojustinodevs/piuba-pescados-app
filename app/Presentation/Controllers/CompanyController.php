@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 /**
+ * @OA\Tag(name="Companies", description="Empresas")
  * @OA\Schema(
  *     schema="Company",
  *     type="object",

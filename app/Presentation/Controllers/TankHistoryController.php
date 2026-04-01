@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Tank History", description="Histórico de tanques")
  * @OA\Schema(
  *     schema="TankHistory",
  *     type="object",
@@ -28,7 +29,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class TankHistoryController
+final class TankHistoryController
 {
     /**
      * @OA\Get(

@@ -7,15 +7,19 @@ namespace App\Application\UseCases\GrowthCurve;
 use App\Domain\Repositories\GrowthCurveRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteGrowthCurveUseCase
+final readonly class DeleteGrowthCurveUseCase
 {
     public function __construct(
-        protected GrowthCurveRepositoryInterface $growthCurveRepository
+        private GrowthCurveRepositoryInterface $growthCurveRepository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->growthCurveRepository->delete($id));
+        $this->growthCurveRepository->findOrFail($id);
+
+        DB::transaction(function () use ($id): void {
+            $this->growthCurveRepository->delete($id);
+        });
     }
 }

@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\GrowthCurve;
 
-use App\Application\DTOs\GrowthCurveDTO;
+use App\Application\DTOs\GrowthCurveInputDTO;
+use App\Domain\Models\GrowthCurve;
 use App\Domain\Repositories\GrowthCurveRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class CreateGrowthCurveUseCase
+final readonly class CreateGrowthCurveUseCase
 {
     public function __construct(
-        protected GrowthCurveRepositoryInterface $growthCurveRepository
+        private GrowthCurveRepositoryInterface $growthCurveRepository,
     ) {
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    public function execute(array $data): GrowthCurveDTO
+    public function execute(array $data): GrowthCurve
     {
-        /** @return GrowthCurveDTO */
-        return DB::transaction(function () use ($data): GrowthCurveDTO {
-            $growthCurve = $this->growthCurveRepository->create($data);
+        return DB::transaction(function () use ($data): GrowthCurve {
+            $dto = GrowthCurveInputDTO::fromArray($data);
 
-            return GrowthCurveDTO::fromArray($growthCurve->toArray());
+            return $this->growthCurveRepository->create($dto);
         });
     }
 }

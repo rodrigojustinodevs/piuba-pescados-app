@@ -12,7 +12,7 @@ use App\Domain\Repositories\PaginationInterface;
 final class MortalityRepository implements MortalityRepositoryInterface
 {
     private const array DEFAULT_RELATIONS = [
-        'batch:id,tank_id,initial_quantity,status',
+        'batch:id,name,tank_id,initial_quantity,status',
     ];
 
     /**

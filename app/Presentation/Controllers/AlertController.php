@@ -17,7 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Throwable;
 
-class AlertController
+final class AlertController
 {
     /**
      * Display a listing of alerts.

@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Tank;
 
-use App\Domain\Models\TankType;
+use App\Domain\Repositories\TankTypeRepositoryInterface;
 
-class GetTankTypesUseCase
+final readonly class GetTankTypesUseCase
 {
+    public function __construct(
+        private TankTypeRepositoryInterface $tankTypeRepository,
+    ) {
+    }
+
     /**
-     * @return array<int, array<string, string|null>>
+     * @return list<array{id: string, name: string|null, description: string|null}>
      */
     public function execute(): array
     {
-        $tankTypes = TankType::orderBy('name')->get();
-
-        return $tankTypes->map(fn (TankType $tankType): array => [
-            'id'          => $tankType->id,
-            'name'        => $tankType->name,
-            'description' => $tankType->description ?? null,
-        ])->toArray();
+        return $this->tankTypeRepository->listAllOrdered();
     }
 }

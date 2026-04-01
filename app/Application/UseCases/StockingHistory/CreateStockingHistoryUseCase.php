@@ -31,8 +31,7 @@ final readonly class CreateStockingHistoryUseCase
             hint: $data['company_id'] ?? $data['companyId'] ?? null,
         );
 
-        $dto = StockingHistoryDTO::fromArray($data);
-        // findByCompany lança ModelNotFoundException se não existir ou não pertencer à empresa
+        $dto      = StockingHistoryDTO::fromArray($data);
         $stocking = $this->stockingRepository->findByCompanyOrFail($dto->stockingId, $dto->companyId);
 
         if ($stocking->isClosed()) {

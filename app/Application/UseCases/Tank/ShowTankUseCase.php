@@ -6,23 +6,16 @@ namespace App\Application\UseCases\Tank;
 
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
-use RuntimeException;
 
-class ShowTankUseCase
+final readonly class ShowTankUseCase
 {
     public function __construct(
-        protected TankRepositoryInterface $tankRepository
+        private TankRepositoryInterface $tankRepository,
     ) {
     }
 
     public function execute(string $id): Tank
     {
-        $tank = $this->tankRepository->showTank('id', $id);
-
-        if (! $tank instanceof Tank) {
-            throw new RuntimeException('Tank not found');
-        }
-
-        return $tank;
+        return $this->tankRepository->findOrFail($id);
     }
 }

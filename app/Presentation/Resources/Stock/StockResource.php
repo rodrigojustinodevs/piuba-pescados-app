@@ -8,7 +8,22 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin \App\Domain\Models\Stock
+ * @property string $id
+ * @property string $company_id
+ * @property string $supply_id
+ * @property string $supplier_id
+ * @property float $current_quantity
+ * @property string $unit
+ * @property float $unit_price
+ * @property float $minimum_stock
+ * @property float $withdrawal_quantity
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ * @property-read \App\Domain\Models\Supply|null $supply
+ * @property-read \App\Domain\Models\Supplier|null $supplier
+ * @property-read \App\Domain\Models\Company|null $company
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Domain\Models\StockTransaction[] $transactions
  */
 final class StockResource extends JsonResource
 {
@@ -20,19 +35,14 @@ final class StockResource extends JsonResource
     {
         return [
             'id'                 => $this->id,
-            'companyId'          => $this->company_id,
-            'supplyId'           => $this->supply_id,
-            'supplierId'         => $this->supplier_id,
             'currentQuantity'    => (float) $this->current_quantity,
             'unit'               => $this->unit,
             'unitPrice'          => (float) $this->unit_price,
             'minimumStock'       => (float) $this->minimum_stock,
             'withdrawalQuantity' => (float) $this->withdrawal_quantity,
-
-            'isBelowMinimum' => $this->isBelowMinimum(),
-
-            'createdAt' => $this->created_at?->toDateTimeString(),
-            'updatedAt' => $this->updated_at?->toDateTimeString(),
+            'isBelowMinimum'     => $this->resource->isBelowMinimum(),
+            'createdAt'          => $this->created_at?->toDateTimeString(),
+            'updatedAt'          => $this->updated_at?->toDateTimeString(),
 
             'supply' => $this->whenLoaded('supply', fn (): array => [
                 'id'          => $this->supply->id,
@@ -43,6 +53,10 @@ final class StockResource extends JsonResource
             'supplier' => $this->whenLoaded('supplier', fn (): array => [
                 'id'   => $this->supplier->id,
                 'name' => $this->supplier->name,
+            ]),
+
+            'company' => $this->whenLoaded('company', fn (): array => [
+                'name' => $this->company->name,
             ]),
 
             'transactions' => $this->whenLoaded(

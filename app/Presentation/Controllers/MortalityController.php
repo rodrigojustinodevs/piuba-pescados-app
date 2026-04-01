@@ -18,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Mortalities", description="Mortes")
  * @OA\Schema(
  *     schema="Mortality",
  *     type="object",
@@ -30,7 +31,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class MortalityController
+final class MortalityController
 {
     /**
      * @OA\Get(

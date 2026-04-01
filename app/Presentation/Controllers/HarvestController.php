@@ -18,6 +18,7 @@ use Illuminate\Http\Response;
 use Throwable;
 
 /**
+ * @OA\Tag(name="Harvests", description="Colheitas")
  * @OA\Schema(
  *     schema="Harvest",
  *     type="object",

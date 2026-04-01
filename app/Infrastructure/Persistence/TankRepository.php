@@ -4,88 +4,99 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\TankInputDTO;
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 
-class TankRepository implements TankRepositoryInterface
+final class TankRepository implements TankRepositoryInterface
 {
-    /**
-     * Create a new tank.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Tank
-    {
-        return Tank::create($data);
-    }
+    private const array DEFAULT_RELATIONS = [
+        'tankType:id,name',
+        'company:id,name',
+    ];
 
     /**
-     * Update an existing tank.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     company_id?: string|null,
+     *     status?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function update(string $id, array $data): ?Tank
+    public function paginate(array $filters = []): PaginationInterface
     {
-        $tank = Tank::find($id);
-
-        if ($tank) {
-            $tank->update($data);
-
-            return $tank;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get paginated .
-     */
-    public function paginate(int $page = 25): PaginationInterface
-    {
-        /** @var LengthAwarePaginator<int, Tank> $paginator */
-        $paginator = Tank::with([
-            'tankType:id,name',
-            'company:id,name',
-        ])->paginate($page);
+        $paginator = Tank::with(self::DEFAULT_RELATIONS)
+            ->when(
+                ! empty($filters['company_id']),
+                static fn ($q) => $q->where('company_id', $filters['company_id']),
+            )
+            ->when(
+                ! empty($filters['status']),
+                static fn ($q) => $q->where('status', $filters['status']),
+            )
+            ->latest()
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
     /**
-     * Get paginated tanks that have no batches linked.
+     * @param array{
+     *     company_id?: string|null,
+     *     status?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function paginateWithoutBatches(int $page = 25): PaginationInterface
+    public function paginateWithoutBatches(array $filters = []): PaginationInterface
     {
-        /** @var LengthAwarePaginator<int, Tank> $paginator */
-        $paginator = Tank::with([
-            'tankType:id,name',
-            'company:id,name',
-        ])
+        $paginator = Tank::with(self::DEFAULT_RELATIONS)
             ->whereDoesntHave('batches')
-            ->paginate($page);
+            ->when(
+                ! empty($filters['company_id']),
+                static fn ($q) => $q->where('company_id', $filters['company_id']),
+            )
+            ->when(
+                ! empty($filters['status']),
+                static fn ($q) => $q->where('status', $filters['status']),
+            )
+            ->latest()
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show tank by field and value.
-     */
+    public function findOrFail(string $id): Tank
+    {
+        return Tank::with(self::DEFAULT_RELATIONS)->findOrFail($id);
+    }
+
     public function showTank(string $field, string | int $value): ?Tank
     {
-        return Tank::where($field, $value)->first();
+        return Tank::with(self::DEFAULT_RELATIONS)->where($field, $value)->first();
     }
 
-    public function delete(string $id): bool
+    public function create(TankInputDTO $dto): Tank
     {
-        $tank = Tank::find($id);
+        /** @var Tank $tank */
+        $tank = Tank::create($dto->toPersistence());
 
-        if (! $tank) {
-            return false;
-        }
+        return $tank->load(self::DEFAULT_RELATIONS);
+    }
 
-        return (bool) $tank->delete();
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): Tank
+    {
+        $tank = $this->findOrFail($id);
+        $tank->update($attributes);
+
+        return $tank->refresh();
+    }
+
+    public function delete(string $id): void
+    {
+        $this->findOrFail($id)->delete();
     }
 
     /** @return array<int, array<string, mixed>> */

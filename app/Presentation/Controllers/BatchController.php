@@ -19,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Batches", description="Lotes")
  * @OA\Schema(
  *     schema="Batch",
  *     type="object",
@@ -34,7 +35,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class BatchController
+final class BatchController
 {
     /**
      * @OA\Get(
@@ -245,8 +246,7 @@ class BatchController
      * @OA\Post(
      *     path="/company/batch/{id}/finish",
      *     summary="Finish a batch (harvest)",
-     *     description="Records the harvest and finishes the batch."
-     *         " Returns a biological and financial performance report.",
+     *     description="Finishes the batch harvest and returns a biological and financial report.",
      *     tags={"Batches"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(

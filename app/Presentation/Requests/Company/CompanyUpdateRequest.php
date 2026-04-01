@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Requests\Company;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CompanyUpdateRequest extends FormRequest
 {
@@ -37,6 +38,7 @@ class CompanyUpdateRequest extends FormRequest
             'email'               => 'sometimes|nullable|email|max:255',
             'phone'               => 'sometimes|string|max:20',
             'active'              => 'sometimes|nullable|boolean',
+            'status'              => ['sometimes', Rule::in(['active', 'inactive'])],
             'addressStreet'       => 'sometimes|string|max:255',
             'addressNumber'       => 'sometimes|string|max:50',
             'addressComplement'   => 'sometimes|nullable|string|max:255',

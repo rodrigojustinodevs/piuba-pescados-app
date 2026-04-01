@@ -11,9 +11,9 @@ use App\Presentation\Resources\StockingHistory\StockingHistoryResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use RuntimeException;
 
 /**
+ * @OA\Tag(name="Stocking History", description="Histórico de povoamentos")
  * @OA\Schema(
  *     schema="StockingHistory",
  *     type="object",
@@ -30,7 +30,7 @@ use RuntimeException;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class StockingHistoryController
+final class StockingHistoryController
 {
     /**
      * @OA\Get(
@@ -113,11 +113,7 @@ class StockingHistoryController
         StockingHistoryStoreRequest $request,
         CreateStockingHistoryUseCase $useCase,
     ): JsonResponse {
-        try {
-            $history = $useCase->execute($request->validated());
-        } catch (RuntimeException $e) {
-            return ApiResponse::domainError($e->getMessage());
-        }
+        $history = $useCase->execute($request->validated());
 
         return ApiResponse::created(
             data:    new StockingHistoryResource($history),

@@ -4,72 +4,94 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\StockingInputDTO;
 use App\Domain\Models\Stocking;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class StockingRepository implements StockingRepositoryInterface
+final class StockingRepository implements StockingRepositoryInterface
 {
-    /**
-     * Create a new stocking.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Stocking
-    {
-        return Stocking::create($data);
-    }
+    private const array DEFAULT_RELATIONS = [
+        'batch:id,name,tank_id',
+    ];
 
     /**
-     * Update an existing stocking.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     batch_id?: string|null,
+     *     company_id?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     *     status?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function update(string $id, array $data): ?Stocking
+    public function paginate(array $filters = []): PaginationInterface
     {
-        $stocking = Stocking::find($id);
-
-        if ($stocking) {
-            $stocking->update($data);
-
-            return $stocking;
-        }
-
-        return null;
-    }
-
-    /**
-     * Get paginated stockings.
-     */
-    public function paginate(int $page = 25): PaginationInterface
-    {
-        /** @var LengthAwarePaginator<int, Stocking> $paginator */
-        $paginator = Stocking::with([
-            'batch:id,name',
-        ])->paginate($page);
+        $paginator = Stocking::with(self::DEFAULT_RELATIONS)
+            ->when(
+                ! empty($filters['batch_id']),
+                static fn ($q) => $q->where('batch_id', $filters['batch_id']),
+            )
+            ->when(
+                ! empty($filters['company_id']),
+                static function ($q) use ($filters): void {
+                    $q->whereHas(
+                        'batch.tank',
+                        static fn ($tq) => $tq->where('company_id', $filters['company_id']),
+                    );
+                },
+            )
+            ->when(
+                ! empty($filters['status']),
+                static fn ($q) => $q->where('status', $filters['status']),
+            )
+            ->when(
+                ! empty($filters['date_from']),
+                static fn ($q) => $q->whereDate('stocking_date', '>=', $filters['date_from']),
+            )
+            ->when(
+                ! empty($filters['date_to']),
+                static fn ($q) => $q->whereDate('stocking_date', '<=', $filters['date_to']),
+            )
+            ->latest('stocking_date')
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show stocking by field and value.
-     */
+    public function findOrFail(string $id): Stocking
+    {
+        return Stocking::with(self::DEFAULT_RELATIONS)->findOrFail($id);
+    }
+
     public function showStocking(string $field, string | int $value): ?Stocking
     {
-        return Stocking::where($field, $value)->first();
+        return Stocking::with(self::DEFAULT_RELATIONS)->where($field, $value)->first();
+    }
+
+    public function create(StockingInputDTO $dto): Stocking
+    {
+        /** @var Stocking $stocking */
+        $stocking = Stocking::create($dto->toPersistence());
+
+        return $stocking->load(self::DEFAULT_RELATIONS);
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): Stocking
+    {
+        $stocking = $this->findOrFail($id);
+        $stocking->update($attributes);
+
+        return $stocking->refresh();
     }
 
     public function delete(string $id): bool
     {
-        $stocking = Stocking::find($id);
-
-        if (! $stocking) {
-            return false;
-        }
-
-        return (bool) $stocking->delete();
+        return (bool) $this->findOrFail($id)->delete();
     }
 
     public function bulkIncrementFixedCost(array $amountsByStockingId): void
@@ -93,14 +115,6 @@ class StockingRepository implements StockingRepositoryInterface
     /**
      * Builds and executes a single CASE WHEN UPDATE for all stockings.
      *
-     * Generated SQL (example with 2 rows):
-     *   UPDATE stockings
-     *   SET accumulated_fixed_cost = GREATEST(0, CASE id
-     *       WHEN ? THEN accumulated_fixed_cost + ?
-     *       WHEN ? THEN accumulated_fixed_cost + ?
-     *   END)
-     *   WHERE id IN (?, ?)
-     *
      * @param array<string, float> $amountsByStockingId
      * @param '+'|'-'              $operator
      */
@@ -121,7 +135,6 @@ class StockingRepository implements StockingRepositoryInterface
         $inSql    = implode(', ', array_fill(0, count($ids), '?'));
         $bindings = array_merge($caseBindings, $ids);
 
-        // GREATEST(0, ...) prevents the column from going negative on decrement
         DB::statement(
             "UPDATE stockings SET accumulated_fixed_cost = GREATEST(0, {$caseSql}) WHERE id IN ({$inSql})",
             $bindings,
@@ -136,6 +149,6 @@ class StockingRepository implements StockingRepositoryInterface
                 'batch.tank',
                 static fn ($q) => $q->where('company_id', $companyId),
             )
-            ->firstOrFail(); // lança ModelNotFoundException com mensagem padrão do Laravel
+            ->firstOrFail();
     }
 }

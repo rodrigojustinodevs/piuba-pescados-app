@@ -18,6 +18,7 @@ use Illuminate\Http\Response;
 use Throwable;
 
 /**
+ * @OA\Tag(name="Subscriptions", description="Assinaturas")
  * @OA\Schema(
  *     schema="Subscription",
  *     type="object",
@@ -36,7 +37,7 @@ use Throwable;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class SubscriptionController
+final class SubscriptionController
 {
     /**
      * @OA\Get(

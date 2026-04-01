@@ -31,6 +31,8 @@ use App\Domain\Exceptions\StockNotFoundException;
 use App\Domain\Exceptions\TankAlreadyHasActiveBatchException;
 use App\Domain\Exceptions\TransactionAlreadyAllocatedException;
 use App\Domain\Exceptions\TransactionAmountImmutableException;
+use App\Domain\Exceptions\TransferBatchOriginMismatchException;
+use App\Domain\Exceptions\TransferSameTankException;
 use App\Domain\Exceptions\UnauthorizedException;
 use App\Domain\Exceptions\ZeroDeltaException;
 use App\Presentation\Response\ApiResponse;
@@ -175,6 +177,18 @@ class Handler extends ExceptionHandler
         );
         $this->renderable(
             fn (TankAlreadyHasActiveBatchException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (TransferBatchOriginMismatchException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (TransferSameTankException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )

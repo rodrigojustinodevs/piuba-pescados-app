@@ -4,53 +4,46 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\DTOs\TankInputDTO;
 use App\Domain\Models\Tank;
 
 interface TankRepositoryInterface
 {
     /**
-     * Create a new tank record.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     company_id?: string|null,
+     *     status?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function create(array $data): Tank;
+    public function paginate(array $filters = []): PaginationInterface;
 
     /**
-     * Update an existing tank record.
-     *
-     * @param array<string, mixed> $data
+     * @param array{
+     *     company_id?: string|null,
+     *     status?: string|null,
+     *     per_page?: int,
+     * } $filters
      */
-    public function update(string $id, array $data): ?Tank;
+    public function paginateWithoutBatches(array $filters = []): PaginationInterface;
 
-    /**
-     * Delete a tank record.
-     */
-    public function delete(string $id): bool;
+    public function findOrFail(string $id): Tank;
 
-    /**
-     * Paginate tank records.
-     */
-    public function paginate(int $page = 25): PaginationInterface;
-
-    /**
-     * Paginate tank records that have no batches linked.
-     */
-    public function paginateWithoutBatches(int $page = 25): PaginationInterface;
-
-    /**
-     * Find a tank by a specific field.
-     */
     public function showTank(string $field, string | int $value): ?Tank;
 
+    public function create(TankInputDTO $dto): Tank;
+
     /**
-     * Find all tanks by company ID.
-     *
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): Tank;
+
+    public function delete(string $id): void;
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     public function findAllByCompany(string $companyId): array;
 
-    /**
-     * Count active tanks.
-     */
     public function countActiveTanks(string $companyId): int;
 }

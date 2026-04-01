@@ -4,65 +4,60 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Transfer;
 
-use App\Application\DTOs\TransferInputDTO;
+use App\Application\Actions\Transfer\ApplyBatchTransferAction;
+use App\Application\Actions\Transfer\GuardTransferRulesAction;
 use App\Domain\Models\Transfer;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class UpdateTransferUseCase
+final readonly class UpdateTransferUseCase
 {
     public function __construct(
-        protected TransferRepositoryInterface $transferRepository,
-        protected BatchRepositoryInterface $batchRepository
+        private TransferRepositoryInterface $transferRepository,
+        private BatchRepositoryInterface $batchRepository,
+        private GuardTransferRulesAction $guardRules,
+        private ApplyBatchTransferAction $applyBatchTransfer,
     ) {
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $data Dados validados pelo FormRequest (snake_case)
      */
     public function execute(string $id, array $data): Transfer
     {
-        return DB::transaction(function () use ($id, $data): Transfer {
-            $dto     = TransferInputDTO::fromArray($data);
-            $current = $this->transferRepository->showTransfer('id', $id);
+        $current = $this->transferRepository->findOrFail($id);
 
-            if (! $current instanceof Transfer) {
-                throw new RuntimeException('Transfer not found');
-            }
+        $effectiveOrigin = (string) ($data['origin_tank_id'] ?? $current->origin_tank_id);
+        $effectiveDest   = (string) ($data['destination_tank_id'] ?? $current->destination_tank_id);
 
-            $newOriginId      = $dto->originTankId ?: $current->origin_tank_id;
-            $newDestinationId = $dto->destinationTankId ?: $current->destination_tank_id;
+        $destinationChanged = array_key_exists('destination_tank_id', $data)
+            && $effectiveDest !== (string) $current->destination_tank_id;
 
-            if ($newOriginId === $newDestinationId) {
-                throw new RuntimeException('The origin tank cannot be the same as the destination tank.');
-            }
+        // Valida regras de negócio fora da transação
+        $this->guardRules->guardUpdate(
+            effectiveOrigin:    $effectiveOrigin,
+            effectiveDest:      $effectiveDest,
+            batchId:            (string) $current->batch_id,
+            destinationChanged: $destinationChanged,
+        );
 
-            $destinationChanged = $dto->destinationTankId !== ''
-                && (string) $newDestinationId !== (string) $current->destination_tank_id;
+        return DB::transaction(function () use ($id, $data, $destinationChanged): Transfer {
+            // Persiste apenas os campos presentes no patch — sem array manual de mapeamento
+            $attributes = array_filter($data, static fn ($v): bool => $v !== null);
 
-            $destinationHasOtherBatch = $this->batchRepository->hasActiveBatchInTank(
-                $newDestinationId,
-                $current->batch_id
-            );
+            $transfer = $this->transferRepository->update($id, $attributes);
 
-            if ($destinationChanged && $destinationHasOtherBatch) {
-                throw new RuntimeException('Tank already has an active batch.');
-            }
+            // Atualiza o lote apenas quando tanque destino ou lote mudaram
+            if ($destinationChanged || array_key_exists('batch_id', $data)) {
+                $batch = $this->batchRepository->findOrFail((string) $transfer->batch_id);
 
-            $transfer = $this->transferRepository->update($id, $dto->toPersistence());
-
-            if (! $transfer instanceof Transfer) {
-                throw new RuntimeException('Transfer not found');
-            }
-
-            if ($dto->batchId !== '' || $dto->destinationTankId !== '') {
-                $batchIdToUpdate = $dto->batchId !== '' ? $dto->batchId : $transfer->batch_id;
-
-                $this->batchRepository->update($batchIdToUpdate, [
-                    'tank_id' => $transfer->destination_tank_id,
-                ]);
+                $this->applyBatchTransfer->execute(
+                    batchId:             (string) $transfer->batch_id,
+                    destinationTankId:   (string) $transfer->destination_tank_id,
+                    transferredQuantity: (int) $transfer->quantity,
+                    currentQuantity:     (int) $batch->initial_quantity,
+                );
             }
 
             return $transfer;

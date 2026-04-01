@@ -16,10 +16,13 @@ use App\Presentation\Requests\Tank\TankUpdateRequest;
 use App\Presentation\Resources\Tank\TankResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Throwable;
 
-class TankController
+/**
+ * @OA\Tag(name="Tanks", description="Tanques")
+ */
+final class TankController
 {
     /**
      * @OA\Get(
@@ -40,6 +43,18 @@ class TankController
      *         description="Items per page",
      *         required=false,
      *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Parameter(
+     *         name="company_id",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"active","inactive"})
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -67,17 +82,18 @@ class TankController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function index(ShowAllTanksUseCase $useCase): JsonResponse
+    public function index(Request $request, ShowAllTanksUseCase $useCase): JsonResponse
     {
-        try {
-            $tanks      = $useCase->execute();
-            $data       = $tanks->toArray(request());
-            $pagination = $tanks->additional['pagination'] ?? null;
+        $result     = $useCase->execute($request->all());
+        $collection = TankResource::collection($result->items());
 
-            return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception);
-        }
+        return ApiResponse::success($collection, Response::HTTP_OK, 'Success', [
+            'total'        => $result->total(),
+            'current_page' => $result->currentPage(),
+            'last_page'    => $result->lastPage(),
+            'first_page'   => $result->firstPage(),
+            'per_page'     => $result->perPage(),
+        ]);
     }
 
     /**
@@ -99,6 +115,18 @@ class TankController
      *         description="Items per page",
      *         required=false,
      *         @OA\Schema(type="integer", example=15)
+     *     ),
+     *     @OA\Parameter(
+     *         name="company_id",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="string", enum={"active","inactive"})
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -126,17 +154,18 @@ class TankController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function tanksWithoutBatches(ShowTanksWithoutBatchesUseCase $useCase): JsonResponse
+    public function tanksWithoutBatches(Request $request, ShowTanksWithoutBatchesUseCase $useCase): JsonResponse
     {
-        try {
-            $tanks      = $useCase->execute();
-            $data       = $tanks->toArray(request());
-            $pagination = $tanks->additional['pagination'] ?? null;
+        $result     = $useCase->execute($request->all());
+        $collection = TankResource::collection($result->items());
 
-            return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception);
-        }
+        return ApiResponse::success($collection, Response::HTTP_OK, 'Success', [
+            'total'        => $result->total(),
+            'current_page' => $result->currentPage(),
+            'last_page'    => $result->lastPage(),
+            'first_page'   => $result->firstPage(),
+            'per_page'     => $result->perPage(),
+        ]);
     }
 
     /**
@@ -193,13 +222,9 @@ class TankController
      */
     public function show(string $id, ShowTankUseCase $useCase): JsonResponse
     {
-        try {
-            $tank = $useCase->execute($id);
+        $tank = $useCase->execute($id);
 
-            return ApiResponse::success(new TankResource($tank), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Tank not found', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(new TankResource($tank), Response::HTTP_OK, 'Success');
     }
 
     /**
@@ -280,13 +305,9 @@ class TankController
      */
     public function store(TankStoreRequest $request, CreateTankUseCase $useCase): JsonResponse
     {
-        try {
-            $tank = $useCase->execute($request->validated());
+        $tank = $useCase->execute($request->validated());
 
-            return ApiResponse::created(new TankResource($tank));
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::created(new TankResource($tank));
     }
 
     /**
@@ -374,13 +395,9 @@ class TankController
      */
     public function update(TankUpdateRequest $request, string $id, UpdateTankUseCase $useCase): JsonResponse
     {
-        try {
-            $tank = $useCase->execute($id, $request->validated());
+        $tank = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success(new TankResource($tank), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::success(new TankResource($tank), Response::HTTP_OK, 'Success');
     }
 
     /**
@@ -410,17 +427,9 @@ class TankController
      */
     public function destroy(string $id, DeleteTankUseCase $useCase): JsonResponse
     {
-        try {
-            $deleted = $useCase->execute($id);
+        $useCase->execute($id);
 
-            if (! $deleted) {
-                return ApiResponse::error(null, 'Tank not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success(null, Response::HTTP_OK, 'Tank successfully deleted');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Error deleting tank', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(null, Response::HTTP_OK, 'Tank successfully deleted');
     }
 
     /**
@@ -443,15 +452,10 @@ class TankController
      */
     public function getTankTypes(GetTankTypesUseCase $useCase): JsonResponse
     {
-        try {
-            $tankTypes = $useCase->execute();
-
-            /** @var array<int|string, mixed> $tankTypesData */
-            $tankTypesData = $tankTypes;
-
-            return ApiResponse::success($tankTypesData, Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Error fetching tank types', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(
+            ['tankTypes' => $useCase->execute()],
+            Response::HTTP_OK,
+            'Success',
+        );
     }
 }

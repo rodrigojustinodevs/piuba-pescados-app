@@ -19,7 +19,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class StockController
+/**
+ * @OA\Tag(name="Stocks", description="Estoques")
+ */
+final class StockController
 {
     /**
      * @OA\Get(

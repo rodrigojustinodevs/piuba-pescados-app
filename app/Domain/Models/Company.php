@@ -31,22 +31,12 @@ class Company extends BaseModel
         'status',
     ];
 
-    /** @var array<string> */
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-    ];
-
     #[\Override]
-    protected static function booted()
+    protected static function booted(): void
     {
-        static::creating(function (Company $company): void {
-            $company->id = (string) Str::uuid();
-
-            if (! isset($company->status)) {
-                $company->status = 'active';
-            }
+        static::creating(static function (Company $company): void {
+            $company->id ??= (string) Str::uuid();
+            $company->status ??= 'active';
         });
     }
 

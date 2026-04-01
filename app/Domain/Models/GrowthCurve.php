@@ -6,16 +6,17 @@ namespace App\Domain\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * @property string $id
- * @property string $batch_id
- * @property float $average_weight
- * @property Carbon|null $deleted
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * Ponto da curva de crescimento (peso médio por lote).
+ *
+ * @property string              $id
+ * @property string              $batch_id
+ * @property float               $average_weight
+ * @property \Carbon\Carbon      $created_at
+ * @property \Carbon\Carbon      $updated_at
+ * @property \Carbon\Carbon|null $deleted_at
  *
  * @property-read Batch|null $batch
  */
@@ -33,18 +34,15 @@ class GrowthCurve extends BaseModel
         'average_weight',
     ];
 
-    /** @var array<string> */
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    protected $casts = [
+        'average_weight' => 'decimal:4',
     ];
 
     #[\Override]
     protected static function booted(): void
     {
-        static::creating(function (GrowthCurve $growthCurve): void {
-            $growthCurve->id = (string) Str::uuid();
+        static::creating(static function (GrowthCurve $growthCurve): void {
+            $growthCurve->id ??= (string) Str::uuid();
         });
     }
 

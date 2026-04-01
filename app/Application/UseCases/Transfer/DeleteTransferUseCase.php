@@ -4,50 +4,35 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Transfer;
 
+use App\Application\Actions\Transfer\ApplyBatchTransferAction;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class DeleteTransferUseCase
+final readonly class DeleteTransferUseCase
 {
     public function __construct(
-        protected TransferRepositoryInterface $transferRepository,
-        protected BatchRepositoryInterface $batchRepository
+        private TransferRepositoryInterface $transferRepository,
+        private BatchRepositoryInterface $batchRepository,
+        private ApplyBatchTransferAction $applyBatchTransfer,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(function () use ($id): bool {
-            $transfer = $this->transferRepository->showTransfer('id', $id);
+        $transfer = $this->transferRepository->findOrFail($id);
+        $batch    = $this->batchRepository->findOrFail((string) $transfer->batch_id);
 
-            if (! $transfer instanceof \App\Domain\Models\Transfer) {
-                return false;
-            }
+        DB::transaction(function () use ($transfer, $batch): void {
+            // Reverte o lote ao tanque de origem e devolve a quantidade
+            $this->applyBatchTransfer->revert(
+                batchId:             (string) $transfer->batch_id,
+                originTankId:        (string) $transfer->origin_tank_id,
+                transferredQuantity: (int) $transfer->quantity,
+                currentQuantity:     (int) $batch->initial_quantity,
+            );
 
-            $batch = $this->batchRepository->showBatch('id', $transfer->batch_id);
-
-            if ($batch instanceof \App\Domain\Models\Batch) {
-                $originHasOtherBatch = $this->batchRepository->hasActiveBatchInTank(
-                    $transfer->origin_tank_id,
-                    $transfer->batch_id
-                );
-
-                if ($originHasOtherBatch) {
-                    throw new RuntimeException(
-                        'Cannot delete transfer: origin tank already has an active batch.'
-                    );
-                }
-
-                $newQuantity = $batch->initial_quantity + (int) $transfer->quantity;
-                $this->batchRepository->update($transfer->batch_id, [
-                    'tank_id'          => $transfer->origin_tank_id,
-                    'initial_quantity' => $newQuantity,
-                ]);
-            }
-
-            return $this->transferRepository->delete($id);
+            $this->transferRepository->delete($transfer->id);
         });
     }
 }

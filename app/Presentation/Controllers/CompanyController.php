@@ -16,9 +16,9 @@ use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Throwable;
 
 /**
+ * @OA\Tag(name="Companies", description="Empresas")
  * @OA\Schema(
  *     schema="Company",
  *     type="object",
@@ -44,7 +44,7 @@ use Throwable;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
  */
-class CompanyController
+final class CompanyController
 {
     /**
      * Display a listing of companies.
@@ -90,18 +90,16 @@ class CompanyController
      */
     public function index(Request $request, ShowAllCompaniesUseCase $useCase): JsonResponse
     {
-        try {
-            $limit  = $request->integer('limit', 25);
-            $search = $request->filled('search') ? trim((string) $request->input('search')) : null;
+        $result     = $useCase->execute($request->all());
+        $collection = CompanyResource::collection($result->items());
 
-            $companies  = $useCase->execute($limit, $search);
-            $data       = $companies->toArray($request);
-            $pagination = $companies->additional['pagination'] ?? null;
-
-            return ApiResponse::success($data, Response::HTTP_OK, 'Success', $pagination);
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception);
-        }
+        return ApiResponse::success($collection, Response::HTTP_OK, 'Success', [
+            'total'        => $result->total(),
+            'current_page' => $result->currentPage(),
+            'last_page'    => $result->lastPage(),
+            'first_page'   => $result->firstPage(),
+            'per_page'     => $result->perPage(),
+        ]);
     }
 
     /**
@@ -128,17 +126,9 @@ class CompanyController
      */
     public function show(string $id, ShowCompanyUseCase $useCase): JsonResponse
     {
-        try {
-            $company = $useCase->execute($id);
+        $company = $useCase->execute($id);
 
-            if (! $company instanceof \App\Domain\Models\Company) {
-                return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success(new CompanyResource($company), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Company not found', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(new CompanyResource($company), Response::HTTP_OK, 'Success');
     }
 
     /**
@@ -182,13 +172,9 @@ class CompanyController
      */
     public function store(CompanyStoreRequest $request, CreateCompanyUseCase $useCase): JsonResponse
     {
-        try {
-            $company = $useCase->execute($request->validated());
+        $company = $useCase->execute($request->validated());
 
-            return ApiResponse::created(new CompanyResource($company));
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::created(new CompanyResource($company));
     }
 
     /**
@@ -233,13 +219,9 @@ class CompanyController
      */
     public function update(CompanyUpdateRequest $request, string $id, UpdateCompanyUseCase $useCase): JsonResponse
     {
-        try {
-            $company = $useCase->execute($id, $request->validated());
+        $company = $useCase->execute($id, $request->validated());
 
-            return ApiResponse::success(new CompanyResource($company), Response::HTTP_OK, 'Success');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, $exception->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+        return ApiResponse::success(new CompanyResource($company), Response::HTTP_OK, 'Success');
     }
 
     /**
@@ -266,16 +248,8 @@ class CompanyController
      */
     public function destroy(string $id, DeleteCompanyUseCase $useCase): JsonResponse
     {
-        try {
-            $deleted = $useCase->execute($id);
+        $useCase->execute($id);
 
-            if (! $deleted) {
-                return ApiResponse::error(null, 'Company not found', Response::HTTP_NOT_FOUND);
-            }
-
-            return ApiResponse::success(null, Response::HTTP_OK, 'Company successfully deleted');
-        } catch (Throwable $exception) {
-            return ApiResponse::error($exception, 'Error deleting company', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        return ApiResponse::success(null, Response::HTTP_OK, 'Company successfully deleted');
     }
 }

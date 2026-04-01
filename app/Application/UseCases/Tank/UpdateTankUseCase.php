@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Tank;
 
+use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\TankInputDTO;
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\TankRepositoryInterface;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class UpdateTankUseCase
+final readonly class UpdateTankUseCase
 {
     public function __construct(
-        protected TankRepositoryInterface $tankRepository
+        private TankRepositoryInterface $tankRepository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
@@ -22,16 +23,25 @@ class UpdateTankUseCase
      */
     public function execute(string $id, array $data): Tank
     {
-        return DB::transaction(function () use ($id, $data): Tank {
-            $dto = TankInputDTO::fromArray($data);
+        $tank = $this->tankRepository->findOrFail($id);
 
-            $tank = $this->tankRepository->update($id, $dto->toPersistence());
+        $data['company_id'] = $this->companyResolver->resolve(
+            $data['company_id'] ?? $data['companyId'] ?? (string) $tank->company_id,
+        );
 
-            if (! $tank instanceof Tank) {
-                throw new RuntimeException('Tank not found');
-            }
+        $dto = TankInputDTO::fromArray($data);
 
-            return $tank;
+        return DB::transaction(function () use ($id, $dto): Tank {
+            $updated = $this->tankRepository->update($id, [
+                'company_id'      => $dto->companyId,
+                'tank_type_id'    => $dto->tankTypeId,
+                'name'            => $dto->name,
+                'capacity_liters' => $dto->capacityLiters,
+                'location'        => $dto->location,
+                'status'          => $dto->status,
+            ]);
+
+            return $updated->refresh();
         });
     }
 }

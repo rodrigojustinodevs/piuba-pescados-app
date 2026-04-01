@@ -8,6 +8,7 @@ use App\Application\Actions\Biometry\ValidateBatchHasFeedingsForBiometryAction;
 use App\Application\Actions\Biometry\ValidateBiometryAverageWeightAction;
 use App\Application\Actions\Biometry\ValidateBiometryDuplicateDateAction;
 use App\Application\DTOs\BiometryInputDTO;
+use App\Application\DTOs\GrowthCurveInputDTO;
 use App\Application\Services\Biometry\BiometryFcrService;
 use App\Application\Services\Feeding\FeedingService;
 use App\Domain\Models\Biometry;
@@ -73,10 +74,10 @@ final readonly class CreateBiometryUseCase
                 'recommended_ration' => $dailyRecommendation,
             ]);
 
-            $this->growthCurveRepository->create([
-                'batch_id'       => $batch->id,
-                'average_weight' => (float) $biometry->average_weight,
-            ]);
+            $this->growthCurveRepository->create(new GrowthCurveInputDTO(
+                batchId:       (string) $batch->id,
+                averageWeight: (float) $biometry->average_weight,
+            ));
 
             $this->alertService->checkDensityAlert($batch, (float) $biometry->density_at_time);
             $this->alertService->checkHighFcr($batch, (float) $biometry->fcr);

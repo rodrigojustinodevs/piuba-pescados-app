@@ -4,52 +4,54 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Persistence;
 
+use App\Application\DTOs\CompanyInputDTO;
 use App\Domain\Models\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class CompanyRepository implements CompanyRepositoryInterface
+final class CompanyRepository implements CompanyRepositoryInterface
 {
-    /**
-     * Create a new company.
-     *
-     * @param array<string, mixed> $data
-     */
-    public function create(array $data): Company
+    public function create(CompanyInputDTO $dto): Company
     {
-        return Company::create($data);
+        /** @var Company $company */
+        $company = Company::create($dto->toPersistence());
+
+        return $company;
     }
 
     /**
-     * Update an existing company.
-     *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed> $attributes
      */
-    public function update(string $id, array $data): ?Company
+    public function update(string $id, array $attributes): Company
     {
-        $company = Company::find($id);
+        $company = $this->findOrFail($id);
 
-        if ($company) {
-            $company->update($data);
-
-            return $company;
+        if ($attributes !== []) {
+            $company->update($attributes);
+            $company->refresh();
         }
 
-        return null;
+        return $company;
     }
 
     /**
-     * Get paginated companies with optional search by name, cnpj and email.
+     * @param array{
+     *     per_page?: int,
+     *     search?: string|null,
+     * } $filters
      */
-    public function paginate(int $perPage = 25, ?string $search = null): PaginationInterface
+    public function paginate(array $filters = []): PaginationInterface
     {
-        $query = Company::query();
+        $search  = $filters['search'] ?? null;
+        $perPage = (int) ($filters['per_page'] ?? 25);
 
-        if ($search !== null && $search !== '') {
-            $term = '%' . $search . '%';
-            $query->whereAny(['name', 'cnpj', 'email'], 'like', $term);
-        }
+        $query = Company::query()
+            ->when(
+                is_string($search) && $search !== '',
+                static fn ($q) => $q->whereAny(['name', 'cnpj', 'email'], 'like', '%' . $search . '%'),
+            )
+            ->latest();
 
         /** @var LengthAwarePaginator<int, Company> $paginator */
         $paginator = $query->paginate($perPage);
@@ -57,22 +59,18 @@ class CompanyRepository implements CompanyRepositoryInterface
         return new PaginationPresentr($paginator);
     }
 
-    /**
-     * Show company by field and value.
-     */
-    public function showCompany(string $field, string | int $value): ?Company
+    public function findOrFail(string $id): Company
     {
-        return Company::where($field, $value)->first();
+        return Company::query()->findOrFail($id);
     }
 
-    public function delete(string $id): bool
+    public function showCompany(string $field, string | int $value): ?Company
     {
-        $company = Company::find($id);
+        return Company::query()->where($field, $value)->first();
+    }
 
-        if (! $company) {
-            return false;
-        }
-
-        return (bool) $company->delete();
+    public function delete(string $id): void
+    {
+        $this->findOrFail($id)->delete();
     }
 }

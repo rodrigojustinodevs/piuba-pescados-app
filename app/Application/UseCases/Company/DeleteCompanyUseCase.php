@@ -7,15 +7,19 @@ namespace App\Application\UseCases\Company;
 use App\Domain\Repositories\CompanyRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class DeleteCompanyUseCase
+final readonly class DeleteCompanyUseCase
 {
     public function __construct(
-        protected CompanyRepositoryInterface $companyRepository
+        private CompanyRepositoryInterface $companyRepository,
     ) {
     }
 
-    public function execute(string $id): bool
+    public function execute(string $id): void
     {
-        return DB::transaction(fn (): bool => $this->companyRepository->delete($id));
+        $this->companyRepository->findOrFail($id);
+
+        DB::transaction(function () use ($id): void {
+            $this->companyRepository->delete($id);
+        });
     }
 }

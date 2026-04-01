@@ -4,54 +4,52 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Transfer;
 
+use App\Application\Actions\Transfer\ApplyBatchTransferAction;
+use App\Application\Actions\Transfer\GuardTransferRulesAction;
+use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\TransferInputDTO;
 use App\Domain\Models\Transfer;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
 use Illuminate\Support\Facades\DB;
-use RuntimeException;
 
-class CreateTransferUseCase
+final readonly class CreateTransferUseCase
 {
     public function __construct(
-        protected TransferRepositoryInterface $transferRepository,
-        protected BatchRepositoryInterface $batchRepository
+        private TransferRepositoryInterface $transferRepository,
+        private BatchRepositoryInterface $batchRepository,
+        private CompanyResolverInterface $companyResolver,
+        private GuardTransferRulesAction $guardRules,
+        private ApplyBatchTransferAction $applyBatchTransfer,
     ) {
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public function execute(array $data): Transfer
     {
-        return DB::transaction(function () use ($data): Transfer {
-            $dto               = TransferInputDTO::fromArray($data);
-            $originTankId      = $dto->originTankId;
-            $destinationTankId = $dto->destinationTankId;
-            $batchId           = $dto->batchId;
-            $quantity          = $dto->quantity;
+        $data['company_id'] = $this->companyResolver->resolve(
+            hint: $data['company_id'] ?? $data['companyId'] ?? null,
+        );
 
-            $batch = $this->batchRepository->showBatch('id', $batchId);
+        $dto   = TransferInputDTO::fromArray($data);
+        $batch = $this->batchRepository->findOrFail($dto->batchId);
 
-            if (! $batch instanceof \App\Domain\Models\Batch) {
-                throw new RuntimeException('Batch not found');
-            }
+        // Valida regras de negócio fora da transação — sem custo de lock
+        $this->guardRules->guardCreate(
+            batch:             $batch,
+            originTankId:      $dto->originTankId,
+            destinationTankId: $dto->destinationTankId,
+        );
 
-            if ((string) $batch->tank_id !== $originTankId) {
-                throw new RuntimeException('The batch is not in the origin tank informed.');
-            }
+        return DB::transaction(function () use ($dto, $batch): Transfer {
+            $transfer = $this->transferRepository->create($dto);
 
-            if ($this->batchRepository->hasActiveBatchInTank($destinationTankId, $batchId)) {
-                throw new RuntimeException('Tank already has an active batch.');
-            }
-
-            $transfer = $this->transferRepository->create($dto->toPersistence());
-
-            $newQuantity = $batch->initial_quantity - $quantity;
-            $this->batchRepository->update($batchId, [
-                'tank_id'          => $dto->destinationTankId,
-                'initial_quantity' => $newQuantity,
-            ]);
+            $this->applyBatchTransfer->execute(
+                batchId:              $dto->batchId,
+                destinationTankId:    $dto->destinationTankId,
+                transferredQuantity:  $dto->quantity,
+                currentQuantity:      (int) $batch->initial_quantity,
+            );
 
             return $transfer;
         });

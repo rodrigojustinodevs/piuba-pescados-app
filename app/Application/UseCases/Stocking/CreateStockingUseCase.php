@@ -9,10 +9,10 @@ use App\Domain\Models\Stocking;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class CreateStockingUseCase
+final readonly class CreateStockingUseCase
 {
     public function __construct(
-        protected StockingRepositoryInterface $stockingRepository
+        private StockingRepositoryInterface $stockingRepository,
     ) {
     }
 
@@ -24,7 +24,7 @@ class CreateStockingUseCase
         return DB::transaction(function () use ($data): Stocking {
             $dto = StockingInputDTO::fromArray($data);
 
-            return $this->stockingRepository->create($dto->toPersistence());
+            return $this->stockingRepository->create($dto);
         });
     }
 }

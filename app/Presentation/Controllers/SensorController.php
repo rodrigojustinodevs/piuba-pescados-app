@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
+ * @OA\Tag(name="Sensors", description="Sensores")
  * @OA\Schema(
  *     schema="Sensor",
  *     type="object",
@@ -135,10 +136,10 @@ class SensorController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"tank_id","sensor_type","installation_date","status"},
-     *             @OA\Property(property="tank_id", type="string", format="uuid"),
-     *             @OA\Property(property="sensor_type", type="string", example="temperature"),
-     *             @OA\Property(property="installation_date", type="string", format="date"),
+     *             required={"tankId","sensorType","installationDate","status"},
+     *             @OA\Property(property="tankId", type="string", format="uuid"),
+     *             @OA\Property(property="sensorType", type="string", example="temperature"),
+     *             @OA\Property(property="installationDate", type="string", format="date"),
      *             @OA\Property(property="status", type="string", example="active")
      *         )
      *     ),
@@ -175,8 +176,9 @@ class SensorController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="sensor_type", type="string"),
-     *             @OA\Property(property="installation_date", type="string", format="date"),
+     *             @OA\Property(property="tankId", type="string", format="uuid"),
+     *             @OA\Property(property="sensorType", type="string"),
+     *             @OA\Property(property="installationDate", type="string", format="date"),
      *             @OA\Property(property="status", type="string")
      *         )
      *     ),

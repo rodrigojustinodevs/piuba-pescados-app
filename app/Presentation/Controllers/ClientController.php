@@ -16,7 +16,10 @@ use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
-class ClientController
+/**
+ * @OA\Tag(name="Clients", description="Clientes")
+ */
+final class ClientController
 {
     /**
      * @OA\Get(

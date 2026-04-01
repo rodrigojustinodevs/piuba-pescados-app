@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
+use App\Application\UseCases\Purchase\CancelPurchaseUseCase;
 use App\Application\UseCases\Purchase\CreatePurchaseUseCase;
 use App\Application\UseCases\Purchase\DeletePurchaseUseCase;
 use App\Application\UseCases\Purchase\ListPurchasesUseCase;
@@ -19,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 /**
+ * @OA\Tag(name="Purchases", description="Compras")
  * @OA\Schema(
  *     schema="PurchaseItem",
  *     type="object",
@@ -104,7 +106,7 @@ use Illuminate\Http\Response;
  *     )
  * )
  */
-class PurchaseController
+final class PurchaseController
 {
     /**
      * @OA\Get(
@@ -441,6 +443,48 @@ class PurchaseController
         return ApiResponse::success(
             data:    new PurchaseResource($purchase->load(['supplier', 'items'])),
             message: 'Purchase received successfully.',
+        );
+    }
+
+    /**
+     * @OA\Patch(
+     *     path="/company/purchase/{id}/cancel",
+     *     summary="Cancel a purchase",
+     *     tags={"Purchases"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Purchase ID",
+     *         required=true,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Purchase cancelled",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(
+     *                 property="response",
+     *                 ref="#/components/schemas/Purchase"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Validation error"),
+     *     @OA\Response(response=404, description="Purchase not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function cancel(
+        string $id,
+        CancelPurchaseUseCase $useCase,
+    ): JsonResponse {
+        $purchase = $useCase->execute($id);
+
+        return ApiResponse::success(
+            data:    new PurchaseResource($purchase->load(['supplier', 'items'])),
+            message: 'Purchase cancelled successfully.',
         );
     }
 

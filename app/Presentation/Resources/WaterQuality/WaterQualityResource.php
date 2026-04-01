@@ -14,6 +14,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read float $dissolved_oxygen
  * @property-read float $temperature
  * @property-read float $ammonia
+ * @property-read float $salinity
+ * @property-read float $turbidity
+ * @property-read string|null $notes
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Tank|null $tank
@@ -36,6 +39,9 @@ class WaterQualityResource extends JsonResource
             'dissolvedOxygen' => $this->dissolved_oxygen,
             'temperature'     => $this->temperature,
             'ammonia'         => $this->ammonia,
+            'salinity'        => $this->salinity,
+            'turbidity'       => $this->turbidity,
+            'notes'           => $this->notes,
             'tank'            => $this->whenLoaded('tank', fn (): array => [
                 'id'   => $this->tank->id,
                 'name' => $this->tank->name,

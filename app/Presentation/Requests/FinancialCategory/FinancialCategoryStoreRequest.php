@@ -22,7 +22,7 @@ class FinancialCategoryStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'company_id' => ['nullable', 'uuid', 'exists:companies,id'],
+            'company_id' => ['sometimes', 'uuid', 'exists:companies,id'],
             'name'       => ['required', 'string', 'max:100'],
             'type'       => ['required', 'string', new Enum(FinancialType::class)],
             'status'     => ['sometimes', 'string', new Enum(FinancialCategoryStatus::class)],
@@ -36,8 +36,9 @@ class FinancialCategoryStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'company_id.uuid'   => 'The company ID must be a valid UUID.',
-            'company_id.exists' => 'The selected company does not exist.',
+            'company_id.sometimes' => 'The company ID is required.',
+            'company_id.uuid'      => 'The company ID must be a valid UUID.',
+            'company_id.exists'    => 'The selected company does not exist.',
 
             'name.required' => 'The financial category name is required.',
             'name.string'   => 'The financial category name must be a string.',

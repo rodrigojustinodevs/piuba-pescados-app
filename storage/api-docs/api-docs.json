@@ -9216,22 +9216,6 @@
                             "type": "integer",
                             "example": 25
                         }
-                    },
-                    {
-                        "name": "company_id",
-                        "in": "query",
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
-                    },
-                    {
-                        "name": "companyId",
-                        "in": "query",
-                        "schema": {
-                            "type": "string",
-                            "format": "uuid"
-                        }
                     }
                 ],
                 "responses": {
@@ -9319,6 +9303,134 @@
                     },
                     "404": {
                         "description": "Not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Supplies"
+                ],
+                "summary": "Atualizar insumo",
+                "operationId": "482b64684df65cdc5c0ee0d4bb0bd19d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "nullable": true
+                                    },
+                                    "defaultUnit": {
+                                        "type": "string",
+                                        "enum": [
+                                            "kg",
+                                            "g",
+                                            "liter",
+                                            "ml",
+                                            "unit",
+                                            "box",
+                                            "piece"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Atualizado"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/supply": {
+            "post": {
+                "tags": [
+                    "Supplies"
+                ],
+                "summary": "Criar insumo",
+                "operationId": "4b0d07118518a70af696877fbf2465df",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "defaultUnit"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "nullable": true
+                                    },
+                                    "defaultUnit": {
+                                        "type": "string",
+                                        "enum": [
+                                            "kg",
+                                            "g",
+                                            "liter",
+                                            "ml",
+                                            "unit",
+                                            "box",
+                                            "piece"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Criado"
+                    },
+                    "400": {
+                        "description": "Validation error"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -10946,35 +11058,6 @@
             },
             "CostAllocation": {
                 "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "financialTransactionId": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "allocationMethod": {
-                        "type": "string",
-                        "enum": [
-                            "flat",
-                            "biomass",
-                            "volume"
-                        ]
-                    },
-                    "allocationMethodLabel": {
-                        "type": "string",
-                        "example": "Biomass"
-                    },
-                    "totalAmount": {
-                        "type": "number",
-                        "format": "float",
-                        "example": 1200.5
-                    },
-                    "notes": {
-                        "type": "string",
-                        "nullable": true
-                    },
                     "company": {
                         "properties": {
                             "id": {
@@ -12485,6 +12568,10 @@
             "description": "Fornecedores"
         },
         {
+            "name": "Supplies",
+            "description": "Insumos"
+        },
+        {
             "name": "Tanks",
             "description": "Tanques"
         },
@@ -12498,11 +12585,11 @@
         },
         {
             "name": "Water Qualities",
-            "description": "Water quality measurements by tank"
+            "description": "Medições de qualidade da água por tanque"
         },
         {
             "name": "Cost Allocation",
-            "description": "Cost Allocation"
+            "description": "Rateios de custo"
         },
         {
             "name": "Dashboard",
@@ -12510,15 +12597,11 @@
         },
         {
             "name": "Harvest",
-            "description": "Harvest"
+            "description": "Colheitas"
         },
         {
             "name": "Sensor readings",
-            "description": "Sensor readings"
-        },
-        {
-            "name": "Supplies",
-            "description": "Supplies"
+            "description": "Leituras de sensores"
         }
     ]
 }

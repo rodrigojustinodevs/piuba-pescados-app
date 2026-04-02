@@ -21,7 +21,7 @@ class ClientStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'company_id'      => ['required', 'uuid', 'exists:companies,id'],
+            'company_id'      => ['sometimes', 'uuid', 'exists:companies,id'],
             'name'            => ['required', 'string', 'max:255'],
             'contact'         => ['nullable', 'string', 'max:255'],
             'phone'           => ['nullable', 'string', 'max:20'],
@@ -58,9 +58,8 @@ class ClientStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'company_id.required' => 'The company ID is required.',
-            'company_id.uuid'     => 'The company ID must be a valid UUID.',
-            'company_id.exists'   => 'The selected company does not exist.',
+            'company_id.uuid'   => 'The company ID must be a valid UUID.',
+            'company_id.exists' => 'The selected company does not exist.',
 
             'name.required' => 'The client name is required.',
             'name.string'   => 'The name must be a string.',

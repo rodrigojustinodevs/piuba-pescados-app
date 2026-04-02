@@ -35,7 +35,7 @@ final class SupplyStoreRequest extends FormRequest
     }
 
     /**
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|string>|string>
+     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Contracts\Validation\Rule|\Illuminate\Validation\Rules\In|string>|string>
      */
     public function rules(): array
     {
@@ -71,4 +71,3 @@ final class SupplyStoreRequest extends FormRequest
         ];
     }
 }
-

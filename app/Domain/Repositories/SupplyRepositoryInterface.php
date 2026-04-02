@@ -7,10 +7,6 @@ namespace App\Domain\Repositories;
 use App\Application\DTOs\SupplyInputDTO;
 use App\Domain\Models\Supply;
 
-/**
- * @method Supply create(SupplyInputDTO $dto)
- * @method Supply update(string $id, array $attributes)
- */
 interface SupplyRepositoryInterface
 {
     /**

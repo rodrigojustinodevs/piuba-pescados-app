@@ -37,8 +37,8 @@ class FinancialCategoryStoreRequest extends FormRequest
     {
         return [
             'company_id.sometimes' => 'The company ID is required.',
-            'company_id.uuid'   => 'The company ID must be a valid UUID.',
-            'company_id.exists' => 'The selected company does not exist.',
+            'company_id.uuid'      => 'The company ID must be a valid UUID.',
+            'company_id.exists'    => 'The selected company does not exist.',
 
             'name.required' => 'The financial category name is required.',
             'name.string'   => 'The financial category name must be a string.',

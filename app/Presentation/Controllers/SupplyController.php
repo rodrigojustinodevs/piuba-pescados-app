@@ -101,7 +101,11 @@ final class SupplyController
      *             required={"name","defaultUnit"},
      *             @OA\Property(property="name", type="string", maxLength=255),
      *             @OA\Property(property="category", type="string", nullable=true, maxLength=255),
-     *             @OA\Property(property="defaultUnit", type="string", enum={"kg","g","liter","ml","unit","box","piece"})
+     *             @OA\Property(
+     *                 property="defaultUnit",
+     *                 type="string",
+     *                 enum={"kg","g","liter","ml","unit","box","piece"}
+     *             )
      *         )
      *     ),
      *     @OA\Response(response=201, description="Criado"),
@@ -109,8 +113,10 @@ final class SupplyController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function store(SupplyStoreRequest $request, CreateSupplyUseCase $useCase): JsonResponse
-    {
+    public function store(
+        SupplyStoreRequest $request,
+        CreateSupplyUseCase $useCase,
+    ): JsonResponse {
         $supply = $useCase->execute($request->validated());
 
         return ApiResponse::created(new SupplyResource($supply));
@@ -127,7 +133,11 @@ final class SupplyController
      *         @OA\JsonContent(
      *             @OA\Property(property="name", type="string", maxLength=255),
      *             @OA\Property(property="category", type="string", nullable=true, maxLength=255),
-     *             @OA\Property(property="defaultUnit", type="string", enum={"kg","g","liter","ml","unit","box","piece"})
+     *             @OA\Property(
+     *                 property="defaultUnit",
+     *                 type="string",
+     *                 enum={"kg","g","liter","ml","unit","box","piece"}
+     *             )
      *         )
      *     ),
      *     @OA\Response(response=200, description="Atualizado"),
@@ -135,8 +145,11 @@ final class SupplyController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function update(SupplyUpdateRequest $request, string $id, UpdateSupplyUseCase $useCase): JsonResponse
-    {
+    public function update(
+        SupplyUpdateRequest $request,
+        string $id,
+        UpdateSupplyUseCase $useCase,
+    ): JsonResponse {
         $supply = $useCase->execute($id, $request->validated());
 
         return ApiResponse::success(new SupplyResource($supply), Response::HTTP_OK, 'Success');

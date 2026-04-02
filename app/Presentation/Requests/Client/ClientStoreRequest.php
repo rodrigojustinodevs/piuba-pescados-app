@@ -58,8 +58,8 @@ class ClientStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'company_id.uuid'     => 'The company ID must be a valid UUID.',
-            'company_id.exists'   => 'The selected company does not exist.',
+            'company_id.uuid'   => 'The company ID must be a valid UUID.',
+            'company_id.exists' => 'The selected company does not exist.',
 
             'name.required' => 'The client name is required.',
             'name.string'   => 'The name must be a string.',

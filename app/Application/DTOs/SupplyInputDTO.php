@@ -35,11 +35,10 @@ final readonly class SupplyInputDTO
     public function toPersistence(): array
     {
         return [
-            'company_id'    => $this->companyId,
-            'name'          => $this->name,
-            'category'      => $this->category,
-            'default_unit'  => $this->defaultUnit,
+            'company_id'   => $this->companyId,
+            'name'         => $this->name,
+            'category'     => $this->category,
+            'default_unit' => $this->defaultUnit,
         ];
     }
 }
-

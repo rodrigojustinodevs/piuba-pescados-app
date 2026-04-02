@@ -82,16 +82,16 @@ class ClientUpdateRequest extends FormRequest
             'person_type.string' => 'The person type must be a string.',
             'person_type.in'     => 'The person type must be either "individual" or "company".',
 
-            'document_number.unique' => 'Este CPF/CNPJ já está cadastrado para esta empresa.',
+            'document_number.unique' => 'This CPF/CNPJ is already registered for this company..',
 
             'address.string' => 'The address must be a string.',
             'address.max'    => 'The address may not be greater than 255 characters.',
 
-            'credit_limit.numeric' => 'O limite de crédito deve ser um valor numérico.',
-            'credit_limit.min'     => 'O limite de crédito não pode ser negativo.',
+            'credit_limit.numeric' => 'The credit limit must be a numeric value.',
+            'credit_limit.min'     => 'The credit limit cannot be negative.',
 
-            'price_group.string' => 'O grupo de preço deve ser uma string.',
-            'price_group.in'     => 'O grupo de preço deve ser: wholesale, retail ou consumer.',
+            'price_group.string' => 'The price group must be a string.',
+            'price_group.in'     => 'The price group must be: wholesale, retail or consumer.',
         ];
     }
 }

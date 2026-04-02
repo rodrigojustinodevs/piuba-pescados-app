@@ -18,14 +18,7 @@ use Illuminate\Http\Request;
  * @OA\Tag(name="Cost Allocations", description="Rateios de custo")
  * @OA\Schema(
  *     schema="CostAllocation",
- *     type="object",
- *     @OA\Property(property="id", type="string", format="uuid"),
- *     @OA\Property(property="financialTransactionId", type="string", format="uuid"),
- *     @OA\Property(property="allocationMethod", type="string", enum={"flat","biomass","volume"}),
- *     @OA\Property(property="allocationMethodLabel", type="string", example="Biomass"),
- *     @OA\Property(property="totalAmount", type="number", format="float", example=1200.5),
- *     @OA\Property(property="notes", type="string", nullable=true),
- *     @OA\Property(
+ *     type="object",     @OA\Property(
  *         property="company",
  *         type="object",
  *         nullable=true,

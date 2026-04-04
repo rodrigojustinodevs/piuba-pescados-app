@@ -6,55 +6,69 @@ namespace App\Presentation\Requests\Sale;
 
 use App\Domain\Enums\SaleStatus;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rule;
 
-class SaleUpdateRequest extends FormRequest
+/**
+ * Valida e normaliza o payload de atualização de uma venda.
+ *
+ * Todos os campos são opcionais (PATCH semântico em endpoint PUT):
+ * campos ausentes não sobrescrevem o estado atual da venda.
+ *
+ * A normalização camelCase → snake_case é feita em prepareForValidation()
+ * somente quando a chave camelCase está presente e a snake_case ausente,
+ * evitando injeção silenciosa de null para campos não enviados.
+ */
+final class SaleUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
+    protected function prepareForValidation(): void
+    {
+        $map = [
+            'totalWeight'    => 'total_weight',
+            'pricePerKg'     => 'price_per_kg',
+            'saleDate'       => 'sale_date',
+            'isTotalHarvest' => 'is_total_harvest',
+        ];
+
+        $normalized = [];
+
+        foreach ($map as $camel => $snake) {
+            if ($this->has($camel) && ! $this->has($snake)) {
+                $normalized[$snake] = $this->input($camel);
+            }
+        }
+
+        if ($normalized !== []) {
+            $this->merge($normalized);
+        }
+    }
+
+    /** @return array<string, mixed[]> */
     public function rules(): array
     {
         return [
-            'client_id'    => ['sometimes', 'uuid', 'exists:clients,id'],
-            'total_weight' => ['sometimes', 'numeric', 'min:0.001'],
-            'price_per_kg' => ['sometimes', 'numeric', 'min:0'],
-            'sale_date'    => ['sometimes', 'date'],
-            'status'       => ['sometimes', new Enum(SaleStatus::class)],
-            'notes'        => ['nullable', 'string'],
+            'total_weight'     => ['sometimes', 'numeric', 'min:0.001'],
+            'price_per_kg'     => ['sometimes', 'numeric', 'min:0'],
+            'sale_date'        => ['sometimes', 'date'],
+            'status'           => ['sometimes', Rule::enum(SaleStatus::class)],
+            'notes'            => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'is_total_harvest' => ['sometimes', 'boolean'],
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
-    #[\Override]
+    /** @return array<string, string> */
     public function messages(): array
     {
         return [
-            'client_id.exists'                        => 'The selected customer does not exist.',
-            'total_weight.min'                        => 'The total weight must be greater than zero.',
-            'price_per_kg.min'                        => 'The price per kg must be greater than zero.',
-            'sale_date.date'                          => 'The sale date must be a valid date.',
-            'status.Illuminate\Validation\Rules\Enum' => 'The status must be: pending, confirmed or cancelled.',
+            'total_weight.min'    => 'O peso total deve ser maior que zero.',
+            'price_per_kg.min'    => 'O preço por kg não pode ser negativo.',
+            'sale_date.date'      => 'A data de venda deve ser uma data válida.',
+            'status.enum'         => 'O status deve ser: pending, confirmed ou cancelled.',
+            'notes.max'           => 'As observações não podem ultrapassar 1000 caracteres.',
         ];
-    }
-
-    #[\Override]
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'client_id'    => $this->input('client_id', $this->input('clientId')),
-            'total_weight' => $this->input('total_weight', $this->input('totalWeight')),
-            'price_per_kg' => $this->input('price_per_kg', $this->input('pricePerKg')),
-            'sale_date'    => $this->input('sale_date', $this->input('saleDate')),
-            'status'       => $this->input('status'),
-            'notes'        => $this->input('notes'),
-        ]);
     }
 }

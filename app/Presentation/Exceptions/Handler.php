@@ -27,6 +27,7 @@ use App\Domain\Exceptions\InvalidCredentialsException;
 use App\Domain\Exceptions\InvalidPurchaseStatusTransitionException;
 use App\Domain\Exceptions\MortalityExceedsSurvivorsException;
 use App\Domain\Exceptions\MortalityNotFoundException;
+use App\Domain\Exceptions\SaleFinanciallyLockedException;
 use App\Domain\Exceptions\StockNotFoundException;
 use App\Domain\Exceptions\TankAlreadyHasActiveBatchException;
 use App\Domain\Exceptions\TransactionAlreadyAllocatedException;
@@ -91,6 +92,7 @@ class Handler extends ExceptionHandler
         // Sale
         InsufficientBiomassException::class,
         ClosedStockingException::class,
+        SaleFinanciallyLockedException::class,
         // CostAllocation
         TransactionAlreadyAllocatedException::class,
         AllocationAmountMismatchException::class,
@@ -307,6 +309,12 @@ class Handler extends ExceptionHandler
         );
         $this->renderable(
             fn (ClosedStockingException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (SaleFinanciallyLockedException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )

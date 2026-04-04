@@ -11,21 +11,30 @@ use App\Domain\Events\MortalityRecorded;
 use App\Domain\Events\SaleProcessed;
 use App\Domain\Models\Stocking;
 use App\Domain\Models\StockingHistory;
+use App\Domain\Repositories\StockingRepositoryInterface;
 use Illuminate\Support\Str;
 
 /**
- * Single listener that handles all three domain events and creates the
- * corresponding StockingHistory records automatically.
+ * Listener que cria registros de histórico do stocking para os três eventos de domínio.
  *
- * Registered for: FeedingCreated | MortalityRecorded | SaleProcessed
+ * Mudança em relação à versão anterior:
+ *  - findActiveStockingByBatch() usava Stocking::query() diretamente.
+ *    Agora usa StockingRepositoryInterface::findByBatchId() — mantém
+ *    a camada de infraestrutura encapsulada e facilita testes.
+ *
+ * Registrado para: FeedingCreated | MortalityRecorded | SaleProcessed
  */
 final class GenerateStockingHistory
 {
+    public function __construct(
+        private readonly StockingRepositoryInterface $stockingRepository,
+    ) {}
+
     public function handleFeedingCreated(FeedingCreated $event): void
     {
-        $stocking = $this->findActiveStockingByBatch($event->feeding->batch_id);
+        $stocking = $this->stockingRepository->findByBatchId($event->feeding->batch_id);
 
-        if (! $stocking instanceof Stocking) {
+        if ($stocking === null) {
             return;
         }
 
@@ -45,9 +54,9 @@ final class GenerateStockingHistory
 
     public function handleMortalityRecorded(MortalityRecorded $event): void
     {
-        $stocking = $this->findActiveStockingByBatch($event->mortality->batch_id);
+        $stocking = $this->stockingRepository->findByBatchId($event->mortality->batch_id);
 
-        if (! $stocking instanceof Stocking) {
+        if ($stocking === null) {
             return;
         }
 
@@ -70,7 +79,6 @@ final class GenerateStockingHistory
     {
         $sale = $event->sale;
 
-        // Only generate stocking history when the sale is linked to a specific stocking
         if ($sale->stocking_id === null) {
             return;
         }
@@ -88,17 +96,5 @@ final class GenerateStockingHistory
                 $sale->total_revenue,
             ),
         ]);
-    }
-
-    /**
-     * Finds the latest active stocking for a given batch.
-     * Returns null if no active stocking exists (feeding/mortality without stocking context).
-     */
-    private function findActiveStockingByBatch(string $batchId): ?Stocking
-    {
-        return Stocking::where('batch_id', $batchId)
-            ->where('status', StockingStatus::ACTIVE)
-            ->latest('stocking_date')
-            ->first();
     }
 }

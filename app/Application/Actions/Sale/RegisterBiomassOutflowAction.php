@@ -12,30 +12,33 @@ use App\Domain\Enums\Unit;
 use App\Domain\Models\Sale;
 use App\Domain\Models\Stocking;
 use App\Domain\Models\StockTransaction;
+use App\Domain\Repositories\SaleRepositoryInterface;
+use App\Domain\Repositories\StockingRepositoryInterface;
 
-final readonly class RegisterBiomassOutflowAction
+final class RegisterBiomassOutflowAction
 {
     public function __construct(
-        private RegisterStockTransactionAction $registerStockTransaction,
+        private readonly RegisterStockTransactionAction  $registerStockTransaction,
+        private readonly StockingRepositoryInterface $stockingRepository,
+        private readonly SaleRepositoryInterface         $saleRepository,
     ) {
     }
 
     /**
-     * Registra a saída de biomassa no livro-razão (stock_transactions).
+     * Regra 3 - CMV exato por stocking_id.
+     * O unit_price e calculado pelo custo financeiro acumulado do POVOAMENTO.
      *
-     * O unit_price é o custo unitário acumulado do lote, calculado com base
-     * no peso já vendido anteriormente — isso garante o custo correto por kg
-     * para cálculo de lucro por tanque.
+     * Formula: custo_total_acumulado_do_stocking / biomassa_restante
      *
-     * @param float $alreadySoldWeight Peso vendido ANTES desta venda (exclui a atual)
+     * @param float $alreadySoldWeight Peso ja vendido ANTES desta venda
      */
     public function execute(
         Stocking $stocking,
-        Sale $sale,
-        float $alreadySoldWeight,
+        Sale     $sale,
+        float    $alreadySoldWeight,
     ): StockTransaction {
-        $unitCost  = $stocking->calculateCurrentUnitCost($alreadySoldWeight);
-        $totalCost = round((float) $sale->total_weight * $unitCost, 2);
+        $unitCost  = $this->calculateUnitCost($stocking, $alreadySoldWeight);
+        $totalCost = round((float) $sale->total_weight * $unitCost, 4);
 
         return $this->registerStockTransaction->execute(new StockTransactionDTO(
             companyId:     (string) $sale->company_id,
@@ -44,9 +47,33 @@ final readonly class RegisterBiomassOutflowAction
             totalCost:     $totalCost,
             unit:          Unit::KG,
             direction:     StockTransactionDirection::OUT,
-            supplyId:      null,
             referenceId:   (string) $sale->id,
             referenceType: StockTransactionReferenceType::SALE,
         ));
+    }
+
+    /**
+     * Custo unitario exato (R$/kg) - Regra 3.
+     *
+     * Custo total acumulado = soma de todas as entradas financeiras do stocking_id
+     * Biomassa restante = (current_quantity * average_weight) - peso_ja_vendido
+     */
+    private function calculateUnitCost(Stocking $stocking, float $alreadySoldWeight): float
+    {
+        $totalAccumulatedCost = $this->stockingRepository
+            ->totalAccumulatedCost((string) $stocking->id);
+
+        if ($totalAccumulatedCost <= 0) {
+            return 0.0;
+        }
+
+        $currentBiomass   = (float) $stocking->current_quantity * (float) $stocking->average_weight;
+        $remainingBiomass = $currentBiomass - $alreadySoldWeight;
+
+        if ($remainingBiomass <= 0) {
+            return 0.0;
+        }
+
+        return round($totalAccumulatedCost / $remainingBiomass, 6);
     }
 }

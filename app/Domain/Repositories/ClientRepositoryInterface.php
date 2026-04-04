@@ -45,4 +45,14 @@ interface ClientRepositoryInterface
      * Anonimiza os dados sensíveis do cliente (LGPD), preservando id e nome.
      */
     public function anonymize(string $id): bool;
+
+    /**
+     * Find a client by ID or throw ModelNotFoundException.
+     */
+    public function findOrFail(string $id): Client;
+
+    /**
+     * Get the current exposure of the client.
+     */
+    public function getPendingObligations(string $id): float;
 }

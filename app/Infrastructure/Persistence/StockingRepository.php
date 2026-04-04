@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Application\DTOs\StockingInputDTO;
+use App\Domain\Enums\StockingStatus;
 use App\Domain\Models\Stocking;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
@@ -149,6 +150,41 @@ final class StockingRepository implements StockingRepositoryInterface
                 'batch.tank',
                 static fn ($q) => $q->where('company_id', $companyId),
             )
+            ->firstOrFail();
+    }
+
+    public function findByBatchId(string $batchId): ?Stocking
+    {
+        return Stocking::with(self::DEFAULT_RELATIONS)
+            ->where('batch_id', $batchId)
+            ->where('status', StockingStatus::ACTIVE)
+            ->latest('stocking_date')
+            ->first();
+    }
+
+    public function hasActiveStockingsInBatch(string $batchId, string $excludeStockingId = null): bool
+    {
+        return Stocking::with(self::DEFAULT_RELATIONS)
+            ->where('batch_id', $batchId)
+            ->where('status', StockingStatus::ACTIVE)
+            ->when($excludeStockingId, static function ($query, string $id): void {
+                $query->where('id', '!=', $id);
+            })
+            ->exists();
+    }
+
+    public function totalAccumulatedCost(string $stockingId): float
+    {
+        return (float) Stocking::with(self::DEFAULT_RELATIONS)
+            ->where('id', $stockingId)
+            ->sum('accumulated_fixed_cost');
+    }
+
+    public function findOrFailLocked(string $id): Stocking
+    {
+        return Stocking::with(self::DEFAULT_RELATIONS)
+            ->where('id', $id)
+            ->lockForUpdate()
             ->firstOrFail();
     }
 }

@@ -19,7 +19,6 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
             'id'             => (string) Str::uuid(),
             'company_id'     => $dto->companyId,
             'supply_id'      => $dto->supplyId,
-            'supplier_id'    => $dto->supplierId,
             'quantity'       => $dto->quantity,
             'unit_price'     => $dto->unitPrice,
             'total_cost'     => $dto->totalCost,

@@ -16,7 +16,6 @@ use App\Domain\Enums\Unit;
  * @property Unit $unit
  * @property StockTransactionDirection $direction
  * @property string|null $supplyId
- * @property string|null $supplierId
  * @property string|null $referenceId
  * @property StockTransactionReferenceType|null $referenceType
  */
@@ -30,7 +29,6 @@ final readonly class StockTransactionDTO
         public Unit $unit,
         public StockTransactionDirection $direction,
         public ?string $supplyId = null,
-        public ?string $supplierId = null,
         public ?string $referenceId = null,
         public ?StockTransactionReferenceType $referenceType = null,
     ) {
@@ -49,7 +47,6 @@ final readonly class StockTransactionDTO
             'unit'           => $this->unit->value,
             'direction'      => $this->direction->value,
             'supply_id'      => $this->supplyId,
-            'supplier_id'    => $this->supplierId,
             'reference_id'   => $this->referenceId,
             'reference_type' => $this->referenceType?->value,
         ], static fn (mixed $v): bool => $v !== null);

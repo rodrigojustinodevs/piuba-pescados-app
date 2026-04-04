@@ -51,4 +51,12 @@ interface SaleRepositoryInterface
      * Pass $excludeSaleId to omit the current sale when re-validating on update.
      */
     public function soldWeightByStocking(string $stockingId, ?string $excludeSaleId = null): float;
+
+    /**
+     * Busca a venda aplicando lockForUpdate (lock pessimista).
+     * Usado pelo UpdateSaleUseCase para evitar edições concorrentes na mesma venda.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    public function findOrFailLocked(string $id): Sale;
 }

@@ -13,12 +13,13 @@ use App\Domain\Models\Sale;
 use App\Domain\Models\StockTransaction;
 use App\Domain\Repositories\StockTransactionRepositoryInterface;
 
-final class RevertBiomassOutflowAction
+final readonly class RevertBiomassOutflowAction
 {
     public function __construct(
-        private readonly StockTransactionRepositoryInterface $stockTransactionRepository,
-        private readonly RegisterStockTransactionAction      $registerStockTransaction,
-    ) {}
+        private StockTransactionRepositoryInterface $stockTransactionRepository,
+        private RegisterStockTransactionAction $registerStockTransaction,
+    ) {
+    }
 
     /**
      * Estorna a baixa de biomassa gerada no momento da venda.
@@ -39,10 +40,10 @@ final class RevertBiomassOutflowAction
         // Busca a transação de saída original desta venda
         $original = $this->stockTransactionRepository->findBy('reference_id', (string) $sale->id);
 
-        if (!$original instanceof StockTransaction) {
+        if (! $original instanceof StockTransaction) {
             return null;
         }
-        
+
         // Cria contra-lançamento (entrada) para neutralizar a saída
         $reversal = $this->registerStockTransaction->execute(new StockTransactionDTO(
             companyId:     (string) $sale->company_id,

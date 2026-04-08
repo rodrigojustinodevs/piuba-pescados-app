@@ -9,16 +9,16 @@ use App\Domain\Exceptions\InvalidSaleStatusTransitionException;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class DeleteSaleUseCase
+final readonly class DeleteSaleUseCase
 {
     public function __construct(
-        private readonly SaleRepositoryInterface       $saleRepository,
-    ) {}
+        private SaleRepositoryInterface $saleRepository,
+    ) {
+    }
 
     public function execute(string $id): void
     {
         DB::transaction(function () use ($id): void {
-
             $sale = $this->saleRepository->findOrFail($id);
 
             if (! $sale->status->isCancelled()) {

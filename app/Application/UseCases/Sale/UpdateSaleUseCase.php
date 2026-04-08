@@ -62,7 +62,7 @@ final readonly class UpdateSaleUseCase
             $this->guardBiomassIfNeeded($sale, $stocking, $attributes);
 
             // ── 3. Ciclo de vida stocking/batch ───────────────────────────────
-            if ($stocking instanceof \App\Domain\Models\Stocking) {
+            if ($stocking instanceof Stocking) {
                 $this->harvestLifecycle->apply(
                     stocking:          $stocking,
                     oldIsTotalHarvest: (bool) $sale->is_total_harvest,
@@ -106,7 +106,7 @@ final readonly class UpdateSaleUseCase
         ?Stocking $stocking,
         SaleAttributes $attributes,
     ): void {
-        if (!$stocking instanceof \App\Domain\Models\Stocking || ! $attributes->has('total_weight')) {
+        if (! $stocking instanceof Stocking || ! $attributes->has('total_weight')) {
             return;
         }
 

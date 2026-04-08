@@ -61,16 +61,16 @@ final class FinancialCategoryRepository implements FinancialCategoryRepositoryIn
 
     /**
      * @param array{
-     *     companyId: string,
+     *     company_id: string,
      *     type?: string|null,
      *     status?: string|null,
-     *     perPage?: int,
+     *     per_page?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface
     {
         $paginator = FinancialCategory::with('company:id,name')
-            ->where('company_id', $filters['companyId'])
+            ->where('company_id', $filters['company_id'])
             ->when(
                 ! empty($filters['type']),
                 static fn ($q) => $q->where(
@@ -86,7 +86,7 @@ final class FinancialCategoryRepository implements FinancialCategoryRepositoryIn
                 ),
             )
             ->latest()
-            ->paginate((int) ($filters['perPage'] ?? 25));
+            ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

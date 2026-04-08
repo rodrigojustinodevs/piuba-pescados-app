@@ -62,10 +62,14 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
         return new PaginationPresentr($paginator);
     }
 
+    /**
+     * @param array<string, mixed> $attributes
+     */
     public function update(string $id, array $attributes): StockTransaction
     {
         $transaction = $this->findOrFail($id);
         $transaction->update($attributes);
+
         return $transaction->refresh();
     }
 

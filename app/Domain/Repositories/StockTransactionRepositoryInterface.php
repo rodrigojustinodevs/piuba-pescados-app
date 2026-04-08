@@ -28,6 +28,8 @@ interface StockTransactionRepositoryInterface
 
     /**
      * Update a stock transaction record.
+     *
+     * @param array<string, mixed> $attributes
      */
     public function update(string $id, array $attributes): StockTransaction;
 

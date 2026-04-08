@@ -100,7 +100,7 @@ final class SaleStoreRequest extends FormRequest
             'total_weight.numeric'  => 'The total weight must be numeric.',
             'total_weight.min'      => 'The total weight must be greater than zero.',
 
-                'price_per_kg.required' => 'The price per kg is required.',
+            'price_per_kg.required' => 'The price per kg is required.',
             'price_per_kg.numeric'  => 'The price per kg must be numeric.',
             'price_per_kg.min'      => 'The price per kg must be greater than zero.',
 

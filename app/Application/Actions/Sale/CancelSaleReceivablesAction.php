@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\Sale;
 
-use App\Domain\Enums\FinancialTransactionReferenceType;
 use App\Domain\Enums\FinancialTransactionStatus;
 use App\Domain\Exceptions\SaleFinanciallyLockedException;
 use App\Domain\Models\FinancialTransaction;
 use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 use Illuminate\Support\Collection;
 
-final class CancelSaleReceivablesAction
+final readonly class CancelSaleReceivablesAction
 {
     public function __construct(
-        private readonly FinancialTransactionRepositoryInterface $transactionRepository,
-    ) {}
+        private FinancialTransactionRepositoryInterface $transactionRepository,
+    ) {
+    }
 
     /**
      * Cancela todas as transações financeiras vinculadas à venda.

@@ -34,7 +34,7 @@ final readonly class GenerateStockingHistory
     {
         $stocking = $this->stockingRepository->findByBatchId($event->feeding->batch_id);
 
-        if (!$stocking instanceof \App\Domain\Models\Stocking) {
+        if (! $stocking instanceof Stocking) {
             return;
         }
 
@@ -56,7 +56,7 @@ final readonly class GenerateStockingHistory
     {
         $stocking = $this->stockingRepository->findByBatchId($event->mortality->batch_id);
 
-        if (!$stocking instanceof \App\Domain\Models\Stocking) {
+        if (! $stocking instanceof Stocking) {
             return;
         }
 

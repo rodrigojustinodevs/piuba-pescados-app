@@ -14,15 +14,16 @@ use App\Domain\Repositories\SaleRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class CancelSaleUseCase
+final readonly class CancelSaleUseCase
 {
     public function __construct(
-        private readonly SaleRepositoryInterface       $saleRepository,
-        private readonly StockingRepositoryInterface   $stockingRepository,
-        private readonly CancelSaleReceivablesAction   $cancelReceivables,
-        private readonly RevertBiomassOutflowAction    $revertBiomassOutflow,
-        private readonly ReopenStockingAndBatchAction  $reopenStockingAndBatch,
-    ) {}
+        private SaleRepositoryInterface $saleRepository,
+        private StockingRepositoryInterface $stockingRepository,
+        private CancelSaleReceivablesAction $cancelReceivables,
+        private RevertBiomassOutflowAction $revertBiomassOutflow,
+        private ReopenStockingAndBatchAction $reopenStockingAndBatch,
+    ) {
+    }
 
     /**
      * Desfaz uma venda de forma atômica revertendo todos os efeitos colaterais:
@@ -44,7 +45,6 @@ final class CancelSaleUseCase
     public function execute(string $id): void
     {
         DB::transaction(function () use ($id): void {
-
             // Lock pessimista — evita deleção concorrente ou edição simultânea
             /** @var Sale $sale */
             $sale = $this->saleRepository->findOrFailLocked($id);
@@ -63,7 +63,7 @@ final class CancelSaleUseCase
 
                 // Só reabre se ainda estiver fechado
                 // (outra venda posterior pode já ter reaberto)
-                if ($stocking !== null && $stocking->isClosed()) {
+                if ($stocking->isClosed()) {
                     $this->reopenStockingAndBatch->execute(
                         $stocking,
                         (string) $sale->batch_id,
@@ -80,9 +80,8 @@ final class CancelSaleUseCase
 
     /**
      * Busca o stocking com lock pessimista via repositório.
-     * Retorna null se o stocking_id for inválido (defensivo — o request já validou).
      */
-    private function resolveLockedStocking(string $stockingId): ?Stocking
+    private function resolveLockedStocking(string $stockingId): Stocking
     {
         return $this->stockingRepository->findOrFailLocked($stockingId);
     }

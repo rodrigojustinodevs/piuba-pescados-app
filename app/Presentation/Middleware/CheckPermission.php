@@ -19,7 +19,7 @@ class CheckPermission
     public function handle(Request $request, Closure $next, string $permissions): mixed
     {
         $user = $request->user();
-    
+
         if (! $user) {
             throw new AccessDeniedHttpException('Unauthorized');
         }

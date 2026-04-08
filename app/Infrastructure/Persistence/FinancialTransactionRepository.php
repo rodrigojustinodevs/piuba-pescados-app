@@ -120,6 +120,9 @@ final class FinancialTransactionRepository implements FinancialTransactionReposi
             ->first();
     }
 
+    /**
+     * @return Collection<int, FinancialTransaction>
+     */
     public function findLockedBySaleId(string $saleId): Collection
     {
         return FinancialTransaction::query()

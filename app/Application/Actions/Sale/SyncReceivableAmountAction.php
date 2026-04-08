@@ -23,13 +23,14 @@ use Illuminate\Support\Collection;
  *
  * @throws SaleFinanciallyLockedException
  */
-final class SyncReceivableAmountAction
+final readonly class SyncReceivableAmountAction
 {
     private const float EPSILON = 0.000_01;
 
     public function __construct(
-        private readonly FinancialTransactionRepositoryInterface $transactionRepository,
-    ) {}
+        private FinancialTransactionRepositoryInterface $transactionRepository,
+    ) {
+    }
 
     /**
      * @throws SaleFinanciallyLockedException

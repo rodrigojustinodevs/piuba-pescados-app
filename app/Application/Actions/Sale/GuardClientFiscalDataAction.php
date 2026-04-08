@@ -7,10 +7,10 @@ namespace App\Application\Actions\Sale;
 use App\Domain\Exceptions\ClientMissingFiscalDataException;
 use App\Domain\Repositories\ClientRepositoryInterface;
 
-final class GuardClientFiscalDataAction
+final readonly class GuardClientFiscalDataAction
 {
     public function __construct(
-        private readonly ClientRepositoryInterface $clientRepository,
+        private ClientRepositoryInterface $clientRepository,
     ) {
     }
 

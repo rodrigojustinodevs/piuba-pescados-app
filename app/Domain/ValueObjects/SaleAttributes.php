@@ -17,12 +17,13 @@ use App\Domain\Models\Sale;
  *
  * Não contém regras de negócio — é apenas um portador de dados validados.
  */
-final class SaleAttributes
+final readonly class SaleAttributes
 {
     private function __construct(
         /** @var array<string, mixed> */
-        private readonly array $fields,
-    ) {}
+        private array $fields,
+    ) {
+    }
 
     /**
      * Constrói o Value Object a partir do array validado da Request.
@@ -112,8 +113,7 @@ final class SaleAttributes
      */
     public function withRevenue(float $revenue): self
     {
-        $clone         = clone $this;
-        $fields        = $this->fields;
+        $fields                  = $this->fields;
         $fields['total_revenue'] = $revenue;
 
         return new self($fields);

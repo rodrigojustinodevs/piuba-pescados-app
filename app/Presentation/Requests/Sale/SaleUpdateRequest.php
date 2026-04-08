@@ -25,6 +25,7 @@ final class SaleUpdateRequest extends FormRequest
         return true;
     }
 
+    #[\Override]
     protected function prepareForValidation(): void
     {
         $map = [
@@ -61,14 +62,15 @@ final class SaleUpdateRequest extends FormRequest
     }
 
     /** @return array<string, string> */
+    #[\Override]
     public function messages(): array
     {
         return [
-            'total_weight.min'    => 'O peso total deve ser maior que zero.',
-            'price_per_kg.min'    => 'O preço por kg não pode ser negativo.',
-            'sale_date.date'      => 'A data de venda deve ser uma data válida.',
-            'status.enum'         => 'O status deve ser: pending, confirmed ou cancelled.',
-            'notes.max'           => 'As observações não podem ultrapassar 1000 caracteres.',
+            'total_weight.min' => 'The total weight must be greater than zero.',
+            'price_per_kg.min' => 'The price per kg must be greater than zero.',
+            'sale_date.date'   => 'The sale date must be a valid date.',
+            'status.enum'      => 'The status must be: pending, confirmed or cancelled.',
+            'notes.max'        => 'The notes must not exceed 1000 characters.',
         ];
     }
 }

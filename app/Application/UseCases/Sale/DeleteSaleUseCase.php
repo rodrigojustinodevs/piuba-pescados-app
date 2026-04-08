@@ -4,20 +4,31 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Sale;
 
+use App\Domain\Enums\SaleStatus;
+use App\Domain\Exceptions\InvalidSaleStatusTransitionException;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 final class DeleteSaleUseCase
 {
     public function __construct(
-        private readonly SaleRepositoryInterface $repository,
-    ) {
-    }
+        private readonly SaleRepositoryInterface       $saleRepository,
+    ) {}
 
     public function execute(string $id): void
     {
-        $this->repository->findOrFail($id);
+        DB::transaction(function () use ($id): void {
 
-        DB::transaction(fn (): bool => $this->repository->delete($id));
+            $sale = $this->saleRepository->findOrFail($id);
+
+            if (! $sale->status->isCancelled()) {
+                throw new InvalidSaleStatusTransitionException(
+                    from: $sale->status,
+                    to:   SaleStatus::CANCELLED,
+                );
+            }
+
+            $this->saleRepository->delete($id);
+        });
     }
 }

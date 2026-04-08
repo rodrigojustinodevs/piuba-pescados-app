@@ -6,21 +6,21 @@ namespace App\Application\DTOs;
 
 use App\Domain\Enums\SaleStatus;
 
-final class SaleInputDTO
+final readonly class SaleInputDTO
 {
     public function __construct(
-        public readonly string    $companyId,
-        public readonly string    $clientId,
-        public readonly string    $batchId,
-        public readonly float     $totalWeight,
-        public readonly float     $pricePerKg,
-        public readonly string    $saleDate,
-        public readonly ?string   $stockingId = null,
-        public readonly ?string   $financialCategoryId = null,
-        public readonly SaleStatus $status = SaleStatus::PENDING,
-        public readonly ?string   $notes = null,
-        public readonly bool      $isHarvestTotal = false,
-        public readonly bool      $requiresInvoice = false,
+        public string $companyId,
+        public string $clientId,
+        public string $batchId,
+        public float $totalWeight,
+        public float $pricePerKg,
+        public string $saleDate,
+        public ?string $stockingId = null,
+        public ?string $financialCategoryId = null,
+        public SaleStatus $status = SaleStatus::PENDING,
+        public ?string $notes = null,
+        public bool $isHarvestTotal = false,
+        public bool $requiresInvoice = false,
     ) {
     }
 

@@ -19,27 +19,27 @@ final class StockingRepository implements StockingRepositoryInterface
 
     /**
      * @param array{
-     *     batch_id?: string|null,
-     *     company_id?: string|null,
-     *     date_from?: string|null,
-     *     date_to?: string|null,
+     *     batchId?: string|null,
+     *     companyId?: string|null,
+     *     dateFrom?: string|null,
+     *     dateTo?: string|null,
      *     status?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface
     {
         $paginator = Stocking::with(self::DEFAULT_RELATIONS)
             ->when(
-                ! empty($filters['batch_id']),
-                static fn ($q) => $q->where('batch_id', $filters['batch_id']),
+                ! empty($filters['batchId']),
+                static fn ($q) => $q->where('batch_id', $filters['batchId']),
             )
             ->when(
-                ! empty($filters['company_id']),
+                ! empty($filters['companyId']),
                 static function ($q) use ($filters): void {
                     $q->whereHas(
                         'batch.tank',
-                        static fn ($tq) => $tq->where('company_id', $filters['company_id']),
+                        static fn ($tq) => $tq->where('company_id', $filters['companyId']),
                     );
                 },
             )
@@ -48,15 +48,15 @@ final class StockingRepository implements StockingRepositoryInterface
                 static fn ($q) => $q->where('status', $filters['status']),
             )
             ->when(
-                ! empty($filters['date_from']),
-                static fn ($q) => $q->whereDate('stocking_date', '>=', $filters['date_from']),
+                ! empty($filters['dateFrom']),
+                static fn ($q) => $q->whereDate('stocking_date', '>=', $filters['dateFrom']),
             )
             ->when(
-                ! empty($filters['date_to']),
-                static fn ($q) => $q->whereDate('stocking_date', '<=', $filters['date_to']),
+                ! empty($filters['dateTo']),
+                static fn ($q) => $q->whereDate('stocking_date', '<=', $filters['dateTo']),
             )
             ->latest('stocking_date')
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

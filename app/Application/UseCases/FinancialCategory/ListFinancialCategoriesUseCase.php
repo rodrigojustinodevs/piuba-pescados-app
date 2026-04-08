@@ -21,7 +21,7 @@ final readonly class ListFinancialCategoriesUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        $filters['company_id'] = $this->companyResolver->resolve();
+        $filters['companyId'] = $this->companyResolver->resolve();
 
         return $this->repository->paginate($filters);
     }

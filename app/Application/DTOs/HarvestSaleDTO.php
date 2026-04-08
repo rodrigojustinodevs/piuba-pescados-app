@@ -20,19 +20,20 @@ use App\Domain\Enums\SaleStatus;
 final readonly class HarvestSaleDTO
 {
     public function __construct(
-        public string     $companyId,
-        public string     $clientId,
-        public string     $batchId,
-        public string     $stockingId,
-        public float      $totalWeight,
-        public float      $pricePerKg,
-        public string     $saleDate,
-        public bool       $isHarvestTotal,
+        public string $companyId,
+        public string $clientId,
+        public string $batchId,
+        public string $stockingId,
+        public float $totalWeight,
+        public float $pricePerKg,
+        public string $saleDate,
+        public bool $isHarvestTotal,
         public SaleStatus $status,
-        public ?string    $financialCategoryId = null,
-        public ?string    $notes               = null,
-        public bool       $needsInvoice        = false,
-    ) {}
+        public ?string $financialCategoryId = null,
+        public ?string $notes = null,
+        public bool $needsInvoice = false,
+    ) {
+    }
 
     public function totalRevenue(): float
     {

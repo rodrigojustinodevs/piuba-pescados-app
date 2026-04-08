@@ -8,10 +8,10 @@ use App\Domain\Exceptions\ClientCreditLimitExceededException;
 use App\Domain\Models\Client;
 use App\Domain\Repositories\ClientRepositoryInterface;
 
-final class ClientCreditService
+final readonly class ClientCreditService
 {
     public function __construct(
-        private readonly ClientRepositoryInterface $clientRepository,
+        private ClientRepositoryInterface $clientRepository,
     ) {
     }
 
@@ -21,22 +21,22 @@ final class ClientCreditService
             return;
         }
 
-        if ($client->credit_limit < $saleAmount) {
+        $creditLimit = (float) $client->credit_limit;
+
+        if ($creditLimit < $saleAmount) {
             throw new ClientCreditLimitExceededException(
-                clientId:        $client->id,
-                creditLimit:     $client->credit_limit,
+                clientName:        $client->name,
+                creditLimit:     $creditLimit,
                 currentExposure: 0,
                 newSaleAmount:   $saleAmount,
             );
         }
 
-        $creditLimit = (float) $client->credit_limit;
-
         $currentExposure = $this->clientRepository->getPendingObligations($client->id);
 
         if (($currentExposure + $saleAmount) > $creditLimit) {
             throw new ClientCreditLimitExceededException(
-                clientId:        $client->id,
+                clientName:        $client->name,
                 creditLimit:     $creditLimit,
                 currentExposure: $currentExposure,
                 newSaleAmount:   $saleAmount,

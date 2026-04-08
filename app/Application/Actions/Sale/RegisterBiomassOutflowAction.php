@@ -12,15 +12,13 @@ use App\Domain\Enums\Unit;
 use App\Domain\Models\Sale;
 use App\Domain\Models\Stocking;
 use App\Domain\Models\StockTransaction;
-use App\Domain\Repositories\SaleRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 
-final class RegisterBiomassOutflowAction
+final readonly class RegisterBiomassOutflowAction
 {
     public function __construct(
-        private readonly RegisterStockTransactionAction  $registerStockTransaction,
-        private readonly StockingRepositoryInterface $stockingRepository,
-        private readonly SaleRepositoryInterface         $saleRepository,
+        private RegisterStockTransactionAction $registerStockTransaction,
+        private StockingRepositoryInterface $stockingRepository,
     ) {
     }
 
@@ -34,8 +32,8 @@ final class RegisterBiomassOutflowAction
      */
     public function execute(
         Stocking $stocking,
-        Sale     $sale,
-        float    $alreadySoldWeight,
+        Sale $sale,
+        float $alreadySoldWeight,
     ): StockTransaction {
         $unitCost  = $this->calculateUnitCost($stocking, $alreadySoldWeight);
         $totalCost = round((float) $sale->total_weight * $unitCost, 4);

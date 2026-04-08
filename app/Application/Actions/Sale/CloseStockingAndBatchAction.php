@@ -9,11 +9,11 @@ use App\Domain\Models\Stocking;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 
-final class CloseStockingAndBatchAction
+final readonly class CloseStockingAndBatchAction
 {
     public function __construct(
-        private readonly StockingRepositoryInterface $stockingRepository,
-        private readonly BatchRepositoryInterface    $batchRepository,
+        private StockingRepositoryInterface $stockingRepository,
+        private BatchRepositoryInterface $batchRepository,
     ) {
     }
 

@@ -31,16 +31,17 @@ use Illuminate\Support\Facades\DB;
  *  - Cálculo receita   → SaleRevenueCalculator
  *  - Atributos patch   → SaleAttributes (Value Object)
  */
-final class UpdateSaleUseCase
+final readonly class UpdateSaleUseCase
 {
     public function __construct(
-        private readonly SaleRepositoryInterface     $saleRepository,
-        private readonly StockingRepositoryInterface $stockingRepository,
-        private readonly GuardBiomassAction          $guardBiomass,
-        private readonly HarvestLifecycleAction      $harvestLifecycle,
-        private readonly SyncReceivableAmountAction  $syncReceivable,
-        private readonly SaleRevenueCalculator       $revenueCalculator,
-    ) {}
+        private SaleRepositoryInterface $saleRepository,
+        private StockingRepositoryInterface $stockingRepository,
+        private GuardBiomassAction $guardBiomass,
+        private HarvestLifecycleAction $harvestLifecycle,
+        private SyncReceivableAmountAction $syncReceivable,
+        private SaleRevenueCalculator $revenueCalculator,
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data Array validado e normalizado pela SaleUpdateRequest.
@@ -52,7 +53,6 @@ final class UpdateSaleUseCase
     public function execute(string $id, array $data): Sale
     {
         return DB::transaction(function () use ($id, $data): Sale {
-
             // ── 1. Carrega entidades com locks pessimistas ────────────────────
             $sale       = $this->saleRepository->findOrFailLocked($id);
             $stocking   = $this->resolveLockedStocking($sale);
@@ -62,7 +62,7 @@ final class UpdateSaleUseCase
             $this->guardBiomassIfNeeded($sale, $stocking, $attributes);
 
             // ── 3. Ciclo de vida stocking/batch ───────────────────────────────
-            if ($stocking !== null) {
+            if ($stocking instanceof \App\Domain\Models\Stocking) {
                 $this->harvestLifecycle->apply(
                     stocking:          $stocking,
                     oldIsTotalHarvest: (bool) $sale->is_total_harvest,
@@ -102,11 +102,11 @@ final class UpdateSaleUseCase
     }
 
     private function guardBiomassIfNeeded(
-        Sale           $sale,
-        ?Stocking      $stocking,
+        Sale $sale,
+        ?Stocking $stocking,
         SaleAttributes $attributes,
     ): void {
-        if ($stocking === null || ! $attributes->has('total_weight')) {
+        if (!$stocking instanceof \App\Domain\Models\Stocking || ! $attributes->has('total_weight')) {
             return;
         }
 

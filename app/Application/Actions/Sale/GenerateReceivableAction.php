@@ -19,12 +19,13 @@ use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
  * Não executa se financialCategoryId for null.
  * Chamada dentro de DB::transaction — atomicidade garantida pelo chamador.
  */
-final class GenerateReceivableAction
+final readonly class GenerateReceivableAction
 {
     public function __construct(
-        private readonly FinancialTransactionRepositoryInterface $transactionRepository,
-        private readonly FinancialTransactionService             $transactionService,
-    ) {}
+        private FinancialTransactionRepositoryInterface $transactionRepository,
+        private FinancialTransactionService $transactionService,
+    ) {
+    }
 
     public function execute(SaleInputDTO $dto, Sale $sale): void
     {

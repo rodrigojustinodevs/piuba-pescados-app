@@ -8,11 +8,11 @@ use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
 
-final class ListSalesUseCase
+final readonly class ListSalesUseCase
 {
     public function __construct(
-        private readonly SaleRepositoryInterface $repository,
-        private readonly CompanyResolverInterface $companyResolver,
+        private SaleRepositoryInterface $repository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 

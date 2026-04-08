@@ -25,4 +25,19 @@ interface StockTransactionRepositoryInterface
      * @param array<string, mixed> $filters
      */
     public function paginate(array $filters): PaginationInterface;
+
+    /**
+     * Update a stock transaction record.
+     */
+    public function update(string $id, array $attributes): StockTransaction;
+
+    /**
+     * Delete a stock transaction record.
+     */
+    public function delete(string $id): bool;
+
+    /**
+     * Find a stock transaction by ID.
+     */
+    public function findOrFail(string $id): StockTransaction;
 }

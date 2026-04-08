@@ -25,13 +25,14 @@ use App\Domain\Repositories\TankRepositoryInterface;
  *
  * Chamada dentro de DB::transaction — atomicidade garantida pelo chamador.
  */
-final class HarvestLifecycleAction
+final readonly class HarvestLifecycleAction
 {
     public function __construct(
-        private readonly StockingRepositoryInterface $stockingRepository,
-        private readonly BatchRepositoryInterface    $batchRepository,
-        private readonly TankRepositoryInterface     $tankRepository,
-    ) {}
+        private StockingRepositoryInterface $stockingRepository,
+        private BatchRepositoryInterface $batchRepository,
+        private TankRepositoryInterface $tankRepository,
+    ) {
+    }
 
     /**
      * Aplica a transição de ciclo de vida adequada com base na mudança de `is_total_harvest`.
@@ -40,9 +41,9 @@ final class HarvestLifecycleAction
      */
     public function apply(
         Stocking $stocking,
-        bool     $oldIsTotalHarvest,
-        bool     $newIsTotalHarvest,
-        string   $batchId,
+        bool $oldIsTotalHarvest,
+        bool $newIsTotalHarvest,
+        string $batchId,
     ): void {
         if ($oldIsTotalHarvest === $newIsTotalHarvest) {
             return;
@@ -50,6 +51,7 @@ final class HarvestLifecycleAction
 
         if ($oldIsTotalHarvest && ! $newIsTotalHarvest) {
             $this->reopen($stocking, $batchId);
+
             return;
         }
 

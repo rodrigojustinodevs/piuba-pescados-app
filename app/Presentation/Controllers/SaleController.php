@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
+use App\Application\UseCases\Sale\CancelSaleUseCase;
 use App\Application\UseCases\Sale\DeleteSaleUseCase;
 use App\Application\UseCases\Sale\ListSalesUseCase;
 use App\Application\UseCases\Sale\ProcessHarvestSaleUseCase;
@@ -219,8 +220,20 @@ class SaleController
      *             @OA\Property(property="saleDate", type="string", format="date"),
      *             @OA\Property(property="status", type="string", enum={"pending","confirmed","cancelled"}),
      *             @OA\Property(property="notes", type="string", nullable=true),
-     *             @OA\Property(property="batchId", type="string", format="uuid", nullable=true, description="Must match the sale batch; cannot be changed."),
-     *             @OA\Property(property="stockingId", type="string", format="uuid", nullable=true, description="Must match the sale stocking; cannot be changed."),
+     *             @OA\Property(
+     *                 property="batchId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 nullable=true,
+     *                 description="Must match the sale batch; cannot be changed."
+     *             ),
+     *             @OA\Property(
+     *                 property="stockingId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 nullable=true,
+     *                 description="Must match the sale stocking; cannot be changed."
+     *             ),
      *             @OA\Property(property="isTotalHarvest", type="boolean", nullable=true)
      *         )
      *     ),
@@ -268,5 +281,26 @@ class SaleController
         $useCase->execute($id);
 
         return ApiResponse::success(message: 'Sale deleted successfully.');
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/company/sale/{id}",
+     *     summary="Delete a sale",
+     *     tags={"Sales"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(response=200, description="Sale deleted"),
+     *     @OA\Response(response=404, description="Sale not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function cancel(
+        string $id,
+        CancelSaleUseCase $useCase,
+    ): JsonResponse {
+        $useCase->execute($id);
+
+        return ApiResponse::success(message: 'Sale cancelled successfully.');
     }
 }

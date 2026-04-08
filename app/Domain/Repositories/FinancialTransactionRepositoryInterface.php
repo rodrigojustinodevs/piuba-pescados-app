@@ -54,6 +54,8 @@ interface FinancialTransactionRepositoryInterface
 
     /**
      * Find financial transactions by sale ID.
+     *
+     * @return Collection<int, FinancialTransaction>
      */
     public function findLockedBySaleId(string $saleId): Collection;
 }

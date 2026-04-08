@@ -9,7 +9,7 @@ use App\Domain\Models\Stocking;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use Illuminate\Support\Facades\Log;
 
-final class GuardBiomassAction
+final readonly class GuardBiomassAction
 {
     /**
      * Tolerância de segurança padrão: 50% acima da biomassa estimada.
@@ -18,7 +18,7 @@ final class GuardBiomassAction
     private const float DEFAULT_TOLERANCE_PERCENT = 50.0;
 
     public function __construct(
-        private readonly SaleRepositoryInterface $saleRepository,
+        private SaleRepositoryInterface $saleRepository,
     ) {
     }
 
@@ -30,8 +30,8 @@ final class GuardBiomassAction
      */
     public function execute(
         Stocking $stocking,
-        float    $requestedWeight,
-        ?string  $excludeSaleId = null,
+        float $requestedWeight,
+        ?string $excludeSaleId = null,
     ): void {
         [$available] = $this->resolveAvailability($stocking, $excludeSaleId);
 
@@ -62,9 +62,9 @@ final class GuardBiomassAction
      */
     public function executeWithTolerance(
         Stocking $stocking,
-        float    $requestedWeight,
-        float    $tolerancePercent = self::DEFAULT_TOLERANCE_PERCENT,
-        ?string  $excludeSaleId = null,
+        float $requestedWeight,
+        float $tolerancePercent = self::DEFAULT_TOLERANCE_PERCENT,
+        ?string $excludeSaleId = null,
     ): void {
         [$available, $committedWeight] = $this->resolveAvailability($stocking, $excludeSaleId);
 

@@ -11,13 +11,14 @@ use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
 
-final class ReopenStockingAndBatchAction
+final readonly class ReopenStockingAndBatchAction
 {
     public function __construct(
-        private readonly StockingRepositoryInterface $stockingRepository,
-        private readonly BatchRepositoryInterface    $batchRepository,
-        private readonly TankRepositoryInterface     $tankRepository,
-    ) {}
+        private StockingRepositoryInterface $stockingRepository,
+        private BatchRepositoryInterface $batchRepository,
+        private TankRepositoryInterface $tankRepository,
+    ) {
+    }
 
     /**
      * Reverte o encerramento de um despesca total:

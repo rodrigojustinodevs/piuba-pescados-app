@@ -7,10 +7,10 @@ namespace App\Application\UseCases\Sale;
 use App\Domain\Models\Sale;
 use App\Domain\Repositories\SaleRepositoryInterface;
 
-final class ShowSaleUseCase
+final readonly class ShowSaleUseCase
 {
     public function __construct(
-        private readonly SaleRepositoryInterface $repository,
+        private SaleRepositoryInterface $repository,
     ) {
     }
 

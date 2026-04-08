@@ -19,3 +19,6 @@ Route::middleware(['permission:update-sale'])
 
 Route::middleware(['permission:delete-sale'])
     ->delete('sale/{id}', [SaleController::class, 'destroy']);
+
+Route::middleware(['permission:cancel-sale'])
+    ->delete('sale/{id}/cancel', [SaleController::class, 'cancel']);

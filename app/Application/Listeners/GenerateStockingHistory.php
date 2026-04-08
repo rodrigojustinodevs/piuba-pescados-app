@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Listeners;
 
 use App\Domain\Enums\StockingHistoryEvent;
-use App\Domain\Enums\StockingStatus;
 use App\Domain\Events\FeedingCreated;
 use App\Domain\Events\MortalityRecorded;
 use App\Domain\Events\SaleProcessed;
@@ -24,17 +23,18 @@ use Illuminate\Support\Str;
  *
  * Registrado para: FeedingCreated | MortalityRecorded | SaleProcessed
  */
-final class GenerateStockingHistory
+final readonly class GenerateStockingHistory
 {
     public function __construct(
-        private readonly StockingRepositoryInterface $stockingRepository,
-    ) {}
+        private StockingRepositoryInterface $stockingRepository,
+    ) {
+    }
 
     public function handleFeedingCreated(FeedingCreated $event): void
     {
         $stocking = $this->stockingRepository->findByBatchId($event->feeding->batch_id);
 
-        if ($stocking === null) {
+        if (!$stocking instanceof \App\Domain\Models\Stocking) {
             return;
         }
 
@@ -56,7 +56,7 @@ final class GenerateStockingHistory
     {
         $stocking = $this->stockingRepository->findByBatchId($event->mortality->batch_id);
 
-        if ($stocking === null) {
+        if (!$stocking instanceof \App\Domain\Models\Stocking) {
             return;
         }
 

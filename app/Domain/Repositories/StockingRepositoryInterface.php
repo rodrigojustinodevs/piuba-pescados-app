@@ -80,7 +80,7 @@ interface StockingRepositoryInterface
      * Get the total accumulated cost of a batch.
      */
     public function totalAccumulatedCost(string $stockingId): float;
- 
+
     /**
      * Busca o stocking aplicando lockForUpdate (lock pessimista).
      * Usado pelo UpdateSaleUseCase para evitar edições concorrentes no mesmo stocking.

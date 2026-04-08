@@ -42,7 +42,7 @@ use Illuminate\Support\Facades\DB;
  *   - StockingRequiredException removida: stocking_id é `required` na Request, nunca chega null aqui.
  *   - company_id resolvido antes de construir o DTO, mantendo o DTO sem dependência do resolver.
  */
-final class ProcessHarvestSaleUseCase
+final readonly class ProcessHarvestSaleUseCase
 {
     /**
      * Regra 5: tolerância máxima acima da biomassa estimada permitida na despesca.
@@ -51,16 +51,17 @@ final class ProcessHarvestSaleUseCase
     private const float BIOMASS_TOLERANCE_PERCENT = 50.0;
 
     public function __construct(
-        private readonly SaleRepositoryInterface      $saleRepository,
-        private readonly StockingRepositoryInterface  $stockingRepository,
-        private readonly CompanyResolverInterface     $companyResolver,
-        private readonly GuardClientFiscalDataAction  $guardFiscalData,
-        private readonly GuardClientCreditAction      $guardClientCredit,
-        private readonly GuardBiomassAction           $guardBiomass,
-        private readonly RegisterBiomassOutflowAction $registerOutflow,
-        private readonly HarvestLifecycleAction       $harvestLifecycle,
-        private readonly GenerateReceivableAction     $generateReceivable,
-    ) {}
+        private SaleRepositoryInterface $saleRepository,
+        private StockingRepositoryInterface $stockingRepository,
+        private CompanyResolverInterface $companyResolver,
+        private GuardClientFiscalDataAction $guardFiscalData,
+        private GuardClientCreditAction $guardClientCredit,
+        private GuardBiomassAction $guardBiomass,
+        private RegisterBiomassOutflowAction $registerOutflow,
+        private HarvestLifecycleAction $harvestLifecycle,
+        private GenerateReceivableAction $generateReceivable,
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data Array validado e normalizado pela SaleStoreRequest.

@@ -117,4 +117,30 @@ class ClientRepository implements ClientRepositoryInterface
 
         return $client->save();
     }
+
+    /**
+     * Find a client by ID or throw ModelNotFoundException.
+     */
+    public function findOrFail(string $id): Client
+    {
+        return Client::findOrFail($id);
+    }
+
+    /**
+     * Get the current exposure of the client.
+     */
+    public function getPendingObligations(string $id): float
+    {
+        return DB::table('financial_transactions')
+            ->join('sales', 'sales.id', '=', 'financial_transactions.reference_id')
+            ->where('sales.client_id', $id)
+            ->where('financial_transactions.reference_type', 'sale')
+            ->whereIn('financial_transactions.status', [
+                FinancialTransactionStatus::PENDING->value,
+                FinancialTransactionStatus::OVERDUE->value,
+            ])
+            ->whereNull('financial_transactions.deleted_at')
+            ->whereNull('sales.deleted_at')
+            ->sum('financial_transactions.amount');
+    }
 }

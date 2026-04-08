@@ -20,6 +20,7 @@ final readonly class SaleInputDTO
         public SaleStatus $status = SaleStatus::PENDING,
         public ?string $notes = null,
         public bool $isHarvestTotal = false,
+        public bool $requiresInvoice = false,
     ) {
     }
 
@@ -28,17 +29,15 @@ final readonly class SaleInputDTO
         return round($this->totalWeight * $this->pricePerKg, 2);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public static function fromArray(array $data): self
     {
         return new self(
             companyId:           (string) ($data['company_id'] ?? $data['companyId'] ?? ''),
             clientId:            (string) ($data['client_id'] ?? $data['clientId'] ?? ''),
             batchId:             (string) ($data['batch_id'] ?? $data['batchId'] ?? ''),
-            totalWeight:         (float) ($data['total_weight'] ?? $data['totalWeight'] ?? 0),
-            pricePerKg:          (float) ($data['price_per_kg'] ?? $data['pricePerKg'] ?? 0),
+            totalWeight:         (float)  ($data['total_weight'] ?? $data['totalWeight'] ?? 0),
+            pricePerKg:          (float)  ($data['price_per_kg'] ?? $data['pricePerKg'] ?? 0),
             saleDate:            (string) ($data['sale_date'] ?? $data['saleDate'] ?? ''),
             stockingId:          isset($data['stocking_id']) ? (string) $data['stocking_id']
                                : (isset($data['stockingId']) ? (string) $data['stockingId'] : null),
@@ -49,6 +48,7 @@ final readonly class SaleInputDTO
                                : SaleStatus::PENDING,
             notes:               isset($data['notes']) ? (string) $data['notes'] : null,
             isHarvestTotal:      (bool) ($data['is_total_harvest'] ?? $data['isHarvestTotal'] ?? false),
+            requiresInvoice:     (bool) ($data['requires_invoice'] ?? $data['requiresInvoice'] ?? false),
         );
     }
 }

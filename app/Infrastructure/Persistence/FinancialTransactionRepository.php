@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Infrastructure\Persistence;
 
 use App\Application\DTOs\FinancialTransactionInputDTO;
+use App\Domain\Enums\FinancialTransactionReferenceType;
 use App\Domain\Enums\FinancialTransactionStatus;
 use App\Domain\Enums\FinancialType;
 use App\Domain\Models\FinancialTransaction;
 use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
+use Illuminate\Support\Collection;
 
 final class FinancialTransactionRepository implements FinancialTransactionRepositoryInterface
 {
@@ -116,5 +118,17 @@ final class FinancialTransactionRepository implements FinancialTransactionReposi
         ])
             ->where($field, $value)
             ->first();
+    }
+
+    /**
+     * @return Collection<int, FinancialTransaction>
+     */
+    public function findLockedBySaleId(string $saleId): Collection
+    {
+        return FinancialTransaction::query()
+            ->where('reference_type', FinancialTransactionReferenceType::SALE->value)
+            ->where('reference_id', $saleId)
+            ->lockForUpdate()
+            ->get();
     }
 }

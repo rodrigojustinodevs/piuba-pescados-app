@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-class HarvestDTO
+/**
+ * DTO de resposta do módulo de colheita (Harvest).
+ */
+final readonly class HarvestDTO
 {
     public function __construct(
         public string $id,
@@ -14,25 +17,13 @@ class HarvestDTO
         public float $pricePerKg,
         public float $totalRevenue,
         public ?string $createdAt = null,
-        public ?string $updatedAt = null
+        public ?string $updatedAt = null,
     ) {
     }
 
-    /**
-     * @param  array<string, mixed>  $data
-     */
-    public static function fromArray(array $data): self
+    public function isEmpty(): bool
     {
-        return new self(
-            id: $data['id'],
-            batchId: $data['batch_id'],
-            harvestDate: $data['harvest_date'],
-            totalWeight: (float) $data['total_weight'],
-            pricePerKg: (float) $data['price_per_kg'],
-            totalRevenue: (float) $data['total_revenue'],
-            createdAt: $data['created_at'] ?? null,
-            updatedAt: $data['updated_at'] ?? null
-        );
+        return $this->id === '';
     }
 
     /**
@@ -50,15 +41,5 @@ class HarvestDTO
             'createdAt'    => $this->createdAt,
             'updatedAt'    => $this->updatedAt,
         ];
-    }
-
-    public function isEmpty(): bool
-    {
-        return ($this->id === '' || $this->id === '0') &&
-            ($this->batchId === '' || $this->batchId === '0') &&
-            ($this->harvestDate === '' || $this->harvestDate === '0') &&
-            ($this->totalWeight === 0.0) &&
-            $this->pricePerKg === 0.0 &&
-            $this->totalRevenue === 0.0;
     }
 }

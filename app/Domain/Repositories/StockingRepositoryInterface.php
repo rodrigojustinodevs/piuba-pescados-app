@@ -65,4 +65,27 @@ interface StockingRepositoryInterface
      * Find a stocking by company ID.
      */
     public function findByCompanyOrFail(string $stockingId, string $companyId): Stocking;
+
+    /**
+     * Find a stocking by batch ID.
+     */
+    public function findByBatchId(string $batchId): ?Stocking;
+
+    /**
+     * Check if there are any active stockings in a batch.
+     */
+    public function hasActiveStockingsInBatch(string $batchId, string $excludeStockingId = null): bool;
+
+    /**
+     * Get the total accumulated cost of a batch.
+     */
+    public function totalAccumulatedCost(string $stockingId): float;
+
+    /**
+     * Busca o stocking aplicando lockForUpdate (lock pessimista).
+     * Usado pelo UpdateSaleUseCase para evitar edições concorrentes no mesmo stocking.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    public function findOrFailLocked(string $id): Stocking;
 }

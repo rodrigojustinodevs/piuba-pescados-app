@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\Client;
 
-use App\Domain\Enums\FinancialTransactionStatus;
+use App\Application\Services\Client\ClientCreditService;
 use App\Domain\Exceptions\ClientCreditLimitExceededException;
-use App\Domain\Models\Client;
-use Illuminate\Support\Facades\DB;
+use App\Domain\Repositories\ClientRepositoryInterface;
 
 /**
  * Verifica se o cliente possui limite de crédito definido e se a nova venda
@@ -17,39 +16,19 @@ use Illuminate\Support\Facades\DB;
  */
 final readonly class GuardClientCreditAction
 {
+    public function __construct(
+        private ClientRepositoryInterface $clientRepository,
+        private ClientCreditService $creditService,
+    ) {
+    }
+
     /**
      * @throws ClientCreditLimitExceededException
      */
     public function execute(string $clientId, float $newSaleAmount): void
     {
-        /** @var Client|null $client */
-        $client = Client::find($clientId);
+        $client = $this->clientRepository->findOrFail($clientId);
 
-        if ($client === null || $client->credit_limit === null) {
-            return;
-        }
-
-        $creditLimit = (float) $client->credit_limit;
-
-        $currentExposure = (float) DB::table('financial_transactions')
-            ->join('sales', 'sales.id', '=', 'financial_transactions.reference_id')
-            ->where('sales.client_id', $clientId)
-            ->where('financial_transactions.reference_type', 'sale')
-            ->whereIn('financial_transactions.status', [
-                FinancialTransactionStatus::PENDING->value,
-                FinancialTransactionStatus::OVERDUE->value,
-            ])
-            ->whereNull('financial_transactions.deleted_at')
-            ->whereNull('sales.deleted_at')
-            ->sum('financial_transactions.amount');
-
-        if (($currentExposure + $newSaleAmount) > $creditLimit) {
-            throw new ClientCreditLimitExceededException(
-                clientId:        $clientId,
-                creditLimit:     $creditLimit,
-                currentExposure: $currentExposure,
-                newSaleAmount:   $newSaleAmount,
-            );
-        }
+        $this->creditService->guardCreditLimit($client, $newSaleAmount);
     }
 }

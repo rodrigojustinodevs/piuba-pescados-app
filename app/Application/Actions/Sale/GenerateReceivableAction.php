@@ -13,6 +13,12 @@ use App\Domain\Enums\FinancialType;
 use App\Domain\Models\Sale;
 use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 
+/**
+ * Gera automaticamente o "Contas a Receber" (PENDING) vinculado à venda.
+ *
+ * Não executa se financialCategoryId for null.
+ * Chamada dentro de DB::transaction — atomicidade garantida pelo chamador.
+ */
 final readonly class GenerateReceivableAction
 {
     public function __construct(
@@ -21,20 +27,12 @@ final readonly class GenerateReceivableAction
     ) {
     }
 
-    /**
-     * Gera automaticamente o "Contas a Receber" (PENDING) vinculado à venda.
-     * Não executa se financialCategoryId for null — venda sem vinculação financeira.
-     *
-     * Valida que a categoria é do tipo REVENUE antes de persistir,
-     * usando FinancialTransactionService como fonte única dessa regra.
-     */
     public function execute(SaleInputDTO $dto, Sale $sale): void
     {
         if ($dto->financialCategoryId === null) {
             return;
         }
 
-        // Valida que a categoria é REVENUE — regra de negócio do domínio financeiro
         $this->transactionService->validateCategoryType(
             categoryId:      $dto->financialCategoryId,
             transactionType: FinancialType::REVENUE,
@@ -47,15 +45,14 @@ final readonly class GenerateReceivableAction
             amount:              $dto->totalRevenue(),
             dueDate:             $dto->saleDate,
             status:              FinancialTransactionStatus::PENDING,
-            paymentDate:         null, // status PENDING → sem data de pagamento
+            paymentDate:         null,
             description:         "Contas a Receber — Venda #{$sale->id}",
             referenceType:       FinancialTransactionReferenceType::SALE,
             referenceId:         (string) $sale->id,
         );
 
-        // Aplica regras de payment_date (no-op aqui pois status = PENDING)
-        $resolvedDTO = $this->transactionService->applyPaymentDateToDTO($receivableDTO);
-
-        $this->transactionRepository->create($resolvedDTO);
+        $this->transactionRepository->create(
+            $this->transactionService->applyPaymentDateToDTO($receivableDTO),
+        );
     }
 }

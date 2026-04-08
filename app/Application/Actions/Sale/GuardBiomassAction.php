@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Log;
 
 final readonly class GuardBiomassAction
 {
+    /**
+     * Tolerância de segurança padrão: 50% acima da biomassa estimada.
+     * Cobre variações naturais de peso (ciclo lunar, jejum pré-despesca, etc.).
+     */
+    private const float DEFAULT_TOLERANCE_PERCENT = 50.0;
+
     public function __construct(
         private SaleRepositoryInterface $saleRepository,
     ) {
@@ -18,7 +24,7 @@ final readonly class GuardBiomassAction
 
     /**
      * Valida biomassa disponível sem margem de tolerância.
-     * Usada em fluxos simples de venda sem despesca total.
+     * Usada no Update (revalidação simples sem flag de despesca).
      *
      * @throws InsufficientBiomassException
      */
@@ -27,48 +33,57 @@ final readonly class GuardBiomassAction
         float $requestedWeight,
         ?string $excludeSaleId = null,
     ): void {
-        $available = $stocking->initialBiomass()
-            - $this->saleRepository->soldWeightByStocking($stocking->id, $excludeSaleId);
+        [$available] = $this->resolveAvailability($stocking, $excludeSaleId);
 
         if ($requestedWeight > $available) {
             throw new InsufficientBiomassException(
                 available:  $available,
                 requested:  $requestedWeight,
-                stockingId: $stocking->id,
+                stockingId: (string) $stocking->id,
             );
         }
     }
 
     /**
-     * Valida biomassa com margem de tolerância configurável.
-     * Usada em despescas onde há variação natural de peso.
+     * Valida biomassa com tolerância de 50% (regra 2 da despesca).
      *
-     * Acima da estimativa mas dentro da tolerância → warning (não bloqueia).
-     * Acima da tolerância → InsufficientBiomassException.
+     * Fórmula da biomassa disponível:
+     *   (current_quantity × avg_weight) − soma_de_peso_já_vendido_deste_stocking
+     *
+     * Limite com tolerância:
+     *   disponível × (1 + tolerancePercent / 100)
+     *
+     * Fluxo:
+     *  - requestedWeight ≤ disponível          → OK silencioso
+     *  - disponível < requestedWeight ≤ limite  → warning (log) + OK
+     *  - requestedWeight > limite               → InsufficientBiomassException + rollback
      *
      * @throws InsufficientBiomassException
      */
     public function executeWithTolerance(
         Stocking $stocking,
         float $requestedWeight,
-        float $tolerancePercent,
+        float $tolerancePercent = self::DEFAULT_TOLERANCE_PERCENT,
         ?string $excludeSaleId = null,
     ): void {
-        $committedWeight = $this->saleRepository->soldWeightByStocking($stocking->id, $excludeSaleId);
-        $available       = $stocking->initialBiomass() - $committedWeight;
-        $toleranceLimit  = $available * (1 + $tolerancePercent / 100);
+        [$available, $committedWeight] = $this->resolveAvailability($stocking, $excludeSaleId);
+
+        $toleranceLimit = $available * (1 + $tolerancePercent / 100);
 
         if ($requestedWeight > $toleranceLimit) {
             throw new InsufficientBiomassException(
                 available:  $toleranceLimit,
                 requested:  $requestedWeight,
-                stockingId: $stocking->id,
+                stockingId: (string) $stocking->id,
             );
         }
 
         if ($requestedWeight > $available) {
-            Log::warning('Harvest adjustment: requested weight exceeds biomass estimate but is within tolerance.', [
+            Log::warning('Harvest adjustment: weight exceeds biomass estimate but within tolerance.', [
                 'stocking_id'       => $stocking->id,
+                'current_quantity'  => $stocking->current_quantity,
+                'avg_weight_kg'     => $stocking->average_weight,
+                'committed_kg'      => $committedWeight,
                 'available_kg'      => $available,
                 'requested_kg'      => $requestedWeight,
                 'tolerance_percent' => $tolerancePercent,
@@ -76,5 +91,32 @@ final readonly class GuardBiomassAction
                 'excess_kg'         => round($requestedWeight - $available, 4),
             ]);
         }
+    }
+
+    /**
+     * Calcula a biomassa disponível do povoamento.
+     *
+     * Regra 2 (fórmula exata):
+     *   disponível = (current_quantity × average_weight) − peso_já_vendido_do_stocking
+     *
+     * Retorna [disponível, pesoComprometido] para evitar recalcular.
+     *
+     * @return array{float, float}
+     */
+    private function resolveAvailability(Stocking $stocking, ?string $excludeSaleId): array
+    {
+        // Biomassa atual estimada do povoamento
+        $currentBiomass = (float) $stocking->current_quantity
+                        * (float) $stocking->average_weight;
+
+        // Peso já comprometido em vendas anteriores deste MESMO stocking_id
+        $committedWeight = $this->saleRepository->soldWeightByStocking(
+            (string) $stocking->id,
+            $excludeSaleId,
+        );
+
+        $available = $currentBiomass - $committedWeight;
+
+        return [$available, $committedWeight];
     }
 }

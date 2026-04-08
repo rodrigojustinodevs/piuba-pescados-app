@@ -16,9 +16,7 @@ final readonly class ListSalesUseCase
     ) {
     }
 
-    /**
-     * @param array<string, mixed> $filters
-     */
+    /** @param array<string, mixed> $filters */
     public function execute(array $filters = []): PaginationInterface
     {
         $filters['company_id'] = $this->companyResolver->resolve();

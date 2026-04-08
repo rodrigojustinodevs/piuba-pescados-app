@@ -19,7 +19,6 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
             'id'             => (string) Str::uuid(),
             'company_id'     => $dto->companyId,
             'supply_id'      => $dto->supplyId,
-            'supplier_id'    => $dto->supplierId,
             'quantity'       => $dto->quantity,
             'unit_price'     => $dto->unitPrice,
             'total_cost'     => $dto->totalCost,
@@ -61,5 +60,26 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
             ->paginate((int) ($filters['per_page'] ?? 25));
 
         return new PaginationPresentr($paginator);
+    }
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function update(string $id, array $attributes): StockTransaction
+    {
+        $transaction = $this->findOrFail($id);
+        $transaction->update($attributes);
+
+        return $transaction->refresh();
+    }
+
+    public function delete(string $id): bool
+    {
+        return $this->findOrFail($id)->delete();
+    }
+
+    public function findOrFail(string $id): StockTransaction
+    {
+        return StockTransaction::query()->findOrFail($id);
     }
 }

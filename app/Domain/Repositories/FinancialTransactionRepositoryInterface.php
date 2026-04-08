@@ -6,6 +6,7 @@ namespace App\Domain\Repositories;
 
 use App\Application\DTOs\FinancialTransactionInputDTO;
 use App\Domain\Models\FinancialTransaction;
+use Illuminate\Support\Collection;
 
 interface FinancialTransactionRepositoryInterface
 {
@@ -50,4 +51,11 @@ interface FinancialTransactionRepositoryInterface
      * Find a financial transaction by a specific field.
      */
     public function showFinancialTransaction(string $field, string | int $value): ?FinancialTransaction;
+
+    /**
+     * Find financial transactions by sale ID.
+     *
+     * @return Collection<int, FinancialTransaction>
+     */
+    public function findLockedBySaleId(string $saleId): Collection;
 }

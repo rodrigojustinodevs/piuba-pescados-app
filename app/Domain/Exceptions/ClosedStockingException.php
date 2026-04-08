@@ -11,8 +11,8 @@ final class ClosedStockingException extends RuntimeException
     public function __construct(string $stockingId)
     {
         parent::__construct(
-            "A estocagem (id: {$stockingId}) já foi encerrada (despesca total realizada). "
-            . 'Não é possível registrar novas vendas para lotes encerrados.'
+            "The stocking (id: {$stockingId}) has already been closed (total harvest completed). "
+            . 'New registration is not allowed for closed batches.'
         );
     }
 }

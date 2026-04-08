@@ -49,7 +49,7 @@ final class FinancialCategoryController
      *     tags={"Financial Categories"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="page", in="query", @OA\Schema(type="integer", example=1)),
-     *     @OA\Parameter(name="per_page", in="query", @OA\Schema(type="integer", example=25)),
+     *     @OA\Parameter(name="perPage", in="query", @OA\Schema(type="integer", example=25)),
      *     @OA\Parameter(name="type", in="query", @OA\Schema(type="string", enum={"revenue","expense","investment"})),
      *     @OA\Parameter(name="status", in="query", @OA\Schema(type="string", enum={"active","inactive"})),
      *     @OA\Response(

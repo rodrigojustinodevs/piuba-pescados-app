@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
+use App\Application\UseCases\Sale\CancelSaleUseCase;
 use App\Application\UseCases\Sale\DeleteSaleUseCase;
 use App\Application\UseCases\Sale\ListSalesUseCase;
 use App\Application\UseCases\Sale\ProcessHarvestSaleUseCase;
@@ -190,11 +191,14 @@ class SaleController
 
         return ApiResponse::created(
             data:    new SaleResource($sale),
-            message: 'Venda registrada com sucesso.',
+            message: 'Sale registered successfully.',
         );
     }
 
     /**
+     * Delegação: {@see UpdateSaleUseCase} → {@see \App\Application\Actions\Sale\UpdateSaleAction}
+     * (transação, locks, trava financeira, biomassa, despesca e sincronização do contas a receber).
+     *
      * @OA\Put(
      *     path="/company/sale/{id}",
      *     summary="Update a sale",
@@ -215,7 +219,22 @@ class SaleController
      *             @OA\Property(property="pricePerKg", type="number", format="float", minimum=0),
      *             @OA\Property(property="saleDate", type="string", format="date"),
      *             @OA\Property(property="status", type="string", enum={"pending","confirmed","cancelled"}),
-     *             @OA\Property(property="notes", type="string", nullable=true)
+     *             @OA\Property(property="notes", type="string", nullable=true),
+     *             @OA\Property(
+     *                 property="batchId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 nullable=true,
+     *                 description="Must match the sale batch; cannot be changed."
+     *             ),
+     *             @OA\Property(
+     *                 property="stockingId",
+     *                 type="string",
+     *                 format="uuid",
+     *                 nullable=true,
+     *                 description="Must match the sale stocking; cannot be changed."
+     *             ),
+     *             @OA\Property(property="isTotalHarvest", type="boolean", nullable=true)
      *         )
      *     ),
      *     @OA\Response(response=200, description="Sale updated"),
@@ -233,7 +252,7 @@ class SaleController
 
         return ApiResponse::success(
             data:    new SaleResource($sale),
-            message: 'Venda atualizada com sucesso.',
+            message: 'Sale updated successfully.',
         );
     }
 
@@ -261,6 +280,27 @@ class SaleController
     ): JsonResponse {
         $useCase->execute($id);
 
-        return ApiResponse::success(message: 'Venda excluída com sucesso.');
+        return ApiResponse::success(message: 'Sale deleted successfully.');
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/company/sale/{id}",
+     *     summary="Delete a sale",
+     *     tags={"Sales"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(response=200, description="Sale deleted"),
+     *     @OA\Response(response=404, description="Sale not found"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function cancel(
+        string $id,
+        CancelSaleUseCase $useCase,
+    ): JsonResponse {
+        $useCase->execute($id);
+
+        return ApiResponse::success(message: 'Sale cancelled successfully.');
     }
 }

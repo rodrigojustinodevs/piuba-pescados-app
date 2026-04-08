@@ -118,4 +118,14 @@ final class SaleRepository implements SaleRepositoryInterface
             )
             ->sum('total_weight');
     }
+
+    public function findOrFailLocked(string $id): Sale
+    {
+        return Sale::with([
+            'company:id,name',
+            'client:id,name',
+            'batch:id,name',
+            'stocking',
+        ])->whereKey($id)->lockForUpdate()->firstOrFail();
+    }
 }

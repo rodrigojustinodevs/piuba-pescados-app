@@ -11,12 +11,14 @@ use Illuminate\Support\Str;
 
 /**
  * @property string              $id
+ * @property string|null         $parent_group_id
  * @property string|null         $name
  * @property string|null         $description
  * @property string              $tank_id
  * @property \Carbon\Carbon|null $entry_date
  * @property int                 $initial_quantity
  * @property float               $unit_cost
+ * @property float               $total_cost
  * @property string              $species
  * @property string              $status
  * @property string|null         $cultivation
@@ -36,12 +38,14 @@ class Batch extends BaseModel
 
     protected $fillable = [
         'id',
+        'parent_group_id',
         'name',
         'description',
         'tank_id',
         'entry_date',
         'initial_quantity',
         'unit_cost',
+        'total_cost',
         'species',
         'status',
         'cultivation',
@@ -51,6 +55,7 @@ class Batch extends BaseModel
         'entry_date'       => 'date:Y-m-d',
         'initial_quantity' => 'integer',
         'unit_cost'        => 'decimal:2',
+        'total_cost'       => 'decimal:2',
     ];
 
     #[\Override]

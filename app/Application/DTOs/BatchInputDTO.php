@@ -19,6 +19,9 @@ final readonly class BatchInputDTO
         public ?string $tankId,
         public string $status = 'active',
         public ?string $cultivation = null,
+        public ?string $parentGroupId = null,
+        public ?float $unitCost = null,
+        public ?float $totalCost = null,
     ) {
     }
 
@@ -44,6 +47,9 @@ final readonly class BatchInputDTO
             tankId:          (string) ($data['tank_id'] ?? $data['tankId'] ?? ''),
             status:          $data['status'] ?? 'active',
             cultivation:     $data['cultivation'] ?? null,
+            parentGroupId:   $data['parentGroupId'] ?? null,
+            unitCost:        $data['unitCost'] ?? null,
+            totalCost:       $data['totalCost'] ?? null,
         );
     }
 
@@ -59,6 +65,9 @@ final readonly class BatchInputDTO
             'tank_id'          => $this->tankId,
             'status'           => $this->status,
             'cultivation'      => $this->cultivation,
+            'parent_group_id'  => $this->parentGroupId,
+            'unit_cost'        => $this->unitCost,
+            'total_cost'       => $this->totalCost,
         ], static fn (int | string | null $v): bool => $v !== null);
     }
 }

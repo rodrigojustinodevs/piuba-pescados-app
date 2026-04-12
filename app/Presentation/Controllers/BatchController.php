@@ -6,10 +6,12 @@ namespace App\Presentation\Controllers;
 
 use App\Application\UseCases\Batch\CreateBatchUseCase;
 use App\Application\UseCases\Batch\DeleteBatchUseCase;
+use App\Application\UseCases\Batch\DistributeBatchUseCase;
 use App\Application\UseCases\Batch\FinishBatchUseCase;
 use App\Application\UseCases\Batch\ListBatchesUseCase;
 use App\Application\UseCases\Batch\ShowBatchUseCase;
 use App\Application\UseCases\Batch\UpdateBatchUseCase;
+use App\Presentation\Requests\Batch\BatchDistributionStoreRequest;
 use App\Presentation\Requests\Batch\BatchFinishRequest;
 use App\Presentation\Requests\Batch\BatchStoreRequest;
 use App\Presentation\Requests\Batch\BatchUpdateRequest;
@@ -33,6 +35,31 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="cultivation", type="string", enum={"growout","nursery"}, nullable=true),
  *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
+ * )
+ * @OA\Schema(
+ *     schema="BatchDistributionItem",
+ *     type="object",
+ *     required={"tankId","quantity","averageWeight"},
+ *     @OA\Property(property="tankId", type="string", format="uuid", description="Tanque de destino"),
+ *     @OA\Property(property="quantity", type="integer", minimum=1, description="Quantidade de alevinos neste tanque"),
+ *     @OA\Property(property="averageWeight", type="number", format="float", minimum=0.0001, example=0.025, description="Peso médio inicial (kg) neste tanque")
+ * )
+ * @OA\Schema(
+ *     schema="BatchDistributionStoreRequest",
+ *     type="object",
+ *     required={"supplierId","totalCost","entryDate","species","cultivation","distribution"},
+ *     @OA\Property(property="supplierId", type="string", format="uuid", description="Fornecedor da compra"),
+ *     @OA\Property(property="totalCost", type="number", format="float", minimum=0, example=2000.00, description="Custo total da nota (rateado proporcionalmente por tanque)"),
+ *     @OA\Property(property="entryDate", type="string", format="date", example="2026-04-09", description="Data de entrada (hoje ou passado)"),
+ *     @OA\Property(property="species", type="string", maxLength=255, example="Tilápia"),
+ *     @OA\Property(property="cultivation", type="string", enum={"growout","nursery"}),
+ *     @OA\Property(property="notes", type="string", nullable=true, maxLength=1000, description="Observações opcionais"),
+ *     @OA\Property(
+ *         property="distribution",
+ *         type="array",
+ *         description="Lista de tanques e quantidades; cada item gera um lote vinculado ao mesmo parent_group_id",
+ *         @OA\Items(ref="#/components/schemas/BatchDistributionItem")
+ *     )
  * )
  */
 final class BatchController
@@ -284,6 +311,54 @@ final class BatchController
         return ApiResponse::success(
             data:    $report,
             message: 'Batch finished successfully.',
+        );
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/company/batches/distribution",
+     *     summary="Distribuir compra em múltiplos tanques",
+     *     description="Registra uma única compra (fornecedor, custo total, espécie) e cria um lote ativo por item em `distribution`, com custo proporcional à quantidade em cada tanque. Todos os lotes compartilham o mesmo `parent_group_id`.",
+     *     tags={"Batches"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/BatchDistributionStoreRequest")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lotes criados com sucesso",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Batch distributed successfully."),
+     *             @OA\Property(
+     *                 property="response",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="data",
+     *                     type="array",
+     *                     description="Coleção de lotes criados (BatchResource)",
+     *                     @OA\Items(ref="#/components/schemas/Batch")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Erro de validação ou regra de negócio (ex.: tanque com lote ativo, tanque indisponível)"
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function distribution(
+        BatchDistributionStoreRequest $request,
+        DistributeBatchUseCase $useCase,
+    ): JsonResponse {
+        $batches = $useCase->execute($request->validated());
+
+        return ApiResponse::success(
+            data:    BatchResource::collection($batches),
+            message: 'Batch distributed successfully.',
         );
     }
 }

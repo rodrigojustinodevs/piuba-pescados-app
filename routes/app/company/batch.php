@@ -13,4 +13,5 @@ Route::middleware(['permission:create-batch|view-batch|update-batch|delete-batch
         Route::put('batch/{id}', [BatchController::class, 'update']);
         Route::delete('batch/{id}', [BatchController::class, 'destroy']);
         Route::post('batch/{id}/finish', [BatchController::class, 'finish']);
+        Route::post('batches/distribution', [BatchController::class, 'distribution']);
     });

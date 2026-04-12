@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Actions\Batch;
 
+use App\Application\Actions\FinancialTransaction\GeneratePayableAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\BatchDistributionInputDTO;
-use App\Application\Actions\FinancialTransaction\GeneratePayableAction;
 use App\Application\DTOs\ExpenseInputDTO;
 use App\Domain\Enums\FinancialTransactionStatus;
 use Illuminate\Support\Collection;
@@ -18,16 +18,17 @@ final readonly class CreateDistributedBatchesAction
         private CompanyResolverInterface $companyResolver,
         private CreateSingleDistributedBatchAction $createSingleBatch,
         private GeneratePayableAction $generatePayable,
-    ) {}
+    ) {
+    }
 
     /**
      * @return Collection<int, \App\Domain\Models\Batch>
      */
     public function execute(BatchDistributionInputDTO $input): Collection
     {
-        $parentGroupId = Str::uuid()->toString();
-        $totalQuantity = $input->getTotalQuantity();
-        $companyId = $this->companyResolver->resolve();
+        $parentGroupId   = Str::uuid()->toString();
+        $totalQuantity   = $input->getTotalQuantity();
+        $companyId       = $this->companyResolver->resolve();
         $expenseInputDTO = new ExpenseInputDTO(
             companyId: $companyId,
             amount: $input->totalCost,
@@ -38,10 +39,10 @@ final readonly class CreateDistributedBatchesAction
             description: null,
             notes: $input->notes,
             status: FinancialTransactionStatus::PENDING,
-            paymentDate: null,
         );
-        
+
         $this->generatePayable->execute($expenseInputDTO, $parentGroupId);
+
         return $this->createBatchesForDistribution(
             $input,
             $parentGroupId,

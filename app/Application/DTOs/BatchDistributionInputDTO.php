@@ -11,24 +11,32 @@ final readonly class BatchDistributionInputDTO
      */
     public function __construct(
         public string $supplierId,
+        public string $companyId,
         public float $totalCost,
         public string $entryDate,
         public string $species,
         public string $cultivation,
         public array $distribution,
         public ?string $notes = null,
-    ) {}
+    ) {
+    }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
+        $companyId = (string) ($data['company_id'] ?? $data['companyId'] ?? '');
+
         return new self(
-            supplierId:  $data['supplierId'],
-            totalCost:   (float) $data['totalCost'],
-            entryDate:    $data['entryDate'],
-            species:      $data['species'],
-            cultivation:  $data['cultivation'],
+            supplierId: (string) $data['supplierId'],
+            companyId: $companyId,
+            totalCost: (float) $data['totalCost'],
+            entryDate: (string) $data['entryDate'],
+            species: (string) $data['species'],
+            cultivation: (string) $data['cultivation'],
             distribution: $data['distribution'],
-            notes:        $data['notes'] ?? null,
+            notes: $data['notes'] ?? null,
         );
     }
 

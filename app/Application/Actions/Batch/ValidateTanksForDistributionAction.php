@@ -10,7 +10,8 @@ final readonly class ValidateTanksForDistributionAction
 {
     public function __construct(
         private ValidateActiveBatchInTankAction $validateTank,
-    ) {}
+    ) {
+    }
 
     /**
      * @throws \App\Domain\Exceptions\TankAlreadyHasActiveBatchException

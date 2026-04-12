@@ -484,7 +484,7 @@
                     "Batches"
                 ],
                 "summary": "Distribuir compra em múltiplos tanques",
-                "description": "Registra uma única compra (fornecedor, custo total, espécie) e cria um lote ativo por item em `distribution`, com custo proporcional à quantidade em cada tanque. Todos os lotes compartilham o mesmo `parent_group_id`.",
+                "description": "Cria um lote por tanque a partir de uma compra; custo proporcional; mesmo parent_group_id.",
                 "operationId": "e3c5d329619ddbb4844d4bb0ea1dbcf4",
                 "requestBody": {
                     "required": true,

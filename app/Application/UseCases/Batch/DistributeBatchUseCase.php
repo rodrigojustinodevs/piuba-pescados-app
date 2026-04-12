@@ -6,9 +6,9 @@ namespace App\Application\UseCases\Batch;
 
 use App\Application\Actions\Batch\CreateDistributedBatchesAction;
 use App\Application\Actions\Batch\ValidateTanksForDistributionAction;
-use App\Application\DTOs\BatchDistributionInputDTO;
 use App\Application\Contracts\CompanyResolverInterface;
- use Illuminate\Support\Collection;
+use App\Application\DTOs\BatchDistributionInputDTO;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final readonly class DistributeBatchUseCase
@@ -17,10 +17,14 @@ final readonly class DistributeBatchUseCase
         private ValidateTanksForDistributionAction $validateTanks,
         private CreateDistributedBatchesAction $createBatches,
         private CompanyResolverInterface $companyResolver,
-    ) {}
+    ) {
+    }
 
     /**
+     * @param array<string, mixed> $data
+     *
      * @return Collection<int, \App\Domain\Models\Batch>
+     *
      * @throws \App\Domain\Exceptions\TankAlreadyHasActiveBatchException
      * @throws \Throwable
      */
@@ -30,9 +34,9 @@ final readonly class DistributeBatchUseCase
             hint: $data['company_id'] ?? $data['companyId'] ?? null,
         );
         $input = BatchDistributionInputDTO::fromArray($data);
-        
+
         $this->validateTanks->execute($input);
 
-        return DB::transaction(fn() => $this->createBatches->execute($input));
+        return DB::transaction(fn (): \Illuminate\Support\Collection => $this->createBatches->execute($input));
     }
 }

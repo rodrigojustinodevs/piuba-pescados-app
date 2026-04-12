@@ -61,10 +61,10 @@ final class FinancialCategoryRepository implements FinancialCategoryRepositoryIn
 
     /**
      * @param array{
-     *     company_id: string,
+     *     companyId: string,
      *     type?: string|null,
      *     status?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface

@@ -14,8 +14,12 @@ final readonly class CreateSingleDistributedBatchAction
         private BatchRepositoryInterface $repository,
         private CalculateProportionalCostAction $calculateCost,
         private GenerateBatchNameAction $generateName,
-    ) {}
+    ) {
+    }
 
+    /**
+     * @param array{tankId: string, quantity: int, averageWeight?: float} $item
+     */
     public function execute(
         BatchDistributionInputDTO $input,
         array $item,

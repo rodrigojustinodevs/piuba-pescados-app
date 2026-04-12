@@ -36,10 +36,10 @@ interface FinancialCategoryRepositoryInterface
      * Paginate financial categories filtered by company.
      *
      * @param array{
-     *     company_id: string,
+     *     companyId: string,
      *     type?: string|null,
      *     status?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface;

@@ -478,6 +478,71 @@
                 ]
             }
         },
+        "/company/batches/distribution": {
+            "post": {
+                "tags": [
+                    "Batches"
+                ],
+                "summary": "Distribuir compra em múltiplos tanques",
+                "description": "Cria um lote por tanque a partir de uma compra; custo proporcional; mesmo parent_group_id.",
+                "operationId": "e3c5d329619ddbb4844d4bb0ea1dbcf4",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BatchDistributionStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Lotes criados com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Batch distributed successfully."
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "data": {
+                                                    "description": "Coleção de lotes criados (BatchResource)",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Batch"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Erro de validação ou regra de negócio (ex.: tanque com lote ativo, tanque indisponível)"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/biometries": {
             "get": {
                 "tags": [
@@ -3004,7 +3069,7 @@
                         }
                     },
                     {
-                        "name": "per_page",
+                        "name": "perPage",
                         "in": "query",
                         "schema": {
                             "type": "integer",
@@ -5789,6 +5854,7 @@
                     "Sales"
                 ],
                 "summary": "Update a sale",
+                "description": "Delegação: {@see UpdateSaleUseCase} → {@see \\App\\Application\\Actions\\Sale\\UpdateSaleAction}\n(transação, locks, trava financeira, biomassa, despesca e sincronização do contas a receber).",
                 "operationId": "9f828e63cc636983eed7faec42f4f1e3",
                 "parameters": [
                     {
@@ -5836,6 +5902,22 @@
                                     },
                                     "notes": {
                                         "type": "string",
+                                        "nullable": true
+                                    },
+                                    "batchId": {
+                                        "description": "Must match the sale batch; cannot be changed.",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "stockingId": {
+                                        "description": "Must match the sale stocking; cannot be changed.",
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "isTotalHarvest": {
+                                        "type": "boolean",
                                         "nullable": true
                                     }
                                 },
@@ -6003,6 +6085,44 @@
                     },
                     "404": {
                         "description": "Related entities not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sale/{id}/cancel": {
+            "delete": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Cancel a sale",
+                "description": "Cancela a venda (rota distinta de excluir permanentemente o registro).",
+                "operationId": "51040e4db576a2094dec4d25a3fd5cab",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sale ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sale cancelled"
+                    },
+                    "404": {
+                        "description": "Sale not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 },
                 "security": [
@@ -10976,6 +11096,89 @@
                 },
                 "type": "object"
             },
+            "BatchDistributionItem": {
+                "required": [
+                    "tankId",
+                    "quantity",
+                    "averageWeight"
+                ],
+                "properties": {
+                    "tankId": {
+                        "description": "Tanque de destino",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "quantity": {
+                        "description": "Quantidade de alevinos neste tanque",
+                        "type": "integer",
+                        "minimum": 1
+                    },
+                    "averageWeight": {
+                        "description": "Peso médio inicial (kg) neste tanque",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0.0001,
+                        "example": 0.025
+                    }
+                },
+                "type": "object"
+            },
+            "BatchDistributionStoreRequest": {
+                "required": [
+                    "supplierId",
+                    "totalCost",
+                    "entryDate",
+                    "species",
+                    "cultivation",
+                    "distribution"
+                ],
+                "properties": {
+                    "supplierId": {
+                        "description": "Fornecedor da compra",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "totalCost": {
+                        "description": "Custo total da nota (rateado proporcionalmente por tanque)",
+                        "type": "number",
+                        "format": "float",
+                        "minimum": 0,
+                        "example": 2000
+                    },
+                    "entryDate": {
+                        "description": "Data de entrada (hoje ou passado)",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-04-09"
+                    },
+                    "species": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Tilápia"
+                    },
+                    "cultivation": {
+                        "type": "string",
+                        "enum": [
+                            "growout",
+                            "nursery"
+                        ]
+                    },
+                    "notes": {
+                        "description": "Observações opcionais",
+                        "type": "string",
+                        "maxLength": 1000,
+                        "nullable": true
+                    },
+                    "distribution": {
+                        "description": "Lista de tanques e quantidades; cada item gera um lote vinculado ao mesmo parent_group_id",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BatchDistributionItem"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "Company": {
                 "properties": {
                     "id": {
@@ -12585,11 +12788,11 @@
         },
         {
             "name": "Water Qualities",
-            "description": "Medições de qualidade da água por tanque"
+            "description": "Water quality measurements by tank"
         },
         {
             "name": "Cost Allocation",
-            "description": "Rateios de custo"
+            "description": "Cost Allocation"
         },
         {
             "name": "Dashboard",
@@ -12597,11 +12800,11 @@
         },
         {
             "name": "Harvest",
-            "description": "Colheitas"
+            "description": "Harvest"
         },
         {
             "name": "Sensor readings",
-            "description": "Leituras de sensores"
+            "description": "Sensor readings"
         }
     ]
 }

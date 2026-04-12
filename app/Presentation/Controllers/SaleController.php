@@ -285,12 +285,19 @@ class SaleController
 
     /**
      * @OA\Delete(
-     *     path="/company/sale/{id}",
-     *     summary="Delete a sale",
+     *     path="/company/sale/{id}/cancel",
+     *     summary="Cancel a sale",
+     *     description="Cancela a venda (rota distinta de excluir permanentemente o registro).",
      *     tags={"Sales"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Response(response=200, description="Sale deleted"),
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Sale ID",
+     *         required=true,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *     @OA\Response(response=200, description="Sale cancelled"),
      *     @OA\Response(response=404, description="Sale not found"),
      *     @OA\Response(response=401, description="Unauthorized")
      * )

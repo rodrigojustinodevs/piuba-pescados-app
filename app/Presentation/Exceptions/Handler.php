@@ -29,6 +29,8 @@ use App\Domain\Exceptions\InvalidSaleStatusTransitionException;
 use App\Domain\Exceptions\MortalityExceedsSurvivorsException;
 use App\Domain\Exceptions\MortalityNotFoundException;
 use App\Domain\Exceptions\SaleFinanciallyLockedException;
+use App\Domain\Exceptions\SalesOrderDeleteForbiddenException;
+use App\Domain\Exceptions\SalesQuotationCannotBeUpdatedException;
 use App\Domain\Exceptions\StockNotFoundException;
 use App\Domain\Exceptions\TankAlreadyHasActiveBatchException;
 use App\Domain\Exceptions\TransactionAlreadyAllocatedException;
@@ -95,6 +97,8 @@ class Handler extends ExceptionHandler
         ClosedStockingException::class,
         SaleFinanciallyLockedException::class,
         InvalidSaleStatusTransitionException::class,
+        SalesQuotationCannotBeUpdatedException::class,
+        SalesOrderDeleteForbiddenException::class,
         // CostAllocation
         TransactionAlreadyAllocatedException::class,
         AllocationAmountMismatchException::class,
@@ -324,6 +328,20 @@ class Handler extends ExceptionHandler
 
         $this->renderable(
             fn (InvalidSaleStatusTransitionException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        $this->renderable(
+            fn (SalesQuotationCannotBeUpdatedException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        $this->renderable(
+            fn (SalesOrderDeleteForbiddenException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )

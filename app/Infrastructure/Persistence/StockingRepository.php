@@ -153,16 +153,16 @@ final class StockingRepository implements StockingRepositoryInterface
             ->firstOrFail();
     }
 
-    public function findByBatchId(string $batchId): ?Stocking
+    public function findByBatchOrFail(string $batchId): Stocking
     {
         return Stocking::with(self::DEFAULT_RELATIONS)
             ->where('batch_id', $batchId)
             ->where('status', StockingStatus::ACTIVE)
             ->latest('stocking_date')
-            ->first();
+            ->firstOrFail();
     }
 
-    public function hasActiveStockingsInBatch(string $batchId, string $excludeStockingId = null): bool
+    public function hasActiveStockingsInBatch(string $batchId, ?string $excludeStockingId = null): bool
     {
         return Stocking::with(self::DEFAULT_RELATIONS)
             ->where('batch_id', $batchId)

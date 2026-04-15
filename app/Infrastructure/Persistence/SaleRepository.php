@@ -9,6 +9,7 @@ use App\Domain\Enums\SaleStatus;
 use App\Domain\Models\Sale;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
+use Illuminate\Support\Collection;
 
 final class SaleRepository implements SaleRepositoryInterface
 {
@@ -127,5 +128,18 @@ final class SaleRepository implements SaleRepositoryInterface
             'batch:id,name',
             'stocking',
         ])->whereKey($id)->lockForUpdate()->firstOrFail();
+    }
+
+    /**
+     * @return Collection<int, Sale>
+     */
+    public function findByOrderId(string $orderId): Collection
+    {
+        return Sale::with([
+            'company:id,name',
+            'client:id,name',
+            'batch:id,name',
+            'stocking',
+        ])->where('sales_order_id', $orderId)->get();
     }
 }

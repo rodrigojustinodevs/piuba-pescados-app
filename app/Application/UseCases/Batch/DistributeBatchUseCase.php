@@ -37,6 +37,6 @@ final readonly class DistributeBatchUseCase
 
         $this->validateTanks->execute($input);
 
-        return DB::transaction(fn (): \Illuminate\Support\Collection => $this->createBatches->execute($input));
+        return DB::transaction(fn (): Collection => $this->createBatches->execute($input));
     }
 }

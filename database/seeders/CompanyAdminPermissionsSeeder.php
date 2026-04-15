@@ -130,6 +130,12 @@ class CompanyAdminPermissionsSeeder extends Seeder
             'update-sale',
             'delete-sale',
 
+            // Pedidos / orçamentos (sales_orders)
+            'create-sales-order',
+            'view-sales-order',
+            'update-sales-order',
+            'delete-sales-order',
+
             // Permissões de Sensor
             'create-sensor',
             'view-sensor',

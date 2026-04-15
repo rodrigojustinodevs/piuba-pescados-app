@@ -6132,6 +6132,612 @@
                 ]
             }
         },
+        "/company/sales-orders": {
+            "get": {
+                "tags": [
+                    "Sales orders"
+                ],
+                "summary": "Lista pedidos/orçamentos da empresa",
+                "operationId": "4a89c41b726c2c083bdd54f2cf8d6873",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "quotation",
+                                "order"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sales-order/{id}": {
+            "get": {
+                "tags": [
+                    "Sales orders"
+                ],
+                "summary": "Detalhe de um pedido/orçamento",
+                "operationId": "114bf49b955490643b0b81f9c667f873",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Encontrado"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Sales orders"
+                ],
+                "summary": "Remove (soft delete) pedido/orçamento em rascunho ou aberto",
+                "operationId": "1cfc529a63d788159caca5189fae7b22",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Removido"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    },
+                    "422": {
+                        "description": "Status não permite exclusão"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/company/sale-order": {
+            "post": {
+                "tags": [
+                    "Sales orders"
+                ],
+                "summary": "Cria um pedido (order) com itens",
+                "operationId": "d7eec4111dee13943851170f293589c0",
+                "responses": {
+                    "201": {
+                        "description": "Pedido criado"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/company/sale-order/{id}": {
+            "put": {
+                "tags": [
+                    "Sales orders"
+                ],
+                "summary": "Atualiza um pedido (order) com regras de validação do create",
+                "operationId": "12216564a2b7aba9f766517c89a751cf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pedido atualizado"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sales-order/{id}/cancel": {
+            "delete": {
+                "tags": [
+                    "Sales orders"
+                ],
+                "summary": "Cancela um pedido (order)",
+                "operationId": "7833f5e80e031cf5a247af4d55c89d2f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pedido cancelado"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    },
+                    "422": {
+                        "description": "Status não permite cancelamento"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sale-orders/quotations": {
+            "get": {
+                "tags": [
+                    "Sales quotations"
+                ],
+                "summary": "Lista orçamentos (cotações) da empresa",
+                "operationId": "34979469914988b89307cc8b31870594",
+                "parameters": [
+                    {
+                        "name": "clientId",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 25
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista paginada"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sale-order/quotation/{id}": {
+            "get": {
+                "tags": [
+                    "Sales quotations"
+                ],
+                "summary": "Detalhe de um orçamento (cotação)",
+                "operationId": "46fc40c96b1a1083766714baacfb1a26",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Encontrado"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/company/sale-order/quotation": {
+            "post": {
+                "tags": [
+                    "Sales quotations"
+                ],
+                "summary": "Cria um orçamento (cotação) com itens",
+                "operationId": "a643ee3e23d7752ffe13dbf916bd528d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "clientId",
+                                    "issueDate",
+                                    "expirationDate",
+                                    "items"
+                                ],
+                                "properties": {
+                                    "companyId": {
+                                        "type": "string",
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "clientId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "issueDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "expirationDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "items": {
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "stockingId",
+                                                "quantity",
+                                                "unitPrice"
+                                            ],
+                                            "properties": {
+                                                "stockingId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "quantity": {
+                                                    "type": "number",
+                                                    "example": 100.5
+                                                },
+                                                "unitPrice": {
+                                                    "type": "number",
+                                                    "example": 18.9
+                                                },
+                                                "measureUnit": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "kg",
+                                                        "g",
+                                                        "un"
+                                                    ],
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Orçamento criado"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/company/sale-order/quotation/{id}": {
+            "put": {
+                "tags": [
+                    "Sales quotations"
+                ],
+                "summary": "Atualiza um orçamento",
+                "operationId": "28b6361795f92f232c967a567bfa21d2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "clientId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "issueDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "expirationDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "items": {
+                                        "description": "Quando enviado, substitui TODOS os itens existentes.",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "stockingId",
+                                                "quantity",
+                                                "unitPrice"
+                                            ],
+                                            "properties": {
+                                                "stockingId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "quantity": {
+                                                    "type": "number"
+                                                },
+                                                "unitPrice": {
+                                                    "type": "number"
+                                                },
+                                                "measureUnit": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "kg",
+                                                        "g",
+                                                        "un"
+                                                    ],
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Orçamento atualizado"
+                    },
+                    "404": {
+                        "description": "Não encontrado"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/company/sale-order/quotation/{id}/convert": {
+            "post": {
+                "tags": [
+                    "Sales quotations"
+                ],
+                "summary": "Converte um orçamento em pedido (vendas, baixa de biomassa, contas a receber)",
+                "operationId": "cfd3278967a37d5495032a7cf4b1e02a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "expectedDeliveryDate",
+                                    "expectedPaymentDate",
+                                    "financialCategoryId",
+                                    "needsInvoice"
+                                ],
+                                "properties": {
+                                    "expectedDeliveryDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "expectedPaymentDate": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "financialCategoryId": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "needsInvoice": {
+                                        "type": "boolean"
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Pedido gerado a partir do orçamento"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "401": {
+                        "description": "Não autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/sensors": {
             "get": {
                 "tags": [
@@ -12741,6 +13347,14 @@
         {
             "name": "Sales",
             "description": "Vendas"
+        },
+        {
+            "name": "Sales orders",
+            "description": "Pedidos"
+        },
+        {
+            "name": "Sales quotations",
+            "description": "Orçamentos (cotações)"
         },
         {
             "name": "Sensors",

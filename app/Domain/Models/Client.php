@@ -95,4 +95,15 @@ class Client extends BaseModel
 
         return $relation;
     }
+
+    /**
+     * @phpstan-return HasMany<SalesOrder, static>
+     */
+    public function salesOrders(): HasMany
+    {
+        /** @var HasMany<SalesOrder, static> $relation */
+        $relation = $this->hasMany(SalesOrder::class, 'client_id');
+
+        return $relation;
+    }
 }

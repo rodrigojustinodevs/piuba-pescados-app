@@ -2,16 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Actions\Sale;
+namespace App\Application\Actions\FinancialTransaction;
 
 use App\Application\DTOs\FinancialTransactionInputDTO;
 use App\Application\DTOs\SaleInputDTO;
-use App\Application\Services\FinancialTransactionService;
 use App\Domain\Enums\FinancialTransactionReferenceType;
 use App\Domain\Enums\FinancialTransactionStatus;
 use App\Domain\Enums\FinancialType;
-use App\Domain\Models\Sale;
-use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 
 /**
  * Gera automaticamente o "Contas a Receber" (PENDING) vinculado à venda.
@@ -22,22 +19,12 @@ use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 final readonly class GenerateReceivableAction
 {
     public function __construct(
-        private FinancialTransactionRepositoryInterface $transactionRepository,
-        private FinancialTransactionService $transactionService,
+        private GenerateFinancialTransactionAction $generateFinancialTransaction,
     ) {
     }
 
-    public function execute(SaleInputDTO $dto, Sale $sale): void
+    public function execute(SaleInputDTO $dto, string $referenceId): void
     {
-        if ($dto->financialCategoryId === null) {
-            return;
-        }
-
-        $this->transactionService->validateCategoryType(
-            categoryId:      $dto->financialCategoryId,
-            transactionType: FinancialType::REVENUE,
-        );
-
         $receivableDTO = new FinancialTransactionInputDTO(
             companyId:           $dto->companyId,
             financialCategoryId: $dto->financialCategoryId,
@@ -46,13 +33,12 @@ final readonly class GenerateReceivableAction
             dueDate:             $dto->saleDate,
             status:              FinancialTransactionStatus::PENDING,
             paymentDate:         null,
-            description:         "Contas a Receber — Venda #{$sale->id}",
+            description:         "Contas a Receber — Venda #{$referenceId}",
+            notes:               $dto->notes,
             referenceType:       FinancialTransactionReferenceType::SALE,
-            referenceId:         (string) $sale->id,
+            referenceId:         $referenceId,
         );
 
-        $this->transactionRepository->create(
-            $this->transactionService->applyPaymentDateToDTO($receivableDTO),
-        );
+        $this->generateFinancialTransaction->execute($receivableDTO);
     }
 }

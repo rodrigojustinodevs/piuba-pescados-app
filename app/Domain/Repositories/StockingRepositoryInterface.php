@@ -69,12 +69,12 @@ interface StockingRepositoryInterface
     /**
      * Find a stocking by batch ID.
      */
-    public function findByBatchId(string $batchId): ?Stocking;
+    public function findByBatchOrFail(string $batchId): ?Stocking;
 
     /**
      * Check if there are any active stockings in a batch.
      */
-    public function hasActiveStockingsInBatch(string $batchId, string $excludeStockingId = null): bool;
+    public function hasActiveStockingsInBatch(string $batchId, ?string $excludeStockingId = null): bool;
 
     /**
      * Get the total accumulated cost of a batch.

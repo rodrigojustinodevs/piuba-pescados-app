@@ -6,11 +6,9 @@ namespace App\Application\Actions\FinancialTransaction;
 
 use App\Application\DTOs\ExpenseInputDTO;
 use App\Application\DTOs\FinancialTransactionInputDTO;
-use App\Application\Services\FinancialTransactionService;
 use App\Domain\Enums\FinancialTransactionReferenceType;
 use App\Domain\Enums\FinancialTransactionStatus;
 use App\Domain\Enums\FinancialType;
-use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 
 /**
  * Gera automaticamente o "Contas a Pagar" (PENDING) vinculado à despesa.
@@ -21,22 +19,12 @@ use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 final readonly class GeneratePayableAction
 {
     public function __construct(
-        private FinancialTransactionRepositoryInterface $transactionRepository,
-        private FinancialTransactionService $transactionService,
+        private GenerateFinancialTransactionAction $generateFinancialTransaction,
     ) {
     }
 
     public function execute(ExpenseInputDTO $dto, string $referenceId): void
     {
-        if ($dto->financialCategoryId === null) {
-            return;
-        }
-
-        $this->transactionService->validateCategoryType(
-            categoryId:      $dto->financialCategoryId,
-            transactionType: FinancialType::EXPENSE,
-        );
-
         $payableDTO = new FinancialTransactionInputDTO(
             companyId:           $dto->companyId,
             financialCategoryId: $dto->financialCategoryId,
@@ -51,8 +39,6 @@ final readonly class GeneratePayableAction
             referenceId:         $referenceId,
         );
 
-        $this->transactionRepository->create(
-            $this->transactionService->applyPaymentDateToDTO($payableDTO),
-        );
+        $this->generateFinancialTransaction->execute($payableDTO);
     }
 }

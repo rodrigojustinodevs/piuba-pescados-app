@@ -6,6 +6,7 @@ namespace App\Domain\Repositories;
 
 use App\Application\DTOs\SaleInputDTO;
 use App\Domain\Models\Sale;
+use Illuminate\Support\Collection;
 
 interface SaleRepositoryInterface
 {
@@ -59,4 +60,11 @@ interface SaleRepositoryInterface
      * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function findOrFailLocked(string $id): Sale;
+
+    /**
+     * Find sales by sales order ID.
+     *
+     * @return Collection<int, Sale>
+     */
+    public function findByOrderId(string $orderId): Collection;
 }

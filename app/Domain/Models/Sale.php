@@ -135,4 +135,13 @@ class Sale extends BaseModel
     {
         return round((float) $this->total_weight * (float) $this->price_per_kg, 2);
     }
+
+    /** @phpstan-return BelongsTo<SalesOrder, static> */
+    public function salesOrder(): BelongsTo
+    {
+        /** @var BelongsTo<SalesOrder, static> $relation */
+        $relation = $this->belongsTo(SalesOrder::class, 'sales_order_id');
+
+        return $relation;
+    }
 }

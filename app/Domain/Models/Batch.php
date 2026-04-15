@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\BatchStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -78,6 +79,17 @@ class Batch extends BaseModel
     {
         /** @var BelongsTo<Tank, static> $relation */
         $relation = $this->belongsTo(Tank::class, 'tank_id');
+
+        return $relation;
+    }
+
+    /**
+     * @phpstan-return HasMany<SalesOrderItem, static>
+     */
+    public function salesOrderItems(): HasMany
+    {
+        /** @var HasMany<SalesOrderItem, static> $relation */
+        $relation = $this->hasMany(SalesOrderItem::class, 'batch_id');
 
         return $relation;
     }

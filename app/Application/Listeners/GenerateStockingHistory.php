@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
  *
  * Mudança em relação à versão anterior:
  *  - findActiveStockingByBatch() usava Stocking::query() diretamente.
- *    Agora usa StockingRepositoryInterface::findByBatchId() — mantém
+ *    Agora usa StockingRepositoryInterface::findByBatchOrFail() — mantém
  *    a camada de infraestrutura encapsulada e facilita testes.
  *
  * Registrado para: FeedingCreated | MortalityRecorded | SaleProcessed
@@ -32,11 +32,7 @@ final readonly class GenerateStockingHistory
 
     public function handleFeedingCreated(FeedingCreated $event): void
     {
-        $stocking = $this->stockingRepository->findByBatchId($event->feeding->batch_id);
-
-        if (! $stocking instanceof Stocking) {
-            return;
-        }
+        $stocking = $this->stockingRepository->findByBatchOrFail($event->feeding->batch_id);
 
         StockingHistory::create([
             'id'          => (string) Str::uuid(),
@@ -54,11 +50,7 @@ final readonly class GenerateStockingHistory
 
     public function handleMortalityRecorded(MortalityRecorded $event): void
     {
-        $stocking = $this->stockingRepository->findByBatchId($event->mortality->batch_id);
-
-        if (! $stocking instanceof Stocking) {
-            return;
-        }
+        $stocking = $this->stockingRepository->findByBatchOrFail($event->mortality->batch_id);
 
         StockingHistory::create([
             'id'          => (string) Str::uuid(),

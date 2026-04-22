@@ -6,7 +6,7 @@ namespace App\Infrastructure\Security;
 
 use App\Domain\Models\User;
 use App\Domain\ValueObjects\TenantContext;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\JWTAuth;
 
 /**
  * Responsável por gerar tokens JWT com claims de company e role.
@@ -19,6 +19,11 @@ use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
  */
 final class CompanyJwtService
 {
+    public function __construct(
+        private readonly JWTAuth $jwt,
+    ) {
+    }
+
     /**
      * @param bool $includePermissions Include permissions in the payload (increases the token size)
      */
@@ -36,7 +41,7 @@ final class CompanyJwtService
             $customClaims['perms'] = $context->permissions;
         }
 
-        return JWTAuth::claims($customClaims)->fromUser($user);
+        return $this->jwt->claims($customClaims)->fromUser($user);
     }
 
     /**
@@ -45,7 +50,7 @@ final class CompanyJwtService
     public function extractCompanyId(): ?string
     {
         try {
-            $payload = JWTAuth::parseToken()->getPayload();
+            $payload = $this->jwt->parseToken()->getPayload();
             $cid     = $payload->get('cid');
 
             return $cid ? (string) $cid : null;
@@ -60,7 +65,7 @@ final class CompanyJwtService
     public function extractRole(): ?string
     {
         try {
-            $payload = JWTAuth::parseToken()->getPayload();
+            $payload = $this->jwt->parseToken()->getPayload();
 
             return $payload->get('role');
         } catch (\Throwable) {
@@ -74,7 +79,7 @@ final class CompanyJwtService
     public function invalidateCurrentToken(): void
     {
         try {
-            JWTAuth::parseToken()->invalidate();
+            $this->jwt->parseToken()->invalidate();
         } catch (\Throwable) {
             // Token already invalid or expired — no action required
         }
@@ -85,6 +90,17 @@ final class CompanyJwtService
      */
     public function refresh(): string
     {
-        return JWTAuth::parseToken()->refresh();
+        return $this->jwt->parseToken()->refresh();
+    }
+
+    public function authenticateFromToken(): ?User
+    {
+        try {
+            $user = $this->jwt->parseToken()->authenticate();
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return $user instanceof User ? $user : null;
     }
 }

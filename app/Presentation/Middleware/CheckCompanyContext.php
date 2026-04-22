@@ -11,7 +11,6 @@ use App\Infrastructure\Security\CompanyJwtService;
 use App\Infrastructure\Security\PermissionResolver;
 use Closure;
 use Illuminate\Http\Request;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 final readonly class CheckCompanyContext
@@ -36,7 +35,7 @@ final readonly class CheckCompanyContext
             ], SymfonyResponse::HTTP_FORBIDDEN);
         }
 
-        $user = JWTAuth::parseToken()->authenticate();
+        $user = $this->jwtService->authenticateFromToken();
 
         if (! $user instanceof User) {
             return response()->json([

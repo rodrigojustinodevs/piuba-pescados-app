@@ -5,13 +5,23 @@ declare(strict_types=1);
 use App\Presentation\Controllers\BatchController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['permission:create-batch|view-batch|update-batch|delete-batch'])
-    ->group(function (): void {
-        Route::post('batch', [BatchController::class, 'store']);
-        Route::get('batches', [BatchController::class, 'index']);
-        Route::get('batch/{id}', [BatchController::class, 'show']);
-        Route::put('batch/{id}', [BatchController::class, 'update']);
-        Route::delete('batch/{id}', [BatchController::class, 'destroy']);
-        Route::post('batch/{id}/finish', [BatchController::class, 'finish']);
-        Route::post('batches/distribution', [BatchController::class, 'distribution']);
-    });
+Route::post('batch', [BatchController::class, 'store'])
+    ->middleware('permission:create-batch');
+
+Route::get('batches', [BatchController::class, 'index'])
+    ->middleware('permission:view-batch');
+
+Route::get('batch/{id}', [BatchController::class, 'show'])
+    ->middleware('permission:view-batch');
+
+Route::put('batch/{id}', [BatchController::class, 'update'])
+    ->middleware('permission:update-batch');
+
+Route::delete('batch/{id}', [BatchController::class, 'destroy'])
+    ->middleware('permission:delete-batch');
+
+Route::post('batch/{id}/finish', [BatchController::class, 'finish'])
+    ->middleware('permission:update-batch');
+
+Route::post('batches/distribution', [BatchController::class, 'distribution'])
+    ->middleware('permission:create-batch');

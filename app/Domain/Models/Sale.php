@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use App\Domain\Enums\SaleStatus;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -35,6 +36,7 @@ use Illuminate\Support\Str;
  */
 class Sale extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

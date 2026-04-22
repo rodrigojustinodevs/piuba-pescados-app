@@ -14,7 +14,8 @@ interface BatchRepositoryInterface
      *     status?: string|null,
      *     tank_id?: string|null,
      *     species?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
+     *     companyId?: string|null,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface;

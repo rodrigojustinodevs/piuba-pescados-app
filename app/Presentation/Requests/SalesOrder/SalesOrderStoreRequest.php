@@ -59,13 +59,12 @@ final class SalesOrderStoreRequest extends FormRequest
 
             'expected_delivery_date.required'       => 'The expected delivery date is required.',
             'expected_delivery_date.date_format'    => 'The expected delivery date must be a valid date.',
-            'expected_delivery_date.after_or_equal' =>
-                'The expected delivery date must be after or equal to issue date.',
+            'expected_delivery_date.after_or_equal' => 'The expected delivery date must be after or equal to '
+                . 'issue date.',
 
             'expected_payment_date.required'       => 'The expected payment date is required.',
             'expected_payment_date.date_format'    => 'The expected payment date must be a valid date.',
-            'expected_payment_date.after_or_equal' =>
-                'The expected payment date must be after or equal to issue date.',
+            'expected_payment_date.after_or_equal' => 'The expected payment date must be after or equal to issue date.',
 
             'financial_category_id.required' => 'The financial category is required.',
             'financial_category_id.exists'   => 'The financial category does not belong to the company.',
@@ -95,12 +94,12 @@ final class SalesOrderStoreRequest extends FormRequest
     {
         return $this->mapCamelToSnake(
             [
-            'clientId'             => 'client_id',
-            'issueDate'            => 'issue_date',
-            'expectedPaymentDate'  => 'expected_payment_date',
-            'expectedDeliveryDate' => 'expected_delivery_date',
-            'needsInvoice'         => 'needs_invoice',
-            'financialCategoryId'  => 'financial_category_id',
+                'clientId'             => 'client_id',
+                'issueDate'            => 'issue_date',
+                'expectedPaymentDate'  => 'expected_payment_date',
+                'expectedDeliveryDate' => 'expected_delivery_date',
+                'needsInvoice'         => 'needs_invoice',
+                'financialCategoryId'  => 'financial_category_id',
             ]
         );
     }
@@ -118,8 +117,8 @@ final class SalesOrderStoreRequest extends FormRequest
             'items' => array_map(
                 fn (?array $item): array => $this->mapCamelToSnake(
                     [
-                    'stockingId' => 'stocking_id',
-                    'unitPrice'  => 'unit_price',
+                        'stockingId' => 'stocking_id',
+                        'unitPrice'  => 'unit_price',
                     ],
                     $item
                 ),

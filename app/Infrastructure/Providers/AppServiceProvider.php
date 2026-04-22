@@ -169,6 +169,7 @@ class AppServiceProvider extends ServiceProvider
                 auth: $app->make(Guard::class),
             ),
         );
+        $this->app->register(MultiTenantServiceProvider::class);
     }
 
     /**

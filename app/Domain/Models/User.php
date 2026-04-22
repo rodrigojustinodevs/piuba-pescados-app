@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\Enums\RolesEnum;
+use App\Infrastructure\Persistence\Traits\HasPermissions;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,13 +14,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use OwenIt\Auditing\Contracts\Auditable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements Auditable, JWTSubject
 {
     use \OwenIt\Auditing\Auditable;
     /** @use HasFactory<UserFactory> */
     use HasFactory;
+    use HasPermissions;
     use Notifiable;
 
     /**
@@ -70,7 +73,7 @@ class User extends Authenticatable implements Auditable, JWTSubject
     public function permissions(): BelongsToMany
     {
         /** @var BelongsToMany<Permission, static> $relation */
-        $relation = $this->belongsToMany(Permission::class);
+        $relation = $this->belongsToMany(Permission::class, 'user_company_permissions');
 
         return $relation;
     }
@@ -92,9 +95,67 @@ class User extends Authenticatable implements Auditable, JWTSubject
     public function companies(): BelongsToMany
     {
         /** @var BelongsToMany<Company, static> $relation */
-        $relation = $this->belongsToMany(Company::class, 'company_user');
+        $relation = $this->belongsToMany(Company::class, 'company_user')
+            ->withPivot(['role', 'is_active', 'joined_at'])
+            ->withTimestamps()
+            ->using(CompanyUserPivot::class);
 
         return $relation;
+    }
+
+    /**
+     * @return BelongsToMany<Company, static>
+     */
+    public function activeCompanies(): BelongsToMany
+    {
+        return $this->companies()->wherePivot('is_active', true);
+    }
+
+    public function belongsToCompany(string $companyId): bool
+    {
+        return $this->activeCompanies()
+            ->where('companies.id', $companyId)
+            ->exists();
+    }
+
+    public function roleInCompany(string $companyId): ?RolesEnum
+    {
+        $pivotModel = $this->companies()
+            ->where('companies.id', $companyId)
+            ->first()?->pivot;
+
+        $pivot = $pivotModel instanceof CompanyUserPivot ? $pivotModel : null;
+
+        return $pivot ? RolesEnum::from($pivot->role) : null;
+    }
+
+    /**
+     * @return list<array{id: string, name: string, slug: string|null, role: string}>
+     */
+    public function companiesWithRoles(): array
+    {
+        return $this->activeCompanies()
+            ->get()
+            ->map(function (Company $company): array {
+                $pivotValue = $company->getRelationValue('pivot');
+                $pivot      = $pivotValue instanceof CompanyUserPivot ? $pivotValue : null;
+
+                return [
+                    'id'   => (string) $company->id,
+                    'name' => (string) $company->name,
+                    'slug' => isset($company->slug) ? (string) $company->slug : null,
+                    'role' => $pivot instanceof CompanyUserPivot ? $pivot->role : RolesEnum::GUEST->value,
+                ];
+            })
+            ->toArray();
+    }
+
+    /** Verifica se o usuário é master_admin em qualquer contexto. */
+    public function isMasterAdmin(): bool
+    {
+        return $this->companies()
+            ->wherePivot('role', RolesEnum::MASTER_ADMIN->value)
+            ->exists();
     }
 
     /**
@@ -112,32 +173,6 @@ class User extends Authenticatable implements Auditable, JWTSubject
      */
     public function getJWTCustomClaims(): array
     {
-        // Carrega as roles globais do usuário de forma eficiente
-        $roles = $this->roles()->pluck('name')->toArray();
-
-        // Verifica se o usuário é master_admin
-        $isMasterAdmin = in_array('master_admin', $roles, true);
-
-        $claims = [
-            'roles'           => $roles,
-            'is_master_admin' => $isMasterAdmin,
-        ];
-
-        // Roles que precisam de company vinculada
-        $companyRoles = ['company-admin', 'manager', 'operator', 'guest'];
-
-        // Verifica se o usuário tem algum desses roles
-        $hasCompanyRole = array_intersect($roles, $companyRoles) !== [];
-
-        // Se tiver um desses roles e estiver vinculado a uma company, adiciona o companyId
-        if ($hasCompanyRole) {
-            $company = $this->companies()->first();
-
-            if ($company) {
-                $claims['company_id'] = $company->id;
-            }
-        }
-
-        return $claims;
+        return [];
     }
 }

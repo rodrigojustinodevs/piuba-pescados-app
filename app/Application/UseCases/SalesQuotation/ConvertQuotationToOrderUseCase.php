@@ -145,9 +145,9 @@ final readonly class ConvertQuotationToOrderUseCase
         $order = $this->salesOrderRepository->update(
             (string) $quotation->id,
             [
-            'type'                   => SalesOrderType::ORDER->value,
-            'expected_delivery_date' => $dto->expectedDeliveryDate,
-            'status'                 => SalesOrderStatus::OPEN->value,
+                'type'                   => SalesOrderType::ORDER->value,
+                'expected_delivery_date' => $dto->expectedDeliveryDate,
+                'status'                 => SalesOrderStatus::OPEN->value,
             ]
         );
 

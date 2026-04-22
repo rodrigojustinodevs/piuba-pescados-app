@@ -38,7 +38,7 @@ final readonly class UpdateTankUseCase
                 'name'            => $dto->name,
                 'capacity_liters' => $dto->capacityLiters,
                 'location'        => $dto->location,
-                'status'          => $dto->status,
+                'status'          => $dto->status->value,
             ]);
 
             return $updated->refresh();

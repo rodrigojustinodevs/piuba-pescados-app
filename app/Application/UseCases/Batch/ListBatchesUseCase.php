@@ -6,6 +6,7 @@ namespace App\Application\UseCases\Batch;
 
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
+use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ListBatchesUseCase
 {
@@ -24,6 +25,8 @@ final readonly class ListBatchesUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
+        $filters['companyId'] = CompanyContext::requireCompanyId();
+
         return $this->repository->paginate($filters);
     }
 }

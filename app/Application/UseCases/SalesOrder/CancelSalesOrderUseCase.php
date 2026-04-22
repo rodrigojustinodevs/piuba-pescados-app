@@ -56,7 +56,7 @@ final readonly class CancelSalesOrderUseCase
                 $this->salesOrderRepository->update(
                     $orderId,
                     [
-                    'status' => SalesOrderStatus::CANCELLED->value,
+                        'status' => SalesOrderStatus::CANCELLED->value,
                     ]
                 );
             }

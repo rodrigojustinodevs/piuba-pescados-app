@@ -6,8 +6,8 @@ namespace App\Infrastructure\Security;
 
 use App\Application\Contracts\Auth\TokenServiceInterface;
 use App\Domain\Models\User;
+use PHPOpenSourceSaver\JWTAuth\JWTAuth;
 use RuntimeException;
-use Tymon\JWTAuth\JWTAuth;
 
 final readonly class JwtTokenService implements TokenServiceInterface
 {

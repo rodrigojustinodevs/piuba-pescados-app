@@ -47,7 +47,7 @@ final class SalesOrderController
         $paginator = $useCase->execute(
             $request->only(
                 [
-                'clientId', 'status', 'type', 'perPage', 'page', 'companyId',
+                    'clientId', 'status', 'type', 'perPage', 'page', 'companyId',
                 ]
             ),
         );

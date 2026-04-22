@@ -4,67 +4,33 @@ declare(strict_types=1);
 
 namespace App\Presentation\Middleware;
 
-use App\Application\UseCases\Auth\CheckUserPermissionUseCase;
+use App\Infrastructure\Security\CompanyContext;
+use App\Infrastructure\Security\PermissionResolver;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
-class CheckPermission
+final readonly class CheckPermission
 {
     public function __construct(
-        protected CheckUserPermissionUseCase $checkPermissionUseCase
+        private PermissionResolver $resolver,
     ) {
     }
 
-    public function handle(Request $request, Closure $next, string $permissions): mixed
+    public function handle(Request $request, Closure $next, string ...$permissions): Response
     {
-        $user = $request->user();
+        $user      = $request->user();
+        $companyId = CompanyContext::requireCompanyId();
 
-        if (! $user) {
-            throw new AccessDeniedHttpException('Unauthorized');
-        }
-
-        $permissionList = $this->parsePermissions($permissions);
-        $companyId      = $this->resolveCompanyId($request);
-
-        if ($this->checkPermissionUseCase->userHasAnyPermission($user, $permissionList, $companyId)) {
-            return $next($request);
-        }
-
-        throw new AccessDeniedHttpException('Forbidden: missing required permission. ' . $permissions);
-    }
-
-    /**
-     * @return array<string>
-     */
-    private function parsePermissions(string $permissions): array
-    {
-        return array_map(
-            trim(...),
-            preg_split('/[,|]/', $permissions)
-        );
-    }
-
-    private function resolveCompanyId(Request $request): ?string
-    {
-        if ($request->hasHeader('X-Company-Id')) {
-            return $request->header('X-Company-Id');
-        }
-
-        $route = $request->route();
-
-        if ($route) {
-            $companyId = $route->parameter('company') ?? $route->parameter('companyId');
-
-            if ($companyId) {
-                return (string) $companyId;
+        foreach ($permissions as $permission) {
+            if (! $this->resolver->hasPermission($user, $companyId, $permission)) {
+                return response()->json([
+                    'message'    => 'Acesso negado.',
+                    'permission' => $permission,
+                ], 403);
             }
         }
 
-        if ($request->has('company_id')) {
-            return $request->query('company_id');
-        }
-
-        return null;
+        return $next($request);
     }
 }

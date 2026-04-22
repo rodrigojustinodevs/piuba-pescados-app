@@ -55,7 +55,7 @@ final readonly class CancelSaleAction
         $this->saleRepository->update(
             (string) $sale->id,
             [
-            'status' => SaleStatus::CANCELLED->value,
+                'status' => SaleStatus::CANCELLED->value,
             ]
         );
     }

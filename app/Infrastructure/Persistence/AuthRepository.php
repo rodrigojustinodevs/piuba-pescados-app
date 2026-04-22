@@ -8,18 +8,22 @@ use App\Application\DTOs\LoginCredentialsDTO;
 use App\Domain\Models\User;
 use App\Domain\Repositories\AuthRepositoryInterface;
 use App\Domain\ValueObjects\Email;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 
 class AuthRepository implements AuthRepositoryInterface
 {
     public function attemptLogin(LoginCredentialsDTO $credentials): ?string
     {
         try {
+            /** @var StatefulGuard $guard */
+            $guard = Auth::guard('api');
+
             /** @var string|false $token */
-            $token = auth('api')->attempt([
+            $token = $guard->attempt([
                 'email'    => $credentials->email,
                 'password' => $credentials->password,
             ]);
@@ -146,6 +150,6 @@ class AuthRepository implements AuthRepositoryInterface
 
     public function findByEmail(Email $email): ?User
     {
-        return User::where('email', $email->value())->first();
+        return User::with('roles', 'permissions', 'companies')->where('email', $email->value())->first();
     }
 }

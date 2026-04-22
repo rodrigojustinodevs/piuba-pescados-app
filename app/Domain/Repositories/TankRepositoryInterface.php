@@ -11,9 +11,11 @@ interface TankRepositoryInterface
 {
     /**
      * @param array{
-     *     company_id?: string|null,
+     *     companyId?: string|null,
      *     status?: string|null,
-     *     per_page?: int,
+     *     tankTypeId?: string|null,
+     *     perPage?: int,
+     *     search?: string|null,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface;

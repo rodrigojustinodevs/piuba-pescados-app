@@ -4,44 +4,46 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObjects;
 
-use InvalidArgumentException;
+use App\Domain\Enums\PermissionsEnum;
 
-final readonly class Permission
+final readonly class Permission implements \Stringable
 {
-    public function __construct(
-        private string $name
-    ) {
-        $this->validate();
+    public PermissionsEnum $enum;
+
+    public function __construct(string | PermissionsEnum $permission)
+    {
+        $this->enum = $permission instanceof PermissionsEnum
+            ? $permission
+            : PermissionsEnum::from($permission);
     }
 
-    private function validate(): void
+    public static function from(string $value): self
     {
-        if ($this->name === '' || $this->name === '0') {
-            throw new InvalidArgumentException('Permission name cannot be empty.');
-        }
-
-        if (in_array(preg_match('/^[a-z]+(-[a-z]+)+$/', $this->name), [0, false], true)) {
-            throw new InvalidArgumentException("Invalid permission format: {$this->name}");
-        }
+        return new self(PermissionsEnum::from($value));
     }
 
     public function value(): string
     {
-        return $this->name;
+        return $this->enum->value;
+    }
+
+    public function label(): string
+    {
+        return $this->enum->label();
+    }
+
+    public function category(): string
+    {
+        return $this->enum->category();
     }
 
     public function equals(self $other): bool
     {
-        return $this->name === $other->name;
+        return $this->enum === $other->enum;
     }
 
-    public function toString(): string
+    public function __toString(): string
     {
-        return $this->name;
-    }
-
-    public static function fromString(string $name): self
-    {
-        return new self($name);
+        return $this->enum->value;
     }
 }

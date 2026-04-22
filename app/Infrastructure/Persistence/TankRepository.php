@@ -8,6 +8,7 @@ use App\Application\DTOs\TankInputDTO;
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 final class TankRepository implements TankRepositoryInterface
 {
@@ -18,25 +19,36 @@ final class TankRepository implements TankRepositoryInterface
 
     /**
      * @param array{
-     *     company_id?: string|null,
+     *     companyId?: string|null,
+     *     name?: string|null,
+     *     tankTypeId?: string|null,
      *     status?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
+     *     search?: string|null,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface
     {
+        $search  = $filters['search'] ?? null;
+        $perPage = (int) ($filters['perPage'] ?? 25);
+
         $paginator = Tank::with(self::DEFAULT_RELATIONS)
             ->when(
-                ! empty($filters['company_id']),
-                static fn ($q) => $q->where('company_id', $filters['company_id']),
+                is_string($search) && $search !== '',
+                static fn ($q) => $q->whereAny(['name', 'location'], 'like', '%' . $search . '%'),
+            )
+            ->when(
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
             )
             ->when(
                 ! empty($filters['status']),
                 static fn ($q) => $q->where('status', $filters['status']),
             )
             ->latest()
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate($perPage);
 
+        /** @var LengthAwarePaginator<int, Tank> $paginator */
         return new PaginationPresentr($paginator);
     }
 

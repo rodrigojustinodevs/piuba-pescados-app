@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\DTOs;
 
-use App\Domain\Enums\Status;
+use App\Domain\Enums\TankStatus;
 use App\Domain\ValueObjects\CapacityLiters;
 use App\Domain\ValueObjects\Location;
 use App\Domain\ValueObjects\Name;
@@ -17,7 +17,7 @@ final readonly class TankInputDTO
         public ?string $location,
         public ?string $tankTypeId,
         public ?string $companyId,
-        public Status $status = Status::ACTIVE,
+        public TankStatus $status,
     ) {
     }
 
@@ -32,7 +32,7 @@ final readonly class TankInputDTO
             location:       isset($data['location']) ? (new Location($data['location']))->value() : null,
             tankTypeId:     (string) ($data['tank_type_id'] ?? $data['tankTypeId'] ?? ''),
             companyId:      (string) ($data['company_id'] ?? $data['companyId'] ?? ''),
-            status:         Status::from((string) ($data['status'] ?? Status::ACTIVE->value)),
+            status:         TankStatus::from((string) ($data['status'] ?? TankStatus::ACTIVE->value)),
         );
     }
 
@@ -45,7 +45,7 @@ final readonly class TankInputDTO
             'location'        => $this->location,
             'tank_type_id'    => $this->tankTypeId,
             'company_id'      => $this->companyId,
-            'status'          => $this->status,
+            'status'          => $this->status->value,
         ], static fn (int | string | null $v): bool => $v !== null);
     }
 }

@@ -19,28 +19,33 @@ final class BatchRepository implements BatchRepositoryInterface
     /**
      * @param array{
      *     status?: string|null,
-     *     tank_id?: string|null,
+     *     tankId?: string|null,
      *     species?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
+     *     companyId?: string|null,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface
     {
         $paginator = Batch::with(self::DEFAULT_RELATIONS)
             ->when(
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
+            )
+            ->when(
                 ! empty($filters['status']),
                 static fn ($q) => $q->where('status', BatchStatus::from($filters['status'])->value),
             )
             ->when(
-                ! empty($filters['tank_id']),
-                static fn ($q) => $q->where('tank_id', $filters['tank_id']),
+                ! empty($filters['tankId']),
+                static fn ($q) => $q->where('tank_id', $filters['tankId']),
             )
             ->when(
                 ! empty($filters['species']),
                 static fn ($q) => $q->where('species', 'like', '%' . $filters['species'] . '%'),
             )
             ->latest('entry_date')
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

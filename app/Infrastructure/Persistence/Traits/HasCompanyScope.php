@@ -29,7 +29,8 @@ trait HasCompanyScope
 
         // Preenche company_id automaticamente ao criar registros
         static::creating(function (self $model): void {
-            $needsCompanyId = ! property_exists($model, 'company_id') || $model->company_id === null;
+            $currentCompanyId = $model->getAttribute('company_id');
+            $needsCompanyId = ! is_string($currentCompanyId) || $currentCompanyId === '';
 
             if (
                 $needsCompanyId &&

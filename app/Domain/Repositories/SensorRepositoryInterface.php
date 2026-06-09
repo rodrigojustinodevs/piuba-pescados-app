@@ -31,11 +31,12 @@ interface SensorRepositoryInterface
      * Paginate sensor records.
      *
      * @param array{
-     *     company_id: string,
-     *     tank_id?: string|null,
-     *     sensor_type?: string|null,
+     *     search?: string|null,
+     *     companyId: string,
+     *     tankId?: string|null,
+     *     sensorType?: string|null,
      *     status?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface;

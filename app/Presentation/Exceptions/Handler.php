@@ -6,6 +6,7 @@ namespace App\Presentation\Exceptions;
 
 use App\Application\Exceptions\CompanyNotFoundException;
 use App\Domain\Exceptions\AllocationAmountMismatchException;
+use App\Domain\Exceptions\SensorNotAssignedToCompanyException;
 use App\Domain\Exceptions\BatchAlreadyFinishedException;
 use App\Domain\Exceptions\BiometryAverageWeightInvalidException;
 use App\Domain\Exceptions\BiometryDuplicateDateException;
@@ -36,6 +37,7 @@ use App\Domain\Exceptions\TankAlreadyHasActiveBatchException;
 use App\Domain\Exceptions\TransactionAlreadyAllocatedException;
 use App\Domain\Exceptions\TransactionAmountImmutableException;
 use App\Domain\Exceptions\TransferBatchOriginMismatchException;
+use App\Domain\Exceptions\TransferQuantityExceedsStockException;
 use App\Domain\Exceptions\TransferSameTankException;
 use App\Domain\Exceptions\UnauthorizedException;
 use App\Domain\Exceptions\ZeroDeltaException;
@@ -197,6 +199,12 @@ class Handler extends ExceptionHandler
         );
         $this->renderable(
             fn (TransferSameTankException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (TransferQuantityExceedsStockException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )
@@ -425,6 +433,16 @@ class Handler extends ExceptionHandler
         );
         $this->renderable(
             fn (ZeroDeltaException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        // -----------------------------------------------------------------------
+        // Domain
+        // -----------------------------------------------------------------------
+        $this->renderable(
+            fn (SensorNotAssignedToCompanyException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )

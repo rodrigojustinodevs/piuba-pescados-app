@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Application\UseCases\WaterQuality;
 
 use App\Application\Contracts\CompanyResolverInterface;
-use App\Domain\Repositories\PaginationInterface;
+use App\Application\DTOs\WaterQualityListResult;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
+use App\Domain\ValueObjects\WaterQualityScore;
+use App\Infrastructure\Security\CompanyContext;
 
 class ListWaterQualitiesUseCase
 {
@@ -18,6 +20,8 @@ class ListWaterQualitiesUseCase
 
     /**
      * @param array{
+     *     company_id?: string|null,
+     *     search?: string|null,
      *     tank_id?: string|null,
      *     date_from?: string|null,
      *     date_to?: string|null,
@@ -25,10 +29,17 @@ class ListWaterQualitiesUseCase
      *     page?: int|string|null,
      * } $filters
      */
-    public function execute(array $filters = []): PaginationInterface
+    public function execute(array $filters = []): WaterQualityListResult
     {
-        $filters['company_id'] = $this->companyResolver->resolve();
+        if (! CompanyContext::isMasterAdmin()) {
+            $filters['company_id'] = CompanyContext::requireCompanyId();
+        }
 
-        return $this->waterQualityRepository->paginate($filters);
+        $paginator = $this->waterQualityRepository->paginate($filters);
+        $score     = WaterQualityScore::fromCounts(
+            $this->waterQualityRepository->countByQuality($filters),
+        );
+
+        return new WaterQualityListResult($paginator, $score);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Sensor;
 
 use App\Application\Contracts\CompanyResolverInterface;
+use App\Infrastructure\Security\CompanyContext;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
 
@@ -18,16 +19,19 @@ class ListSensorsUseCase
 
     /**
      * @param array{
-     *     tank_id?: string|null,
-     *     sensor_type?: string|null,
+     *     search?: string|null,
+     *     tankId?: string|null,
+     *     sensorType?: string|null,
      *     status?: string|null,
-     *     per_page?: int|string|null,
+     *     perPage?: int|string|null,
      *     page?: int|string|null,
      * } $filters
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        $filters['company_id'] = $this->companyResolver->resolve();
+        if (!CompanyContext::isMasterAdmin()) {
+            $filters['companyId'] = CompanyContext::requireCompanyId();
+        }
 
         return $this->sensorRepository->paginate($filters);
     }

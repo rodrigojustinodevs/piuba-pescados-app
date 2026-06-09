@@ -38,31 +38,44 @@ class SensorRepository implements SensorRepositoryInterface
      * Get paginated records.
      *
      * @param array{
-     *     company_id: string,
-     *     tank_id?: string|null,
-     *     sensor_type?: string|null,
+     *     search?: string|null,
+     *     companyId: string,
+     *     tankId?: string|null,
+     *     sensorType?: string|null,
      *     status?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface
     {
+        $search = $filters['search'] ?? null;
+        if (isset($filters['status']) && is_string($filters['status'])) {
+            $filters['status'] = SensorDTO::toPersistenceStatus($filters['status']);
+        }
+
         $paginator = Sensor::with(['tank:id,name'])
-            ->whereHas('tank', static fn ($q) => $q->where('company_id', $filters['company_id']))
             ->when(
-                ! empty($filters['tank_id']),
-                static fn ($q) => $q->where('tank_id', $filters['tank_id']),
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
             )
             ->when(
-                ! empty($filters['sensor_type']),
-                static fn ($q) => $q->where('sensor_type', $filters['sensor_type']),
+                is_string($search) && $search !== '',
+                static fn ($q) => $q->whereAny(['name', 'serial_number', 'notes'], 'like', '%' . $search . '%'),
+            )
+            ->when(
+                ! empty($filters['tankId']),
+                static fn ($q) => $q->where('tank_id', $filters['tankId']),
+            )
+            ->when(
+                ! empty($filters['sensorType']),
+                static fn ($q) => $q->where('sensor_type', $filters['sensorType']),
             )
             ->when(
                 ! empty($filters['status']),
                 static fn ($q) => $q->where('status', $filters['status']),
             )
             ->latest()
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

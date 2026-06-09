@@ -153,9 +153,7 @@ class User extends Authenticatable implements Auditable, JWTSubject
     /** Verifica se o usuário é master_admin em qualquer contexto. */
     public function isMasterAdmin(): bool
     {
-        return $this->companies()
-            ->wherePivot('role', RolesEnum::MASTER_ADMIN->value)
-            ->exists();
+        return $this->roles()->where('name', 'master_admin')->exists();
     }
 
     /**

@@ -10,12 +10,67 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @OA\Schema(
  *     schema="TransferResource",
+ *
  *     @OA\Property(property="id", type="string", format="uuid"),
  *     @OA\Property(property="batchId", type="string", format="uuid"),
  *     @OA\Property(property="originTankId", type="string", format="uuid"),
  *     @OA\Property(property="destinationTankId", type="string", format="uuid"),
+ *
  *     @OA\Property(property="quantity", type="integer", example=1000),
- *     @OA\Property(property="description", type="string", nullable=true),
+ *
+ *     @OA\Property(
+ *         property="description",
+ *         type="string",
+ *         nullable=true
+ *     ),
+ *
+ *     @OA\Property(
+ *         property="transferDate",
+ *         type="string",
+ *         format="date",
+ *         nullable=true,
+ *         example="2026-05-27"
+ *     ),
+ *
+ *     @OA\Property(
+ *         property="status",
+ *         type="string",
+ *         enum={"completed","scheduled","cancelled"},
+ *         nullable=true,
+ *         example="scheduled"
+ *     ),
+ *
+ *     @OA\Property(
+ *         property="reason",
+ *         type="string",
+ *         enum={
+ *             "growth",
+ *             "density",
+ *             "biosecurity",
+ *             "maintenance",
+ *             "harvest_prep",
+ *             "other"
+ *         },
+ *         nullable=true,
+ *         example="growth"
+ *     ),
+ *
+ *     @OA\Property(
+ *         property="responsible",
+ *         type="string",
+ *         nullable=true,
+ *         example="Carlos Silva"
+ *     ),
+ *
+ *     @OA\Property(
+ *         property="averageWeight",
+ *         type="number",
+ *         format="float",
+ *         nullable=true,
+ *         example=12.5,
+ *         description="Peso médio em gramas"
+ *     ),
+ *
  *     @OA\Property(
  *         property="batch",
  *         type="object",
@@ -23,6 +78,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *         @OA\Property(property="id", type="string", format="uuid"),
  *         @OA\Property(property="name", type="string")
  *     ),
+ *
  *     @OA\Property(
  *         property="originTank",
  *         type="object",
@@ -30,6 +86,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *         @OA\Property(property="id", type="string", format="uuid"),
  *         @OA\Property(property="name", type="string")
  *     ),
+ *
  *     @OA\Property(
  *         property="destinationTank",
  *         type="object",
@@ -37,8 +94,20 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *         @OA\Property(property="id", type="string", format="uuid"),
  *         @OA\Property(property="name", type="string")
  *     ),
- *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
- *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
+ *
+ *     @OA\Property(
+ *         property="createdAt",
+ *         type="string",
+ *         format="date-time",
+ *         nullable=true
+ *     ),
+ *
+ *     @OA\Property(
+ *         property="updatedAt",
+ *         type="string",
+ *         format="date-time",
+ *         nullable=true
+ *     )
  * )
  *
  * @property-read string $id
@@ -46,7 +115,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string $origin_tank_id
  * @property-read string $destination_tank_id
  * @property-read int $quantity
- * @property-read string $description
+ * @property-read string|null $description
+ * @property-read string|null $status
+ * @property-read string|null $reason
+ * @property-read string|null $responsible
+ * @property-read float|null $average_weight
+ * @property-read \Illuminate\Support\Carbon|null $transfer_date
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Batch|null $batch
@@ -66,22 +140,32 @@ final class TransferResource extends JsonResource
             'batchId'           => $this->batch_id,
             'originTankId'      => $this->origin_tank_id,
             'destinationTankId' => $this->destination_tank_id,
-            'batch'             => $this->whenLoaded('batch', fn (): array => [
+
+            'batch' => $this->whenLoaded('batch', fn (): array => [
                 'id'   => $this->batch->id,
                 'name' => $this->batch->name,
             ]),
+
             'originTank' => $this->whenLoaded('originTank', fn (): array => [
                 'id'   => $this->originTank->id,
                 'name' => $this->originTank->name,
             ]),
+
             'destinationTank' => $this->whenLoaded('destinationTank', fn (): array => [
                 'id'   => $this->destinationTank->id,
                 'name' => $this->destinationTank->name,
             ]),
-            'quantity'    => $this->quantity,
-            'description' => $this->description,
-            'createdAt'   => $this->created_at?->toDateTimeString(),
-            'updatedAt'   => $this->updated_at?->toDateTimeString(),
+
+            'quantity'       => $this->quantity,
+            'description'    => $this->description,
+            'transferDate'   => $this->transfer_date?->toDateString(),
+            'status'         => $this->status,
+            'reason'         => $this->reason,
+            'responsible'    => $this->responsible,
+            'averageWeight'  => $this->average_weight,
+
+            'createdAt' => $this->created_at?->toDateTimeString(),
+            'updatedAt' => $this->updated_at?->toDateTimeString(),
         ];
     }
 }

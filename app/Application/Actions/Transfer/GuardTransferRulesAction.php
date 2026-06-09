@@ -6,6 +6,7 @@ namespace App\Application\Actions\Transfer;
 
 use App\Domain\Exceptions\TankAlreadyHasActiveBatchException;
 use App\Domain\Exceptions\TransferBatchOriginMismatchException;
+use App\Domain\Exceptions\TransferQuantityExceedsStockException;
 use App\Domain\Exceptions\TransferSameTankException;
 use App\Domain\Models\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
@@ -20,18 +21,25 @@ final readonly class GuardTransferRulesAction
     /**
      * Valida as regras de negócio para criação de transferência:
      *  1. O lote deve estar no tanque de origem informado.
-     *  2. O tanque de destino não pode ter outro lote ativo.
+     *  2. A quantidade transferida não pode exceder o estoque atual do lote.
+     *  3. O tanque de destino não pode ter outro lote ativo.
      *
      * @throws TransferBatchOriginMismatchException
+     * @throws TransferQuantityExceedsStockException
      * @throws TankAlreadyHasActiveBatchException
      */
     public function guardCreate(
         Batch $batch,
         string $originTankId,
         string $destinationTankId,
+        int $quantity,
     ): void {
         if ((string) $batch->tank_id !== $originTankId) {
             throw new TransferBatchOriginMismatchException();
+        }
+
+        if ($quantity > $batch->initial_quantity) {
+            throw new TransferQuantityExceedsStockException($quantity, $batch->initial_quantity);
         }
 
         if ($this->batchRepository->hasActiveBatchInTank($destinationTankId, $batch->id)) {

@@ -17,6 +17,11 @@ final readonly class SensorDTO
         public string $companyId,
         public string $sensorType,
         public string $status,
+        public ?string $name = null,
+        public ?string $serialNumber = null,
+        public ?int $battery = null,
+        public ?string $unit = null,
+        public ?float $lastReading = null,
         public ?string $installationDate = null,
         public ?string $notes = null,
         public ?array $tank = null,
@@ -38,7 +43,12 @@ final readonly class SensorDTO
             tankId:             $sensor->tank_id,
             companyId:          $sensor->company_id,
             sensorType:         $sensor->sensor_type,
-            status:             $sensor->status,
+            name:               $sensor->name,
+            serialNumber:       $sensor->serial_number,
+            battery:            $sensor->battery,
+            unit:               $sensor->unit,
+            lastReading:        $sensor->last_reading,
+            status:             self::toOutputStatus((string) $sensor->status),
             installationDate:   $installationStr,
             notes:              $sensor->notes,
             tank:               $tank,
@@ -55,7 +65,16 @@ final readonly class SensorDTO
             tankId:             (string) ($data['tank_id'] ?? $data['tankId'] ?? ''),
             companyId:          (string) ($data['company_id'] ?? $data['companyId'] ?? ''),
             sensorType:         (string) ($data['sensor_type'] ?? $data['sensorType'] ?? ''),
-            status:             (string) ($data['status'] ?? 'active'),
+            name: isset($data['name']) ? (string) $data['name'] : null,
+            serialNumber: isset($data['serial_number'])
+                ? (string) $data['serial_number']
+                : (isset($data['serialNumber']) ? (string) $data['serialNumber'] : null),
+            battery: isset($data['battery']) ? (int) $data['battery'] : null,
+            unit: isset($data['unit']) ? (string) $data['unit'] : null,
+            lastReading: isset($data['last_reading'])
+                ? (float) $data['last_reading']
+                : (isset($data['lastReading']) ? (float) $data['lastReading'] : null),
+            status:             self::toPersistenceStatus((string) ($data['status'] ?? 'active')),
             installationDate: isset($data['installation_date'])
                 ? (string) $data['installation_date']
                 : (isset($data['installationDate']) ? (string) $data['installationDate'] : null),
@@ -71,7 +90,12 @@ final readonly class SensorDTO
             'tankId'           => $this->tankId,
             'companyId'        => $this->companyId,
             'sensorType'       => $this->sensorType,
-            'status'           => $this->status,
+            'name'             => $this->name,
+            'serialNumber'     => $this->serialNumber,
+            'battery'          => $this->battery,
+            'unit'             => $this->unit,
+            'lastReading'      => $this->lastReading,
+            'status'           => self::toOutputStatus($this->status),
             'installationDate' => $this->installationDate,
             'notes'            => $this->notes,
             'tank'             => $this->tank ?? ['id' => '', 'name' => ''],
@@ -92,9 +116,32 @@ final readonly class SensorDTO
             'tank_id'           => $this->tankId,
             'company_id'        => $this->companyId,
             'sensor_type'       => $this->sensorType,
-            'status'            => $this->status,
+            'name'              => $this->name,
+            'serial_number'     => $this->serialNumber,
+            'battery'           => $this->battery,
+            'unit'              => $this->unit,
+            'last_reading'      => $this->lastReading,
+            'status'            => self::toPersistenceStatus($this->status),
             'installation_date' => $this->installationDate,
             'notes'             => $this->notes,
-        ], static fn (?string $v): bool => $v !== null);
+        ], static fn (mixed $v): bool => $v !== null);
+    }
+
+    public static function toPersistenceStatus(string $status): string
+    {
+        return match (mb_strtolower(trim($status))) {
+            'online', 'ativo' => 'active',
+            'offline', 'inativo' => 'inactive',
+            default => $status,
+        };
+    }
+
+    public static function toOutputStatus(string $status): string
+    {
+        return match (mb_strtolower(trim($status))) {
+            'active', 'ativo' => 'Online',
+            'inactive', 'inativo' => 'Offline',
+            default => $status,
+        };
     }
 }

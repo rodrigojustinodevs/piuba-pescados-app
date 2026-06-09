@@ -13,10 +13,15 @@ final readonly class DashboardSummaryDTO
         public int $readingsLast24h,
         public int $stocksBelowMinimum,
         public int $inactiveSensors,
+        public float $score,
+        public int $excellent,
+        public int $good,
+        public int $warning,
+        public int $critical,
     ) {
     }
 
-    /** @return array<string, int> */
+    /** @return array<string, int|float> */
     public function toArray(): array
     {
         return [
@@ -26,6 +31,11 @@ final readonly class DashboardSummaryDTO
             'readingsLast24h'    => $this->readingsLast24h,
             'stocksBelowMinimum' => $this->stocksBelowMinimum,
             'inactiveSensors'    => $this->inactiveSensors,
+            'score'              => $this->score,
+            'excellent'          => $this->excellent,
+            'good'               => $this->good,
+            'warning'            => $this->warning,
+            'critical'           => $this->critical,
         ];
     }
 }

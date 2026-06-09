@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\Mortality;
 
+use App\Domain\Enums\MortalityCause;
+use App\Domain\Enums\MortalitySeverity;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -50,7 +52,9 @@ class MortalityStoreRequest extends FormRequest
             ],
             'mortalityDate' => ['required', 'date', 'date_format:Y-m-d'],
             'quantity'      => ['required', 'integer', 'min:1'],
-            'cause'         => ['required', 'string', 'max:255'],
+            'cause'         => ['required', Rule::enum(MortalityCause::class)],
+            'description'   => ['nullable', 'string', 'max:255'],
+            'severity'      => ['required', Rule::enum(MortalitySeverity::class)],
         ];
     }
 
@@ -72,8 +76,9 @@ class MortalityStoreRequest extends FormRequest
             'quantity.integer'          => 'The quantity must be an integer.',
             'quantity.min'              => 'The quantity must be at least 1.',
             'cause.required'            => 'The cause is required.',
-            'cause.string'              => 'The cause must be a valid text.',
-            'cause.max'                 => 'The cause must not exceed 255 characters.',
+            'cause.enum'                => 'The cause must be one of: disease, water_quality, predation, handling, climate, unknown, other.',
+            'severity.required' => 'The severity is required.',
+            'severity.enum'       => 'The severity must be one of: low, medium, high, critical.',
         ];
     }
 }

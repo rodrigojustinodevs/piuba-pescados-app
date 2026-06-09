@@ -38,7 +38,7 @@ final readonly class PermissionResolver
      *
      * @throws \DomainException se o usuário não pertencer à empresa.
      */
-    public function resolve(User $user, string $companyId): TenantContext
+    public function resolve(User $user, ?string $companyId = ''): TenantContext
     {
         $cacheKey = $this->cacheKey((string) $user->id, $companyId);
 
@@ -50,7 +50,7 @@ final readonly class PermissionResolver
 
         return new TenantContext(
             userId:      (string) $user->id,
-            companyId:   $companyId,
+            companyId:   $companyId ?? '',
             role:        new Role(RolesEnum::from($data['role'])),
             permissions: $data['permissions'],
         );
@@ -97,13 +97,23 @@ final readonly class PermissionResolver
      * @return array{role: string, permissions: array<string>}
      * @throws \DomainException
      */
-    private function buildPermissionData(User $user, string $companyId): array
+    private function buildPermissionData(User $user, ?string $companyId = ''): array
     {
-        // 1. Fetches the role of the user in the company
+        if ($user->isMasterAdmin()) {
+            $permissions = collect(PermissionsEnum::forRole(RolesEnum::MASTER_ADMIN))
+                ->map(fn (PermissionsEnum $p): string => $p->value)
+                ->toArray();
+
+            return [
+                'role'        => RolesEnum::MASTER_ADMIN->value,
+                'permissions' => $permissions,
+            ];
+        }
+
         $pivot = DB::table('company_user')
             ->where('user_id', $user->id)
-            ->where('company_id', $companyId)
             ->where('is_active', true)
+            ->when($companyId, fn ($query) => $query->where('company_id', $companyId))
             ->select(['role'])
             ->first();
 
@@ -147,7 +157,7 @@ final readonly class PermissionResolver
         ];
     }
 
-    private function cacheKey(string $userId, string $companyId): string
+    private function cacheKey(string $userId, ?string $companyId = ''): string
     {
         return self::CACHE_PREFIX . ":{$userId}:{$companyId}";
     }

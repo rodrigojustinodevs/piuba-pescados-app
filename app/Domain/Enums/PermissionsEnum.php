@@ -76,6 +76,12 @@ enum PermissionsEnum: string
     // ─── Audit ───────────────────────────────────────────────────────────────
     case VIEW_AUDIT_LOG = 'view-audit-log';
 
+    // ─── Sensors (aquicultura) ─────────────────────────────────────────────────
+    case VIEW_SENSOR    = 'view-sensor';
+    case CREATE_SENSOR  = 'create-sensor';
+    case UPDATE_SENSOR  = 'update-sensor';
+    case DELETE_SENSOR  = 'delete-sensor';
+
     /**
      * Retorna todas as permissions que um determinado role possui por padrão.
      *
@@ -155,6 +161,10 @@ enum PermissionsEnum: string
                 self::VIEW_FINANCE,
                 self::APPROVE_PAYMENT,
                 self::MANAGE_SETTINGS,
+                self::VIEW_SENSOR,
+                self::CREATE_SENSOR,
+                self::UPDATE_SENSOR,
+                self::DELETE_SENSOR,
             ],
 
             RolesEnum::COMPANY_ADMIN => [
@@ -195,6 +205,7 @@ enum PermissionsEnum: string
             str_contains($this->value, 'finance')
                 || str_contains($this->value, 'payment') => 'Finance',
             str_contains($this->value, 'audit')          => 'Audit',
+            str_contains($this->value, 'sensor')         => 'Sensors',
             str_contains($this->value, 'role')
                 || str_contains($this->value, 'permission') => 'Access Control',
             default                                         => 'General',

@@ -24,7 +24,12 @@ use Illuminate\Http\JsonResponse;
  *     @OA\Property(property="criticalAlerts", type="integer", example=2),
  *     @OA\Property(property="readingsLast24h", type="integer", example=180),
  *     @OA\Property(property="stocksBelowMinimum", type="integer", example=3),
- *     @OA\Property(property="inactiveSensors", type="integer", example=1)
+ *     @OA\Property(property="inactiveSensors", type="integer", example=1),
+ *     @OA\Property(property="score", type="number", format="float", example=87.5),
+ *     @OA\Property(property="excellent", type="integer", example=7),
+ *     @OA\Property(property="good", type="integer", example=2),
+ *     @OA\Property(property="warning", type="integer", example=2),
+ *     @OA\Property(property="critical", type="integer", example=1)
  * )
  *
  * @OA\Schema(

@@ -54,9 +54,9 @@ final class TankRepository implements TankRepositoryInterface
 
     /**
      * @param array{
-     *     company_id?: string|null,
+     *     companyId?: string|null,
      *     status?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
      * } $filters
      */
     public function paginateWithoutBatches(array $filters = []): PaginationInterface
@@ -64,15 +64,15 @@ final class TankRepository implements TankRepositoryInterface
         $paginator = Tank::with(self::DEFAULT_RELATIONS)
             ->whereDoesntHave('batches')
             ->when(
-                ! empty($filters['company_id']),
-                static fn ($q) => $q->where('company_id', $filters['company_id']),
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
             )
             ->when(
                 ! empty($filters['status']),
                 static fn ($q) => $q->where('status', $filters['status']),
             )
             ->latest()
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

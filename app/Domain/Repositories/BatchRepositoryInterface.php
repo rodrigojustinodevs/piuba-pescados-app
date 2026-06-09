@@ -12,7 +12,7 @@ interface BatchRepositoryInterface
     /**
      * @param array{
      *     status?: string|null,
-     *     tank_id?: string|null,
+     *     tankId?: string|null,
      *     species?: string|null,
      *     perPage?: int,
      *     companyId?: string|null,
@@ -41,4 +41,9 @@ interface BatchRepositoryInterface
      * Check if there is another active batch in the tank.
      */
     public function hasActiveBatchInTank(string $tankId, ?string $exceptBatchId = null): bool;
+
+    /**
+     * Cria um sub-lote (lote filho) a partir de um lote pai para transferências parciais.
+     */
+    public function createChildBatch(Batch $parent, string $tankId, int $quantity): Batch;
 }

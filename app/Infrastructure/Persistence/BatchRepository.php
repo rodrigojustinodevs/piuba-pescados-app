@@ -96,4 +96,23 @@ final class BatchRepository implements BatchRepositoryInterface
             })
             ->exists();
     }
+
+    public function createChildBatch(Batch $parent, string $tankId, int $quantity): Batch
+    {
+        /** @var Batch $child */
+        $child = Batch::create([
+            'parent_group_id'  => $parent->id,
+            'name'             => $parent->name,
+            'description'      => $parent->description,
+            'tank_id'          => $tankId,
+            'entry_date'       => now()->toDateString(),
+            'initial_quantity' => $quantity,
+            'unit_cost'        => $parent->unit_cost,
+            'total_cost'       => (float) $parent->unit_cost * $quantity,
+            'species'          => $parent->species,
+            'cultivation'      => $parent->cultivation,
+        ]);
+
+        return $child->load(self::DEFAULT_RELATIONS);
+    }
 }

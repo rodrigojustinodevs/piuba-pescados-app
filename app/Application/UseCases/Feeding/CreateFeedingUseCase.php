@@ -8,6 +8,7 @@ use App\Application\Actions\FeedInventory\ValidateFeedInventoryStockAction;
 use App\Application\DTOs\FeedingInputDTO;
 use App\Application\Services\FeedInventory\FeedInventoryService;
 use App\Domain\Events\FeedingCreated;
+use App\Domain\Exceptions\FeedInventoryNotFoundException;
 use App\Domain\Models\Feeding;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\BiometryRepositoryInterface;
@@ -40,7 +41,8 @@ final readonly class CreateFeedingUseCase
         $batch         = $this->batchRepository->findOrFail($dto->batchId);
         $companyId     = $batch->tank?->company_id;
         $feedInventory = $this->feedInventoryRepository
-            ->findByCompanyAndFeedType($companyId, $dto->feedType);
+            ->findByCompanyAndFeedType($companyId, $dto->feedType)
+            ?? throw FeedInventoryNotFoundException::forFeedType($dto->feedType);
 
         $this->validateFeedInventoryStock->execute($feedInventory, $dto->stockReductionQuantity);
 

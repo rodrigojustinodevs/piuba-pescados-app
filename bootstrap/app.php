@@ -56,6 +56,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->priority([
             Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
             Illuminate\Http\Middleware\HandleCors::class,
+            Illuminate\Auth\Middleware\Authenticate::class,                    // auth:api
             PHPOpenSourceSaver\JWTAuth\Http\Middleware\Authenticate::class, // jwt.auth
             App\Presentation\Middleware\CheckCompanyContext::class,          // company.context
             App\Presentation\Middleware\CheckRole::class,                    // role

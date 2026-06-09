@@ -7,6 +7,7 @@ namespace App\Domain\Models;
 use App\Domain\Enums\TankHistoryEvent;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -98,6 +99,17 @@ class Tank extends BaseModel
     {
         /** @var HasMany<TankHistory, static> $relation */
         $relation = $this->hasMany(TankHistory::class, 'tank_id');
+
+        return $relation;
+    }
+
+    /**
+     * @phpstan-return HasOne<Sensor, static>
+     */
+    public function sensor(): HasOne
+    {
+        /** @var HasOne<Sensor, static> $relation */
+        $relation = $this->hasOne(Sensor::class, 'tank_id');
 
         return $relation;
     }

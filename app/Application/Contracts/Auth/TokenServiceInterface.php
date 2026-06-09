@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Contracts\Auth;
 
+use App\Domain\Models\Company;
 use App\Domain\Models\User;
 
 interface TokenServiceInterface
@@ -15,4 +16,8 @@ interface TokenServiceInterface
     public function refresh(): string;
 
     public function ttlInSeconds(): int;
+
+    public function generateForMasterAdmin(User $user): string;
+ 
+    public function generateForCompanyUser(User $user, Company $company): string;
 }

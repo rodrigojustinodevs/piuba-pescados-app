@@ -41,6 +41,20 @@ final readonly class GetDashboardSummaryUseCase
             $alerts,
             static fn (\App\Application\DTOs\TankAlertDTO $a): bool => $a->severity() === 'critical',
         ));
+        $warning = count(array_filter(
+            $alerts,
+            static fn (\App\Application\DTOs\TankAlertDTO $a): bool => $a->severity() === 'warning',
+        ));
+        $good = count(array_filter(
+            $alerts,
+            static fn (\App\Application\DTOs\TankAlertDTO $a): bool => $a->severity() === 'info',
+        ));
+        $excellent = max($totalTanks - ($criticalAlerts + $warning + $good), 0);
+
+        // Score de 0 a 100 baseado na distribuição de risco dos tanques.
+        $score = $totalTanks > 0
+            ? round((($excellent * 100) + ($good * 75) + ($warning * 40) + ($criticalAlerts * 10)) / $totalTanks, 2)
+            : 0.0;
 
         return new DashboardSummaryDTO(
             totalTanks:         $totalTanks,
@@ -49,6 +63,11 @@ final readonly class GetDashboardSummaryUseCase
             readingsLast24h:    $readingsLast24h,
             stocksBelowMinimum: $stocksBelowMinimum,
             inactiveSensors:    $inactiveSensors,
+            score:              $score,
+            excellent:          $excellent,
+            good:               $good,
+            warning:            $warning,
+            critical:           $criticalAlerts,
         );
     }
 }

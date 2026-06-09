@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Providers;
 
 use App\Application\Listeners\GenerateStockingHistory;
+use App\Application\Listeners\RecordBatchTransferHistory;
+use App\Domain\Events\BatchTransferred;
 use App\Domain\Events\FeedingCreated;
 use App\Domain\Events\MortalityRecorded;
 use App\Domain\Events\SaleProcessed;
@@ -16,6 +18,10 @@ class EventServiceProvider extends ServiceProvider
      * @var array<string, array<int, string>>
      */
     protected $listen = [
+        BatchTransferred::class => [
+            RecordBatchTransferHistory::class . '@handle',
+        ],
+
         FeedingCreated::class => [
             GenerateStockingHistory::class . '@handleFeedingCreated',
         ],

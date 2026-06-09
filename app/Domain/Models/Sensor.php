@@ -14,6 +14,11 @@ use Illuminate\Support\Str;
  * @property string            $tank_id
  * @property string            $company_id
  * @property string            $sensor_type
+ * @property string|null       $name
+ * @property string|null       $serial_number
+ * @property int|null          $battery
+ * @property string|null       $unit
+ * @property float|null        $last_reading
  * @property string            $status
  * @property Carbon|null       $installation_date
  * @property string|null       $notes
@@ -34,6 +39,11 @@ class Sensor extends BaseModel
         'tank_id',
         'company_id',
         'sensor_type',
+        'name',
+        'serial_number',
+        'battery',
+        'unit',
+        'last_reading',
         'status',
         'installation_date',
         'notes',
@@ -41,6 +51,7 @@ class Sensor extends BaseModel
 
     protected $casts = [
         'installation_date' => 'date',
+        'last_reading'      => 'float',
     ];
 
     #[\Override]

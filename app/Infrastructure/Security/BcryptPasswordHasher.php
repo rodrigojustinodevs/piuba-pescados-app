@@ -12,6 +12,10 @@ final class BcryptPasswordHasher implements PasswordHasherInterface
 {
     public function check(PlainPassword $plain, string $hashed): bool
     {
+        if ($hashed === '') {
+            return false;
+        }
+
         return Hash::check($plain->value(), $hashed);
     }
 }

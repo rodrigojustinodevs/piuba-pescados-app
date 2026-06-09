@@ -12,6 +12,7 @@ use App\Domain\Events\MortalityRecorded;
 use App\Domain\Models\Mortality;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
+use App\Infrastructure\Security\CompanyContext;
 use Illuminate\Support\Facades\DB;
 
 final readonly class CreateMortalityUseCase
@@ -30,19 +31,19 @@ final readonly class CreateMortalityUseCase
      */
     public function execute(array $data): Mortality
     {
-        $companyId = $this->companyResolver->resolve(
-            hint: $data['company_id'] ?? $data['companyId'] ?? null,
-        );
+       if (!CompanyContext::isMasterAdmin()) {
+            $data['companyId'] = CompanyContext::requireCompanyId();
+        }
 
         $dto   = MortalityInputDTO::fromArray($data);
         $batch = $this->batchRepository->findOrFail($dto->batchId);
 
         $this->validateQuantity->execute($batch, $dto->quantity);
 
-        return DB::transaction(function () use ($dto, $batch, $companyId): Mortality {
+        return DB::transaction(function () use ($dto, $batch): Mortality {
             $mortality = $this->repository->create($dto);
 
-            MortalityRecorded::dispatch($mortality, $companyId);
+            MortalityRecorded::dispatch($mortality);
 
             $this->checkCritical->execute($batch);
 

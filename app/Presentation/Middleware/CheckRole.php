@@ -23,6 +23,10 @@ final readonly class CheckRole
         $user      = $request->user();
         $companyId = CompanyContext::getCompanyId();
 
+        if (! $user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
         try {
             $context = $this->resolver->resolve($user, $companyId);
         } catch (\DomainException $e) {

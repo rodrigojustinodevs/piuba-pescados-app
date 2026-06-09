@@ -10,6 +10,6 @@ final class BiometryDuplicateDateException extends RuntimeException
 {
     public function __construct()
     {
-        parent::__construct(__('validation.biometry.duplicate_date'));
+        parent::__construct(__('A biometry record already exists for this batch on the selected date'));
     }
 }

@@ -29,10 +29,11 @@ interface StockRepositoryInterface
 
     /**
      * @param array{
-     *     company_id: string,
-     *     supply_id?: string|null,
-     *     supplier_id?: string|null,
-     *     per_page?: int,
+     *     search?: string|null,
+     *     companyId?: string|null,
+     *     supplyId?: string|null,
+     *     supplierId?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface;

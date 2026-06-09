@@ -29,6 +29,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="ammonia", type="number", format="float", nullable=true, minimum=0),
  *     @OA\Property(property="salinity", type="number", format="float", nullable=true, minimum=0),
  *     @OA\Property(property="turbidity", type="number", format="float", nullable=true, minimum=0),
+ *     @OA\Property(property="quality", type="string", enum={"excellent","good","warning","critical","unknown"}),
  *     @OA\Property(property="notes", type="string", nullable=true, maxLength=500),
  *     @OA\Property(
  *         property="tank",
@@ -58,23 +59,22 @@ final class WaterQualityController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function index(
-        Request $request,
-        ListWaterQualitiesUseCase $useCase,
-    ): JsonResponse {
-        $paginator = $useCase->execute(
-            filters: $request->only(['tank_id', 'date_from', 'date_to', 'per_page', 'page']),
+    public function index(Request $request, ListWaterQualitiesUseCase $useCase): JsonResponse
+    {
+        $result    = $useCase->execute(
+            filters: $request->only(['search', 'tank_id', 'date_from', 'date_to', 'per_page', 'page']),
         );
+        $paginator = $result->paginator;
 
         return ApiResponse::success(
             data:       WaterQualityResource::collection($paginator->items()),
-            pagination: [
+            pagination: array_merge($result->score->toArray(), [
                 'total'        => $paginator->total(),
                 'current_page' => $paginator->currentPage(),
                 'last_page'    => $paginator->lastPage(),
                 'first_page'   => $paginator->firstPage(),
                 'per_page'     => $paginator->perPage(),
-            ],
+            ]),
         );
     }
 
@@ -99,9 +99,9 @@ final class WaterQualityController
     public function show(string $id, ShowWaterQualityUseCase $useCase): JsonResponse
     {
         $record = $useCase->execute($id);
-
+ 
         return ApiResponse::success(
-            data: new WaterQualityResource($record->loadMissing('tank')),
+            data: new WaterQualityResource($record->loadMissing(['tank.tankType', 'tank.sensor'])),
         );
     }
 

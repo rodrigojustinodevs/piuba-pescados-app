@@ -27,6 +27,7 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="value", type="number", format="float"),
  *     @OA\Property(property="unit", type="string", example="ppm"),
  *     @OA\Property(property="measuredAt", type="string", format="date-time"),
+ *     @OA\Property(property="type", type="string", example="automatic"),
  *     @OA\Property(property="notes", type="string", nullable=true),
  *     @OA\Property(
  *         property="sensor",
@@ -52,6 +53,7 @@ class SensorReadingController
      *     @OA\Parameter(name="page", in="query", @OA\Schema(type="integer", example=1)),
      *     @OA\Parameter(name="per_page", in="query", @OA\Schema(type="integer", example=25)),
      *     @OA\Parameter(name="sensor_id", in="query", @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="type", in="query", @OA\Schema(type="string", enum={"automatic","manual"})),
      *     @OA\Parameter(name="tank_id", in="query", @OA\Schema(type="string", format="uuid")),
      *     @OA\Parameter(name="date_from", in="query", @OA\Schema(type="string", format="date")),
      *     @OA\Parameter(name="date_to", in="query", @OA\Schema(type="string", format="date")),
@@ -90,7 +92,9 @@ class SensorReadingController
     ): JsonResponse {
         $paginator = $useCase->execute(
             filters: $request->only([
+                'search',
                 'sensor_id',
+                'type',
                 'tank_id',
                 'date_from',
                 'date_to',
@@ -156,6 +160,7 @@ class SensorReadingController
      *             @OA\Property(property="value", type="number", format="float"),
      *             @OA\Property(property="unit", type="string", example="ppm"),
      *             @OA\Property(property="measured_at", type="string", format="date-time"),
+     *             @OA\Property(property="type", type="string", enum={"automatic","manual"}, example="automatic"),
      *             @OA\Property(property="notes", type="string", nullable=true)
      *         )
      *     ),
@@ -197,6 +202,7 @@ class SensorReadingController
      *             @OA\Property(property="value", type="number", format="float"),
      *             @OA\Property(property="unit", type="string"),
      *             @OA\Property(property="measured_at", type="string", format="date-time"),
+     *             @OA\Property(property="type", type="string", enum={"automatic","manual"}),
      *             @OA\Property(property="notes", type="string", nullable=true)
      *         )
      *     ),

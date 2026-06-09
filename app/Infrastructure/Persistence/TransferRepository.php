@@ -19,10 +19,11 @@ final class TransferRepository implements TransferRepositoryInterface
 
     /**
      * @param array{
-     *     batch_id?: string|null,
-     *     origin_tank_id?: string|null,
-     *     destination_tank_id?: string|null,
-     *     per_page?: int,
+     *     companyId?: string|null,
+     *     batchId?: string|null,
+     *     originTankId?: string|null,
+     *     destinationTankId?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface
@@ -30,16 +31,20 @@ final class TransferRepository implements TransferRepositoryInterface
         $paginator = Transfer::query()
             ->with(self::DEFAULT_RELATIONS)
             ->when(
-                ! empty($filters['batch_id']),
-                static fn ($q) => $q->where('batch_id', $filters['batch_id']),
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
             )
             ->when(
-                ! empty($filters['origin_tank_id']),
-                static fn ($q) => $q->where('origin_tank_id', $filters['origin_tank_id']),
+                ! empty($filters['batchId']),
+                static fn ($q) => $q->where('batch_id', $filters['batchId']),
             )
             ->when(
-                ! empty($filters['destination_tank_id']),
-                static fn ($q) => $q->where('destination_tank_id', $filters['destination_tank_id']),
+                ! empty($filters['originTankId']),
+                static fn ($q) => $q->where('origin_tank_id', $filters['originTankId']),
+            )
+            ->when(
+                ! empty($filters['destinationTankId']),
+                static fn ($q) => $q->where('destination_tank_id', $filters['destinationTankId']),
             )
             ->latest()
             ->paginate((int) ($filters['per_page'] ?? 25));

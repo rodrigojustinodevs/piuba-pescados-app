@@ -22,9 +22,9 @@ interface TankRepositoryInterface
 
     /**
      * @param array{
-     *     company_id?: string|null,
+     *     companyId?: string|null,
      *     status?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
      * } $filters
      */
     public function paginateWithoutBatches(array $filters = []): PaginationInterface;

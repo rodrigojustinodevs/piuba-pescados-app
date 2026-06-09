@@ -23,8 +23,13 @@ use Illuminate\Http\Request;
  *     type="object",
  *     @OA\Property(property="id", type="string", format="uuid"),
  *     @OA\Property(property="sensorType", type="string", example="temperature"),
+ *     @OA\Property(property="name", type="string", example="Sensor Temperatura Viveiro 01"),
+ *     @OA\Property(property="serialNumber", type="string", example="SN-TEMP-0001"),
+ *     @OA\Property(property="battery", type="integer", example=86),
+ *     @OA\Property(property="unit", type="string", example="°C"),
+ *     @OA\Property(property="lastReading", type="number", format="float", example=27.4),
  *     @OA\Property(property="installationDate", type="string", format="date", nullable=true),
- *     @OA\Property(property="status", type="string", example="active"),
+ *     @OA\Property(property="status", type="string", example="Online"),
  *     @OA\Property(
  *         property="tank",
  *         type="object",
@@ -83,7 +88,7 @@ class SensorController
         ListSensorsUseCase $useCase,
     ): JsonResponse {
         $paginator = $useCase->execute(
-            filters: $request->only(['tank_id', 'sensor_type', 'status', 'per_page', 'page']),
+            filters: $request->only([ 'search', 'tankId', 'sensorType', 'status', 'perPage', 'page']),
         );
 
         return ApiResponse::success(
@@ -136,11 +141,16 @@ class SensorController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"tankId","sensorType","installationDate","status"},
+     *             required={"tankId","sensorType","name","serialNumber","battery","unit","lastReading","installationDate","status"},
      *             @OA\Property(property="tankId", type="string", format="uuid"),
      *             @OA\Property(property="sensorType", type="string", example="temperature"),
+     *             @OA\Property(property="name", type="string", example="Sensor Temperatura Viveiro 01"),
+     *             @OA\Property(property="serialNumber", type="string", example="SN-TEMP-0001"),
+     *             @OA\Property(property="battery", type="integer", example=86),
+     *             @OA\Property(property="unit", type="string", example="°C"),
+     *             @OA\Property(property="lastReading", type="number", format="float", example=27.4),
      *             @OA\Property(property="installationDate", type="string", format="date"),
-     *             @OA\Property(property="status", type="string", example="active")
+     *             @OA\Property(property="status", type="string", example="Online")
      *         )
      *     ),
      *     @OA\Response(
@@ -178,6 +188,11 @@ class SensorController
      *         @OA\JsonContent(
      *             @OA\Property(property="tankId", type="string", format="uuid"),
      *             @OA\Property(property="sensorType", type="string"),
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="serialNumber", type="string"),
+     *             @OA\Property(property="battery", type="integer"),
+     *             @OA\Property(property="unit", type="string", example="°C"),
+     *             @OA\Property(property="lastReading", type="number", format="float", example=27.4),
      *             @OA\Property(property="installationDate", type="string", format="date"),
      *             @OA\Property(property="status", type="string")
      *         )

@@ -63,22 +63,25 @@ class StockRepository implements StockRepositoryInterface
     }
 
     /**
-     * Get paginated .
+     * Get paginated stocks.
      */
     public function paginate(array $filters): PaginationInterface
     {
         $paginator = Stock::with(self::DEFAULT_RELATIONS)
-            ->where('company_id', $filters['company_id'])
             ->when(
-                ! empty($filters['supply_id']),
-                static fn ($q) => $q->where('supply_id', $filters['supply_id']),
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
             )
             ->when(
-                ! empty($filters['supplier_id']),
-                static fn ($q) => $q->where('supplier_id', $filters['supplier_id']),
+                ! empty($filters['supplyId']),
+                static fn ($q) => $q->where('supply_id', $filters['supplyId']),
+            )
+            ->when(
+                ! empty($filters['supplierId']),
+                static fn ($q) => $q->where('supplier_id', $filters['supplierId']),
             )
             ->latest()
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

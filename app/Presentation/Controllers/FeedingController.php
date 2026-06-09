@@ -76,7 +76,7 @@ final class FeedingController
         ListFeedingsUseCase $useCase,
     ): JsonResponse {
         $paginator = $useCase->execute(
-            filters: $request->only(['batch_id', 'feed_type', 'date_from', 'date_to', 'per_page', 'page']),
+            filters: $request->only(['batchId', 'feedType', 'dateFrom', 'dateTo', 'perPage', 'page', 'search']),
         );
 
         return ApiResponse::success(

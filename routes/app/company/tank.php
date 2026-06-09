@@ -15,6 +15,7 @@ Route::middleware(['permission:view-tank'])
         Route::get('tanks', [TankController::class, 'index']);
         Route::get('tanks/without-batches', [TankController::class, 'tanksWithoutBatches']);
         Route::get('tank/{id}', [TankController::class, 'show']);
+        Route::get('tank-types/', [TankController::class, 'getTankTypes']);
     });
 
 Route::middleware(['permission:update-tank'])

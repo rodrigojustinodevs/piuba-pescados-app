@@ -30,12 +30,22 @@ final readonly class UpdateMortalityUseCase
 
         $this->validateQuantity->execute($mortality->batch, $dto->quantity, $id);
 
-        return DB::transaction(function () use ($id, $dto, $mortality): Mortality {
-            $updated = $this->repository->update($id, [
+        return DB::transaction(function () use ($id, $dto, $mortality, $data): Mortality {
+            $attributes = [
                 'quantity'       => $dto->quantity,
                 'mortality_date' => $dto->mortalityDate,
-                'cause'          => $dto->cause,
-            ]);
+                'cause'          => $dto->cause->value,
+            ];
+
+            if (array_key_exists('description', $data)) {
+                $attributes['description'] = $dto->description;
+            }
+
+            if (array_key_exists('severity', $data)) {
+                $attributes['severity'] = $dto->severity?->value;
+            }
+
+            $updated = $this->repository->update($id, $attributes);
 
             $this->checkCritical->execute($mortality->batch);
 

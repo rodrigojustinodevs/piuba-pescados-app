@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\Mortality;
 
+use App\Domain\Enums\MortalityCause;
+use App\Domain\Enums\MortalitySeverity;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class MortalityUpdateRequest extends FormRequest
 {
@@ -32,7 +35,7 @@ class MortalityUpdateRequest extends FormRequest
     }
 
     /**
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
@@ -40,7 +43,9 @@ class MortalityUpdateRequest extends FormRequest
             'batchId'       => 'sometimes|uuid|exists:batches,id',
             'mortalityDate' => 'sometimes|date|date_format:Y-m-d',
             'quantity'      => 'sometimes|integer|min:1',
-            'cause'         => 'sometimes|string|max:255',
+            'cause'         => ['sometimes', Rule::enum(MortalityCause::class)],
+            'description'   => 'sometimes|nullable|string|max:255',
+            'severity'      => ['sometimes', Rule::enum(MortalitySeverity::class)],
         ];
     }
 
@@ -57,8 +62,8 @@ class MortalityUpdateRequest extends FormRequest
             'mortalityDate.date_format' => 'The mortality date must be in Y-m-d format.',
             'quantity.integer'          => 'The quantity must be an integer.',
             'quantity.min'              => 'The quantity must be at least 1.',
-            'cause.string'              => 'The cause must be a valid text.',
-            'cause.max'                 => 'The cause must not exceed 255 characters.',
+            'cause.enum'                => 'The cause must be one of: disease, water_quality, predation, handling, climate, unknown, other.',
+            'severity.enum'             => 'The severity must be one of: low, medium, high, critical.',
         ];
     }
 }

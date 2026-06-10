@@ -67,9 +67,9 @@ interface StockingRepositoryInterface
     public function findByCompanyOrFail(string $stockingId, string $companyId): Stocking;
 
     /**
-     * Find a stocking by batch ID.
+     * Retorna o stocking ativo mais recente do lote, ou null se não houver.
      */
-    public function findByBatchOrFail(string $batchId): ?Stocking;
+    public function findActiveByBatch(string $batchId): ?Stocking;
 
     /**
      * Check if there are any active stockings in a batch.

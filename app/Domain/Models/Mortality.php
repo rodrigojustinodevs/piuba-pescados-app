@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\Enums\MortalityCause;
+use App\Domain\Enums\MortalitySeverity;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -13,7 +15,8 @@ use Illuminate\Support\Str;
  * @property string              $batch_id
  * @property \Carbon\Carbon|null $mortality_date
  * @property int                 $quantity
- * @property string              $cause
+ * @property MortalityCause      $cause
+ * @property MortalitySeverity|null $severity
  * @property \Carbon\Carbon      $created_at
  * @property \Carbon\Carbon      $updated_at
  * @property \Carbon\Carbon|null $deleted_at
@@ -34,11 +37,15 @@ class Mortality extends BaseModel
         'mortality_date',
         'quantity',
         'cause',
+        'description',
+        'severity',
     ];
 
     protected $casts = [
         'mortality_date' => 'date:Y-m-d',
         'quantity'       => 'integer',
+        'cause'          => MortalityCause::class,
+        'severity'       => MortalitySeverity::class,
     ];
 
     #[\Override]

@@ -117,9 +117,10 @@ final class BatchController
      *         required=false,
      *         @OA\Schema(type="string", enum={"active","finished"})
      *     ),
-     *     @OA\Parameter(name="tank_id", in="query", required=false, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="companyId", in="query", required=false, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="tankId", in="query", required=false, @OA\Schema(type="string", format="uuid")),
      *     @OA\Parameter(name="species", in="query", required=false, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="per_page", in="query", required=false, @OA\Schema(type="integer", example=25)),
+     *     @OA\Parameter(name="perPage", in="query", required=false, @OA\Schema(type="integer", example=25)),
      *     @OA\Parameter(name="page", in="query", required=false, @OA\Schema(type="integer", example=1)),
      *     @OA\Response(
      *         response=200,
@@ -151,7 +152,7 @@ final class BatchController
         ListBatchesUseCase $useCase,
     ): JsonResponse {
         $paginator = $useCase->execute(
-            filters: $request->only(['status', 'tank_id', 'species', 'per_page', 'page']),
+            filters: $request->only(['companyId', 'status', 'tankId', 'species', 'perPage', 'page']),
         );
 
         return ApiResponse::success(

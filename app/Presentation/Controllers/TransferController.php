@@ -20,11 +20,12 @@ use Illuminate\Http\Request;
  * @OA\Tag(name="Transfers", description="Transferências de lote entre tanques")
  *
  * Exceções tratadas pelo Handler:
- *  - ModelNotFoundException                  → 404
- *  - TransferBatchOriginMismatchException    → 422
- *  - TankAlreadyHasActiveBatchException      → 422
- *  - TransferSameTankException               → 422
- *  - ValidationException                     → 422
+ *  - ModelNotFoundException                    → 404
+ *  - TransferBatchOriginMismatchException      → 422
+ *  - TransferQuantityExceedsStockException     → 422
+ *  - TankAlreadyHasActiveBatchException        → 422
+ *  - TransferSameTankException                 → 422
+ *  - ValidationException                       → 422
  */
 final class TransferController
 {
@@ -35,10 +36,10 @@ final class TransferController
      *     tags={"Transfers"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="page", in="query", @OA\Schema(type="integer", example=1)),
-     *     @OA\Parameter(name="per_page", in="query", @OA\Schema(type="integer", example=25)),
-     *     @OA\Parameter(name="batch_id", in="query", @OA\Schema(type="string", format="uuid")),
-     *     @OA\Parameter(name="origin_tank_id", in="query", @OA\Schema(type="string", format="uuid")),
-     *     @OA\Parameter(name="destination_tank_id", in="query", @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="perPage", in="query", @OA\Schema(type="integer", example=25)),
+     *     @OA\Parameter(name="batchId", in="query", @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="originTankId", in="query", @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="destinationTankId", in="query", @OA\Schema(type="string", format="uuid")),
      *     @OA\Response(
      *         response=200,
      *         description="Lista paginada de transferências",
@@ -62,7 +63,7 @@ final class TransferController
     ): JsonResponse {
         $pagination = $useCase->execute(
             // $request->only() — nunca $request->all()
-            filters: $request->only(['batch_id', 'origin_tank_id', 'destination_tank_id', 'per_page']),
+            filters: $request->only(['batchId', 'originTankId', 'destinationTankId', 'perPage']),
         );
 
         return ApiResponse::success(
@@ -115,11 +116,90 @@ final class TransferController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"batch_id","origin_tank_id","destination_tank_id"},
-     *             @OA\Property(property="batch_id", type="string", format="uuid"),
-     *             @OA\Property(property="origin_tank_id", type="string", format="uuid"),
-     *             @OA\Property(property="destination_tank_id", type="string", format="uuid"),
-     *             @OA\Property(property="description", type="string", nullable=true)
+     *             required={
+     *                 "batch_id",
+     *                 "origin_tank_id",
+     *                 "destination_tank_id",
+     *                 "quantity",
+     *                 "description",
+     *                 "transfer_date",
+     *                 "status",
+     *                 "reason",
+     *                 "responsible"
+     *             },
+     *
+     *             @OA\Property(
+     *                 property="batch_id",
+     *                 type="string",
+     *                 format="uuid"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="origin_tank_id",
+     *                 type="string",
+     *                 format="uuid"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="destination_tank_id",
+     *                 type="string",
+     *                 format="uuid"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="quantity",
+     *                 type="integer",
+     *                 example=1500
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="description",
+     *                 type="string",
+     *                 example="Transferência para tanque de crescimento"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="transfer_date",
+     *                 type="string",
+     *                 format="date",
+     *                 example="2026-05-27"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="status",
+     *                 type="string",
+     *                 enum={"completed","scheduled","cancelled"},
+     *                 example="scheduled"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="reason",
+     *                 type="string",
+     *                 enum={
+     *                     "growth",
+     *                     "density",
+     *                     "biosecurity",
+     *                     "maintenance",
+     *                     "harvest_prep",
+     *                     "other"
+     *                 },
+     *                 example="growth"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="responsible",
+     *                 type="string",
+     *                 example="Carlos Silva"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="average_weight",
+     *                 type="number",
+     *                 format="float",
+     *                 nullable=true,
+     *                 example=12.5,
+     *                 description="Peso médio em gramas"
+     *             )
      *         )
      *     ),
      *     @OA\Response(response=201, description="Transferência criada"),
@@ -145,16 +225,93 @@ final class TransferController
      *     summary="Atualizar transferência",
      *     tags={"Transfers"},
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="string", format="uuid")
+     *     ),
+     *
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="batch_id", type="string", format="uuid"),
-     *             @OA\Property(property="origin_tank_id", type="string", format="uuid"),
-     *             @OA\Property(property="destination_tank_id", type="string", format="uuid"),
-     *             @OA\Property(property="description", type="string", nullable=true)
+     *
+     *             @OA\Property(
+     *                 property="batch_id",
+     *                 type="string",
+     *                 format="uuid"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="origin_tank_id",
+     *                 type="string",
+     *                 format="uuid"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="destination_tank_id",
+     *                 type="string",
+     *                 format="uuid"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="quantity",
+     *                 type="integer",
+     *                 example=1500
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="description",
+     *                 type="string",
+     *                 example="Transferência ajustada"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="transfer_date",
+     *                 type="string",
+     *                 format="date",
+     *                 example="2026-05-27"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="status",
+     *                 type="string",
+     *                 enum={"completed","scheduled","cancelled"},
+     *                 example="completed"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="reason",
+     *                 type="string",
+     *                 enum={
+     *                     "growth",
+     *                     "density",
+     *                     "biosecurity",
+     *                     "maintenance",
+     *                     "harvest_prep",
+     *                     "other"
+     *                 },
+     *                 example="density"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="responsible",
+     *                 type="string",
+     *                 example="João Pereira"
+     *             ),
+     *
+     *             @OA\Property(
+     *                 property="average_weight",
+     *                 type="number",
+     *                 format="float",
+     *                 nullable=true,
+     *                 example=15.3,
+     *                 description="Peso médio em gramas"
+     *             )
      *         )
      *     ),
+     *
      *     @OA\Response(response=200, description="Transferência atualizada"),
      *     @OA\Response(response=401, description="Unauthorized"),
      *     @OA\Response(response=404, description="Not found"),

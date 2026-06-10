@@ -39,7 +39,8 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
      * Get paginated records.
      *
      * @param array{
-     *     company_id: string,
+     *     company_id?: string|null,
+     *     search?: string|null,
      *     tank_id?: string|null,
      *     date_from?: string|null,
      *     date_to?: string|null,
@@ -48,9 +49,38 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
      */
     public function paginate(array $filters): PaginationInterface
     {
-        $paginator = WaterQuality::with(['tank:id,name'])
-            // ✅ Multi-tenancy via tank.company_id
-            ->whereHas('tank', static fn ($q) => $q->where('company_id', $filters['company_id']))
+        $search = $filters['search'] ?? null;
+        $paginator = WaterQuality::with([
+            'tank' => static fn ($q) => $q->select('id', 'name')
+                ->with([
+                    'sensor' => static fn ($tankQuery) => $tankQuery->select('id', 'sensor_type', 'status', 'tank_id', 'last_reading', 'unit'),
+                ]),
+        ])
+            ->with([
+                'company' => static fn ($companyQuery) => $companyQuery->select('id', 'name'),
+            ])
+            ->when(
+                ! empty($filters['company_id']),
+                static fn ($q) => $q->whereHas('tank', static fn ($q) => $q->where('company_id', $filters['company_id'])),
+            )
+            ->when(
+                is_string($search) && $search !== '',
+                static function ($q) use ($search): void {
+                    $term = '%' . $search . '%';
+                    $q->where(static function ($sub) use ($term): void {
+                        $sub->where('notes', 'like', $term)
+                            ->orWhere('ph', 'like', $term)
+                            ->orWhere('dissolved_oxygen', 'like', $term)
+                            ->orWhere('ammonia', 'like', $term)
+                            ->orWhere('salinity', 'like', $term)
+                            ->orWhere('turbidity', 'like', $term)
+                            ->orWhereHas(
+                                'tank',
+                                static fn ($s) => $s->whereAny(['name'], 'like', $term),
+                            );
+                    });
+                },
+            )
             ->when(
                 ! empty($filters['tank_id']),
                 static fn ($q) => $q->where('tank_id', $filters['tank_id']),
@@ -90,6 +120,58 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
     public function findByCompany(string $companyId): ?WaterQuality
     {
         return WaterQuality::where('company_id', $companyId)->first();
+    }
+
+    /** @return array<string, int> */
+    public function countByQuality(array $filters): array
+    {
+        $search = $filters['search'] ?? null;
+
+        $counts = WaterQuality::query()
+            ->when(
+                ! empty($filters['company_id']),
+                static fn ($q) => $q->whereHas('tank', static fn ($q) => $q->where('company_id', $filters['company_id'])),
+            )
+            ->when(
+                is_string($search) && $search !== '',
+                static function ($q) use ($search): void {
+                    $term = '%' . $search . '%';
+                    $q->where(static function ($sub) use ($term): void {
+                        $sub->where('notes', 'like', $term)
+                            ->orWhere('ph', 'like', $term)
+                            ->orWhere('dissolved_oxygen', 'like', $term)
+                            ->orWhere('ammonia', 'like', $term)
+                            ->orWhere('salinity', 'like', $term)
+                            ->orWhere('turbidity', 'like', $term)
+                            ->orWhereHas(
+                                'tank',
+                                static fn ($s) => $s->whereAny(['name'], 'like', $term),
+                            );
+                    });
+                },
+            )
+            ->when(
+                ! empty($filters['tank_id']),
+                static fn ($q) => $q->where('tank_id', $filters['tank_id']),
+            )
+            ->when(
+                ! empty($filters['date_from']),
+                static fn ($q) => $q->whereDate('measured_at', '>=', $filters['date_from']),
+            )
+            ->when(
+                ! empty($filters['date_to']),
+                static fn ($q) => $q->whereDate('measured_at', '<=', $filters['date_to']),
+            )
+            ->selectRaw('quality, COUNT(*) as total')
+            ->groupBy('quality')
+            ->pluck('total', 'quality');
+
+        return [
+            'excellent' => (int) ($counts['excellent'] ?? 0),
+            'good'      => (int) ($counts['good'] ?? 0),
+            'warning'   => (int) ($counts['warning'] ?? 0),
+            'critical'  => (int) ($counts['critical'] ?? 0),
+        ];
     }
 
     /** @return array<string, object> */

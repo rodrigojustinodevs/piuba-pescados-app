@@ -8,9 +8,11 @@ use App\Application\Actions\Transfer\ApplyBatchTransferAction;
 use App\Application\Actions\Transfer\GuardTransferRulesAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\TransferInputDTO;
+use App\Domain\Events\BatchTransferred;
 use App\Domain\Models\Transfer;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
+use App\Infrastructure\Security\CompanyContext;
 use Illuminate\Support\Facades\DB;
 
 final readonly class CreateTransferUseCase
@@ -27,31 +29,44 @@ final readonly class CreateTransferUseCase
     /** @param array<string, mixed> $data */
     public function execute(array $data): Transfer
     {
-        $data['company_id'] = $this->companyResolver->resolve(
-            hint: $data['company_id'] ?? $data['companyId'] ?? null,
-        );
-
+        if (!CompanyContext::isMasterAdmin()) {
+            $data['companyId'] = CompanyContext::requireCompanyId();
+        }
         $dto   = TransferInputDTO::fromArray($data);
         $batch = $this->batchRepository->findOrFail($dto->batchId);
 
         // Valida regras de negócio fora da transação — sem custo de lock
         $this->guardRules->guardCreate(
-            batch:             $batch,
-            originTankId:      $dto->originTankId,
-            destinationTankId: $dto->destinationTankId,
+            $batch,
+            $dto->originTankId,
+            $dto->destinationTankId,
+            $dto->quantity,
         );
 
-        return DB::transaction(function () use ($dto, $batch): Transfer {
+        $transfer = DB::transaction(function () use ($dto, $batch): Transfer {
             $transfer = $this->transferRepository->create($dto);
 
-            $this->applyBatchTransfer->execute(
-                batchId:              $dto->batchId,
-                destinationTankId:    $dto->destinationTankId,
-                transferredQuantity:  $dto->quantity,
-                currentQuantity:      (int) $batch->initial_quantity,
-            );
+            // M-07: só move o lote quando a transferência está concluída
+            if ($dto->status === 'completed') {
+                $childBatchId = $this->applyBatchTransfer->execute(
+                    $batch,
+                    $dto->destinationTankId,
+                    $dto->quantity,
+                );
+
+                if ($childBatchId !== null) {
+                    $transfer = $this->transferRepository->update($transfer->id, [
+                        'child_batch_id' => $childBatchId,
+                    ]);
+                }
+            }
 
             return $transfer;
         });
+
+        // M-04: ShouldDispatchAfterCommit — disparado após o commit da transação
+        BatchTransferred::dispatch($transfer, $dto->companyId);
+
+        return $transfer;
     }
 }

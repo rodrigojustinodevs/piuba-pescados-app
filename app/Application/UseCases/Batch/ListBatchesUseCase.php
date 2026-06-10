@@ -18,14 +18,18 @@ final readonly class ListBatchesUseCase
     /**
      * @param array{
      *     status?: string|null,
-     *     tank_id?: string|null,
+     *     tankId?: string|null,
      *     species?: string|null,
-     *     per_page?: int,
+     *     perPage?: int,
+     * 
      * } $filters
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        $filters['companyId'] = CompanyContext::requireCompanyId();
+
+        if (!CompanyContext::isMasterAdmin()) {
+            $filters['companyId'] = CompanyContext::requireCompanyId();
+        }
 
         return $this->repository->paginate($filters);
     }

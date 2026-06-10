@@ -19,8 +19,6 @@ class TransferStoreRequest extends FormRequest
     #[\Override]
     protected function prepareForValidation(): void
     {
-        // Compatibilidade com payloads antigos (snake_case)
-        // Só faz merge quando o campo alternativo existe, para não injetar null.
         $merge = [];
 
         if (! $this->has('batchId') && $this->has('batch_id')) {
@@ -33,6 +31,14 @@ class TransferStoreRequest extends FormRequest
 
         if (! $this->has('destinationTankId') && $this->has('destination_tank_id')) {
             $merge['destinationTankId'] = $this->input('destination_tank_id');
+        }
+
+        if (! $this->has('transferDate') && $this->has('transfer_date')) {
+            $merge['transferDate'] = $this->input('transfer_date');
+        }
+
+        if (! $this->has('averageWeight') && $this->has('average_weight')) {
+            $merge['averageWeight'] = $this->input('average_weight');
         }
 
         if ($merge !== []) {
@@ -51,8 +57,26 @@ class TransferStoreRequest extends FormRequest
             'batchId'           => ['required', 'uuid', 'exists:batches,id'],
             'originTankId'      => ['required', 'uuid', 'exists:tanks,id'],
             'destinationTankId' => ['required', 'uuid', 'exists:tanks,id', 'different:originTankId'],
+            'companyId'         => ['sometimes', 'uuid', 'exists:companies,id'],
+
             'description'       => ['required', 'string'],
             'quantity'          => ['required', 'integer', 'min:1'],
+
+            'transferDate'      => ['required', 'date'],
+
+            'status'            => [
+                'required',
+                'in:completed,scheduled,cancelled',
+            ],
+
+            'reason'            => [
+                'required',
+                'in:growth,density,biosecurity,maintenance,harvest_prep,other',
+            ],
+
+            'responsible'       => ['required', 'string', 'max:255'],
+
+            'averageWeight'     => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

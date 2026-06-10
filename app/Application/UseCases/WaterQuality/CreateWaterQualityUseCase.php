@@ -4,31 +4,32 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\WaterQuality;
 
-use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\WaterQualityDTO;
 use App\Domain\Models\WaterQuality;
+use App\Domain\Repositories\TankRepositoryInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-class CreateWaterQualityUseCase
+final class CreateWaterQualityUseCase
 {
     public function __construct(
-        protected WaterQualityRepositoryInterface $waterQualityRepository,
-        protected CompanyResolverInterface $companyResolver,
-    ) {
-    }
+        private readonly WaterQualityRepositoryInterface $repository,
+        private readonly TankRepositoryInterface         $tankRepository,
+    ) {}
 
-    /**
-     * @param array<string, mixed> $data
-     */
+    /** @param array<string, mixed> $data */
     public function execute(array $data): WaterQuality
     {
-        return DB::transaction(function () use ($data): WaterQuality {
-            $data['company_id'] = $this->companyResolver->resolve();
-            $dto                = WaterQualityDTO::fromArray($data);
-            $waterQuality       = $this->waterQualityRepository->create($dto);
+        $tank = $this->tankRepository->findOrFail($data['tank_id']);
 
-            return $waterQuality->load('tank');
-        });
+        $data['company_id'] = (string) $tank->company_id;
+
+        $dto = WaterQualityDTO::fromArray($data);
+
+        $record = DB::transaction(
+            fn (): WaterQuality => $this->repository->create($dto)
+        );
+
+        return $record->load('tank');
     }
 }

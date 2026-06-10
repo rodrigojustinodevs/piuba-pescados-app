@@ -12,4 +12,9 @@ final class FeedInventoryNotFoundException extends RuntimeException
     {
         parent::__construct("FeedInventory [{$id}] not found.");
     }
+
+    public static function forFeedType(string $feedType): self
+    {
+        return new self("feed type [{$feedType}]");
+    }
 }

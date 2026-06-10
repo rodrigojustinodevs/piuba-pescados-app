@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Resources\Sensor;
 
+use App\Application\DTOs\SensorDTO;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -30,8 +31,14 @@ class SensorResource extends JsonResource
         return [
             'id'               => $this->id,
             'sensorType'       => $this->sensor_type,
+            'name'             => $this->name,
+            'serialNumber'     => $this->serial_number,
+            'battery'          => $this->battery,
+            'unit'             => $this->unit,
+            'lastReading'      => $this->last_reading !== null ? (float) $this->last_reading : null,
             'installationDate' => $this->installation_date,
-            'status'           => $this->status,
+            'notes'            => $this->notes,
+            'status'           => SensorDTO::toOutputStatus((string) $this->status),
             'tank'             => $this->whenLoaded('tank', fn (): array => [
                 'id'   => $this->tank->id,
                 'name' => $this->tank->name,

@@ -12,7 +12,7 @@ final readonly class FinancialTransactionInputDTO
 {
     public function __construct(
         public string $companyId,
-        public string $financialCategoryId,
+        public ?string $financialCategoryId,
         public FinancialType $type,
         public float $amount,
         public string $dueDate,

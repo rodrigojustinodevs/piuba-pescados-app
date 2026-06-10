@@ -10,6 +10,6 @@ final class BiometryNoFeedingsException extends RuntimeException
 {
     public function __construct()
     {
-        parent::__construct(__('validation.biometry.no_feedings'));
+        parent::__construct(__('This batch has no feeding records. Register at least one feeding before creating biometry.'));
     }
 }

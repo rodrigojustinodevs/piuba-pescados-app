@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\ValueObjects\WaterQualityThresholds;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -20,10 +21,12 @@ use Illuminate\Support\Str;
  * @property float $salinity
  * @property float $turbidity
  * @property string $notes
+ * @property string $quality
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
  * @property-read Tank|null $tank
+ * @property-read Company|null $company
  */
 class WaterQuality extends BaseModel
 {
@@ -42,6 +45,7 @@ class WaterQuality extends BaseModel
         'salinity',
         'turbidity',
         'notes',
+        'quality',
     ];
 
     /** @var array<string> */
@@ -54,8 +58,17 @@ class WaterQuality extends BaseModel
     #[\Override]
     protected static function booted(): void
     {
-        static::creating(function (WaterQuality $quality): void {
-            $quality->id = (string) Str::uuid();
+        static::creating(function (WaterQuality $record): void {
+            $record->id = (string) Str::uuid();
+        });
+
+        static::saving(function (WaterQuality $record): void {
+            $record->quality = WaterQualityThresholds::quality(
+                ph:              $record->ph               !== null ? (float) $record->ph               : null,
+                dissolvedOxygen: $record->dissolved_oxygen !== null ? (float) $record->dissolved_oxygen : null,
+                ammonia:         $record->ammonia          !== null ? (float) $record->ammonia          : null,
+                temperature:     $record->temperature      !== null ? (float) $record->temperature      : null,
+            )->value;
         });
     }
 
@@ -66,6 +79,17 @@ class WaterQuality extends BaseModel
     {
         /** @var BelongsTo<Tank, static> $relation */
         $relation = $this->belongsTo(Tank::class, 'tank_id');
+
+        return $relation;
+    }
+
+    /**
+     * @phpstan-return BelongsTo<Company, static>
+     */
+    public function company(): BelongsTo
+    {
+        /** @var BelongsTo<Company, static> $relation */
+        $relation = $this->belongsTo(Company::class, 'company_id');
 
         return $relation;
     }

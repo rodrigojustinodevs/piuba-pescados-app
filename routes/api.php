@@ -21,13 +21,6 @@ Route::prefix('auth')->name('auth.')->middleware('auth:api')->group(function ():
 });
 
 // ── Admin global (sem company context — master_admin only) ───────────────────
-Route::prefix('admin')
-    ->middleware(['auth:api', 'role:admin,master_admin'])
-    ->group(function (): void {
-        require base_path('routes/app/admin/company.php');
-
-        require base_path('routes/app/admin/subscription.php');
-    });
 
 // ── Rotas com company context ─────────────────────────────────────────────────
 // auth:api → company.context → (permission ou role por rota)
@@ -58,6 +51,7 @@ Route::middleware(['auth:api', 'company.context'])->group(function (): void {
             require base_path('routes/app/company/batch.php');
 
             require base_path('routes/app/company/biometry.php');
+
 
             require base_path('routes/app/company/client.php');
 
@@ -110,8 +104,14 @@ Route::middleware(['auth:api', 'company.context'])->group(function (): void {
             require base_path('routes/app/company/waterQuality.php');
         });
 
-    // ── Master Admin (bypass total de company) ────────────────────────────────
-    Route::middleware('role:master_admin')->prefix('admin')->group(function (): void {
-        // Route::apiResource('companies', AdminCompanyController::class);
+});
+
+// ── Master Admin (bypass total de company context) ────────────────────────────
+Route::prefix('admin')
+    ->middleware(['auth:api', 'role:master_admin'])
+    ->group(function (): void {
+        require base_path('routes/app/admin/company.php');
+
+        require base_path('routes/app/admin/subscription.php');
     });
 });

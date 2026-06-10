@@ -21,16 +21,19 @@ final readonly class DeleteTransferUseCase
     public function execute(string $id): void
     {
         $transfer = $this->transferRepository->findOrFail($id);
-        $batch    = $this->batchRepository->findOrFail((string) $transfer->batch_id);
 
-        DB::transaction(function () use ($transfer, $batch): void {
-            // Reverte o lote ao tanque de origem e devolve a quantidade
-            $this->applyBatchTransfer->revert(
-                batchId:             (string) $transfer->batch_id,
-                originTankId:        (string) $transfer->origin_tank_id,
-                transferredQuantity: (int) $transfer->quantity,
-                currentQuantity:     (int) $batch->initial_quantity,
-            );
+        DB::transaction(function () use ($transfer): void {
+            // M-07: só reverte movimentação se a transferência estava concluída
+            if ($transfer->status === 'completed') {
+                $batch = $this->batchRepository->findOrFail((string) $transfer->batch_id);
+
+                $this->applyBatchTransfer->revert(
+                    $batch,
+                    (string) $transfer->origin_tank_id,
+                    (int) $transfer->quantity,
+                    $transfer->child_batch_id,
+                );
+            }
 
             $this->transferRepository->delete($transfer->id);
         });

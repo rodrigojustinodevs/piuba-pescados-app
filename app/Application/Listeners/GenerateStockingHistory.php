@@ -18,7 +18,8 @@ use Illuminate\Support\Str;
  *
  * Mudança em relação à versão anterior:
  *  - findActiveStockingByBatch() usava Stocking::query() diretamente.
- *    Agora usa StockingRepositoryInterface::findByBatchOrFail() — mantém
+ *    Usa StockingRepositoryInterface::findActiveByBatch(); sem stocking ativo,
+ *    o histórico não é criado (evita 404 após alimentação válida).
  *    a camada de infraestrutura encapsulada e facilita testes.
  *
  * Registrado para: FeedingCreated | MortalityRecorded | SaleProcessed
@@ -32,7 +33,10 @@ final readonly class GenerateStockingHistory
 
     public function handleFeedingCreated(FeedingCreated $event): void
     {
-        $stocking = $this->stockingRepository->findByBatchOrFail($event->feeding->batch_id);
+        $stocking = $this->stockingRepository->findActiveByBatch($event->feeding->batch_id);
+        if ($stocking === null) {
+            return;
+        }
 
         StockingHistory::create([
             'id'          => (string) Str::uuid(),
@@ -50,7 +54,10 @@ final readonly class GenerateStockingHistory
 
     public function handleMortalityRecorded(MortalityRecorded $event): void
     {
-        $stocking = $this->stockingRepository->findByBatchOrFail($event->mortality->batch_id);
+        $stocking = $this->stockingRepository->findActiveByBatch($event->mortality->batch_id);
+        if ($stocking === null) {
+            return;
+        }
 
         StockingHistory::create([
             'id'          => (string) Str::uuid(),
@@ -62,7 +69,7 @@ final readonly class GenerateStockingHistory
             'notes'       => sprintf(
                 'Mortalidade registrada: %d unidades. Causa: %s.',
                 $event->mortality->quantity,
-                $event->mortality->cause,
+                $event->mortality->cause->value,
             ),
         ]);
     }

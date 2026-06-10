@@ -36,41 +36,65 @@ final class SensorReadingRepository implements SensorReadingRepositoryInterface
 
     /**
      * @param array{
-     *     company_id: string,
-     *     sensor_id?: string|null,
-     *     tank_id?: string|null,
-     *     date_from?: string|null,
-     *     date_to?: string|null,
-     *     per_page?: int,
+     *     companyId?: string|null
+     *     search?: string|null,
+     *     sensorId?: string|null,
+     *     type?: string|null,
+     *     tankId?: string|null,
+     *     dateFrom?: string|null,
+     *     dateTo?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface
     {
+        $search = $filters['search'] ?? null;
         $paginator = SensorReading::with([
             'sensor' => static fn ($q) => $q->select('id', 'sensor_type', 'status', 'tank_id')
                 ->with([
                     'tank' => static fn ($tankQuery) => $tankQuery->select('id', 'name'),
                 ]),
         ])
-            ->whereHas('sensor', static fn ($q) => $q->where('company_id', $filters['company_id']))
             ->when(
-                ! empty($filters['sensor_id']),
-                static fn ($q) => $q->where('sensor_id', $filters['sensor_id']),
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->whereHas('sensor', static fn ($s) => $s->where('company_id', $filters['companyId'])),
             )
             ->when(
-                ! empty($filters['tank_id']),
-                static fn ($q) => $q->whereHas('sensor', static fn ($s) => $s->where('tank_id', $filters['tank_id'])),
+                is_string($search) && $search !== '',
+                static function ($q) use ($search): void {
+                    $term = '%' . $search . '%';
+                    $q->where(static function ($sub) use ($term): void {
+                        $sub->where('notes', 'like', $term)
+                            ->orWhere('value', 'like', $term)
+                            ->orWhereHas(
+                                'sensor',
+                                static fn ($s) => $s->whereAny(['name', 'serial_number'], 'like', $term),
+                            );
+                    });
+                },
             )
             ->when(
-                ! empty($filters['date_from']),
-                static fn ($q) => $q->whereDate('measured_at', '>=', $filters['date_from']),
+                ! empty($filters['sensorId']),
+                static fn ($q) => $q->where('sensor_id', $filters['sensorId']),
             )
             ->when(
-                ! empty($filters['date_to']),
-                static fn ($q) => $q->whereDate('measured_at', '<=', $filters['date_to']),
+                ! empty($filters['type']),
+                static fn ($q) => $q->where('type', $filters['type']),
+            )
+            ->when(
+                ! empty($filters['tankId']),
+                static fn ($q) => $q->whereHas('sensor', static fn ($s) => $s->where('tank_id', $filters['tankId'])),
+            )
+            ->when(
+                ! empty($filters['dateFrom']),
+                static fn ($q) => $q->whereDate('measured_at', '>=', $filters['dateFrom']),
+            )
+            ->when(
+                ! empty($filters['dateTo']),
+                static fn ($q) => $q->whereDate('measured_at', '<=', $filters['dateTo']),
             )
             ->latest('measured_at')
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

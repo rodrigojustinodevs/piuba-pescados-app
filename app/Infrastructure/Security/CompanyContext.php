@@ -18,7 +18,8 @@ final class CompanyContext
 
     private static string $userId = '';
 
-    public static function set(string $userId, string $companyId, string $role): void
+
+    public static function set(string $userId, ?string $companyId = '', string $role): void
     {
         self::$userId    = $userId;
         self::$companyId = $companyId;

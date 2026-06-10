@@ -30,6 +30,7 @@ final class SensorReadingUpdateRequest extends FormRequest
             'value'       => ['sometimes', 'numeric'],
             'unit'        => ['sometimes', 'string', 'max:50'],
             'measured_at' => ['sometimes', 'date'],
+            'type'        => ['sometimes', 'string', 'in:automatic,manual'],
             'notes'       => ['nullable', 'string', 'max:2000'],
         ];
     }

@@ -63,6 +63,20 @@ interface WaterQualityRepositoryInterface
     public function getLatestByTank(string $companyId): array;
 
     /**
+     * Count records grouped by quality level, applying the same filters as paginate().
+     *
+     * @param array{
+     *     company_id?: string|null,
+     *     search?: string|null,
+     *     tank_id?: string|null,
+     *     date_from?: string|null,
+     *     date_to?: string|null,
+     * } $filters
+     * @return array<string, int>
+     */
+    public function countByQuality(array $filters): array;
+
+    /**
      * Get the trends for a given company, parameter, date from, date to, granularity and tank id.
      *
      * @return array<int, object>

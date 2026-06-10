@@ -26,9 +26,10 @@ final readonly class CheckCompanyContext
         // 1. Extrai company_id do payload JWT
         //    NUNCA do request body/query (evita injeção de tenant)
         $companyId = $this->jwtService->extractCompanyId();
+        $roleUser   = $this->jwtService->extractRole(); 
 
-        if (! $companyId) {
-            return response()->json([
+        if (! $companyId && $roleUser !== 'master_admin') {
+             return response()->json([
                 'error'   => 'Company context not found in token.',
                 'message' => 'Select an active company via /auth/switch-company.',
                 'code'    => 'NO_COMPANY_CONTEXT',

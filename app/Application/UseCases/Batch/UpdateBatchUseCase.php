@@ -29,7 +29,7 @@ final readonly class UpdateBatchUseCase
 
         $targetStatus = $dto->status ?? $currentBatch->status;
 
-        if ($targetStatus === BatchStatus::ACTIVE->value) {
+        if ($targetStatus === BatchStatus::ACTIVE->value && $dto->tankId !== $currentBatch->tank_id) {
             $this->validateTank->execute($dto->tankId, $id);
         }
 

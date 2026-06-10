@@ -7,6 +7,7 @@ namespace App\Application\UseCases\Transfer;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
+use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ListTransfersUseCase
 {
@@ -18,16 +19,18 @@ final readonly class ListTransfersUseCase
 
     /**
      * @param array{
-     *     batch_id?: string|null,
-     *     origin_tank_id?: string|null,
-     *     destination_tank_id?: string|null,
-     *     per_page?: int,
+     *     companyId?: string|null,
+     *     batchId?: string|null,
+     *     originTankId?: string|null,
+     *     destinationTankId?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        // Multi-tenancy: garante isolamento por empresa
-        $filters['company_id'] = $this->companyResolver->resolve();
+        if (!CompanyContext::isMasterAdmin()) {
+            $filters['companyId'] = CompanyContext::requireCompanyId();
+        }
 
         return $this->transferRepository->paginate($filters);
     }

@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Sensor;
 
+use App\Application\Contracts\CompanyResolverInterface;
+use App\Application\DTOs\SensorDTO;
 use App\Domain\Models\Sensor;
 use App\Domain\Repositories\SensorRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 
-class UpdateSensorUseCase
+final readonly class UpdateSensorUseCase
 {
     public function __construct(
-        protected SensorRepositoryInterface $sensorRepository
+        private SensorRepositoryInterface $sensorRepository,
+        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
@@ -19,30 +23,20 @@ class UpdateSensorUseCase
      */
     public function execute(string $id, array $data): Sensor
     {
-        $sensor = $this->sensorRepository->update($id, $this->toPersistenceKeys($data));
+        $sensor = $this->sensorRepository->findOrFail($id);
 
-        return $sensor->load('tank');
-    }
+        $data['tank_id'] = $data['tank_id'] ?? $data['tankId'] ?? (string) $sensor->tank_id;
+        $data['sensor_type'] = $data['sensor_type'] ?? $data['sensorType'] ?? (string) $sensor->sensor_type;
+        $data['status'] = $data['status'] ?? (string) $sensor->status;
+        $data['company_id'] = $this->companyResolver->resolve(
+            $data['company_id'] ?? $data['companyId'] ?? (string) $sensor->company_id,
+        );
 
-    /**
-     * @param array<string, mixed> $data
-     *
-     * @return array<string, mixed>
-     */
-    private function toPersistenceKeys(array $data): array
-    {
-        $aliases = [
-            'tankId'           => 'tank_id',
-            'sensorType'       => 'sensor_type',
-            'installationDate' => 'installation_date',
-        ];
+        return DB::transaction(function () use ($id, $data): Sensor {
+            $dto    = SensorDTO::fromArray($data);
+            $sensor = $this->sensorRepository->update($id, $dto->toPersistence());
 
-        $out = [];
-
-        foreach ($data as $key => $value) {
-            $out[$aliases[$key] ?? $key] = $value;
-        }
-
-        return $out;
+            return $sensor->load('tank');
+        });
     }
 }

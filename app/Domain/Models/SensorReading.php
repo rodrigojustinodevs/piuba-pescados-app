@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
  * @property float                         $value
  * @property string                        $unit
  * @property \Illuminate\Support\Carbon|null $measured_at
+ * @property string                        $type
  * @property string|null                   $notes
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -37,6 +38,7 @@ class SensorReading extends BaseModel
         'value',
         'unit',
         'measured_at',
+        'type',
         'notes',
     ];
 

@@ -11,6 +11,7 @@ use App\Presentation\Middleware\CheckPermission;
 use App\Presentation\Middleware\EnsureMasterAdmin;
 use App\Presentation\Policies\BatchPolicy;
 use App\Presentation\Policies\SalePolicy;
+use App\Presentation\Policies\SensorPolicy;
 use App\Presentation\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -47,6 +48,7 @@ final class MultiTenantServiceProvider extends ServiceProvider
         // Registra Policies
         Gate::policy(\App\Domain\Models\Batch::class, BatchPolicy::class);
         Gate::policy(\App\Domain\Models\Sale::class, SalePolicy::class);
+        Gate::policy(\App\Domain\Models\Sensor::class, SensorPolicy::class);
         Gate::policy(\App\Domain\Models\User::class, UserPolicy::class);
 
         // Gate "before": master_admin bypassa todas as verificações

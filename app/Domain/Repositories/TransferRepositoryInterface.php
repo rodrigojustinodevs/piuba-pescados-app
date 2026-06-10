@@ -11,10 +11,11 @@ interface TransferRepositoryInterface
 {
     /**
      * @param array{
-     *     batch_id?: string|null,
-     *     origin_tank_id?: string|null,
-     *     destination_tank_id?: string|null,
-     *     per_page?: int,
+     *     companyId?: string|null,
+     *     batchId?: string|null,
+     *     originTankId?: string|null,
+     *     destinationTankId?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface;

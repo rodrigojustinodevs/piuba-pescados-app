@@ -30,14 +30,17 @@ final class FeedingResource extends JsonResource
         return [
             'id'                     => $this->id,
             'batchId'                => $this->batch_id,
-            'feedingDate'            => $this->feeding_date?->toDateString(),
+            'feedingDate'            => $this->feeding_date?->toDateTimeString(),
             'quantityProvided'       => (float) $this->quantity_provided,
             'feedType'               => $this->feed_type,
-            'stockId'                => $this->stock_id,
             'stockReductionQuantity' => (float) $this->stock_reduction_quantity,
             'createdAt'              => $this->created_at?->toDateTimeString(),
             'updatedAt'              => $this->updated_at?->toDateTimeString(),
-
+            
+            'stock' => $this->whenLoaded('stock', fn (): array => [
+                'id'   => $this->stock->id,
+                'name' => $this->stock->supply?->name,
+            ]),
             'batch' => $this->whenLoaded('batch', fn (): array => [
                 'id'   => $this->batch->id,
                 'name' => $this->batch->name,

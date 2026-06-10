@@ -80,7 +80,7 @@ use App\Infrastructure\Persistence\TankTypeRepository;
 use App\Infrastructure\Persistence\TransferRepository;
 use App\Infrastructure\Persistence\WaterQualityRepository;
 use App\Infrastructure\Security\BcryptPasswordHasher;
-use App\Infrastructure\Security\JwtTokenService;
+use App\Infrastructure\Security\CompanyJwtService;
 use Carbon\CarbonImmutable;
 use Illuminate\Cache\RateLimiter;
 use Illuminate\Contracts\Auth\Guard;
@@ -104,7 +104,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(AuthRepositoryInterface::class, AuthRepository::class);
 
-        $this->app->bind(TokenServiceInterface::class, JwtTokenService::class);
+        $this->app->bind(TokenServiceInterface::class, CompanyJwtService::class);
 
         $this->app->bind(PasswordHasherInterface::class, BcryptPasswordHasher::class);
 

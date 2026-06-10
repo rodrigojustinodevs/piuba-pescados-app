@@ -29,7 +29,10 @@ class HarvestResource extends JsonResource
     {
         return [
             'id'           => $this->id,
-            'batchId'      => $this->batch_id,
+            'batch'        => $this->whenLoaded('batch', fn (): array => [
+                'id'   => $this->batch->id,
+                'name' => $this->batch->name,
+            ]),
             'totalWeight'  => $this->total_weight,
             'pricePerKg'   => $this->price_per_kg,
             'totalRevenue' => $this->total_revenue,

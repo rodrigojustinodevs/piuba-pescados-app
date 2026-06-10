@@ -25,6 +25,7 @@ final class SensorReadingResource extends JsonResource
             'value'      => (float) $this->value,
             'unit'       => $this->unit,
             'measuredAt' => $this->measured_at?->toDateTimeString(),
+            'type'       => $this->type,
             'notes'      => $this->notes,
             'createdAt'  => $this->created_at?->toDateTimeString(),
             'updatedAt'  => $this->updated_at?->toDateTimeString(),

@@ -10,6 +10,7 @@ use App\Application\DTOs\BatchInputDTO;
 use App\Domain\Enums\BatchStatus;
 use App\Domain\Models\Batch;
 use App\Domain\Repositories\BatchRepositoryInterface;
+use App\Domain\Repositories\TankRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 final readonly class CreateBatchUseCase
@@ -18,6 +19,7 @@ final readonly class CreateBatchUseCase
         private BatchRepositoryInterface $repository,
         private ValidateActiveBatchInTankAction $validateTank,
         private CompanyResolverInterface $companyResolver,
+        private TankRepositoryInterface $tankRepository,
     ) {
     }
 
@@ -27,9 +29,10 @@ final readonly class CreateBatchUseCase
     public function execute(array $data): Batch
     {
         $dto       = BatchInputDTO::fromArray($data);
-        $companyId = $this->companyResolver->resolve(
-            hint: $data['company_id'] ?? $data['companyId'] ?? null,
-        );
+        
+        $tank = $this->tankRepository->findOrFail($dto->tankId);
+        
+        $companyId = $tank->company_id ?? null;
 
         if ($dto->status === BatchStatus::ACTIVE->value) {
             $this->validateTank->execute($dto->tankId, $companyId);

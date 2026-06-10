@@ -25,9 +25,9 @@ return new class () extends Migration
             $table->timestamp('installation_date')
                 ->default(now())
                 ->comment('Installation date (YYYY-MM-DD)');
-            $table->enum('status', ['active', 'inactive', 'maintenance'])
-                ->default('active')
-                ->comment('Status: active, inactive, maintenance');
+            $table->enum('status', ['online', 'offline', 'maintenance'])
+                ->default('online')
+                ->comment('Status: online, offline, maintenance');
 
             $table->text('notes')->nullable()->comment('Notes about the sensor');
             $table->timestamps();

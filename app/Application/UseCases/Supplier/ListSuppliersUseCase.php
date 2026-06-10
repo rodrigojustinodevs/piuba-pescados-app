@@ -13,7 +13,6 @@ final readonly class ListSuppliersUseCase
 {
     public function __construct(
         private SupplierRepositoryInterface $supplierRepository,
-        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
@@ -23,7 +22,7 @@ final readonly class ListSuppliersUseCase
     public function execute(array $filters = []): PaginationInterface
     {
         if (!CompanyContext::isMasterAdmin()) {
-            $filters['company_id'] = CompanyContext::requireCompanyId();
+            $filters['companyId'] = CompanyContext::requireCompanyId();
         }
 
         return $this->supplierRepository->paginate($filters);

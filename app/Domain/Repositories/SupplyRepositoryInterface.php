@@ -11,8 +11,8 @@ interface SupplyRepositoryInterface
 {
     /**
      * @param array{
-     *     company_id?: string|null,
-     *     per_page?: int,
+     *     companyId?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface;

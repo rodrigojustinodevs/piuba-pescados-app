@@ -17,16 +17,16 @@ final class SupplierRepository implements SupplierRepositoryInterface
 
     /**
      * @param array{
-     *     company_id?: string|null,
-     *     per_page?: int,
+     *     companyId?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface
     {
         $paginator = Supplier::with(self::DEFAULT_RELATIONS)
             ->when(
-                ! empty($filters['company_id']),
-                static fn ($q) => $q->where('company_id', $filters['company_id']),
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
             )
             ->latest()
             ->paginate((int) ($filters['per_page'] ?? 25));

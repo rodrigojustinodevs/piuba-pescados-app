@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\FinancialCategory;
 
-use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
+use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ListFinancialCategoriesUseCase
 {
     public function __construct(
         private FinancialCategoryRepositoryInterface $repository,
-        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
@@ -21,7 +20,9 @@ final readonly class ListFinancialCategoriesUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        $filters['companyId'] = $this->companyResolver->resolve();
+        if (! CompanyContext::isMasterAdmin()) {
+            $filters['companyId'] = CompanyContext::requireCompanyId();
+        }
 
         return $this->repository->paginate($filters);
     }

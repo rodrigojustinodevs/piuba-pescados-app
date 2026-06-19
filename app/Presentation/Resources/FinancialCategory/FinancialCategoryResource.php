@@ -13,6 +13,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string                               $name
  * @property-read FinancialType                        $type
  * @property-read FinancialCategoryStatus              $status
+ * @property-read string|null                          $notes
+ * @property-read string|null                          $total_amount
  * @property-read \Illuminate\Support\Carbon|null      $created_at
  * @property-read \Illuminate\Support\Carbon|null      $updated_at
  * @property-read \App\Domain\Models\Company|null      $company
@@ -33,7 +35,10 @@ class FinancialCategoryResource extends JsonResource
             'typeLabel'   => $this->type->label(),
             'status'      => $this->status->value,
             'statusLabel' => $this->status->label(),
+            'notes'       => $this->notes,
+            'totalAmount' => (float) ($this->total_amount ?? 0),
             'company'     => $this->whenLoaded('company', fn (): array => [
+                'id'   => $this->company->id,
                 'name' => $this->company->name,
             ]),
             'createdAt' => $this->created_at?->toDateTimeString(),

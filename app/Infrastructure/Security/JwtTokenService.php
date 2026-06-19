@@ -7,7 +7,6 @@ namespace App\Infrastructure\Security;
 use App\Application\Contracts\Auth\TokenServiceInterface;
 use App\Domain\Models\Company;
 use App\Domain\Models\User;
-use App\Domain\ValueObjects\TenantContext;
 use PHPOpenSourceSaver\JWTAuth\JWTAuth;
 use RuntimeException;
 
@@ -56,11 +55,6 @@ final readonly class JwtTokenService implements TokenServiceInterface
     }
 
     public function generateForCompanyUser(User $user, Company $company): string
-    {
-        return $this->jwt->fromUser($user);
-    }
-
-    private function generateToken(User $user, TenantContext $context): string
     {
         return $this->jwt->fromUser($user);
     }

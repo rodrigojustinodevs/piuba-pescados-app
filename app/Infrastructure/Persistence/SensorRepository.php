@@ -49,7 +49,8 @@ class SensorRepository implements SensorRepositoryInterface
     public function paginate(array $filters): PaginationInterface
     {
         $search = $filters['search'] ?? null;
-        if (isset($filters['status']) && is_string($filters['status'])) {
+
+        if (isset($filters['status'])) {
             $filters['status'] = SensorDTO::toPersistenceStatus($filters['status']);
         }
 

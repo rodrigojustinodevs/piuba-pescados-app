@@ -19,8 +19,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $unit
  * @property float $unit_price
  * @property float $total_cost
- * @property string $direction
+ * @property string      $direction
+ * @property string|null $location
+ * @property string|null $responsible
+ * @property string|null $notes
  * @property \Illuminate\Support\Carbon|null $created_at
+ * @property-read \App\Domain\Models\Supply|null $supply
  */
 final class StockTransactionResource extends JsonResource
 {
@@ -39,7 +43,14 @@ final class StockTransactionResource extends JsonResource
             'totalCost'     => (float) $this->total_cost,
             'referenceType' => $this->reference_type,
             'referenceId'   => $this->reference_id,
-            'createdAt'     => $this->created_at?->toDateTimeString(),
+            'supply'        => $this->whenLoaded('supply', fn (): array => [
+                'id'   => $this->supply->id,
+                'name' => $this->supply->name,
+            ]),
+            'location'    => $this->location,
+            'responsible' => $this->responsible,
+            'notes'       => $this->notes,
+            'createdAt'   => $this->created_at?->toDateTimeString(),
         ];
     }
 }

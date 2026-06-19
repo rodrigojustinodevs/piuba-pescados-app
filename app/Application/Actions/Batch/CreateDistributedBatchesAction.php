@@ -7,8 +7,8 @@ namespace App\Application\Actions\Batch;
 use App\Application\Actions\FinancialTransaction\GeneratePayableAction;
 use App\Application\DTOs\BatchDistributionInputDTO;
 use App\Application\DTOs\ExpenseInputDTO;
-use App\Domain\Enums\FinancialType;
 use App\Domain\Enums\FinancialTransactionStatus;
+use App\Domain\Enums\FinancialType;
 use App\Domain\Exceptions\DistributionCrossCompanyException;
 use App\Domain\Models\Tank;
 use App\Domain\Repositories\FinancialCategoryRepositoryInterface;
@@ -16,14 +16,15 @@ use App\Domain\Repositories\TankRepositoryInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-final class CreateDistributedBatchesAction
+final readonly class CreateDistributedBatchesAction
 {
     public function __construct(
-        private readonly CreateSingleDistributedBatchAction $createSingleBatch,
-        private readonly GeneratePayableAction              $generatePayable,
-        private readonly TankRepositoryInterface            $tankRepository,
-        private readonly FinancialCategoryRepositoryInterface $financialCategoryRepository,
-    ) {}
+        private CreateSingleDistributedBatchAction $createSingleBatch,
+        private GeneratePayableAction $generatePayable,
+        private TankRepositoryInterface $tankRepository,
+        private FinancialCategoryRepositoryInterface $financialCategoryRepository,
+    ) {
+    }
 
     /**
      * @return Collection<int, \App\Domain\Models\Batch>
@@ -35,8 +36,9 @@ final class CreateDistributedBatchesAction
 
         // Passo 1: valida TODOS os tanques antes de qualquer escrita.
         // Se um tanque nao existir ou pertencer a outra empresa, falha aqui.
-        $companyId = $this->resolveAndValidateCompany($input);
-        $financialCategoryId = $this->financialCategoryRepository->showFinancialCategory('code', FinancialType::PURCHASE->value)->id;
+        $companyId           = $this->resolveAndValidateCompany($input);
+        $financialCategoryId = $this->financialCategoryRepository
+            ->showFinancialCategory('code', FinancialType::PURCHASE->value)->id;
 
         $expenseInputDTO = new ExpenseInputDTO(
             companyId:           $companyId,
@@ -66,7 +68,7 @@ final class CreateDistributedBatchesAction
     {
         $tankIds = array_column($input->distribution, 'tankId');
 
-        if (empty($tankIds)) {
+        if ($tankIds === []) {
             throw new \InvalidArgumentException('A distribuicao deve ter ao menos um item.');
         }
 
@@ -91,11 +93,13 @@ final class CreateDistributedBatchesAction
         return $distinctCompanyIds[0];
     }
 
-    /** @return Collection<int, \App\Domain\Models\Batch> */
+    /**
+     * @return Collection<int, \App\Domain\Models\Batch>
+     */
     private function createBatchesForDistribution(
         BatchDistributionInputDTO $input,
         string $parentGroupId,
-        int    $totalQuantity,
+        int $totalQuantity,
     ): Collection {
         $createdBatches = collect();
 

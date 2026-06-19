@@ -4,25 +4,37 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\Enums\StockStatusEnum;
+use App\Domain\Enums\StockTypeEnum;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 /**
- * @property string      $id
- * @property string      $company_id
- * @property string      $supply_id
- * @property string|null $supplier_id
- * @property float       $current_quantity
- * @property string      $unit
- * @property float       $unit_price
- * @property float       $minimum_stock
- * @property float       $withdrawal_quantity
+ * @property string           $id
+ * @property string           $company_id
+ * @property string|null      $supply_id
+ * @property string|null      $supplier_id
+ * @property string|null      $code
+ * @property string|null      $name
+ * @property StockTypeEnum|null   $type
+ * @property string|null      $location
+ * @property string|null      $responsible
+ * @property float|null       $capacity
+ * @property StockStatusEnum  $status
+ * @property string|null      $notes
+ * @property float            $current_quantity
+ * @property string           $unit
+ * @property float            $unit_price
+ * @property float            $minimum_stock
+ * @property float            $withdrawal_quantity
  *
- * @property-read Supply    $supply
- * @property-read Supplier|null $supplier
- * @property-read \Illuminate\Database\Eloquent\Collection<int, StockTransaction> $transactions
+ * @property-read Supply|null                                                        $supply
+ * @property-read Supplier|null                                                      $supplier
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockTransaction>    $transactions
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockBalance>        $balances
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, StockMovement>       $movements
  */
 class Stock extends BaseModel
 {
@@ -37,6 +49,14 @@ class Stock extends BaseModel
         'company_id',
         'supply_id',
         'supplier_id',
+        'code',
+        'name',
+        'type',
+        'location',
+        'responsible',
+        'capacity',
+        'status',
+        'notes',
         'current_quantity',
         'unit',
         'unit_price',
@@ -45,6 +65,9 @@ class Stock extends BaseModel
     ];
 
     protected $casts = [
+        'type'                => StockTypeEnum::class,
+        'status'              => StockStatusEnum::class,
+        'capacity'            => 'decimal:3',
         'current_quantity'    => 'float',
         'unit_price'          => 'decimal:2',
         'minimum_stock'       => 'float',
@@ -81,6 +104,16 @@ class Stock extends BaseModel
     public function transactions(): HasMany
     {
         return $this->hasMany(StockTransaction::class, 'stock_id');
+    }
+
+    public function balances(): HasMany
+    {
+        return $this->hasMany(StockBalance::class, 'stock_id');
+    }
+
+    public function movements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class, 'stock_id');
     }
 
     // -------------------------------------------------------------------------

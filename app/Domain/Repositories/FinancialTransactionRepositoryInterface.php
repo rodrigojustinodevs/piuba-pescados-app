@@ -36,13 +36,13 @@ interface FinancialTransactionRepositoryInterface
      * Paginate financial transactions filtered by company.
      *
      * @param array{
-     *     company_id: string,
+     *     companyId: string,
      *     status?: string|null,
      *     type?: string|null,
-     *     financial_category_id?: string|null,
-     *     due_date_from?: string|null,
-     *     due_date_to?: string|null,
-     *     per_page?: int,
+     *     financialCategoryId?: string|null,
+     *     dueDateFrom?: string|null,
+     *     dueDateTo?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface;

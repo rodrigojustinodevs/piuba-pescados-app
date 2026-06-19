@@ -57,8 +57,8 @@ class CreateHarvestUseCase
         $totalRevenue = 0.0;
 
         foreach ($classifications as $item) {
-            $weightKg      = ((float) $item['quantity'] * (float) $item['average_weight']) / 1000;
-            $totalWeight  += $weightKg;
+            $weightKg = ((float) $item['quantity'] * (float) $item['average_weight']) / 1000;
+            $totalWeight += $weightKg;
             $totalRevenue += $weightKg * (float) $item['price_per_kg'];
         }
 

@@ -8,12 +8,12 @@ use App\Domain\Enums\WaterQualityLevel;
 
 final class WaterQualityThresholds
 {
-    public const float PH_MIN              = 6.5;
-    public const float PH_MAX              = 8.5;
+    public const float PH_MIN               = 6.5;
+    public const float PH_MAX               = 8.5;
     public const float DISSOLVED_OXYGEN_MIN = 5.0;
-    public const float AMMONIA_MAX         = 0.1;
-    public const float TEMPERATURE_MIN     = 20.0;
-    public const float TEMPERATURE_MAX     = 32.0;
+    public const float AMMONIA_MAX          = 0.1;
+    public const float TEMPERATURE_MIN      = 20.0;
+    public const float TEMPERATURE_MAX      = 32.0;
 
     public static function isPHCritical(?float $ph): bool
     {
@@ -52,12 +52,15 @@ final class WaterQualityThresholds
         if (self::isPHCritical($ph)) {
             $alerts[] = 'ph';
         }
+
         if (self::isOxygenLow($dissolvedOxygen)) {
             $alerts[] = 'dissolved_oxygen';
         }
+
         if (self::isAmmoniaCritical($ammonia)) {
             $alerts[] = 'ammonia';
         }
+
         if (self::isTemperatureCritical($temperature)) {
             $alerts[] = 'temperature';
         }

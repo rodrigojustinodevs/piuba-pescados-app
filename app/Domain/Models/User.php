@@ -126,7 +126,7 @@ class User extends Authenticatable implements Auditable, JWTSubject
 
         $pivot = $pivotModel instanceof CompanyUserPivot ? $pivotModel : null;
 
-        return $pivot ? RolesEnum::from($pivot->role) : null;
+        return $pivot instanceof \App\Domain\Models\CompanyUserPivot ? RolesEnum::from($pivot->role) : null;
     }
 
     /**

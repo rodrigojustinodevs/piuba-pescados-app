@@ -66,9 +66,8 @@ final readonly class UpdateFinancialTransactionUseCase
     {
         return FinancialTransactionInputDTO::fromArray([
             'company_id'            => (string) $transaction->company_id,
-            'financial_category_id' => (string) ($data['financial_category_id']
-                                       ?? $transaction->financial_category_id),
-            'type' => array_key_exists('type', $data)
+            'financial_category_id' => $data['financial_category_id'] ?? $transaction->financial_category_id,
+            'type'                  => array_key_exists('type', $data)
                                        ? $data['type']
                                        : $transaction->type->value,
             'status' => array_key_exists('status', $data)

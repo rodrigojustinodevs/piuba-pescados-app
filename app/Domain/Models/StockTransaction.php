@@ -11,8 +11,8 @@ use Illuminate\Support\Str;
 
 /**
  * @property string      $id
- * @property string      $stock_id
  * @property string      $company_id
+ * @property string|null $supply_id
  * @property string|null $supplier_id
  * @property string|null $reference_id
  * @property string|null $reference_type
@@ -21,8 +21,11 @@ use Illuminate\Support\Str;
  * @property float       $total_cost
  * @property string      $unit
  * @property string      $direction
+ * @property string|null $location
+ * @property string|null $responsible
+ * @property string|null $notes
  *
- * @property-read Stock         $stock
+ * @property-read Supply|null   $supply
  * @property-read Supplier|null $supplier
  */
 class StockTransaction extends BaseModel
@@ -36,8 +39,8 @@ class StockTransaction extends BaseModel
 
     protected $fillable = [
         'id',
-        'stock_id',
         'company_id',
+        'supply_id',
         'supplier_id',
         'reference_id',
         'reference_type',
@@ -66,9 +69,9 @@ class StockTransaction extends BaseModel
     // Relacionamentos
     // -------------------------------------------------------------------------
 
-    public function stock(): BelongsTo
+    public function supply(): BelongsTo
     {
-        return $this->belongsTo(Stock::class, 'stock_id');
+        return $this->belongsTo(Supply::class, 'supply_id');
     }
 
     public function supplier(): BelongsTo

@@ -10,29 +10,29 @@ namespace App\Application\DTOs;
 final readonly class HarvestDTO
 {
     /**
-     * @param array<int, array{class: string, quantity: int, averageWeight: float, pricePerKg: float}> $sizeClassifications
+     * @param list<array{class: string, quantity: int, averageWeight: float, pricePerKg: float}> $sizeClassifications
      */
     public function __construct(
-        public string  $id,
-        public string  $batchId,
+        public string $id,
+        public string $batchId,
         public ?string $tankId,
-        public string  $harvestDate,
-        public string  $type,
-        public string  $status,
+        public string $harvestDate,
+        public string $type,
+        public string $status,
         public ?string $destination,
-        public int     $initialPopulation,
-        public int     $harvestedQuantity,
-        public float   $averageWeight,
-        public float   $totalWeight,
-        public float   $pricePerKg,
-        public float   $totalRevenue,
-        public float   $operationalCost,
-        public float   $netProfit,
-        public float   $survivalRate,
+        public int $initialPopulation,
+        public int $harvestedQuantity,
+        public float $averageWeight,
+        public float $totalWeight,
+        public float $pricePerKg,
+        public float $totalRevenue,
+        public float $operationalCost,
+        public float $netProfit,
+        public float $survivalRate,
         public ?string $clientDestination,
         public ?string $responsible,
         public ?string $notes,
-        public array   $sizeClassifications = [],
+        public array $sizeClassifications = [],
         public ?string $createdAt = null,
         public ?string $updatedAt = null,
     ) {

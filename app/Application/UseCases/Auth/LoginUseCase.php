@@ -9,27 +9,23 @@ use App\Application\Contracts\Auth\TokenServiceInterface;
 use App\Application\DTOs\LoginInputDTO;
 use App\Application\DTOs\LoginOutputDTO;
 use App\Application\DTOs\UserContextDTO;
-use App\Domain\Enums\RolesEnum;
 use App\Domain\Exceptions\InvalidCredentialsException;
-use App\Domain\Models\CompanyUserPivot;
 use App\Domain\Repositories\AuthRepositoryInterface;
-use App\Domain\ValueObjects\Role;
-use App\Domain\ValueObjects\TenantContext;
-use App\Infrastructure\Security\CompanyJwtService;
 
-final class LoginUseCase
+final readonly class LoginUseCase
 {
     public function __construct(
-        private readonly AuthRepositoryInterface $authRepository,
-        private readonly PasswordHasherInterface $passwordHasher,
-        private readonly TokenServiceInterface   $tokenService,
-    ) {}
+        private AuthRepositoryInterface $authRepository,
+        private PasswordHasherInterface $passwordHasher,
+        private TokenServiceInterface $tokenService,
+    ) {
+    }
 
     public function execute(LoginInputDTO $input): LoginOutputDTO
     {
         $user = $this->authRepository->findByEmail($input->email);
 
-        if ($user === null) {
+        if (!$user instanceof \App\Domain\Models\User) {
             throw new InvalidCredentialsException();
         }
 

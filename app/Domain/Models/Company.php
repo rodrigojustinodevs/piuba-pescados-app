@@ -99,7 +99,7 @@ class Company extends BaseModel
 
         $pivot = $pivotModel instanceof CompanyUserPivot ? $pivotModel : null;
 
-        return $pivot ? RolesEnum::from($pivot->role) : null;
+        return $pivot instanceof \App\Domain\Models\CompanyUserPivot ? RolesEnum::from($pivot->role) : null;
     }
 
     public function getSetting(string $key, mixed $default = null): mixed

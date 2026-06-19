@@ -22,7 +22,7 @@ final class MultiTenantServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Singleton do PermissionResolver (mantém cache em memória entre chamadas)
-        $this->app->singleton(PermissionResolver::class, fn($app): PermissionResolver => new PermissionResolver(
+        $this->app->singleton(PermissionResolver::class, fn ($app): PermissionResolver => new PermissionResolver(
             cache: $app->make(\Illuminate\Contracts\Cache\Repository::class),
         ));
 

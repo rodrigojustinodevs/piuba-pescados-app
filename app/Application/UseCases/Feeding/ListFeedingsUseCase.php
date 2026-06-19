@@ -26,7 +26,7 @@ final readonly class ListFeedingsUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (!CompanyContext::isMasterAdmin()) {
+        if (! CompanyContext::isMasterAdmin()) {
             $filters['companyId'] = CompanyContext::requireCompanyId();
         }
 

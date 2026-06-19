@@ -26,6 +26,7 @@ class FinancialCategoryStoreRequest extends FormRequest
             'name'       => ['required', 'string', 'max:100'],
             'type'       => ['required', 'string', new Enum(FinancialType::class)],
             'status'     => ['sometimes', 'string', new Enum(FinancialCategoryStatus::class)],
+            'notes'      => ['nullable', 'string', 'max:1000'],
         ];
     }
 

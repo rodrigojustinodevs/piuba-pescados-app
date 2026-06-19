@@ -4,24 +4,36 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\Enums\SupplierCategoryEnum;
+use App\Domain\Enums\SupplierStatusEnum;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 /**
- * @property string              $id
- * @property string              $company_id
- * @property string              $name
- * @property string|null         $contact
- * @property string|null         $phone
- * @property string|null         $email
- * @property \Carbon\Carbon      $created_at
- * @property \Carbon\Carbon      $updated_at
- * @property \Carbon\Carbon|null $deleted_at
+ * @property string                 $id
+ * @property string                 $company_id
+ * @property string                 $name
+ * @property string|null            $trade_name
+ * @property string|null            $contact
+ * @property string|null            $phone
+ * @property string|null            $email
+ * @property string|null            $document
+ * @property string|null            $state_registration
+ * @property SupplierCategoryEnum   $category
+ * @property string|null            $payment_terms
+ * @property float                  $rating
+ * @property array<string,mixed>|null $address
+ * @property SupplierStatusEnum     $status
+ * @property \Carbon\Carbon         $created_at
+ * @property \Carbon\Carbon         $updated_at
+ * @property \Carbon\Carbon|null    $deleted_at
  *
- * @property-read Company|null $company
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Stock> $stocks
+ * @property-read Company|null      $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Stock>    $stocks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Supply>   $supplies
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Purchase> $purchases
  */
 class Supplier extends BaseModel
 {
@@ -35,9 +47,25 @@ class Supplier extends BaseModel
         'id',
         'company_id',
         'name',
+        'trade_name',
         'contact',
         'phone',
         'email',
+        'document',
+        'state_registration',
+        'category',
+        'payment_terms',
+        'rating',
+        'address',
+        'status',
+    ];
+
+    /** @var array<string, string|class-string> */
+    protected $casts = [
+        'category' => SupplierCategoryEnum::class,
+        'status'   => SupplierStatusEnum::class,
+        'address'  => 'array',
+        'rating'   => 'decimal:1',
     ];
 
     #[\Override]
@@ -48,25 +76,30 @@ class Supplier extends BaseModel
         });
     }
 
-    /**
-     * @phpstan-return BelongsTo<Company, static>
-     */
-    public function company(): BelongsTo
+    public function setDocumentAttribute(?string $value): void
     {
-        /** @var BelongsTo<Company, static> $relation */
-        $relation = $this->belongsTo(Company::class, 'company_id');
-
-        return $relation;
+        $this->attributes['document'] = $value === null
+            ? null
+            : preg_replace('/\D/', '', $value);
     }
 
-    /**
-     * @phpstan-return HasMany<Stock, static>
-     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
     public function stocks(): HasMany
     {
-        /** @var HasMany<Stock, static> $relation */
-        $relation = $this->hasMany(Stock::class, 'supplier_id');
+        return $this->hasMany(Stock::class, 'supplier_id');
+    }
 
-        return $relation;
+    public function supplies(): HasMany
+    {
+        return $this->hasMany(Supply::class, 'supplier_id');
+    }
+
+    public function purchases(): HasMany
+    {
+        return $this->hasMany(Purchase::class, 'supplier_id');
     }
 }

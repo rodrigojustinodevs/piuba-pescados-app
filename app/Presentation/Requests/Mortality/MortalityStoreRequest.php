@@ -76,9 +76,10 @@ class MortalityStoreRequest extends FormRequest
             'quantity.integer'          => 'The quantity must be an integer.',
             'quantity.min'              => 'The quantity must be at least 1.',
             'cause.required'            => 'The cause is required.',
-            'cause.enum'                => 'The cause must be one of: disease, water_quality, predation, handling, climate, unknown, other.',
-            'severity.required' => 'The severity is required.',
-            'severity.enum'       => 'The severity must be one of: low, medium, high, critical.',
+            'cause.enum'                => 'The cause must be one of:'
+                . ' disease, water_quality, predation, handling, climate, unknown, other.',
+            'severity.required'         => 'The severity is required.',
+            'severity.enum'             => 'The severity must be one of: low, medium, high, critical.',
         ];
     }
 }

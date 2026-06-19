@@ -10,14 +10,17 @@ use App\Domain\Repositories\TankRepositoryInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class CreateWaterQualityUseCase
+final readonly class CreateWaterQualityUseCase
 {
     public function __construct(
-        private readonly WaterQualityRepositoryInterface $repository,
-        private readonly TankRepositoryInterface         $tankRepository,
-    ) {}
+        private WaterQualityRepositoryInterface $repository,
+        private TankRepositoryInterface $tankRepository,
+    ) {
+    }
 
-    /** @param array<string, mixed> $data */
+    /**
+     * @param array<string, mixed> $data
+     */
     public function execute(array $data): WaterQuality
     {
         $tank = $this->tankRepository->findOrFail($data['tank_id']);

@@ -6,12 +6,12 @@ namespace App\Domain\Enums;
 
 enum HarvestDestination: string
 {
-    case WHOLESALE  = 'wholesale';
-    case RETAIL     = 'retail';
-    case PROCESSING = 'processing';
-    case RESTAURANT = 'restaurant';
+    case WHOLESALE   = 'wholesale';
+    case RETAIL      = 'retail';
+    case PROCESSING  = 'processing';
+    case RESTAURANT  = 'restaurant';
     case LIVE_MARKET = 'live_market';
-    case INTERNAL   = 'internal';
+    case INTERNAL    = 'internal';
 
     public function label(): string
     {

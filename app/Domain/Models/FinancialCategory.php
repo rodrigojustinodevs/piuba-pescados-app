@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
  * @property string                    $name
  * @property FinancialType             $type
  * @property FinancialCategoryStatus   $status
+ * @property string|null               $notes
  * @property-read Company|null         $company
  * @property Carbon|null               $created_at
  * @property Carbon|null               $updated_at
@@ -37,6 +38,7 @@ class FinancialCategory extends BaseModel
         'name',
         'type',
         'status',
+        'notes',
     ];
 
     /** @var array<string, string|class-string> */

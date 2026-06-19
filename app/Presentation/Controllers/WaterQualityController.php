@@ -61,7 +61,7 @@ final class WaterQualityController
      */
     public function index(Request $request, ListWaterQualitiesUseCase $useCase): JsonResponse
     {
-        $result    = $useCase->execute(
+        $result = $useCase->execute(
             filters: $request->only(['search', 'tank_id', 'date_from', 'date_to', 'per_page', 'page']),
         );
         $paginator = $result->paginator;
@@ -99,7 +99,7 @@ final class WaterQualityController
     public function show(string $id, ShowWaterQualityUseCase $useCase): JsonResponse
     {
         $record = $useCase->execute($id);
- 
+
         return ApiResponse::success(
             data: new WaterQualityResource($record->loadMissing(['tank.tankType', 'tank.sensor'])),
         );

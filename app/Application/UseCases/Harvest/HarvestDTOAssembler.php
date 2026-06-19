@@ -17,7 +17,7 @@ final class HarvestDTOAssembler
             : Carbon::parse($harvest->harvest_date);
 
         $classifications = $harvest->relationLoaded('sizeClassifications')
-            ? $harvest->sizeClassifications->map(fn ($c) => [
+            ? $harvest->sizeClassifications->map(fn ($c): array => [
                 'id'            => $c->id,
                 'class'         => $c->class,
                 'quantity'      => $c->quantity,

@@ -6,7 +6,6 @@ namespace App\Presentation\Exceptions;
 
 use App\Application\Exceptions\CompanyNotFoundException;
 use App\Domain\Exceptions\AllocationAmountMismatchException;
-use App\Domain\Exceptions\SensorNotAssignedToCompanyException;
 use App\Domain\Exceptions\BatchAlreadyFinishedException;
 use App\Domain\Exceptions\BiometryAverageWeightInvalidException;
 use App\Domain\Exceptions\BiometryDuplicateDateException;
@@ -29,9 +28,13 @@ use App\Domain\Exceptions\InvalidPurchaseStatusTransitionException;
 use App\Domain\Exceptions\InvalidSaleStatusTransitionException;
 use App\Domain\Exceptions\MortalityExceedsSurvivorsException;
 use App\Domain\Exceptions\MortalityNotFoundException;
+use App\Domain\Exceptions\PurchasePaymentException;
+use App\Domain\Exceptions\PurchaseReceivingException;
 use App\Domain\Exceptions\SaleFinanciallyLockedException;
 use App\Domain\Exceptions\SalesOrderDeleteForbiddenException;
 use App\Domain\Exceptions\SalesQuotationCannotBeUpdatedException;
+use App\Domain\Exceptions\SensorNotAssignedToCompanyException;
+use App\Domain\Exceptions\StockMovementException;
 use App\Domain\Exceptions\StockNotFoundException;
 use App\Domain\Exceptions\TankAlreadyHasActiveBatchException;
 use App\Domain\Exceptions\TransactionAlreadyAllocatedException;
@@ -67,6 +70,10 @@ class Handler extends ExceptionHandler
         // Purchase
         CompanyNotFoundException::class,
         InvalidPurchaseStatusTransitionException::class,
+        PurchaseReceivingException::class,
+        PurchasePaymentException::class,
+        // Stock
+        StockMovementException::class,
         // Client
         ClientHasPendingObligationsException::class,
         ClientMissingFiscalDataException::class,
@@ -165,6 +172,24 @@ class Handler extends ExceptionHandler
         // -----------------------------------------------------------------------
         $this->renderable(
             fn (InvalidPurchaseStatusTransitionException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (PurchaseReceivingException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (PurchasePaymentException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+        $this->renderable(
+            fn (StockMovementException $e, Request $r): JsonResponse => $this->handleDomainException(
                 $e,
                 JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
             )

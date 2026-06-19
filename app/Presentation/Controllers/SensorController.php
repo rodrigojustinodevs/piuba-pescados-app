@@ -88,7 +88,7 @@ class SensorController
         ListSensorsUseCase $useCase,
     ): JsonResponse {
         $paginator = $useCase->execute(
-            filters: $request->only([ 'search', 'tankId', 'sensorType', 'status', 'perPage', 'page']),
+            filters: $request->only(['search', 'tankId', 'sensorType', 'status', 'perPage', 'page']),
         );
 
         return ApiResponse::success(

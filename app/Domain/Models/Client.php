@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\Enums\ClientStatusEnum;
 use App\Domain\Enums\PriceGroup;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,10 +21,15 @@ use Illuminate\Support\Str;
  * @property string|null $phone
  * @property string|null $email
  * @property string|null $document_number
+ * @property string|null $trade_name
  * @property string|null $address
+ * @property string|null $city
+ * @property string|null $state
+ * @property ClientStatusEnum $status
  * @property float|null $credit_limit
  * @property bool $is_defaulter
  * @property PriceGroup|null $price_group
+ * @property string|null $notes
  * @property-read Company|null $company
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -41,15 +47,20 @@ class Client extends BaseModel
         'id',
         'company_id',
         'name',
+        'trade_name',
         'contact',
         'phone',
         'email',
         'person_type',
         'document_number',
         'address',
+        'city',
+        'state',
+        'status',
         'credit_limit',
         'is_defaulter',
         'price_group',
+        'notes',
     ];
 
     /** @var array<string, string|class-string> */
@@ -57,6 +68,7 @@ class Client extends BaseModel
         'credit_limit' => 'decimal:2',
         'is_defaulter' => 'boolean',
         'price_group'  => PriceGroup::class,
+        'status'       => ClientStatusEnum::class,
     ];
 
     /** @var array<string> */

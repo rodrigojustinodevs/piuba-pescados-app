@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 /**
  * @property string            $id
  * @property string            $tank_id
- * @property string            $company_id
+ * @property string|null       $company_id
  * @property string            $sensor_type
  * @property string|null       $name
  * @property string|null       $serial_number

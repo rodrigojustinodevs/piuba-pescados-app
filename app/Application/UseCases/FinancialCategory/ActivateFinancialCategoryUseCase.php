@@ -23,6 +23,6 @@ final readonly class ActivateFinancialCategoryUseCase
 
         $category->activate();
 
-        return $category->refresh()->load('company');
+        return $category->refresh()->load(['company' => fn ($q) => $q->withTrashed()->select(['id', 'name'])]);
     }
 }

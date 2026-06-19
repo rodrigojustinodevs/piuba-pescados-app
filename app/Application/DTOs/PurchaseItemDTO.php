@@ -30,7 +30,8 @@ final readonly class PurchaseItemDTO
             unit:       (string)  $data['unit'],
             unitPrice:  $unitPrice,
             id:         isset($data['id']) ? (string) $data['id'] : null,
-            totalPrice: isset($data['total_price']) ? (float) $data['total_price'] : null,
+            totalPrice: isset($data['totalPrice']) ? (float) $data['totalPrice']
+                : (isset($data['total_price']) ? (float) $data['total_price'] : null),
         );
     }
 

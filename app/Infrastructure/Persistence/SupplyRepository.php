@@ -13,12 +13,16 @@ final class SupplyRepository implements SupplyRepositoryInterface
 {
     private const array DEFAULT_RELATIONS = [
         'company:id,name',
+        'supplier:id,name,contact,phone,email',
     ];
 
     /**
      * @param array{
      *     companyId?: string|null,
      *     perPage?: int,
+     *     category?: string|null,
+     *     status?: string|null,
+     *     isProduct?: bool|null,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface
@@ -27,6 +31,18 @@ final class SupplyRepository implements SupplyRepositoryInterface
             ->when(
                 ! empty($filters['companyId']),
                 static fn ($q) => $q->where('company_id', $filters['companyId']),
+            )
+            ->when(
+                ! empty($filters['category']),
+                static fn ($q) => $q->where('category', $filters['category']),
+            )
+            ->when(
+                ! empty($filters['status']),
+                static fn ($q) => $q->where('status', $filters['status']),
+            )
+            ->when(
+                isset($filters['isProduct']),
+                static fn ($q) => $q->where('is_product', $filters['isProduct']),
             )
             ->latest()
             ->paginate((int) ($filters['perPage'] ?? 25));
@@ -47,17 +63,22 @@ final class SupplyRepository implements SupplyRepositoryInterface
         return $supply->load(self::DEFAULT_RELATIONS);
     }
 
-    /**
-     * @param array<string, mixed> $attributes
-     */
-    public function update(string $id, array $attributes): Supply
+    public function update(string $id, SupplyInputDTO $dto): Supply
     {
         $supply = $this->findOrFail($id);
-        $supply->update($attributes);
+        $supply->fill($dto->toPersistence());
+        $supply->save();
 
         /** @var Supply $refreshed */
         $refreshed = $supply->refresh();
 
         return $refreshed->load(self::DEFAULT_RELATIONS);
+    }
+
+    public function delete(string $id): bool
+    {
+        $supply = $this->findOrFail($id);
+
+        return (bool) $supply->delete();
     }
 }

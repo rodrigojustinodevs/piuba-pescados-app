@@ -8,8 +8,8 @@ use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\SensorDTO;
 use App\Domain\Models\Sensor;
 use App\Domain\Repositories\SensorRepositoryInterface;
-use Illuminate\Support\Facades\DB;
 use App\Infrastructure\Security\CompanyContext;
+use Illuminate\Support\Facades\DB;
 
 class CreateSensorUseCase
 {
@@ -24,7 +24,7 @@ class CreateSensorUseCase
      */
     public function execute(array $data): Sensor
     {
-        if (!CompanyContext::isMasterAdmin()) {
+        if (! CompanyContext::isMasterAdmin()) {
             $data['companyId'] = CompanyContext::requireCompanyId();
         }
 

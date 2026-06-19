@@ -36,9 +36,9 @@ final readonly class UpdateTransferUseCase
 
         $batchChanged = array_key_exists('batch_id', $data);
 
-        $currentStatus  = (string) $current->status;
-        $newStatus      = (string) ($data['status'] ?? $currentStatus);
-        $wasCompleted   = $currentStatus === 'completed';
+        $currentStatus   = (string) $current->status;
+        $newStatus       = (string) ($data['status'] ?? $currentStatus);
+        $wasCompleted    = $currentStatus === 'completed';
         $willBeCompleted = $newStatus === 'completed';
 
         // M-06 + M-07: precisa reverter se estava completed e algo de movimento mudou

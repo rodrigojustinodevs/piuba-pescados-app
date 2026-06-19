@@ -68,6 +68,7 @@ class TransferUpdateRequest extends FormRequest
         ];
 
         $result = [];
+
         foreach ($data as $field => $value) {
             $result[$camelToSnake[$field] ?? $field] = $value;
         }

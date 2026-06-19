@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Stock;
 
-use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Infrastructure\Security\CompanyContext;
@@ -13,7 +12,6 @@ final readonly class ListStocksUseCase
 {
     public function __construct(
         private StockRepositoryInterface $repository,
-        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
@@ -26,7 +24,7 @@ final readonly class ListStocksUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (!CompanyContext::isMasterAdmin()) {
+        if (! CompanyContext::isMasterAdmin()) {
             $filters['companyId'] = CompanyContext::requireCompanyId();
         }
 

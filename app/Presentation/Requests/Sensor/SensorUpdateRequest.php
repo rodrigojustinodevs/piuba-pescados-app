@@ -63,7 +63,8 @@ class SensorUpdateRequest extends FormRequest
             'lastReading'      => ['sometimes', 'numeric'],
             'installationDate' => ['sometimes', 'date'],
             'notes'            => ['sometimes', 'string', 'max:2000'],
-            'status'           => ['sometimes', 'string', 'in:active,inactive,maintenance,online,offline,ativo,inativo'],
+            'status'           => ['sometimes', 'string',
+                'in:active,inactive,maintenance,online,offline,ativo,inativo'],
         ];
     }
 
@@ -94,7 +95,8 @@ class SensorUpdateRequest extends FormRequest
             'notes.string'          => 'The notes must be a string.',
             'notes.max'             => 'The notes must not exceed 2000 characters.',
             'status.string'         => 'The status must be a string.',
-            'status.in'             => 'The status must be one of: online, offline, active, inactive, ativo, inativo or maintenance.',
+            'status.in'             => 'The status must be one of: online, offline,'
+                . ' active, inactive, ativo, inativo or maintenance.',
         ];
     }
 }

@@ -34,15 +34,31 @@ final readonly class UpdateSupplierUseCase
         return DB::transaction(function () use ($id, $data): Supplier {
             $dto = SupplierInputDTO::fromArray($data);
 
-            $updated = $this->supplierRepository->update($id, [
-                'company_id' => $dto->companyId,
-                'name'       => $dto->name,
-                'contact'    => $dto->contact,
-                'phone'      => $dto->phone,
-                'email'      => $dto->email,
-            ]);
+            $map = [
+                'company_id'         => 'companyId',
+                'name'               => 'name',
+                'contact'            => 'contact',
+                'phone'              => 'phone',
+                'email'              => 'email',
+                'trade_name'         => 'tradeName',
+                'document'           => 'document',
+                'state_registration' => 'stateRegistration',
+                'category'           => 'category',
+                'payment_terms'      => 'paymentTerms',
+                'rating'             => 'rating',
+                'address'            => 'address',
+                'status'             => 'status',
+            ];
 
-            return $updated->refresh();
+            $attributes = [];
+
+            foreach ($map as $snakeKey => $camelKey) {
+                if (array_key_exists($snakeKey, $data) || array_key_exists($camelKey, $data)) {
+                    $attributes[$snakeKey] = $dto->{$camelKey};
+                }
+            }
+
+            return $this->supplierRepository->update($id, $attributes);
         });
     }
 }

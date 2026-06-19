@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Purchase;
 
 use App\Application\Actions\Purchase\ApplyPurchaseToStockAction;
+use App\Application\DTOs\ReceivePurchaseDTO;
 use App\Domain\Enums\PurchaseStatus;
-use App\Domain\Exceptions\InvalidPurchaseStatusTransitionException;
+use App\Domain\Exceptions\PurchaseReceivingException;
 use App\Domain\Models\Purchase;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 use Illuminate\Support\Facades\DB;
@@ -19,27 +20,52 @@ final readonly class ReceivePurchaseUseCase
     ) {
     }
 
-    public function execute(string $id): Purchase
+    public function execute(ReceivePurchaseDTO $dto): Purchase
     {
-        $purchase      = $this->repository->findOrFail($id);
-        $currentStatus = PurchaseStatus::from($purchase->status);
+        return DB::transaction(function () use ($dto): Purchase {
+            $purchase = $this->repository->findOrFail($dto->purchaseId);
 
-        if (! $currentStatus->canTransitionTo(PurchaseStatus::RECEIVED)) {
-            throw new InvalidPurchaseStatusTransitionException(
-                from: $currentStatus,
-                to:   PurchaseStatus::RECEIVED,
-            );
-        }
+            if ($purchase->status === PurchaseStatus::CANCELLED) {
+                throw PurchaseReceivingException::cancelled();
+            }
 
-        return DB::transaction(function () use ($purchase): Purchase {
-            $updated = $this->repository->update($purchase->id, [
-                'status'      => PurchaseStatus::RECEIVED->value,
-                'received_at' => now()->toDateTimeString(),
-            ]);
+            if ($purchase->status === PurchaseStatus::RECEIVED) {
+                throw PurchaseReceivingException::alreadyReceived();
+            }
 
-            $this->applyToStockAction->execute($updated->load('items'));
+            $purchase->load('items');
+            $itemsById = $purchase->items->keyBy('id');
 
-            return $updated;
+            foreach ($dto->items as $itemData) {
+                $itemId         = (string) $itemData['purchase_item_id'];
+                $receivedAmount = (float) $itemData['received_quantity'];
+
+                $purchaseItem = $itemsById->get($itemId);
+
+                if ($purchaseItem === null) {
+                    throw PurchaseReceivingException::itemNotBelongsToPurchase($itemId);
+                }
+
+                if (! $purchaseItem->canReceive($receivedAmount)) {
+                    throw PurchaseReceivingException::quantityExceedsPending(
+                        $receivedAmount,
+                        $purchaseItem->getPendingQuantity(),
+                    );
+                }
+
+                $this->applyToStockAction->executeForItem(
+                    purchase: $purchase,
+                    item:     $purchaseItem,
+                    quantity: $receivedAmount,
+                );
+
+                $purchaseItem->receive($receivedAmount);
+            }
+
+            $purchase->refresh()->load('items');
+            $purchase->updateReceivingStatus();
+
+            return $purchase->refresh()->load(['supplier', 'company', 'items.supply']);
         });
     }
 }

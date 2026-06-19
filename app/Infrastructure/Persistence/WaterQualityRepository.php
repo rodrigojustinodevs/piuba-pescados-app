@@ -49,11 +49,18 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
      */
     public function paginate(array $filters): PaginationInterface
     {
-        $search = $filters['search'] ?? null;
+        $search    = $filters['search'] ?? null;
         $paginator = WaterQuality::with([
             'tank' => static fn ($q) => $q->select('id', 'name')
                 ->with([
-                    'sensor' => static fn ($tankQuery) => $tankQuery->select('id', 'sensor_type', 'status', 'tank_id', 'last_reading', 'unit'),
+                    'sensor' => static fn ($tankQuery) => $tankQuery->select(
+                        'id',
+                        'sensor_type',
+                        'status',
+                        'tank_id',
+                        'last_reading',
+                        'unit'
+                    ),
                 ]),
         ])
             ->with([
@@ -61,7 +68,10 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
             ])
             ->when(
                 ! empty($filters['company_id']),
-                static fn ($q) => $q->whereHas('tank', static fn ($q) => $q->where('company_id', $filters['company_id'])),
+                static fn ($q) => $q->whereHas(
+                    'tank',
+                    static fn ($q) => $q->where('company_id', $filters['company_id'])
+                ),
             )
             ->when(
                 is_string($search) && $search !== '',
@@ -130,7 +140,10 @@ class WaterQualityRepository implements WaterQualityRepositoryInterface
         $counts = WaterQuality::query()
             ->when(
                 ! empty($filters['company_id']),
-                static fn ($q) => $q->whereHas('tank', static fn ($q) => $q->where('company_id', $filters['company_id'])),
+                static fn ($q) => $q->whereHas(
+                    'tank',
+                    static fn ($q) => $q->where('company_id', $filters['company_id'])
+                ),
             )
             ->when(
                 is_string($search) && $search !== '',

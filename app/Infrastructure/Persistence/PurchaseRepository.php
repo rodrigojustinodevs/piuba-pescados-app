@@ -13,24 +13,38 @@ use App\Domain\Repositories\PurchaseRepositoryInterface;
 
 final class PurchaseRepository implements PurchaseRepositoryInterface
 {
+    private const array DEFAULT_RELATIONS = [
+        'supplier:id,name',
+        'company:id,name',
+        'items.supply:id,name,unit',
+    ];
+
     public function create(PurchaseDTO $dto): Purchase
     {
         /** @var Purchase $purchase */
         $purchase = Purchase::create([
+            'code'           => $dto->code,
             'company_id'     => $dto->companyId,
             'supplier_id'    => $dto->supplierId,
-            'purchase_date'  => $dto->purchaseDate,
+            'order_date'     => $dto->orderDate,
+            'expected_date'  => $dto->expectedDate,
             'invoice_number' => $dto->invoiceNumber,
             'status'         => $dto->status->value,
+            'payment_status' => $dto->paymentStatus->value,
+            'payment_method' => $dto->paymentMethod?->value,
             'total_price'    => $dto->totalPrice(),
-            'received_at'    => $dto->receivedAt,
+            'freight'        => $dto->freight,
+            'other_costs'    => $dto->otherCosts,
+            'notes'          => $dto->notes,
+            'responsible'    => $dto->responsible,
+            'received_date'  => $dto->receivedDate,
         ]);
 
         foreach ($dto->items as $item) {
             $purchase->items()->create($item->toPersistence());
         }
 
-        return $purchase->load('items');
+        return $purchase->load(self::DEFAULT_RELATIONS);
     }
 
     /**
@@ -70,65 +84,68 @@ final class PurchaseRepository implements PurchaseRepositoryInterface
 
     /**
      * @param array{
-     *     company_id: string,
+     *     companyId: string,
      *     status?: string|null,
-     *     supplier_id?: string|null,
-     *     date_from?: string|null,
-     *     date_to?: string|null,
-     *     per_page?: int,
+     *     paymentStatus?: string|null,
+     *     paymentMethod?: string|null,
+     *     supplierId?: string|null,
+     *     code?: string|null,
+     *     dateFrom?: string|null,
+     *     dateTo?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface
     {
-        $paginator = Purchase::with([
-            'supplier:id,name',
-            'company:id,name',
-            'items.supply:id,name,default_unit',
-        ])
-            ->where('company_id', $filters['company_id'])
+        $paginator = Purchase::with(self::DEFAULT_RELATIONS)
+            ->when(
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
+            )
             ->when(
                 ! empty($filters['status']),
-                static fn ($q) => $q->where(
-                    'status',
-                    PurchaseStatus::from($filters['status'])->value,
-                ),
+                static fn ($q) => $q->where('status', PurchaseStatus::from($filters['status'])->value),
             )
             ->when(
-                ! empty($filters['supplier_id']),
-                static fn ($q) => $q->where('supplier_id', $filters['supplier_id']),
+                ! empty($filters['paymentStatus']),
+                static fn ($q) => $q->where('payment_status', $filters['paymentStatus']),
             )
             ->when(
-                ! empty($filters['date_from']),
-                static fn ($q) => $q->whereDate('purchase_date', '>=', $filters['date_from']),
+                ! empty($filters['paymentMethod']),
+                static fn ($q) => $q->where('payment_method', $filters['paymentMethod']),
             )
             ->when(
-                ! empty($filters['date_to']),
-                static fn ($q) => $q->whereDate('purchase_date', '<=', $filters['date_to']),
+                ! empty($filters['supplierId']),
+                static fn ($q) => $q->where('supplier_id', $filters['supplierId']),
             )
-            ->latest('purchase_date')
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->when(
+                ! empty($filters['code']),
+                static fn ($q) => $q->where('code', 'like', '%' . $filters['code'] . '%'),
+            )
+            ->when(
+                ! empty($filters['dateFrom']),
+                static fn ($q) => $q->whereDate('order_date', '>=', $filters['dateFrom']),
+            )
+            ->when(
+                ! empty($filters['dateTo']),
+                static fn ($q) => $q->whereDate('order_date', '<=', $filters['dateTo']),
+            )
+            ->latest('order_date')
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
     public function showPurchase(string $field, string | int $value): ?Purchase
     {
-        return Purchase::with([
-            'supplier:id,name',
-            'company:id,name',
-            'items.supply:id,name,default_unit',
-        ])
+        return Purchase::with(self::DEFAULT_RELATIONS)
             ->where($field, $value)
             ->first();
     }
 
     public function findOrFail(string $id): Purchase
     {
-        return Purchase::with([
-            'supplier:id,name',
-            'company:id,name',
-            'items.supply:id,name,default_unit',
-        ])->findOrFail($id);
+        return Purchase::with(self::DEFAULT_RELATIONS)->findOrFail($id);
     }
 
     public function delete(string $id): bool

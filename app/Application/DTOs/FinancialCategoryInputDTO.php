@@ -14,6 +14,7 @@ final readonly class FinancialCategoryInputDTO
         public string $name,
         public FinancialType $type,
         public FinancialCategoryStatus $status = FinancialCategoryStatus::ACTIVE,
+        public ?string $notes = null,
     ) {
     }
 
@@ -33,6 +34,7 @@ final readonly class FinancialCategoryInputDTO
             name:      (string) ($data['name'] ?? ''),
             type:      FinancialType::from((string) ($data['type'] ?? '')),
             status:    $status,
+            notes:     isset($data['notes']) ? (string) $data['notes'] : null,
         );
     }
 }

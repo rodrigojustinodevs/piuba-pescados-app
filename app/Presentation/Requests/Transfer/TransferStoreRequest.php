@@ -59,24 +59,24 @@ class TransferStoreRequest extends FormRequest
             'destinationTankId' => ['required', 'uuid', 'exists:tanks,id', 'different:originTankId'],
             'companyId'         => ['sometimes', 'uuid', 'exists:companies,id'],
 
-            'description'       => ['required', 'string'],
-            'quantity'          => ['required', 'integer', 'min:1'],
+            'description' => ['required', 'string'],
+            'quantity'    => ['required', 'integer', 'min:1'],
 
-            'transferDate'      => ['required', 'date'],
+            'transferDate' => ['required', 'date'],
 
-            'status'            => [
+            'status' => [
                 'required',
                 'in:completed,scheduled,cancelled',
             ],
 
-            'reason'            => [
+            'reason' => [
                 'required',
                 'in:growth,density,biosecurity,maintenance,harvest_prep,other',
             ],
 
-            'responsible'       => ['required', 'string', 'max:255'],
+            'responsible' => ['required', 'string', 'max:255'],
 
-            'averageWeight'     => ['nullable', 'numeric', 'min:0'],
+            'averageWeight' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

@@ -10,6 +10,7 @@ enum FinancialType: string
     case EXPENSE    = 'expense';
     case INVESTMENT = 'investment';
     case PURCHASE   = 'purchase';
+    case TRANSFER   = 'transfer';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum FinancialType: string
             self::EXPENSE    => 'Expense',
             self::INVESTMENT => 'Investment',
             self::PURCHASE   => 'Purchase',
+            self::TRANSFER   => 'Transfer',
         };
     }
 

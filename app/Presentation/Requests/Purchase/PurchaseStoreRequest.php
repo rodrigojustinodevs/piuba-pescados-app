@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\Purchase;
 
+use App\Domain\Enums\PurchasePaymentMethod;
+use App\Domain\Enums\PurchasePaymentStatus;
+use App\Domain\Enums\PurchaseStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class PurchaseStoreRequest extends FormRequest
+final class PurchaseStoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -23,63 +27,43 @@ class PurchaseStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'companyId' => [
-                'sometimes',
-                'uuid',
-                'exists:companies,id',
-            ],
+            'companyId' => ['sometimes', 'uuid', 'exists:companies,id'],
 
-            'supplierId' => [
+            'supplierId' => ['required', 'uuid', 'exists:suppliers,id'],
+
+            'code' => [
                 'required',
-                'uuid',
-                'exists:suppliers,id',
-            ],
-
-            'invoiceNumber' => [
-                'nullable',
-                'string',
-                'max:100',
-            ],
-
-            'purchaseDate' => [
-                'required',
-                'date',
-            ],
-            'status' => [
-                'nullable',
-                'string',
-                'in:draft,confirmed,received,cancelled',
-            ],
-
-            'items' => [
-                'required',
-                'array',
-                'min:1',
-            ],
-
-            'items.*.supplyId' => [
-                'required',
-                'uuid',
-                'exists:supplies,id',
-            ],
-
-            'items.*.quantity' => [
-                'required',
-                'numeric',
-                'gt:0',
-            ],
-
-            'items.*.unit' => [
-                'nullable',
                 'string',
                 'max:50',
+                Rule::unique('purchases', 'code')->whereNull('deleted_at'),
             ],
 
-            'items.*.unitPrice' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
+            'invoiceNumber' => ['nullable', 'string', 'max:100'],
+
+            'orderDate' => ['required', 'date'],
+
+            'expectedDate' => ['nullable', 'date'],
+
+            'status' => ['nullable', Rule::enum(PurchaseStatus::class)],
+
+            'paymentStatus' => ['required', Rule::enum(PurchasePaymentStatus::class)],
+
+            'paymentMethod' => ['nullable', Rule::enum(PurchasePaymentMethod::class)],
+
+            'freight'     => ['nullable', 'numeric', 'min:0'],
+            'otherCosts'  => ['nullable', 'numeric', 'min:0'],
+            'notes'       => ['nullable', 'string'],
+            'responsible' => ['nullable', 'string', 'max:255'],
+
+            'items' => ['required', 'array', 'min:1'],
+
+            'items.*.supplyId' => ['required', 'uuid', 'exists:supplies,id'],
+
+            'items.*.quantity' => ['required', 'numeric', 'gt:0'],
+
+            'items.*.unit' => ['nullable', 'string', 'max:50'],
+
+            'items.*.unitPrice' => ['required', 'numeric', 'min:0'],
         ];
     }
 
@@ -87,27 +71,43 @@ class PurchaseStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'companyId.required' => 'The company ID is required.',
-            'companyId.uuid'     => 'The company ID must be a valid UUID.',
-            'companyId.exists'   => 'The selected company does not exist.',
+            'companyId.uuid'   => 'O ID da empresa deve ser um UUID válido.',
+            'companyId.exists' => 'A empresa selecionada não existe.',
 
-            'supplierId.required' => 'The supplier ID is required.',
-            'supplierId.uuid'     => 'The supplier ID must be a valid UUID.',
-            'supplierId.exists'   => 'The selected supplier does not exist.',
+            'supplierId.required' => 'O fornecedor é obrigatório.',
+            'supplierId.uuid'     => 'O ID do fornecedor deve ser um UUID válido.',
+            'supplierId.exists'   => 'O fornecedor selecionado não existe.',
 
-            'purchaseDate.required' => 'The purchase date is required.',
-            'purchaseDate.date'     => 'The purchase date must be a valid date.',
+            'code.required' => 'O código da compra é obrigatório.',
+            'code.max'      => 'O código não pode ter mais de 50 caracteres.',
+            'code.unique'   => 'Este código de compra já está em uso.',
 
-            'items.required' => 'At least one purchase item is required.',
-            'items.array'    => 'Items must be an array.',
+            'orderDate.required' => 'A data do pedido é obrigatória.',
+            'orderDate.date'     => 'A data do pedido deve ser uma data válida.',
 
-            'items.*.supplyId.required' => 'Each item must have a supply.',
-            'items.*.supplyId.exists'   => 'The selected supply does not exist.',
+            'paymentStatus.required' => 'O status de pagamento é obrigatório.',
+            'paymentStatus.enum'     => 'Status de pagamento inválido.',
 
-            'items.*.quantity.required' => 'Item quantity is required.',
-            'items.*.quantity.gt'       => 'Item quantity must be greater than zero.',
+            'paymentMethod.enum' => 'Forma de pagamento inválida.',
 
-            'items.*.unitPrice.required' => 'Item unit price is required.',
+            'status.enum' => 'Status inválido.',
+
+            'freight.numeric'    => 'O frete deve ser numérico.',
+            'freight.min'        => 'O frete não pode ser negativo.',
+            'otherCosts.numeric' => 'Outros custos devem ser numéricos.',
+            'otherCosts.min'     => 'Outros custos não podem ser negativos.',
+
+            'items.required' => 'Ao menos um item é obrigatório.',
+            'items.array'    => 'Itens deve ser um array.',
+            'items.min'      => 'A compra deve possuir ao menos 1 item.',
+
+            'items.*.supplyId.required' => 'O insumo de cada item é obrigatório.',
+            'items.*.supplyId.exists'   => 'O insumo selecionado não existe.',
+
+            'items.*.quantity.required' => 'A quantidade do item é obrigatória.',
+            'items.*.quantity.gt'       => 'A quantidade deve ser maior que zero.',
+
+            'items.*.unitPrice.required' => 'O preço unitário do item é obrigatório.',
         ];
     }
 
@@ -120,8 +120,13 @@ class PurchaseStoreRequest extends FormRequest
             'company_id'     => 'companyId',
             'supplier_id'    => 'supplierId',
             'invoice_number' => 'invoiceNumber',
-            'total_price'    => 'totalPrice',
-            'purchase_date'  => 'purchaseDate',
+            'order_date'     => 'orderDate',
+            'expected_date'  => 'expectedDate',
+            'payment_status' => 'paymentStatus',
+            'payment_method' => 'paymentMethod',
+            'other_costs'    => 'otherCosts',
+            'referenceCode'  => 'code',
+            'reference_code' => 'code',
         ];
 
         foreach ($map as $snake => $camel) {

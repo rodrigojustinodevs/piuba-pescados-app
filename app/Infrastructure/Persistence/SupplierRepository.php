@@ -24,24 +24,33 @@ final class SupplierRepository implements SupplierRepositoryInterface
     public function paginate(array $filters = []): PaginationInterface
     {
         $paginator = Supplier::with(self::DEFAULT_RELATIONS)
+            ->withCount('purchases as total_purchases')
+            ->withMax('purchases', 'order_date')
             ->when(
                 ! empty($filters['companyId']),
                 static fn ($q) => $q->where('company_id', $filters['companyId']),
             )
             ->latest()
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }
 
     public function findOrFail(string $id): Supplier
     {
-        return Supplier::with(self::DEFAULT_RELATIONS)->findOrFail($id);
+        return Supplier::with(self::DEFAULT_RELATIONS)
+            ->withCount('purchases as total_purchases')
+            ->withMax('purchases', 'order_date')
+            ->findOrFail($id);
     }
 
     public function showSupplier(string $field, string | int $value): ?Supplier
     {
-        return Supplier::with(self::DEFAULT_RELATIONS)->where($field, $value)->first();
+        return Supplier::with(self::DEFAULT_RELATIONS)
+            ->withCount('purchases as total_purchases')
+            ->withMax('purchases', 'order_date')
+            ->where($field, $value)
+            ->first();
     }
 
     public function create(SupplierInputDTO $dto): Supplier
@@ -60,7 +69,7 @@ final class SupplierRepository implements SupplierRepositoryInterface
         $supplier = $this->findOrFail($id);
         $supplier->update($attributes);
 
-        return $supplier->refresh();
+        return $this->findOrFail($id);
     }
 
     public function delete(string $id): bool

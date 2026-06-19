@@ -21,8 +21,9 @@ class FinancialCategoryUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:100'],
-            'type' => ['sometimes', 'string', new Enum(FinancialType::class)],
+            'name'  => ['sometimes', 'string', 'max:100'],
+            'type'  => ['sometimes', 'string', new Enum(FinancialType::class)],
+            'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
 

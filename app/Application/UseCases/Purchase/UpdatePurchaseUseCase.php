@@ -7,7 +7,6 @@ namespace App\Application\UseCases\Purchase;
 use App\Application\Actions\Purchase\ApplyPurchaseToStockAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\PurchaseDTO;
-use App\Domain\Enums\PurchaseStatus;
 use App\Domain\Models\Purchase;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
 use Illuminate\Support\Facades\DB;
@@ -33,16 +32,24 @@ final readonly class UpdatePurchaseUseCase
         );
 
         $dto         = PurchaseDTO::fromArray($data);
-        $wasReceived = PurchaseStatus::from($purchase->status)->isReceived();
+        $wasReceived = $purchase->isReceived();
 
         return DB::transaction(function () use ($purchase, $dto, $wasReceived): Purchase {
             $updated = $this->repository->update($purchase->id, [
+                'code'           => $dto->code ?: $purchase->code,
                 'supplier_id'    => $dto->supplierId,
-                'purchase_date'  => $dto->purchaseDate,
+                'order_date'     => $dto->orderDate,
+                'expected_date'  => $dto->expectedDate,
                 'invoice_number' => $dto->invoiceNumber,
                 'status'         => $dto->status->value,
+                'payment_status' => $dto->paymentStatus->value,
+                'payment_method' => $dto->paymentMethod?->value,
                 'total_price'    => $dto->totalPrice(),
-                'received_at'    => $dto->receivedAt,
+                'freight'        => $dto->freight,
+                'other_costs'    => $dto->otherCosts,
+                'notes'          => $dto->notes,
+                'responsible'    => $dto->responsible,
+                'received_date'  => $dto->receivedDate,
             ]);
 
             $this->repository->syncItems($updated, $dto->items);

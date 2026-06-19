@@ -77,10 +77,10 @@ enum PermissionsEnum: string
     case VIEW_AUDIT_LOG = 'view-audit-log';
 
     // ─── Sensors (aquicultura) ─────────────────────────────────────────────────
-    case VIEW_SENSOR    = 'view-sensor';
-    case CREATE_SENSOR  = 'create-sensor';
-    case UPDATE_SENSOR  = 'update-sensor';
-    case DELETE_SENSOR  = 'delete-sensor';
+    case VIEW_SENSOR   = 'view-sensor';
+    case CREATE_SENSOR = 'create-sensor';
+    case UPDATE_SENSOR = 'update-sensor';
+    case DELETE_SENSOR = 'delete-sensor';
 
     /**
      * Retorna todas as permissions que um determinado role possui por padrão.

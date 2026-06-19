@@ -18,6 +18,6 @@ interface TokenServiceInterface
     public function ttlInSeconds(): int;
 
     public function generateForMasterAdmin(User $user): string;
- 
+
     public function generateForCompanyUser(User $user, Company $company): string;
 }

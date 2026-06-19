@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\DB;
 final readonly class PermissionResolver
 {
     private const int CACHE_TTL_SECONDS = 1800; // 30 min
-    private const string CACHE_PREFIX      = 'perms';
+    private const string CACHE_PREFIX   = 'perms';
 
     public function __construct(
         private CacheRepository $cache,

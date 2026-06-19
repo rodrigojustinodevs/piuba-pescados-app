@@ -56,9 +56,9 @@ class Transfer extends BaseModel
     ];
 
     protected $casts = [
-        'quantity'        => 'integer',
-        'average_weight'  => 'float',
-        'transfer_date'   => 'date',
+        'quantity'       => 'integer',
+        'average_weight' => 'float',
+        'transfer_date'  => 'date',
     ];
 
     #[\Override]

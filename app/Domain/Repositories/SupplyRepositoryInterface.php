@@ -13,6 +13,9 @@ interface SupplyRepositoryInterface
      * @param array{
      *     companyId?: string|null,
      *     perPage?: int,
+     *     category?: string|null,
+     *     status?: string|null,
+     *     isProduct?: bool|null,
      * } $filters
      */
     public function paginate(array $filters = []): PaginationInterface;
@@ -21,8 +24,7 @@ interface SupplyRepositoryInterface
 
     public function create(SupplyInputDTO $dto): Supply;
 
-    /**
-     * @param array<string, mixed> $attributes
-     */
-    public function update(string $id, array $attributes): Supply;
+    public function update(string $id, SupplyInputDTO $dto): Supply;
+
+    public function delete(string $id): bool;
 }

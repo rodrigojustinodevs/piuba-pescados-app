@@ -8,22 +8,32 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property string $id
- * @property string $company_id
- * @property string $supply_id
- * @property string $supplier_id
- * @property float $current_quantity
- * @property string $unit
- * @property float $unit_price
- * @property float $minimum_stock
- * @property float $withdrawal_quantity
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string                              $id
+ * @property string                              $company_id
+ * @property string|null                         $supply_id
+ * @property string|null                         $supplier_id
+ * @property string|null                         $code
+ * @property string|null                         $name
+ * @property \App\Domain\Enums\StockTypeEnum|null   $type
+ * @property string|null                         $location
+ * @property string|null                         $responsible
+ * @property float|null                          $capacity
+ * @property \App\Domain\Enums\StockStatusEnum   $status
+ * @property string|null                         $notes
+ * @property float                               $current_quantity
+ * @property string                              $unit
+ * @property float                               $unit_price
+ * @property float                               $minimum_stock
+ * @property float                               $withdrawal_quantity
+ * @property \Illuminate\Support\Carbon|null     $created_at
+ * @property \Illuminate\Support\Carbon|null     $updated_at
  *
- * @property-read \App\Domain\Models\Supply|null $supply
+ * @property-read \App\Domain\Models\Supply|null   $supply
  * @property-read \App\Domain\Models\Supplier|null $supplier
- * @property-read \App\Domain\Models\Company|null $company
+ * @property-read \App\Domain\Models\Company|null  $company
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Domain\Models\StockTransaction[] $transactions
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Domain\Models\StockBalance[]     $balances
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Domain\Models\StockMovement[]    $movements
  */
 final class StockResource extends JsonResource
 {
@@ -35,6 +45,16 @@ final class StockResource extends JsonResource
     {
         return [
             'id'                 => $this->id,
+            'code'               => $this->code,
+            'name'               => $this->name,
+            'type'               => $this->type?->value,
+            'typeLabel'          => $this->type?->label(),
+            'location'           => $this->location,
+            'responsible'        => $this->responsible,
+            'capacity'           => $this->capacity !== null ? (float) $this->capacity : null,
+            'status'             => $this->status->value,
+            'statusLabel'        => $this->status->label(),
+            'notes'              => $this->notes,
             'currentQuantity'    => (float) $this->current_quantity,
             'unit'               => $this->unit,
             'unitPrice'          => (float) $this->unit_price,
@@ -45,9 +65,9 @@ final class StockResource extends JsonResource
             'updatedAt'          => $this->updated_at?->toDateTimeString(),
 
             'supply' => $this->whenLoaded('supply', fn (): array => [
-                'id'          => $this->supply->id,
-                'name'        => $this->supply->name,
-                'defaultUnit' => $this->supply->default_unit,
+                'id'   => $this->supply->id,
+                'name' => $this->supply->name,
+                'unit' => $this->supply->unit,
             ]),
 
             'supplier' => $this->whenLoaded('supplier', fn (): array => [
@@ -70,6 +90,35 @@ final class StockResource extends JsonResource
                     'referenceType' => $t->reference_type,
                     'referenceId'   => $t->reference_id,
                     'createdAt'     => $t->created_at?->toDateTimeString(),
+                ])->all(),
+            ),
+
+            'balances' => $this->whenLoaded(
+                'balances',
+                fn (): array => $this->balances->map(static fn ($b): array => [
+                    'id'       => $b->id,
+                    'supplyId' => $b->supply_id,
+                    'quantity' => (float) $b->quantity,
+                    'supply'   => $b->relationLoaded('supply') ? [
+                        'id'   => $b->supply->id,
+                        'name' => $b->supply->name,
+                        'unit' => $b->supply->unit,
+                    ] : null,
+                    'updatedAt' => $b->updated_at?->toDateTimeString(),
+                ])->all(),
+            ),
+
+            'movements' => $this->whenLoaded(
+                'movements',
+                fn (): array => $this->movements->map(static fn ($m): array => [
+                    'id'        => $m->id,
+                    'supplyId'  => $m->supply_id,
+                    'userId'    => $m->user_id,
+                    'type'      => $m->type->value,
+                    'typeLabel' => $m->type->label(),
+                    'quantity'  => (float) $m->quantity,
+                    'reason'    => $m->reason,
+                    'createdAt' => $m->created_at?->toDateTimeString(),
                 ])->all(),
             ),
         ];

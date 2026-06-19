@@ -21,13 +21,12 @@ final readonly class ListBatchesUseCase
      *     tankId?: string|null,
      *     species?: string|null,
      *     perPage?: int,
-     * 
+     *
      * } $filters
      */
     public function execute(array $filters = []): PaginationInterface
     {
-
-        if (!CompanyContext::isMasterAdmin()) {
+        if (! CompanyContext::isMasterAdmin()) {
             $filters['companyId'] = CompanyContext::requireCompanyId();
         }
 

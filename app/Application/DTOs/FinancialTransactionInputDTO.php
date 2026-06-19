@@ -40,7 +40,7 @@ final readonly class FinancialTransactionInputDTO
 
         return new self(
             companyId:           (string) ($data['company_id'] ?? $data['companyId'] ?? ''),
-            financialCategoryId: (string) ($data['financial_category_id'] ?? $data['financialCategoryId'] ?? ''),
+            financialCategoryId: $data['financial_category_id'] ?? $data['financialCategoryId'] ?? null,
             type:                FinancialType::from((string) ($data['type'] ?? '')),
             amount:              (float) ($data['amount'] ?? 0),
             dueDate:             (string) ($data['due_date'] ?? $data['dueDate'] ?? ''),

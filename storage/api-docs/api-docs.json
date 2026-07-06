@@ -6362,7 +6362,7 @@
                 "tags": [
                     "Sales"
                 ],
-                "summary": "List sales",
+                "summary": "Listar vendas",
                 "operationId": "bc4eccc8b47d932bf3084fffe8b2c00c",
                 "parameters": [
                     {
@@ -6392,6 +6392,9 @@
                             "enum": [
                                 "pending",
                                 "confirmed",
+                                "paid",
+                                "delivered",
+                                "overdue",
                                 "cancelled"
                             ]
                         }
@@ -6435,10 +6438,42 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Paginated list of sales"
+                        "description": "Lista paginada de vendas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Sale"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "current_page": {
+                                                    "type": "integer"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Não autenticado"
                     }
                 },
                 "security": [
@@ -6453,13 +6488,13 @@
                 "tags": [
                     "Sales"
                 ],
-                "summary": "Get sale by ID",
+                "summary": "Buscar venda por ID",
                 "operationId": "4f0a27b4ca01f590019330385ada39c1",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Sale ID",
+                        "description": "UUID da venda",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -6469,13 +6504,25 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Sale found"
+                        "description": "Venda encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Sale"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "404": {
-                        "description": "Sale not found"
+                        "description": "Venda não encontrada"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Não autenticado"
                     }
                 },
                 "security": [
@@ -6488,14 +6535,14 @@
                 "tags": [
                     "Sales"
                 ],
-                "summary": "Update a sale",
-                "description": "Delegação: {@see UpdateSaleUseCase} → {@see \\App\\Application\\Actions\\Sale\\UpdateSaleAction}\n(transação, locks, trava financeira, biomassa, despesca e sincronização do contas a receber).",
+                "summary": "Atualizar venda",
+                "description": "Atualiza campos editáveis da venda. Campos imutáveis (batch, stocking, cliente) são ignorados. Sincroniza automaticamente o sale_items[0] e o contas a receber.",
                 "operationId": "9f828e63cc636983eed7faec42f4f1e3",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Sale ID",
+                        "description": "UUID da venda",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -6509,10 +6556,6 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "clientId": {
-                                        "type": "string",
-                                        "format": "uuid"
-                                    },
                                     "totalWeight": {
                                         "type": "number",
                                         "format": "float",
@@ -6527,32 +6570,61 @@
                                         "type": "string",
                                         "format": "date"
                                     },
+                                    "dueDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                    },
                                     "status": {
                                         "type": "string",
                                         "enum": [
                                             "pending",
                                             "confirmed",
+                                            "paid",
+                                            "delivered",
+                                            "overdue",
                                             "cancelled"
                                         ]
+                                    },
+                                    "isTotalHarvest": {
+                                        "type": "boolean"
                                     },
                                     "notes": {
                                         "type": "string",
                                         "nullable": true
                                     },
-                                    "batchId": {
-                                        "description": "Must match the sale batch; cannot be changed.",
+                                    "discount": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "shipping": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "taxes": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "paymentMethod": {
                                         "type": "string",
-                                        "format": "uuid",
+                                        "enum": [
+                                            "pix",
+                                            "bank_slip",
+                                            "bank_transfer",
+                                            "credit_card",
+                                            "debit_card",
+                                            "cash",
+                                            "check"
+                                        ],
                                         "nullable": true
                                     },
-                                    "stockingId": {
-                                        "description": "Must match the sale stocking; cannot be changed.",
+                                    "invoiceNumber": {
                                         "type": "string",
-                                        "format": "uuid",
                                         "nullable": true
                                     },
-                                    "isTotalHarvest": {
-                                        "type": "boolean",
+                                    "responsibleUserId": {
+                                        "type": "string",
+                                        "format": "uuid",
                                         "nullable": true
                                     }
                                 },
@@ -6563,16 +6635,31 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Sale updated"
+                        "description": "Venda atualizada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Sale"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
-                    "400": {
-                        "description": "Validation error"
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "409": {
+                        "description": "Biomassa insuficiente"
                     },
                     "404": {
-                        "description": "Sale not found"
+                        "description": "Venda não encontrada"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Não autenticado"
                     }
                 },
                 "security": [
@@ -6585,13 +6672,14 @@
                 "tags": [
                     "Sales"
                 ],
-                "summary": "Delete a sale",
+                "summary": "Excluir venda",
+                "description": "Soft delete. A venda precisa estar com status CANCELLED antes de ser excluída.",
                 "operationId": "2f5806b93a9b2c85667720e28544a291",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Sale ID",
+                        "description": "UUID da venda",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -6601,13 +6689,16 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Sale deleted"
+                        "description": "Venda excluída"
+                    },
+                    "409": {
+                        "description": "Venda não está cancelada"
                     },
                     "404": {
-                        "description": "Sale not found"
+                        "description": "Venda não encontrada"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Não autenticado"
                     }
                 },
                 "security": [
@@ -6622,7 +6713,8 @@
                 "tags": [
                     "Sales"
                 ],
-                "summary": "Create a sale",
+                "summary": "Criar venda / despesca",
+                "description": "Registra uma venda vinculada a um ou mais itens de biomassa (stocking). Atualmente limitado a 1 item. Suporta formato legado (campos diretos) e o novo formato via `items[]`.",
                 "operationId": "eb0dab29c039e392c87a12b221981584",
                 "requestBody": {
                     "required": true,
@@ -6631,55 +6723,40 @@
                             "schema": {
                                 "required": [
                                     "clientId",
-                                    "batchId",
-                                    "totalWeight",
-                                    "pricePerKg",
-                                    "saleDate"
+                                    "saleDate",
+                                    "items"
                                 ],
                                 "properties": {
-                                    "companyId": {
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "nullable": true
-                                    },
                                     "clientId": {
                                         "type": "string",
                                         "format": "uuid"
                                     },
-                                    "batchId": {
+                                    "saleDate": {
                                         "type": "string",
-                                        "format": "uuid"
-                                    },
-                                    "stockingId": {
-                                        "type": "string",
-                                        "format": "uuid",
-                                        "nullable": true
+                                        "format": "date",
+                                        "example": "2026-06-25"
                                     },
                                     "financialCategoryId": {
                                         "type": "string",
                                         "format": "uuid",
                                         "nullable": true
                                     },
-                                    "totalWeight": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "minimum": 0.001
-                                    },
-                                    "pricePerKg": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "minimum": 0
-                                    },
-                                    "saleDate": {
+                                    "responsibleUserId": {
                                         "type": "string",
-                                        "format": "date"
+                                        "format": "uuid",
+                                        "nullable": true
+                                    },
+                                    "dueDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
                                     },
                                     "status": {
+                                        "description": "Padrão: pending",
                                         "type": "string",
                                         "enum": [
                                             "pending",
-                                            "confirmed",
-                                            "cancelled"
+                                            "confirmed"
                                         ],
                                         "nullable": true
                                     },
@@ -6687,20 +6764,92 @@
                                         "type": "string",
                                         "nullable": true
                                     },
-                                    "isTotalHarvest": {
-                                        "type": "boolean",
-                                        "nullable": true
-                                    },
-                                    "tolerancePercent": {
-                                        "type": "number",
-                                        "format": "float",
-                                        "maximum": 50,
-                                        "minimum": 0,
-                                        "nullable": true
-                                    },
                                     "needsInvoice": {
                                         "type": "boolean",
                                         "nullable": true
+                                    },
+                                    "discount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "nullable": true
+                                    },
+                                    "shipping": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "nullable": true
+                                    },
+                                    "taxes": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "nullable": true
+                                    },
+                                    "paymentMethod": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pix",
+                                            "bank_slip",
+                                            "bank_transfer",
+                                            "credit_card",
+                                            "debit_card",
+                                            "cash",
+                                            "check"
+                                        ],
+                                        "nullable": true
+                                    },
+                                    "invoiceNumber": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "items": {
+                                        "description": "Itens da venda. Atualmente máximo de 1 item.",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "batchId",
+                                                "stockingId",
+                                                "totalWeight",
+                                                "pricePerKg"
+                                            ],
+                                            "properties": {
+                                                "batchId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "stockingId": {
+                                                    "type": "string",
+                                                    "format": "uuid"
+                                                },
+                                                "totalWeight": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "minimum": 0.001,
+                                                    "example": 500.5
+                                                },
+                                                "pricePerKg": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "minimum": 0,
+                                                    "example": 12.5
+                                                },
+                                                "isTotalHarvest": {
+                                                    "description": "Se true, fecha o stocking e o lote ao vender toda a biomassa",
+                                                    "type": "boolean",
+                                                    "nullable": true
+                                                },
+                                                "category": {
+                                                    "type": "string",
+                                                    "example": "G",
+                                                    "nullable": true
+                                                },
+                                                "notes": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "maxItems": 1,
+                                        "minItems": 1
                                     }
                                 },
                                 "type": "object"
@@ -6710,16 +6859,31 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Sale created"
+                        "description": "Venda criada com sucesso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Sale"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
-                    "400": {
-                        "description": "Validation error"
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "409": {
+                        "description": "Biomassa insuficiente ou stocking fechado"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Não autenticado"
                     },
                     "404": {
-                        "description": "Related entities not found"
+                        "description": "Entidades relacionadas não encontradas"
                     }
                 },
                 "security": [
@@ -6730,18 +6894,17 @@
             }
         },
         "/company/sale/{id}/cancel": {
-            "delete": {
+            "patch": {
                 "tags": [
                     "Sales"
                 ],
-                "summary": "Cancel a sale",
-                "description": "Cancela a venda (rota distinta de excluir permanentemente o registro).",
-                "operationId": "51040e4db576a2094dec4d25a3fd5cab",
+                "summary": "Cancelar venda",
+                "description": "Cancela a venda e estorna as movimentações financeiras vinculadas. Apenas vendas com status pending, confirmed ou overdue podem ser canceladas.",
+                "operationId": "e017dee17b7e01c238c33689a8b47eb5",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "Sale ID",
                         "required": true,
                         "schema": {
                             "type": "string",
@@ -6751,13 +6914,292 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Sale cancelled"
+                        "description": "Venda cancelada"
+                    },
+                    "409": {
+                        "description": "Venda não pode ser cancelada neste status"
                     },
                     "404": {
-                        "description": "Sale not found"
+                        "description": "Venda não encontrada"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sale/{id}/pay": {
+            "patch": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Marcar venda como paga",
+                "description": "Transição direta para status PAID. Allowed from: pending, confirmed, overdue.",
+                "operationId": "d4b17326022e48eda465025e4cea7d1d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "paid_date": {
+                                        "description": "Data do pagamento. Padrão: hoje",
+                                        "type": "string",
+                                        "format": "date",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Venda marcada como paga",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Sale"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Transição de status inválida"
+                    },
+                    "404": {
+                        "description": "Venda não encontrada"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sale/{id}/deliver": {
+            "patch": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Marcar venda como entregue",
+                "description": "Transição para status DELIVERED. Allowed from: confirmed, paid.",
+                "operationId": "74f4e73cae1e394a6ceed6351921df77",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Venda marcada como entregue",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/Sale"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Transição de status inválida"
+                    },
+                    "404": {
+                        "description": "Venda não encontrada"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/company/sale/{id}/payments": {
+            "get": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Listar pagamentos da venda",
+                "operationId": "9ff5012f5668f2f4a960de0f3cf01aba",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID da venda",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de pagamentos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/SalePayment"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Venda não encontrada"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Sales"
+                ],
+                "summary": "Registrar pagamento parcial ou total",
+                "description": "Registra um pagamento contra a venda. Quando o total pago atingir ou superar total_revenue, a venda é automaticamente marcada como PAID.",
+                "operationId": "02c118a278c94c24bb3a2250fd17a3fd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UUID da venda",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "amount",
+                                    "paymentMethod",
+                                    "paymentDate"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0.01,
+                                        "example": 1500
+                                    },
+                                    "paymentMethod": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pix",
+                                            "bank_slip",
+                                            "bank_transfer",
+                                            "credit_card",
+                                            "debit_card",
+                                            "cash",
+                                            "check"
+                                        ]
+                                    },
+                                    "paymentDate": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-06-25"
+                                    },
+                                    "reference": {
+                                        "type": "string",
+                                        "example": "TXN-98765",
+                                        "nullable": true
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Pagamento registrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SalePayment"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Venda já está paga ou cancelada"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    },
+                    "404": {
+                        "description": "Venda não encontrada"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
                     }
                 },
                 "security": [
@@ -9390,7 +9832,7 @@
                     "Stocks"
                 ],
                 "summary": "Transferir insumo entre estoques",
-                "description": "Debita do estoque origem e credita no estoque destino em uma única transação. Registra duas movimentações.",
+                "description": "Debita do estoque origem e credita no estoque destino\n     *         em uma única transação. Registra duas movimentações.",
                 "operationId": "3713727cfa3e290d8bcf85409604561d",
                 "requestBody": {
                     "required": true,
@@ -14192,73 +14634,75 @@
                 },
                 "type": "object"
             },
-            "Sale": {
+            "SaleItem": {
+                "description": "Item individual da venda (produto/lote/stocking)",
                 "properties": {
                     "id": {
                         "type": "string",
                         "format": "uuid"
                     },
-                    "totalWeight": {
-                        "type": "number",
-                        "format": "float"
-                    },
-                    "pricePerKg": {
-                        "type": "number",
-                        "format": "float"
-                    },
-                    "totalRevenue": {
-                        "type": "number",
-                        "format": "float"
-                    },
-                    "saleDate": {
-                        "type": "string",
-                        "format": "date"
-                    },
-                    "status": {
-                        "type": "string",
-                        "enum": [
-                            "pending",
-                            "confirmed",
-                            "cancelled"
-                        ]
-                    },
-                    "statusLabel": {
-                        "type": "string",
-                        "example": "Pending"
-                    },
-                    "notes": {
-                        "type": "string",
-                        "nullable": true
-                    },
                     "batchId": {
+                        "description": "Lote de origem",
                         "type": "string",
                         "format": "uuid"
                     },
                     "stockingId": {
+                        "description": "Povoamento de origem",
                         "type": "string",
-                        "format": "uuid",
+                        "format": "uuid"
+                    },
+                    "productName": {
+                        "type": "string",
+                        "example": "Tilápia G",
                         "nullable": true
                     },
-                    "company": {
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            }
-                        },
-                        "type": "object",
+                    "species": {
+                        "type": "string",
+                        "example": "Tilápia",
                         "nullable": true
                     },
-                    "client": {
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "format": "uuid"
-                            },
-                            "name": {
-                                "type": "string"
-                            }
-                        },
-                        "type": "object",
+                    "category": {
+                        "description": "Categoria/tamanho do produto",
+                        "type": "string",
+                        "example": "G",
+                        "nullable": true
+                    },
+                    "totalWeight": {
+                        "description": "Peso vendido neste item (kg)",
+                        "type": "number",
+                        "format": "float",
+                        "example": 500.5
+                    },
+                    "pricePerKg": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.5
+                    },
+                    "subtotal": {
+                        "description": "totalWeight × pricePerKg",
+                        "type": "number",
+                        "format": "float",
+                        "example": 6256.25
+                    },
+                    "unitCost": {
+                        "description": "CMV por kg — snapshot calculado no momento da venda",
+                        "type": "number",
+                        "format": "float",
+                        "example": 8.4
+                    },
+                    "totalCost": {
+                        "description": "CMV total do item",
+                        "type": "number",
+                        "format": "float",
+                        "example": 4202.1
+                    },
+                    "isTotalHarvest": {
+                        "description": "Se true, fechou o stocking ao vender",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "notes": {
+                        "type": "string",
                         "nullable": true
                     },
                     "batch": {
@@ -14290,6 +14734,182 @@
                         },
                         "type": "object",
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Sale": {
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "code": {
+                        "description": "Código sequencial da venda",
+                        "type": "string",
+                        "example": "VND-2026-0001",
+                        "nullable": true
+                    },
+                    "clientId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "financialCategoryId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "invoiceNumber": {
+                        "type": "string",
+                        "example": "NF-001",
+                        "nullable": true
+                    },
+                    "needsInvoice": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "totalRevenue": {
+                        "description": "Soma dos subtotais dos itens",
+                        "type": "number",
+                        "format": "float",
+                        "example": 6256.25
+                    },
+                    "discount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "shipping": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "taxes": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "saleDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-06-25"
+                    },
+                    "dueDate": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "paidDate": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "deliveredAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "paymentMethod": {
+                        "type": "string",
+                        "enum": [
+                            "pix",
+                            "bank_slip",
+                            "bank_transfer",
+                            "credit_card",
+                            "debit_card",
+                            "cash",
+                            "check"
+                        ],
+                        "nullable": true
+                    },
+                    "paymentMethodLabel": {
+                        "type": "string",
+                        "example": "PIX",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "confirmed",
+                            "paid",
+                            "delivered",
+                            "overdue",
+                            "cancelled"
+                        ],
+                        "example": "pending"
+                    },
+                    "statusLabel": {
+                        "type": "string",
+                        "example": "Pendente"
+                    },
+                    "notes": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "responsibleUserId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "nullable": true
+                    },
+                    "company": {
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "client": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "stocking": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "quantity": {
+                                "type": "integer"
+                            },
+                            "averageWeight": {
+                                "type": "number",
+                                "format": "float"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "responsibleUser": {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "format": "uuid"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "items": {
+                        "description": "Itens da venda (produtos/lotes). Atualmente 1 item por venda.",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SaleItem"
+                        }
                     },
                     "createdAt": {
                         "type": "string",
@@ -14297,6 +14917,60 @@
                         "nullable": true
                     },
                     "updatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "SalePayment": {
+                "description": "Pagamento parcial ou total de uma venda",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "saleId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 1000
+                    },
+                    "paymentMethod": {
+                        "type": "string",
+                        "enum": [
+                            "pix",
+                            "bank_slip",
+                            "bank_transfer",
+                            "credit_card",
+                            "debit_card",
+                            "cash",
+                            "check"
+                        ]
+                    },
+                    "paymentMethodLabel": {
+                        "type": "string",
+                        "example": "PIX"
+                    },
+                    "paymentDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-06-25"
+                    },
+                    "reference": {
+                        "type": "string",
+                        "example": "TXN-12345",
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "createdAt": {
                         "type": "string",
                         "format": "date-time",
                         "nullable": true
@@ -15355,7 +16029,7 @@
         },
         {
             "name": "Sales",
-            "description": "Vendas"
+            "description": "Vendas e despescas"
         },
         {
             "name": "Sales orders",

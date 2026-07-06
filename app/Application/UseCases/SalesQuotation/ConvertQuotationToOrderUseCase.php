@@ -12,6 +12,7 @@ use App\Application\Actions\Sale\RegisterBiomassOutflowAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\ConvertQuotationDTO;
 use App\Application\DTOs\SaleInputDTO;
+use App\Application\DTOs\SaleItemDTO;
 use App\Domain\Enums\SalesOrderStatus;
 use App\Domain\Enums\SalesOrderType;
 use App\Domain\Enums\SaleStatus;
@@ -115,11 +116,13 @@ final readonly class ConvertQuotationToOrderUseCase
             $saleInputDTO = new SaleInputDTO(
                 companyId:           $quotation->company_id,
                 clientId:            $quotation->client_id,
-                batchId:             (string) $stocking->batch_id,
-                totalWeight:         (float) $item->quantity,
-                pricePerKg:          (float) $item->unit_price,
                 saleDate:            $dto->expectedPaymentDate,
-                stockingId:          (string) $stocking->id,
+                items:               [new SaleItemDTO(
+                    batchId:    (string) $stocking->batch_id,
+                    stockingId: (string) $stocking->id,
+                    totalWeight: (float) $item->quantity,
+                    pricePerKg:  (float) $item->unit_price,
+                )],
                 financialCategoryId: $dto->financialCategoryId,
                 status:              SaleStatus::PENDING,
                 notes:               $dto->notes ?? $quotation->notes,
@@ -156,14 +159,17 @@ final readonly class ConvertQuotationToOrderUseCase
 
         // 2. Os Side-Effects são idênticos aos do CreateSalesOrderUseCase
         foreach ($validatedItems as ['saleInputDTO' => $saleInputDTO, 'stocking' => $stocking]) {
-            $sale = $this->saleRepository->create($saleInputDTO);
+            $sale     = $this->saleRepository->create($saleInputDTO);
+            $saleItem = $sale->items->firstWhere('stocking_id', (string) $stocking->id);
 
             $alreadySoldWeight = $this->saleRepository->soldWeightByStocking(
                 stockingId:    (string) $stocking->id,
                 excludeSaleId: (string) $sale->id,
             );
 
-            $this->registerOutflow->execute($stocking, $sale, $alreadySoldWeight);
+            if ($saleItem !== null) {
+                $this->registerOutflow->execute($stocking, $sale, $saleItem, $alreadySoldWeight);
+            }
 
             $this->generateReceivable->execute($saleInputDTO, (string) $sale->id);
 

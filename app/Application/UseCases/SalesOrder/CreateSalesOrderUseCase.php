@@ -11,6 +11,7 @@ use App\Application\Actions\Sale\GuardClientFiscalDataAction;
 use App\Application\Actions\Sale\RegisterBiomassOutflowAction;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\SaleInputDTO;
+use App\Application\DTOs\SaleItemDTO;
 use App\Application\DTOs\SalesOrderDTO;
 use App\Domain\Enums\SalesOrderType;
 use App\Domain\Enums\SaleStatus;
@@ -84,11 +85,13 @@ final readonly class CreateSalesOrderUseCase
             $saleInputDTO = new SaleInputDTO(
                 companyId:           $dto->companyId,
                 clientId:            $dto->clientId,
-                batchId:             (string) $stocking->batch_id,
-                totalWeight:         $item->quantity,
-                pricePerKg:          $item->unitPrice,
                 saleDate:            now()->format('Y-m-d'),
-                stockingId:          (string) $stocking->id,
+                items:               [new SaleItemDTO(
+                    batchId:    (string) $stocking->batch_id,
+                    stockingId: (string) $stocking->id,
+                    totalWeight: $item->quantity,
+                    pricePerKg:  $item->unitPrice,
+                )],
                 financialCategoryId: $dto->financialCategoryId,
                 status:              SaleStatus::PENDING,
                 notes:               $dto->notes,
@@ -113,17 +116,18 @@ final readonly class CreateSalesOrderUseCase
         $createdSales = [];
 
         foreach ($validatedItems as ['saleInputDTO' => $saleInputDTO, 'stocking' => $stocking]) {
-            $sale = $this->saleRepository->create($saleInputDTO);
+            $sale     = $this->saleRepository->create($saleInputDTO);
+            $saleItem = $sale->items->firstWhere('stocking_id', (string) $stocking->id);
 
             $alreadySoldWeight = $this->saleRepository->soldWeightByStocking(
                 stockingId:    (string) $stocking->id,
                 excludeSaleId: (string) $sale->id,
             );
 
-            $this->registerOutflow->execute($stocking, $sale, $alreadySoldWeight);
+            if ($saleItem !== null) {
+                $this->registerOutflow->execute($stocking, $sale, $saleItem, $alreadySoldWeight);
+            }
 
-            // Assinatura correta: GenerateReceivableAction::execute(SaleInputDTO, Sale)
-            // Não (string) $sale->id — o Model é necessário para compor a descrição do recebível
             $this->generateReceivable->execute($saleInputDTO, (string) $sale->id);
 
             $createdSales[] = $sale;

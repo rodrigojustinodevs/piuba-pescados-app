@@ -12,6 +12,7 @@ enum StockTransactionReferenceType: string
     case TRANSFER      = 'transfer';
     case STOCKING      = 'stocking';
     case SALE          = 'sale';
+    case SALE_ITEM     = 'sale_item';
 
     public function label(): string
     {
@@ -22,6 +23,7 @@ enum StockTransactionReferenceType: string
             self::TRANSFER      => 'Transfer',
             self::STOCKING      => 'Stocking',
             self::SALE          => 'Sale',
+            self::SALE_ITEM     => 'Sale Item',
         };
     }
 }

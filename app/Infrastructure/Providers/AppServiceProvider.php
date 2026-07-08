@@ -50,6 +50,7 @@ use App\Domain\Repositories\TankHistoryRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
 use App\Domain\Repositories\TankTypeRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
+use App\Domain\Repositories\UserRepositoryInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
 use App\Infrastructure\Persistence\AlertRepository;
 use App\Infrastructure\Persistence\AuthRepository;
@@ -86,6 +87,7 @@ use App\Infrastructure\Persistence\TankHistoryRepository;
 use App\Infrastructure\Persistence\TankRepository;
 use App\Infrastructure\Persistence\TankTypeRepository;
 use App\Infrastructure\Persistence\TransferRepository;
+use App\Infrastructure\Persistence\UserRepository;
 use App\Infrastructure\Persistence\WaterQualityRepository;
 use App\Infrastructure\Security\BcryptPasswordHasher;
 use App\Infrastructure\Security\CompanyJwtService;
@@ -169,6 +171,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SupplierRepositoryInterface::class, SupplierRepository::class);
         $this->app->bind(WaterQualityRepositoryInterface::class, WaterQualityRepository::class);
         $this->app->bind(TransferRepositoryInterface::class, TransferRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(
             UserResolverInterface::class,
             static fn ($app): UserResolver => new UserResolver(

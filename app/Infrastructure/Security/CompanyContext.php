@@ -67,4 +67,30 @@ final class CompanyContext
 
         return self::$companyId;
     }
+
+    /**
+     * Resolves which company_id an action targets when the acting user isn't
+     * necessarily scoped to a single company (master_admin).
+     *
+     * Non-master users are always forced to their own active company, ignoring
+     * whatever was requested — never trust company_id coming from the request.
+     * master_admin may pass an explicit companyId, or fall back to an active
+     * one if they've switched into a company; otherwise it's an error.
+     *
+     * @throws \DomainException if master_admin has no company to target
+     */
+    public static function resolveTargetCompanyId(?string $requested): string
+    {
+        if (! self::isMasterAdmin()) {
+            return self::requireCompanyId();
+        }
+
+        $companyId = $requested ?? self::$companyId;
+
+        if ($companyId === null || $companyId === '') {
+            throw new \DomainException('O campo companyId é obrigatório para master_admin sem empresa ativa selecionada.');
+        }
+
+        return $companyId;
+    }
 }

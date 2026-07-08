@@ -33,6 +33,8 @@ final readonly class LoginUseCase
             throw new InvalidCredentialsException();
         }
 
+        $user->update(['last_access_at' => now()]);
+
         $token = $user->isMasterAdmin()
             ? $this->tokenService->generateForMasterAdmin($user)
             : $this->generateForCompanyUser($user);

@@ -405,6 +405,16 @@ class Handler extends ExceptionHandler
         );
 
         // -----------------------------------------------------------------------
+        // Domain (genérico)
+        // -----------------------------------------------------------------------
+        $this->renderable(
+            fn (\DomainException $e, Request $r): JsonResponse => $this->handleDomainException(
+                $e,
+                JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
+            )
+        );
+
+        // -----------------------------------------------------------------------
         // Eloquent
         // -----------------------------------------------------------------------
         $this->renderable(function (ModelNotFoundException $e, Request $r): JsonResponse {

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Domain\Enums\PositionEnum;
 use App\Domain\Enums\RolesEnum;
+use App\Domain\Enums\UserStatusEnum;
 use App\Infrastructure\Persistence\Traits\HasPermissions;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -50,6 +53,9 @@ class User extends Authenticatable implements Auditable, JWTSubject
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'is_admin'          => 'boolean',
+            'status'            => UserStatusEnum::class,
+            'position'          => PositionEnum::class,
+            'last_access_at'    => 'datetime',
         ];
     }
 
@@ -111,6 +117,21 @@ class User extends Authenticatable implements Auditable, JWTSubject
         return $this->companies()->wherePivot('is_active', true);
     }
 
+    /**
+     * Direct relationship to the company_user rows themselves (not as pivot data
+     * attached to a Company, but as first-class records of their own — company_user
+     * has its own UUID primary key).
+     *
+     * @return HasMany<CompanyUserPivot, static>
+     */
+    public function companyMemberships(): HasMany
+    {
+        /** @var HasMany<CompanyUserPivot, static> $relation */
+        $relation = $this->hasMany(CompanyUserPivot::class, 'user_id');
+
+        return $relation;
+    }
+
     public function belongsToCompany(string $companyId): bool
     {
         return $this->activeCompanies()
@@ -126,7 +147,7 @@ class User extends Authenticatable implements Auditable, JWTSubject
 
         $pivot = $pivotModel instanceof CompanyUserPivot ? $pivotModel : null;
 
-        return $pivot instanceof \App\Domain\Models\CompanyUserPivot ? RolesEnum::from($pivot->role) : null;
+        return $pivot instanceof CompanyUserPivot ? RolesEnum::from($pivot->role) : null;
     }
 
     /**
@@ -134,8 +155,11 @@ class User extends Authenticatable implements Auditable, JWTSubject
      */
     public function companiesWithRoles(): array
     {
-        return $this->activeCompanies()
-            ->get()
+        $companies = $this->relationLoaded('activeCompanies')
+            ? $this->activeCompanies
+            : $this->activeCompanies()->get();
+
+        return $companies
             ->map(function (Company $company): array {
                 $pivotValue = $company->getRelationValue('pivot');
                 $pivot      = $pivotValue instanceof CompanyUserPivot ? $pivotValue : null;

@@ -96,6 +96,8 @@ Route::middleware(['auth:api', 'company.context'])->group(function (): void {
 
             require base_path('routes/app/company/tank.php');
 
+            require base_path('routes/app/company/user.php');
+
             require base_path('routes/app/company/tankHistory.php');
 
             require base_path('routes/app/company/stockingHistory.php');

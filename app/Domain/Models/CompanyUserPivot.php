@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use App\Domain\Enums\RolesEnum;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
@@ -23,5 +24,16 @@ final class CompanyUserPivot extends Pivot
     public function getRoleEnumAttribute(): RolesEnum
     {
         return RolesEnum::from($this->role);
+    }
+
+    /**
+     * @return BelongsTo<Company, CompanyUserPivot>
+     */
+    public function company(): BelongsTo
+    {
+        /** @var BelongsTo<Company, CompanyUserPivot> $relation */
+        $relation = $this->belongsTo(Company::class);
+
+        return $relation;
     }
 }

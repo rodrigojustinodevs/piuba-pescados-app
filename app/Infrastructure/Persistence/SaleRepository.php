@@ -16,18 +16,17 @@ final class SaleRepository implements SaleRepositoryInterface
 {
     public function create(SaleInputDTO $dto): Sale
     {
-        /** @var \App\Application\DTOs\SaleItemDTO $firstItem */
         $firstItem = $dto->firstItem();
 
         /** @var Sale $sale */
         $sale = Sale::create([
-            'company_id'            => $dto->companyId,
-            'client_id'             => $dto->clientId,
+            'company_id' => $dto->companyId,
+            'client_id'  => $dto->clientId,
             // Colunas deprecated mantidas para compatibilidade — removidas na Fase 3
-            'batch_id'              => $firstItem->batchId,
-            'stocking_id'           => $firstItem->stockingId,
-            'total_weight'          => array_sum(array_map(
-                static fn ($i) => $i->totalWeight,
+            'batch_id'     => $firstItem->batchId,
+            'stocking_id'  => $firstItem->stockingId,
+            'total_weight' => array_sum(array_map(
+                static fn (\App\Application\DTOs\SaleItemDTO $i): float => $i->totalWeight,
                 $dto->items,
             )),
             'price_per_kg'          => $firstItem->pricePerKg,
@@ -66,7 +65,13 @@ final class SaleRepository implements SaleRepositoryInterface
             ]);
         }
 
-        return $sale->load(['company:id,name', 'client:id,name', 'stocking', 'items.batch:id,name', 'items.stocking:id,quantity,average_weight']);
+        return $sale->load([
+            'company:id,name',
+            'client:id,name',
+            'stocking',
+            'items.batch:id,name',
+            'items.stocking:id,quantity,average_weight',
+        ]);
     }
 
     /**
@@ -78,7 +83,13 @@ final class SaleRepository implements SaleRepositoryInterface
 
         $sale->update($attributes);
 
-        return $sale->refresh()->load(['company:id,name', 'client:id,name', 'stocking', 'items.batch:id,name', 'items.stocking:id,quantity,average_weight']);
+        return $sale->refresh()->load([
+            'company:id,name',
+            'client:id,name',
+            'stocking',
+            'items.batch:id,name',
+            'items.stocking:id,quantity,average_weight',
+        ]);
     }
 
     public function delete(string $id): bool

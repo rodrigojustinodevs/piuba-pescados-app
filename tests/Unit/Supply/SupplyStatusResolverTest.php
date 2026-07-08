@@ -65,7 +65,7 @@ describe('Supply::resolveStatus()', function (): void {
 
 describe('SupplyCategoryEnum', function (): void {
     it('has all required cases', function (): void {
-        $values = array_map(fn (\App\Domain\Enums\SupplyCategoryEnum $case) => $case->value, SupplyCategoryEnum::cases());
+        $values = array_map(fn (SupplyCategoryEnum $case) => $case->value, SupplyCategoryEnum::cases());
 
         expect($values)->toContain('feed')
             ->toContain('medication')
@@ -86,7 +86,7 @@ describe('SupplyCategoryEnum', function (): void {
 
 describe('SupplyStatusEnum', function (): void {
     it('has all required cases', function (): void {
-        $values = array_map(fn (\App\Domain\Enums\SupplyStatusEnum $case) => $case->value, SupplyStatusEnum::cases());
+        $values = array_map(fn (SupplyStatusEnum $case) => $case->value, SupplyStatusEnum::cases());
 
         expect($values)->toContain('active')
             ->toContain('inactive')

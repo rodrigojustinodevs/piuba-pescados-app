@@ -63,7 +63,7 @@ final readonly class HarvestSaleDTO
     {
         if (isset($data['items']) && is_array($data['items'])) {
             $items = array_map(
-                static fn (array $item): SaleItemDTO => SaleItemDTO::fromArray($item),
+                SaleItemDTO::fromArray(...),
                 $data['items'],
             );
         } else {
@@ -79,7 +79,11 @@ final readonly class HarvestSaleDTO
 
         // is_total_harvest do header é o OR de todos os itens (para compatibilidade)
         $isHarvestTotal = (bool) ($data['is_total_harvest'] ?? false)
-            || array_reduce($items, static fn (bool $carry, SaleItemDTO $i): bool => $carry || $i->isHarvestTotal, false);
+            || array_reduce(
+                $items,
+                static fn (bool $carry, SaleItemDTO $i): bool => $carry || $i->isHarvestTotal,
+                false
+            );
 
         return new self(
             companyId:           (string) ($data['company_id'] ?? ''),
@@ -119,16 +123,16 @@ final readonly class HarvestSaleDTO
             financialCategoryId: $this->financialCategoryId,
             status:              $this->status,
             notes:               $this->notes,
-            needsInvoice:        $this->needsInvoice,
-            paymentMethod:       $this->paymentMethod !== null
-                                     ? PaymentMethod::from($this->paymentMethod)
-                                     : null,
-            invoiceNumber:       $this->invoiceNumber,
             discount:            $this->discount,
             shipping:            $this->freight,
             taxes:               $this->taxes,
             dueDate:             $this->dueDate,
             paidAt:              $this->paidAt,
+            needsInvoice:        $this->needsInvoice,
+            paymentMethod:       $this->paymentMethod !== null
+                                     ? PaymentMethod::from($this->paymentMethod)
+                                     : null,
+            invoiceNumber:       $this->invoiceNumber,
         );
     }
 }

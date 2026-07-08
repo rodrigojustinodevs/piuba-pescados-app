@@ -59,7 +59,7 @@ final readonly class WaterQualityDTO
                 'turbidity'        => $this->turbidity,
                 'notes'            => $this->notes,
             ],
-            static fn (float|string|null $v): bool => $v !== null
+            static fn (float | string | null $v): bool => $v !== null
         );
     }
 }

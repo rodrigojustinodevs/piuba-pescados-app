@@ -25,7 +25,7 @@ final readonly class LoginUseCase
     {
         $user = $this->authRepository->findByEmail($input->email);
 
-        if (!$user instanceof \App\Domain\Models\User) {
+        if (! $user instanceof \App\Domain\Models\User) {
             throw new InvalidCredentialsException();
         }
 

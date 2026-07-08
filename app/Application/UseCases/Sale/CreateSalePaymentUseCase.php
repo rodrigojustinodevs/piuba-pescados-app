@@ -31,8 +31,8 @@ final readonly class CreateSalePaymentUseCase
 
             if ($sale->status->isFinanciallySettled() || $sale->status->isCancelled()) {
                 throw new InvalidSaleStatusTransitionException(
-                    $sale->status->value,
-                    'payment_registration',
+                    $sale->status,
+                    SaleStatus::PAID,
                 );
             }
 

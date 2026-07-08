@@ -306,7 +306,9 @@ final class UserController
             $request->user(),
         );
 
-        $target->refresh()->load(['companyMemberships' => fn ($q) => $q->where('company_id', $companyId)->with('company')]);
+        $target->refresh()->load([
+            'companyMemberships' => fn ($q) => $q->where('company_id', $companyId)->with('company'),
+        ]);
 
         return ApiResponse::success(new UserResource($target), Response::HTTP_OK, 'Success');
     }
@@ -355,7 +357,9 @@ final class UserController
 
         $useCase->execute($id, (bool) $request->validated('isActive'), $companyId);
 
-        $target->refresh()->load(['companyMemberships' => fn ($q) => $q->where('company_id', $companyId)->with('company')]);
+        $target->refresh()->load([
+            'companyMemberships' => fn ($q) => $q->where('company_id', $companyId)->with('company'),
+        ]);
 
         return ApiResponse::success(new UserResource($target), Response::HTTP_OK, 'Success');
     }

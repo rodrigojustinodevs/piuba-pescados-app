@@ -27,7 +27,7 @@ final readonly class PaySaleUseCase
             $sale = $this->saleRepository->findOrFailLocked($id);
 
             if (! in_array($sale->status, [SaleStatus::PENDING, SaleStatus::CONFIRMED, SaleStatus::OVERDUE], true)) {
-                throw new InvalidSaleStatusTransitionException($sale->status->value, SaleStatus::PAID->value);
+                throw new InvalidSaleStatusTransitionException($sale->status, SaleStatus::PAID);
             }
 
             return $this->saleRepository->update($id, [

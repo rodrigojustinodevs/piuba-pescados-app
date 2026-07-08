@@ -28,7 +28,7 @@ final readonly class UpdateSensorUseCase
         $data['tank_id'] ??= $data['tankId'] ?? (string) $sensor->tank_id;
         $data['sensor_type'] ??= $data['sensorType'] ?? (string) $sensor->sensor_type;
         $data['status'] ??= (string) $sensor->status;
-        $data['company_id']  = $this->companyResolver->resolve(
+        $data['company_id'] = $this->companyResolver->resolve(
             $data['company_id'] ?? $data['companyId'] ?? (string) $sensor->company_id,
         );
 

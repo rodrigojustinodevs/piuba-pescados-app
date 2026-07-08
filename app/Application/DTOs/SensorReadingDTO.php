@@ -64,7 +64,7 @@ final readonly class SensorReadingDTO
                 'type'        => $this->type,
                 'notes'       => $this->notes,
             ],
-            static fn (float|string|null $v): bool => $v !== null && $v !== ''
+            static fn (float | string | null $v): bool => $v !== null && $v !== ''
         );
     }
 }

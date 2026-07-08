@@ -113,62 +113,92 @@ class Sale extends BaseModel
     /** @phpstan-return BelongsTo<Company, static> */
     public function company(): BelongsTo
     {
-        return $this->belongsTo(Company::class, 'company_id');
+        /** @var BelongsTo<Company, static> $relation */
+        $relation = $this->belongsTo(Company::class, 'company_id');
+
+        return $relation;
     }
 
     /** @phpstan-return BelongsTo<Client, static> */
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        /** @var BelongsTo<Client, static> $relation */
+        $relation = $this->belongsTo(Client::class, 'client_id');
+
+        return $relation;
     }
 
     /** @phpstan-return BelongsTo<Batch, static> */
     public function batch(): BelongsTo
     {
-        return $this->belongsTo(Batch::class, 'batch_id');
+        /** @var BelongsTo<Batch, static> $relation */
+        $relation = $this->belongsTo(Batch::class, 'batch_id');
+
+        return $relation;
     }
 
     /** @phpstan-return BelongsTo<Stocking, static> */
     public function stocking(): BelongsTo
     {
-        return $this->belongsTo(Stocking::class, 'stocking_id');
+        /** @var BelongsTo<Stocking, static> $relation */
+        $relation = $this->belongsTo(Stocking::class, 'stocking_id');
+
+        return $relation;
     }
 
     /** @phpstan-return BelongsTo<FinancialCategory, static> */
     public function financialCategory(): BelongsTo
     {
-        return $this->belongsTo(FinancialCategory::class, 'financial_category_id');
+        /** @var BelongsTo<FinancialCategory, static> $relation */
+        $relation = $this->belongsTo(FinancialCategory::class, 'financial_category_id');
+
+        return $relation;
     }
 
     /** @phpstan-return HasMany<FinancialTransaction, static> */
     public function financialTransactions(): HasMany
     {
-        return $this->hasMany(FinancialTransaction::class, 'reference_id')
+        /** @var HasMany<FinancialTransaction, static> $relation */
+        $relation = $this->hasMany(FinancialTransaction::class, 'reference_id')
             ->where('reference_type', 'sale');
+
+        return $relation;
     }
 
     /** @phpstan-return HasMany<SalePayment, static> */
     public function payments(): HasMany
     {
-        return $this->hasMany(SalePayment::class, 'sale_id');
+        /** @var HasMany<SalePayment, static> $relation */
+        $relation = $this->hasMany(SalePayment::class, 'sale_id');
+
+        return $relation;
     }
 
     /** @phpstan-return HasMany<SaleItem, static> */
     public function items(): HasMany
     {
-        return $this->hasMany(SaleItem::class, 'sale_id');
+        /** @var HasMany<SaleItem, static> $relation */
+        $relation = $this->hasMany(SaleItem::class, 'sale_id');
+
+        return $relation;
     }
 
     /** @phpstan-return BelongsTo<User, static> */
     public function responsibleUser(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'responsible_user_id');
+        /** @var BelongsTo<User, static> $relation */
+        $relation = $this->belongsTo(User::class, 'responsible_user_id');
+
+        return $relation;
     }
 
     /** @phpstan-return BelongsTo<SalesOrder, static> */
     public function salesOrder(): BelongsTo
     {
-        return $this->belongsTo(SalesOrder::class, 'sales_order_id');
+        /** @var BelongsTo<SalesOrder, static> $relation */
+        $relation = $this->belongsTo(SalesOrder::class, 'sales_order_id');
+
+        return $relation;
     }
 
     public function totalRevenue(): float

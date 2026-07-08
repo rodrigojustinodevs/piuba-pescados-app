@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
  * Vendas soft-deleted são incluídas para manter rastreabilidade histórica.
  * unit_cost e total_cost ficam zerados — valores históricos não são recalculáveis com precisão.
  */
-return new class extends Migration
+return new class () extends Migration
 {
     public function up(): void
     {

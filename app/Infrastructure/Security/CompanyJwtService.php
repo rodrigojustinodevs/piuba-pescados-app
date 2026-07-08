@@ -56,7 +56,7 @@ final readonly class CompanyJwtService implements TokenServiceInterface
         $pivot      = $pivotValue instanceof CompanyUserPivot ? $pivotValue : null;
 
         // Se o pivot estiver ausente, o JWT não pode ser gerado com role correto
-        if (!$pivot instanceof \App\Domain\Models\CompanyUserPivot) {
+        if (! $pivot instanceof CompanyUserPivot) {
             throw new \RuntimeException(
                 "CompanyUserPivot not loaded for user [{$user->id}] and company [{$company->id}]."
             );

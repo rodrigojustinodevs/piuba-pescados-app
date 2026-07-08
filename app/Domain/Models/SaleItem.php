@@ -51,12 +51,12 @@ class SaleItem extends BaseModel
 
     /** @var array<string, string> */
     protected $casts = [
-        'total_weight'    => 'float',
-        'price_per_kg'    => 'decimal:2',
-        'subtotal'        => 'decimal:2',
-        'unit_cost'       => 'decimal:4',
-        'total_cost'      => 'decimal:2',
-        'is_total_harvest'=> 'boolean',
+        'total_weight'     => 'float',
+        'price_per_kg'     => 'decimal:2',
+        'subtotal'         => 'decimal:2',
+        'unit_cost'        => 'decimal:4',
+        'total_cost'       => 'decimal:2',
+        'is_total_harvest' => 'boolean',
     ];
 
     #[\Override]
@@ -70,18 +70,27 @@ class SaleItem extends BaseModel
     /** @phpstan-return BelongsTo<Sale, static> */
     public function sale(): BelongsTo
     {
-        return $this->belongsTo(Sale::class, 'sale_id');
+        /** @var BelongsTo<Sale, static> $relation */
+        $relation = $this->belongsTo(Sale::class, 'sale_id');
+
+        return $relation;
     }
 
     /** @phpstan-return BelongsTo<Batch, static> */
     public function batch(): BelongsTo
     {
-        return $this->belongsTo(Batch::class, 'batch_id');
+        /** @var BelongsTo<Batch, static> $relation */
+        $relation = $this->belongsTo(Batch::class, 'batch_id');
+
+        return $relation;
     }
 
     /** @phpstan-return BelongsTo<Stocking, static> */
     public function stocking(): BelongsTo
     {
-        return $this->belongsTo(Stocking::class, 'stocking_id');
+        /** @var BelongsTo<Stocking, static> $relation */
+        $relation = $this->belongsTo(Stocking::class, 'stocking_id');
+
+        return $relation;
     }
 }

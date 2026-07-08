@@ -122,7 +122,7 @@ final class PurchaseResource extends JsonResource
 
             'payments' => $this->whenLoaded(
                 'payments',
-                fn (): array => $this->payments->map(static fn(PurchasePayment $payment): array => [
+                fn (): array => $this->payments->map(static fn (PurchasePayment $payment): array => [
                     'id'            => $payment->id,
                     'paymentDate'   => $payment->payment_date->toDateTimeString(),
                     'amount'        => (float) $payment->amount,

@@ -48,13 +48,13 @@ class FinancialTransactionStoreRequest extends FormRequest
             'company_id'            => ['sometimes', 'uuid', 'exists:companies,id'],
             'financial_category_id' => ['nullable', 'required_unless:type,transfer',
                 'uuid', 'exists:financial_categories,id'],
-            'type'                  => ['required', 'string', new Enum(FinancialType::class)],
-            'status'                => ['nullable', 'string', new Enum(FinancialTransactionStatus::class)],
-            'amount'                => ['required', 'numeric', 'min:0.01'],
-            'due_date'              => ['required', 'date'],
-            'payment_date'          => ['nullable', 'date', 'before_or_equal:today'],
-            'description'           => ['nullable', 'string', 'max:500'],
-            'notes'                 => ['nullable', 'string'],
+            'type'         => ['required', 'string', new Enum(FinancialType::class)],
+            'status'       => ['nullable', 'string', new Enum(FinancialTransactionStatus::class)],
+            'amount'       => ['required', 'numeric', 'min:0.01'],
+            'due_date'     => ['required', 'date'],
+            'payment_date' => ['nullable', 'date', 'before_or_equal:today'],
+            'description'  => ['nullable', 'string', 'max:500'],
+            'notes'        => ['nullable', 'string'],
         ];
     }
 
@@ -68,8 +68,8 @@ class FinancialTransactionStoreRequest extends FormRequest
             'company_id.uuid'   => 'The company ID must be a valid UUID.',
             'company_id.exists' => 'The selected company does not exist.',
 
-            'financial_category_id.required_unless' =>
-                'The financial category is required for non-transfer transactions.',
+            'financial_category_id.required_unless' => 'The financial category is required '
+                . 'for non-transfer transactions.',
             'financial_category_id.uuid'            => 'The financial category ID must be a valid UUID.',
             'financial_category_id.exists'          => 'The selected financial category does not exist.',
 

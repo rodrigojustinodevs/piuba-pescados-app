@@ -28,7 +28,7 @@ final readonly class RecordBatchTransferHistory
 
         $stocking = $this->stockingRepository->findActiveByBatch((string) $transfer->batch_id);
 
-        if (!$stocking instanceof \App\Domain\Models\Stocking) {
+        if (! $stocking instanceof \App\Domain\Models\Stocking) {
             return;
         }
 

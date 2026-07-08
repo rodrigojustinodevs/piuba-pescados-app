@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Sale;
 
-use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use App\Infrastructure\Security\CompanyContext;
@@ -13,7 +12,6 @@ final readonly class ListSalesUseCase
 {
     public function __construct(
         private SaleRepositoryInterface $repository,
-        private CompanyResolverInterface $companyResolver,
     ) {
     }
 

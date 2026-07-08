@@ -78,8 +78,8 @@ class MortalityStoreRequest extends FormRequest
             'cause.required'            => 'The cause is required.',
             'cause.enum'                => 'The cause must be one of:'
                 . ' disease, water_quality, predation, handling, climate, unknown, other.',
-            'severity.required'         => 'The severity is required.',
-            'severity.enum'             => 'The severity must be one of: low, medium, high, critical.',
+            'severity.required' => 'The severity is required.',
+            'severity.enum'     => 'The severity must be one of: low, medium, high, critical.',
         ];
     }
 }

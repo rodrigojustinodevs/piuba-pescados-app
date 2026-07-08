@@ -106,8 +106,8 @@ class SensorStoreRequest extends FormRequest
             'status.string'             => 'The status must be a string.',
             'status.in'                 => 'The status must be one of: online,'
                 . ' offline, active, inactive, ativo or inativo.',
-            'notes.string'              => 'The notes must be a string.',
-            'notes.max'                 => 'The notes must not exceed 2000 characters.',
+            'notes.string' => 'The notes must be a string.',
+            'notes.max'    => 'The notes must not exceed 2000 characters.',
         ];
     }
 }

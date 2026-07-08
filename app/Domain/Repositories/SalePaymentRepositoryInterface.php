@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 
 interface SalePaymentRepositoryInterface
 {
+    /** @param array<string, mixed> $attributes */
     public function create(string $saleId, array $attributes): SalePayment;
 
     /** @return Collection<int, SalePayment> */

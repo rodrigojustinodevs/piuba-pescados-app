@@ -19,19 +19,19 @@ final class SaleItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'              => $this->id,
-            'batchId'         => $this->batch_id,
-            'stockingId'      => $this->stocking_id,
-            'productName'     => $this->product_name,
-            'species'         => $this->species,
-            'category'        => $this->category,
-            'totalWeight'     => (float) $this->total_weight,
-            'pricePerKg'      => (float) $this->price_per_kg,
-            'subtotal'        => (float) $this->subtotal,
-            'unitCost'        => (float) $this->unit_cost,
-            'totalCost'       => (float) $this->total_cost,
-            'isTotalHarvest'  => (bool) $this->is_total_harvest,
-            'notes'           => $this->notes,
+            'id'             => $this->id,
+            'batchId'        => $this->batch_id,
+            'stockingId'     => $this->stocking_id,
+            'productName'    => $this->product_name,
+            'species'        => $this->species,
+            'category'       => $this->category,
+            'totalWeight'    => (float) $this->total_weight,
+            'pricePerKg'     => (float) $this->price_per_kg,
+            'subtotal'       => (float) $this->subtotal,
+            'unitCost'       => (float) $this->unit_cost,
+            'totalCost'      => (float) $this->total_cost,
+            'isTotalHarvest' => (bool) $this->is_total_harvest,
+            'notes'          => $this->notes,
 
             'stocking' => $this->whenLoaded('stocking', fn (): array => [
                 'id'            => $this->stocking->id,

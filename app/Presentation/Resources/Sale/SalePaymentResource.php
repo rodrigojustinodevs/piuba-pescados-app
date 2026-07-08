@@ -23,15 +23,15 @@ final class SalePaymentResource extends JsonResource
         $method = $this->payment_method;
 
         return [
-            'id'            => $this->id,
-            'saleId'        => $this->sale_id,
-            'amount'        => (float) $this->amount,
-            'paymentMethod' => $method->value,
+            'id'                 => $this->id,
+            'saleId'             => $this->sale_id,
+            'amount'             => (float) $this->amount,
+            'paymentMethod'      => $method->value,
             'paymentMethodLabel' => $method->label(),
-            'paymentDate'   => $this->payment_date->toDateString(),
-            'reference'     => $this->reference,
-            'notes'         => $this->notes,
-            'createdAt'     => $this->created_at?->toDateTimeString(),
+            'paymentDate'        => $this->payment_date->toDateString(),
+            'reference'          => $this->reference,
+            'notes'              => $this->notes,
+            'createdAt'          => $this->created_at?->toDateTimeString(),
         ];
     }
 }

@@ -111,14 +111,14 @@ final class SaleStoreRequest extends FormRequest
             'invoice_number'        => ['nullable', 'string', 'max:50'],
 
             // Itens da venda — max:1 enquanto regra de negócio limita a 1 produto
-            'items'                   => ['required', 'array', 'min:1', 'max:1'],
-            'items.*.batch_id'        => ['required', 'uuid', 'exists:batches,id'],
-            'items.*.stocking_id'     => ['required', 'uuid', 'exists:stockings,id'],
-            'items.*.total_weight'    => ['required', 'numeric', 'min:0.001'],
-            'items.*.price_per_kg'    => ['required', 'numeric', 'min:0'],
-            'items.*.is_total_harvest'=> ['nullable', 'boolean'],
-            'items.*.category'        => ['nullable', 'string', 'max:50'],
-            'items.*.notes'           => ['nullable', 'string', 'max:1000'],
+            'items'                    => ['required', 'array', 'min:1', 'max:1'],
+            'items.*.batch_id'         => ['required', 'uuid', 'exists:batches,id'],
+            'items.*.stocking_id'      => ['required', 'uuid', 'exists:stockings,id'],
+            'items.*.total_weight'     => ['required', 'numeric', 'min:0.001'],
+            'items.*.price_per_kg'     => ['required', 'numeric', 'min:0'],
+            'items.*.is_total_harvest' => ['nullable', 'boolean'],
+            'items.*.category'         => ['nullable', 'string', 'max:50'],
+            'items.*.notes'            => ['nullable', 'string', 'max:1000'],
         ];
     }
 
@@ -133,8 +133,8 @@ final class SaleStoreRequest extends FormRequest
             'sale_date.required' => 'The sale date is required.',
             'sale_date.date'     => 'The sale date must be a valid date.',
 
-            'items.required'     => 'At least one sale item is required.',
-            'items.max'          => 'Currently only one item per sale is supported.',
+            'items.required' => 'At least one sale item is required.',
+            'items.max'      => 'Currently only one item per sale is supported.',
 
             'items.*.batch_id.required'     => 'Each item must have a batch.',
             'items.*.batch_id.exists'       => 'The batch informed was not found.',

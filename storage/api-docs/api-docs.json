@@ -6536,7 +6536,7 @@
                     "Sales"
                 ],
                 "summary": "Atualizar venda",
-                "description": "Atualiza campos editáveis da venda. Campos imutáveis (batch, stocking, cliente) são ignorados. Sincroniza automaticamente o sale_items[0] e o contas a receber.",
+                "description": "Atualiza campos editáveis. Imutáveis são ignorados. Sincroniza sale_items[0] e receber.",
                 "operationId": "9f828e63cc636983eed7faec42f4f1e3",
                 "parameters": [
                     {
@@ -6714,7 +6714,7 @@
                     "Sales"
                 ],
                 "summary": "Criar venda / despesca",
-                "description": "Registra uma venda vinculada a um ou mais itens de biomassa (stocking). Atualmente limitado a 1 item. Suporta formato legado (campos diretos) e o novo formato via `items[]`.",
+                "description": "Registra uma venda vinculada a itens de biomassa (stocking). Limitado a 1 item.",
                 "operationId": "eb0dab29c039e392c87a12b221981584",
                 "requestBody": {
                     "required": true,
@@ -6899,7 +6899,7 @@
                     "Sales"
                 ],
                 "summary": "Cancelar venda",
-                "description": "Cancela a venda e estorna as movimentações financeiras vinculadas. Apenas vendas com status pending, confirmed ou overdue podem ser canceladas.",
+                "description": "Cancela a venda e estorna movimentações financeiras vinculadas.",
                 "operationId": "e017dee17b7e01c238c33689a8b47eb5",
                 "parameters": [
                     {
@@ -7110,7 +7110,7 @@
                     "Sales"
                 ],
                 "summary": "Registrar pagamento parcial ou total",
-                "description": "Registra um pagamento contra a venda. Quando o total pago atingir ou superar total_revenue, a venda é automaticamente marcada como PAID.",
+                "description": "Registra um pagamento contra a venda. Ao atingir total_revenue, a venda é marcada como PAID.",
                 "operationId": "02c118a278c94c24bb3a2250fd17a3fd",
                 "parameters": [
                     {

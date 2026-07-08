@@ -36,13 +36,31 @@ use Illuminate\Http\Request;
  *     @OA\Property(property="stockingId", type="string", format="uuid", description="Povoamento de origem"),
  *     @OA\Property(property="productName", type="string", nullable=true, example="Tilápia G"),
  *     @OA\Property(property="species", type="string", nullable=true, example="Tilápia"),
- *     @OA\Property(property="category", type="string", nullable=true, example="G", description="Categoria/tamanho do produto"),
- *     @OA\Property(property="totalWeight", type="number", format="float", example=500.5, description="Peso vendido neste item (kg)"),
+ *     @OA\Property(
+ *         property="category", type="string", nullable=true, example="G",
+ *         description="Categoria/tamanho do produto"
+ *     ),
+ *     @OA\Property(
+ *         property="totalWeight", type="number", format="float", example=500.5,
+ *         description="Peso vendido neste item (kg)"
+ *     ),
  *     @OA\Property(property="pricePerKg", type="number", format="float", example=12.50),
- *     @OA\Property(property="subtotal", type="number", format="float", example=6256.25, description="totalWeight × pricePerKg"),
- *     @OA\Property(property="unitCost", type="number", format="float", example=8.40, description="CMV por kg — snapshot calculado no momento da venda"),
- *     @OA\Property(property="totalCost", type="number", format="float", example=4202.10, description="CMV total do item"),
- *     @OA\Property(property="isTotalHarvest", type="boolean", example=false, description="Se true, fechou o stocking ao vender"),
+ *     @OA\Property(
+ *         property="subtotal", type="number", format="float", example=6256.25,
+ *         description="totalWeight × pricePerKg"
+ *     ),
+ *     @OA\Property(
+ *         property="unitCost", type="number", format="float", example=8.40,
+ *         description="CMV por kg — snapshot calculado no momento da venda"
+ *     ),
+ *     @OA\Property(
+ *         property="totalCost", type="number", format="float", example=4202.10,
+ *         description="CMV total do item"
+ *     ),
+ *     @OA\Property(
+ *         property="isTotalHarvest", type="boolean", example=false,
+ *         description="Se true, fechou o stocking ao vender"
+ *     ),
  *     @OA\Property(property="notes", type="string", nullable=true),
  *     @OA\Property(
  *         property="batch",
@@ -65,12 +83,18 @@ use Illuminate\Http\Request;
  *     schema="Sale",
  *     type="object",
  *     @OA\Property(property="id", type="string", format="uuid"),
- *     @OA\Property(property="code", type="string", nullable=true, example="VND-2026-0001", description="Código sequencial da venda"),
+ *     @OA\Property(
+ *         property="code", type="string", nullable=true, example="VND-2026-0001",
+ *         description="Código sequencial da venda"
+ *     ),
  *     @OA\Property(property="clientId", type="string", format="uuid"),
  *     @OA\Property(property="financialCategoryId", type="string", format="uuid", nullable=true),
  *     @OA\Property(property="invoiceNumber", type="string", nullable=true, example="NF-001"),
  *     @OA\Property(property="needsInvoice", type="boolean", example=false),
- *     @OA\Property(property="totalRevenue", type="number", format="float", example=6256.25, description="Soma dos subtotais dos itens"),
+ *     @OA\Property(
+ *         property="totalRevenue", type="number", format="float", example=6256.25,
+ *         description="Soma dos subtotais dos itens"
+ *     ),
  *     @OA\Property(property="discount", type="number", format="float", example=0),
  *     @OA\Property(property="shipping", type="number", format="float", example=0),
  *     @OA\Property(property="taxes", type="number", format="float", example=0),
@@ -247,7 +271,7 @@ class SaleController
      * @OA\Post(
      *     path="/company/sale",
      *     summary="Criar venda / despesca",
-     *     description="Registra uma venda vinculada a um ou mais itens de biomassa (stocking). Atualmente limitado a 1 item. Suporta formato legado (campos diretos) e o novo formato via `items[]`.",
+     *     description="Registra uma venda vinculada a itens de biomassa (stocking). Limitado a 1 item.",
      *     tags={"Sales"},
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -288,9 +312,16 @@ class SaleController
      *                     required={"batchId","stockingId","totalWeight","pricePerKg"},
      *                     @OA\Property(property="batchId", type="string", format="uuid"),
      *                     @OA\Property(property="stockingId", type="string", format="uuid"),
-     *                     @OA\Property(property="totalWeight", type="number", format="float", minimum=0.001, example=500.5),
-     *                     @OA\Property(property="pricePerKg", type="number", format="float", minimum=0, example=12.50),
-     *                     @OA\Property(property="isTotalHarvest", type="boolean", nullable=true, description="Se true, fecha o stocking e o lote ao vender toda a biomassa"),
+     *                     @OA\Property(
+     *                         property="totalWeight", type="number", format="float", minimum=0.001, example=500.5
+     *                     ),
+     *                     @OA\Property(
+     *                         property="pricePerKg", type="number", format="float", minimum=0, example=12.50
+     *                     ),
+     *                     @OA\Property(
+     *                         property="isTotalHarvest", type="boolean", nullable=true,
+     *                         description="Se true, fecha o stocking e o lote ao vender toda a biomassa"
+     *                     ),
      *                     @OA\Property(property="category", type="string", nullable=true, example="G"),
      *                     @OA\Property(property="notes", type="string", nullable=true)
      *                 )
@@ -327,7 +358,7 @@ class SaleController
      * @OA\Put(
      *     path="/company/sale/{id}",
      *     summary="Atualizar venda",
-     *     description="Atualiza campos editáveis da venda. Campos imutáveis (batch, stocking, cliente) são ignorados. Sincroniza automaticamente o sale_items[0] e o contas a receber.",
+     *     description="Atualiza campos editáveis. Imutáveis são ignorados. Sincroniza sale_items[0] e receber.",
      *     tags={"Sales"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -421,7 +452,7 @@ class SaleController
      * @OA\Patch(
      *     path="/company/sale/{id}/cancel",
      *     summary="Cancelar venda",
-     *     description="Cancela a venda e estorna as movimentações financeiras vinculadas. Apenas vendas com status pending, confirmed ou overdue podem ser canceladas.",
+     *     description="Cancela a venda e estorna movimentações financeiras vinculadas.",
      *     tags={"Sales"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -460,7 +491,10 @@ class SaleController
      *     ),
      *     @OA\RequestBody(
      *         @OA\JsonContent(
-     *             @OA\Property(property="paid_date", type="string", format="date", nullable=true, description="Data do pagamento. Padrão: hoje")
+     *             @OA\Property(
+     *                 property="paid_date", type="string", format="date", nullable=true,
+     *                 description="Data do pagamento. Padrão: hoje"
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -560,7 +594,7 @@ class SaleController
      * @OA\Post(
      *     path="/company/sale/{id}/payments",
      *     summary="Registrar pagamento parcial ou total",
-     *     description="Registra um pagamento contra a venda. Quando o total pago atingir ou superar total_revenue, a venda é automaticamente marcada como PAID.",
+     *     description="Registra um pagamento contra a venda. Ao atingir total_revenue, a venda é marcada como PAID.",
      *     tags={"Sales"},
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(

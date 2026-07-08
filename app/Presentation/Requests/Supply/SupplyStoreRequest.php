@@ -46,9 +46,9 @@ final class SupplyStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'companyId'     => ['sometimes', 'uuid', 'exists:companies,id'],
-            'name'          => ['required', 'string', 'max:255'],
-            'sku'           => ['nullable', 'string', 'max:100',
+            'companyId' => ['sometimes', 'uuid', 'exists:companies,id'],
+            'name'      => ['required', 'string', 'max:255'],
+            'sku'       => ['nullable', 'string', 'max:100',
                 Rule::unique('supplies', 'sku')->whereNull('deleted_at')],
             'category'      => ['required', Rule::enum(SupplyCategoryEnum::class)],
             'unit'          => ['required', 'string', 'max:50'],

@@ -27,7 +27,7 @@ final readonly class DeliverSaleUseCase
             $sale = $this->saleRepository->findOrFailLocked($id);
 
             if (! in_array($sale->status, [SaleStatus::CONFIRMED, SaleStatus::PAID], true)) {
-                throw new InvalidSaleStatusTransitionException($sale->status->value, SaleStatus::DELIVERED->value);
+                throw new InvalidSaleStatusTransitionException($sale->status, SaleStatus::DELIVERED);
             }
 
             return $this->saleRepository->update($id, [

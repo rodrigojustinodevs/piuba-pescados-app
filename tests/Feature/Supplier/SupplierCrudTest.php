@@ -17,7 +17,7 @@ beforeEach(function (): void {
 
     $this->company = $company;
 
-    $this->app->bind(CompanyResolverInterface::class, fn(): CompanyResolverInterface => new readonly class ($company->id) implements CompanyResolverInterface
+    $this->app->bind(CompanyResolverInterface::class, fn (): CompanyResolverInterface => new readonly class ($company->id) implements CompanyResolverInterface
     {
         public function __construct(private string $id)
         {

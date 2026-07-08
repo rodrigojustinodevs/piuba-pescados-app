@@ -12,12 +12,12 @@ use App\Application\Actions\Sale\HarvestLifecycleAction;
 use App\Application\Actions\Sale\RegisterBiomassOutflowAction;
 use App\Application\DTOs\HarvestSaleDTO;
 use App\Application\DTOs\SaleItemDTO;
-use App\Domain\Models\Stocking;
 use App\Application\Services\Sale\SaleCodeGeneratorService;
 use App\Domain\Events\SaleProcessed;
 use App\Domain\Exceptions\ClosedStockingException;
 use App\Domain\Models\Sale;
 use App\Domain\Models\SaleItem;
+use App\Domain\Models\Stocking;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
@@ -89,7 +89,6 @@ final readonly class ProcessHarvestSaleUseCase
                 stocking:         $stocking,
                 requestedWeight:  $itemDto->totalWeight,
                 tolerancePercent: self::BIOMASS_TOLERANCE_PERCENT,
-                excludeSaleId:    null,
             );
         }
 

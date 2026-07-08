@@ -79,7 +79,7 @@ final class UserRepository implements UserRepositoryInterface
         $companyId = $filters['companyId'] ?? null;
         $search    = $filters['search'] ?? null;
         $role      = $filters['role'] ?? null;
-        $isActive  = array_key_exists('isActive', $filters) ? $filters['isActive'] : null;
+        $isActive  = $filters['isActive'] ?? null;
         $perPage   = (int) ($filters['perPage'] ?? 25);
 
         $sortBy = in_array($filters['sortBy'] ?? null, self::SORTABLE_COLUMNS, true)

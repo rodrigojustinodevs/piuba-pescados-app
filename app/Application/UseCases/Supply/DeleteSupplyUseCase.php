@@ -16,6 +16,6 @@ final readonly class DeleteSupplyUseCase
 
     public function execute(string $id): bool
     {
-        return DB::transaction(fn(): bool => $this->supplyRepository->delete($id));
+        return DB::transaction(fn (): bool => $this->supplyRepository->delete($id));
     }
 }

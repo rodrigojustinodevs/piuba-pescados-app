@@ -88,7 +88,9 @@ final class CompanyContext
         $companyId = $requested ?? self::$companyId;
 
         if ($companyId === null || $companyId === '') {
-            throw new \DomainException('O campo companyId é obrigatório para master_admin sem empresa ativa selecionada.');
+            throw new \DomainException(
+                'O campo companyId é obrigatório para master_admin sem empresa ativa selecionada.'
+            );
         }
 
         return $companyId;

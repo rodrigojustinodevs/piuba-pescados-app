@@ -7,8 +7,10 @@ namespace App\Presentation\Requests\User;
 use App\Domain\Enums\PositionEnum;
 use App\Domain\Enums\RolesEnum;
 use App\Domain\Enums\UserStatusEnum;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\In;
 
 class UserStoreRequest extends FormRequest
 {
@@ -23,7 +25,7 @@ class UserStoreRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Validation\Rules\In|string>|string>
+     * @return array<string, array<int, ValidationRule|In|string>|string>
      */
     public function rules(): array
     {

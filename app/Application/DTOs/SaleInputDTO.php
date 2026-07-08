@@ -62,7 +62,7 @@ final readonly class SaleInputDTO
         }
 
         $items = array_map(
-            static fn (array $item): SaleItemDTO => SaleItemDTO::fromArray($item),
+            SaleItemDTO::fromArray(...),
             $data['items'],
         );
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Collection;
 
 final class SalePaymentRepository implements SalePaymentRepositoryInterface
 {
+    /** @param array<string, mixed> $attributes */
     public function create(string $saleId, array $attributes): SalePayment
     {
         /** @var SalePayment $payment */

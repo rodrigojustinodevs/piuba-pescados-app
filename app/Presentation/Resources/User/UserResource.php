@@ -50,12 +50,12 @@ final class UserResource extends JsonResource
             'position'        => $this->position?->value,
             'lastAccessAt'    => $this->last_access_at?->toDateTimeString(),
             'role'            => $membership?->role,
-            'company'         => $company !== null ? [
+            'company'         => $company instanceof \App\Domain\Models\Company ? [
                 'name' => $company->name,
                 ...($request->user()?->isMasterAdmin() ? ['id' => $company->id] : []),
             ] : null,
-            'createdAt'       => $this->created_at?->toDateTimeString(),
-            'updatedAt'       => $this->updated_at?->toDateTimeString(),
+            'createdAt' => $this->created_at?->toDateTimeString(),
+            'updatedAt' => $this->updated_at?->toDateTimeString(),
         ];
     }
 
@@ -75,7 +75,7 @@ final class UserResource extends JsonResource
 
     private function loadedCompany(?CompanyUserPivot $membership): ?Company
     {
-        if ($membership === null || ! $membership->relationLoaded('company')) {
+        if (!$membership instanceof \App\Domain\Models\CompanyUserPivot || ! $membership->relationLoaded('company')) {
             return null;
         }
 

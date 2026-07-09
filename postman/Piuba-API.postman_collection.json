@@ -1,0 +1,922 @@
+{
+  "info": {
+    "_postman_id": "piuba-api-collection-001",
+    "name": "Piuba API",
+    "description": "Collection gerada a partir da documentação Swagger (OpenAPI) da API Piuba.\n\nBase URL: http://localhost:8005/api\n\n1. Execute **Login** primeiro para obter o token.\n2. O token é salvo automaticamente na variável `token`.\n3. As demais requisições usam Bearer Token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8005/api"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    if (json.data && json.data.token) {",
+                  "        pm.collectionVariables.set('token', json.data.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": "{{baseUrl}}/login",
+            "description": "Autentica o usuário e retorna o token JWT. O token é salvo automaticamente na variável da collection."
+          }
+        },
+        {
+          "name": "Ping",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/ping",
+            "description": "Verifica se a API está respondendo (requer autenticação)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Batches",
+      "item": [
+        {
+          "name": "List batches",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/company/batches?page=1&per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "batches"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Lista lotes (batches) com paginação."
+          }
+        },
+        {
+          "name": "Get batch by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/batch/{{batchId}}",
+            "description": "Retorna um lote pelo ID. Substitua {{batchId}} pelo UUID."
+          }
+        },
+        {
+          "name": "Create batch",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"tankId\": \"uuid-do-tanque\",\n    \"name\": \"Lote 01\",\n    \"entryDate\": \"2026-03-01\",\n    \"initialQuantity\": 1000,\n    \"species\": \"Tilápia\",\n    \"cultivation\": \"Intensivo\"\n}"
+            },
+            "url": "{{baseUrl}}/company/batch",
+            "description": "Cria um novo lote."
+          }
+        },
+        {
+          "name": "Update batch",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"tankId\": \"uuid-do-tanque\",\n    \"name\": \"Lote 01\",\n    \"entryDate\": \"2026-03-01\",\n    \"initialQuantity\": 1000,\n    \"species\": \"Tilápia\",\n    \"cultivation\": \"Intensivo\"\n}"
+            },
+            "url": "{{baseUrl}}/company/batch/{{batchId}}",
+            "description": "Atualiza um lote. Substitua {{batchId}} pelo UUID."
+          }
+        },
+        {
+          "name": "Delete batch",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/company/batch/{{batchId}}",
+            "description": "Remove um lote. Substitua {{batchId}} pelo UUID."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Biometry",
+      "item": [
+        {
+          "name": "List biometries",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/company/biometries?page=1&per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "biometries"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Lista biometrias com paginação."
+          }
+        },
+        {
+          "name": "Get biometry by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/biometry/{{biometryId}}",
+            "description": "Retorna uma biometria pelo ID."
+          }
+        },
+        {
+          "name": "Create biometry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"uuid-do-lote\",\n    \"biometryDate\": \"2025-02-20\",\n    \"averageWeight\": 15.5,\n    \"sampleWeight\": null,\n    \"sampleQuantity\": null,\n    \"fcr\": null\n}"
+            },
+            "url": "{{baseUrl}}/company/biometry",
+            "description": "Cria biometria. Use averageWeight ou (sampleWeight + sampleQuantity). FCR é calculado automaticamente se omitido."
+          }
+        },
+        {
+          "name": "Update biometry",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"uuid-do-lote\",\n    \"biometryDate\": \"2025-02-20\",\n    \"averageWeight\": 15.5\n}"
+            },
+            "url": "{{baseUrl}}/company/biometry/{{biometryId}}",
+            "description": "Atualiza uma biometria."
+          }
+        },
+        {
+          "name": "Delete biometry",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/company/biometry/{{biometryId}}",
+            "description": "Remove uma biometria."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clients",
+      "item": [
+        {
+          "name": "List clients",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/company/clients?page=1&per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "clients"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Lista clientes com paginação."
+          }
+        },
+        {
+          "name": "Get client by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/client/{{clientId}}",
+            "description": "Retorna um cliente pelo ID."
+          }
+        },
+        {
+          "name": "Create client",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"company_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"name\": \"João Silva\",\n    \"contact\": \"Maria Silva\",\n    \"phone\": \"(85) 99999-9999\",\n    \"email\": \"joao@example.com\",\n    \"person_type\": \"individual\",\n    \"document_number\": \"12345678901\",\n    \"address\": \"Rua Exemplo, 123\"\n}"
+            },
+            "url": "{{baseUrl}}/company/client",
+            "description": "Cria um novo cliente. person_type: individual | company."
+          }
+        },
+        {
+          "name": "Update client",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"company_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"name\": \"João Silva\",\n    \"person_type\": \"individual\"\n}"
+            },
+            "url": "{{baseUrl}}/company/client/{{clientId}}",
+            "description": "Atualiza um cliente."
+          }
+        },
+        {
+          "name": "Delete client",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/company/client/{{clientId}}",
+            "description": "Remove um cliente."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stockings",
+      "item": [
+        {
+          "name": "List stockings",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/company/stockings?page=1&per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "stockings"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Lista estocagens (stockings) com paginação."
+          }
+        },
+        {
+          "name": "Get stocking by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/stocking/{{stockingId}}",
+            "description": "Retorna uma estocagem pelo ID."
+          }
+        },
+        {
+          "name": "Create stocking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"uuid-do-lote\",\n    \"stockingDate\": \"2026-02-13\",\n    \"quantity\": 100,\n    \"averageWeight\": 1.25\n}"
+            },
+            "url": "{{baseUrl}}/company/stocking",
+            "description": "Cria uma estocagem."
+          }
+        },
+        {
+          "name": "Update stocking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"uuid-do-lote\",\n    \"stockingDate\": \"2026-02-13\",\n    \"quantity\": 100,\n    \"averageWeight\": 1.25\n}"
+            },
+            "url": "{{baseUrl}}/company/stocking/{{stockingId}}",
+            "description": "Atualiza uma estocagem."
+          }
+        },
+        {
+          "name": "Delete stocking",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/company/stocking/{{stockingId}}",
+            "description": "Remove uma estocagem."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tanks",
+      "item": [
+        {
+          "name": "Get tank types",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/tank-types",
+            "description": "Lista todos os tipos de tanque."
+          }
+        },
+        {
+          "name": "List tanks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/company/tanks?page=1&per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "tanks"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Lista tanques com paginação."
+          }
+        },
+        {
+          "name": "List tanks without batches",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/tanks/without-batches",
+            "description": "Lista tanques sem lotes ativos."
+          }
+        },
+        {
+          "name": "Get tank by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/tank/{{tankId}}",
+            "description": "Retorna um tanque pelo ID."
+          }
+        },
+        {
+          "name": "Create tank",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"companyId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"tankTypeId\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"name\": \"Tanque 01\",\n    \"capacityLiters\": 10000,\n    \"location\": \"Setor A - Bloco 3\",\n    \"status\": \"active\"\n}"
+            },
+            "url": "{{baseUrl}}/company/tank",
+            "description": "Cria um novo tanque. status: active | inactive."
+          }
+        },
+        {
+          "name": "Update tank",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"companyId\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"tankTypeId\": \"550e8400-e29b-41d4-a716-446655440001\",\n    \"name\": \"Tanque 01\",\n    \"capacityLiters\": 10000,\n    \"location\": \"Setor A - Bloco 3\",\n    \"status\": \"active\"\n}"
+            },
+            "url": "{{baseUrl}}/company/tank/{{tankId}}",
+            "description": "Atualiza um tanque."
+          }
+        },
+        {
+          "name": "Delete tank",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/company/tank/{{tankId}}",
+            "description": "Remove um tanque."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transfers",
+      "item": [
+        {
+          "name": "List transfers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/company/transfers?page=1&per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "transfers"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Lista transferências com paginação."
+          }
+        },
+        {
+          "name": "Get transfer by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/transfer/{{transferId}}",
+            "description": "Retorna uma transferência pelo ID."
+          }
+        },
+        {
+          "name": "Create transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"uuid-do-lote\",\n    \"originTankId\": \"uuid-tanque-origem\",\n    \"destinationTankId\": \"uuid-tanque-destino\",\n    \"quantity\": 100,\n    \"description\": \"Transferência entre tanques\"\n}"
+            },
+            "url": "{{baseUrl}}/company/transfer",
+            "description": "Cria uma transferência entre tanques."
+          }
+        },
+        {
+          "name": "Update transfer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"uuid-do-lote\",\n    \"originTankId\": \"uuid-tanque-origem\",\n    \"destinationTankId\": \"uuid-tanque-destino\",\n    \"quantity\": 100,\n    \"description\": \"Transferência entre tanques\"\n}"
+            },
+            "url": "{{baseUrl}}/company/transfer/{{transferId}}",
+            "description": "Atualiza uma transferência."
+          }
+        },
+        {
+          "name": "Delete transfer",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/company/transfer/{{transferId}}",
+            "description": "Remove uma transferência."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feeding",
+      "item": [
+        {
+          "name": "List feedings",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/company/feedings?page=1&per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "feedings"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Lista alimentações (feedings) com paginação."
+          }
+        },
+        {
+          "name": "Get feeding by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/feeding/{{feedingId}}",
+            "description": "Retorna uma alimentação pelo ID."
+          }
+        },
+        {
+          "name": "Create feeding",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"uuid-do-lote\",\n    \"feedingDate\": \"2026-03-09\",\n    \"quantityProvided\": 10.5,\n    \"feedType\": \"Ração 32%\",\n    \"stockReductionQuantity\": 10.5\n}"
+            },
+            "url": "{{baseUrl}}/company/feeding",
+            "description": "Cria uma alimentação. Lote deve estar ativo."
+          }
+        },
+        {
+          "name": "Update feeding",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"uuid-do-lote\",\n    \"feedingDate\": \"2026-03-09\",\n    \"quantityProvided\": 10.5,\n    \"feedType\": \"Ração 32%\",\n    \"stockReductionQuantity\": 10.5\n}"
+            },
+            "url": "{{baseUrl}}/company/feeding/{{feedingId}}",
+            "description": "Atualiza uma alimentação."
+          }
+        },
+        {
+          "name": "Delete feeding",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/company/feeding/{{feedingId}}",
+            "description": "Remove uma alimentação."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feed Inventory",
+      "item": [
+        {
+          "name": "List feed inventories",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/company/feed-inventories?page=1&per_page=15",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "feed-inventories"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "15"
+                }
+              ]
+            },
+            "description": "Lista inventários de ração com paginação."
+          }
+        },
+        {
+          "name": "Get feed inventory by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/company/feed-inventory/{{feedInventoryId}}",
+            "description": "Retorna um inventário de ração pelo ID."
+          }
+        },
+        {
+          "name": "Create feed inventory",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"company_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"feed_type\": \"Ração 32%\",\n    \"current_stock\": 1000,\n    \"minimum_stock\": 100,\n    \"daily_consumption\": 50,\n    \"total_consumption\": 500\n}"
+            },
+            "url": "{{baseUrl}}/company/feed-inventory",
+            "description": "Cria um registro de inventário de ração."
+          }
+        },
+        {
+          "name": "Update feed inventory",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"company_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"feed_type\": \"Ração 32%\",\n    \"current_stock\": 1000,\n    \"minimum_stock\": 100,\n    \"daily_consumption\": 50,\n    \"total_consumption\": 500\n}"
+            },
+            "url": "{{baseUrl}}/company/feed-inventory/{{feedInventoryId}}",
+            "description": "Atualiza um inventário de ração."
+          }
+        },
+        {
+          "name": "Delete feed inventory",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/company/feed-inventory/{{feedInventoryId}}",
+            "description": "Remove um inventário de ração."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Harvest",
+      "item": [
+        {
+          "name": "List Harvests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/company/harvests?page=1&per_page=25",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "harvests"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "25"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Harvest",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/company/harvest/{{harvest_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "harvest",
+                "{{harvest_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Harvest",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"{{batch_id}}\",\n    \"tankId\": \"{{tank_id}}\",\n    \"harvestDate\": \"2026-06-09\",\n    \"type\": \"partial\",\n    \"status\": \"completed\",\n    \"destination\": \"wholesale\",\n    \"initialPopulation\": 14,\n    \"harvestedQuantity\": 12,\n    \"averageWeight\": 1200,\n    \"sizeClassifications\": [\n        {\n            \"class\": \"G\",\n            \"quantity\": 100,\n            \"averageWeight\": 1200,\n            \"pricePerKg\": 12.0\n        }\n    ],\n    \"clientDestination\": \"teste\",\n    \"responsible\": \"teste\",\n    \"operationalCost\": 598.0,\n    \"notes\": \"teste\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/company/harvest",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "harvest"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Harvest",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"batchId\": \"{{batch_id}}\",\n    \"tankId\": \"{{tank_id}}\",\n    \"harvestDate\": \"2026-06-09\",\n    \"type\": \"partial\",\n    \"status\": \"completed\",\n    \"destination\": \"wholesale\",\n    \"initialPopulation\": 14,\n    \"harvestedQuantity\": 12,\n    \"averageWeight\": 1200,\n    \"sizeClassifications\": [\n        {\n            \"class\": \"G\",\n            \"quantity\": 100,\n            \"averageWeight\": 1200,\n            \"pricePerKg\": 12.0\n        }\n    ],\n    \"clientDestination\": \"teste\",\n    \"responsible\": \"teste\",\n    \"operationalCost\": 598.0,\n    \"notes\": \"teste\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/company/harvest/{{harvest_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "harvest",
+                "{{harvest_id}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Harvest",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/company/harvest/{{harvest_id}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "company",
+                "harvest",
+                "{{harvest_id}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

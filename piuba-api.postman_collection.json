@@ -1,0 +1,856 @@
+{
+  "info": {
+    "name": "Piuba API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api" },
+    { "key": "token", "value": "" },
+    { "key": "company_id", "value": "" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Ping",
+          "request": { "method": "GET", "url": "{{base_url}}/auth/ping", "auth": { "type": "noauth" } }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.access_token) pm.collectionVariables.set('token', r.access_token);",
+                  "if (r.company_id) pm.collectionVariables.set('company_id', r.company_id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "url": "{{base_url}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\",\n  \"company_id\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": { "method": "GET", "url": "{{base_url}}/auth/me" }
+        },
+        {
+          "name": "Refresh Token",
+          "request": { "method": "POST", "url": "{{base_url}}/auth/refresh" }
+        },
+        {
+          "name": "Switch Company",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/auth/switch-company",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"company_id\": 1\n}" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": { "method": "POST", "url": "{{base_url}}/auth/logout" }
+        }
+      ]
+    },
+    {
+      "name": "Admin / Companies",
+      "item": [
+        { "name": "List Companies", "request": { "method": "GET", "url": "{{base_url}}/admin/companies" } },
+        { "name": "Show Company", "request": { "method": "GET", "url": "{{base_url}}/admin/company/:id" } },
+        {
+          "name": "Create Company",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/company",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Fazenda Exemplo\",\n  \"document\": \"00.000.000/0001-00\"\n}" }
+          }
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/admin/company/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Fazenda Atualizada\"\n}" }
+          }
+        },
+        { "name": "Delete Company", "request": { "method": "DELETE", "url": "{{base_url}}/admin/company/:id" } }
+      ]
+    },
+    {
+      "name": "Admin / Subscriptions",
+      "item": [
+        { "name": "List Subscriptions", "request": { "method": "GET", "url": "{{base_url}}/admin/subscriptions" } },
+        { "name": "Show Subscription", "request": { "method": "GET", "url": "{{base_url}}/admin/subscription/:id" } },
+        {
+          "name": "Create Subscription",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/admin/subscription",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"company_id\": 1,\n  \"plan\": \"basic\",\n  \"expires_at\": \"2026-12-31\"\n}" }
+          }
+        },
+        {
+          "name": "Update Subscription",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/admin/subscription/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"plan\": \"premium\"\n}" }
+          }
+        },
+        { "name": "Delete Subscription", "request": { "method": "DELETE", "url": "{{base_url}}/admin/subscription/:id" } }
+      ]
+    },
+    {
+      "name": "Company Members",
+      "item": [
+        {
+          "name": "List Members",
+          "request": { "method": "GET", "url": "{{base_url}}/companies/{{company_id}}/members" }
+        },
+        {
+          "name": "Add Member",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/companies/{{company_id}}/members",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"user_id\": 1,\n  \"role\": \"operator\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        { "name": "Summary", "request": { "method": "GET", "url": "{{base_url}}/company/dashboard/summary" } },
+        { "name": "Alerts", "request": { "method": "GET", "url": "{{base_url}}/company/dashboard/alerts" } },
+        { "name": "Trends", "request": { "method": "GET", "url": "{{base_url}}/company/dashboard/trends" } }
+      ]
+    },
+    {
+      "name": "Tanks",
+      "item": [
+        { "name": "List Tanks", "request": { "method": "GET", "url": "{{base_url}}/company/tanks" } },
+        { "name": "Tanks Without Batches", "request": { "method": "GET", "url": "{{base_url}}/company/tanks/without-batches" } },
+        { "name": "Show Tank", "request": { "method": "GET", "url": "{{base_url}}/company/tank/:id" } },
+        {
+          "name": "Create Tank",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/tank",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Tanque 01\",\n  \"capacity\": 10000,\n  \"type\": \"viveiro\"\n}" }
+          }
+        },
+        {
+          "name": "Update Tank",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/tank/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Tanque 01 Atualizado\"\n}" }
+          }
+        },
+        { "name": "Delete Tank", "request": { "method": "DELETE", "url": "{{base_url}}/company/tank/:id" } }
+      ]
+    },
+    {
+      "name": "Tank History",
+      "item": [
+        { "name": "List Tank Histories", "request": { "method": "GET", "url": "{{base_url}}/company/tank-histories" } },
+        {
+          "name": "Create Tank History",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/tank-history",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"tank_id\": 1,\n  \"event\": \"maintenance\",\n  \"notes\": \"Limpeza do tanque\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Batches",
+      "item": [
+        { "name": "List Batches", "request": { "method": "GET", "url": "{{base_url}}/company/batches" } },
+        { "name": "Show Batch", "request": { "method": "GET", "url": "{{base_url}}/company/batch/:id" } },
+        {
+          "name": "Create Batch",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/batch",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"tank_id\": 1,\n  \"species\": \"Tilápia\",\n  \"quantity\": 1000,\n  \"start_date\": \"2026-06-01\"\n}" }
+          }
+        },
+        {
+          "name": "Update Batch",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/batch/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 950\n}" }
+          }
+        },
+        { "name": "Delete Batch", "request": { "method": "DELETE", "url": "{{base_url}}/company/batch/:id" } },
+        { "name": "Finish Batch", "request": { "method": "POST", "url": "{{base_url}}/company/batch/:id/finish" } },
+        {
+          "name": "Distribute Batch",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/batches/distribution",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"batch_id\": 1,\n  \"distributions\": [\n    { \"tank_id\": 2, \"quantity\": 400 },\n    { \"tank_id\": 3, \"quantity\": 600 }\n  ]\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stockings",
+      "item": [
+        { "name": "List Stockings", "request": { "method": "GET", "url": "{{base_url}}/company/stockings" } },
+        { "name": "Show Stocking", "request": { "method": "GET", "url": "{{base_url}}/company/stocking/:id" } },
+        {
+          "name": "Create Stocking",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/stocking",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"batch_id\": 1,\n  \"tank_id\": 1,\n  \"quantity\": 1000,\n  \"date\": \"2026-06-01\"\n}" }
+          }
+        },
+        {
+          "name": "Update Stocking",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/stocking/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 980\n}" }
+          }
+        },
+        { "name": "Delete Stocking", "request": { "method": "DELETE", "url": "{{base_url}}/company/stocking/:id" } }
+      ]
+    },
+    {
+      "name": "Stocking History",
+      "item": [
+        { "name": "List Stocking Histories", "request": { "method": "GET", "url": "{{base_url}}/company/stocking-histories" } },
+        {
+          "name": "Create Stocking History",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/stocking-history",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"stocking_id\": 1,\n  \"event\": \"transfer\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Biometry",
+      "item": [
+        { "name": "List Biometries", "request": { "method": "GET", "url": "{{base_url}}/company/biometries" } },
+        { "name": "Show Biometry", "request": { "method": "GET", "url": "{{base_url}}/company/biometry/:id" } },
+        {
+          "name": "Create Biometry",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/biometry",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"batch_id\": 1,\n  \"sample_size\": 30,\n  \"average_weight\": 250.5,\n  \"date\": \"2026-06-07\"\n}" }
+          }
+        },
+        {
+          "name": "Update Biometry",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/biometry/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"average_weight\": 260.0\n}" }
+          }
+        },
+        { "name": "Delete Biometry", "request": { "method": "DELETE", "url": "{{base_url}}/company/biometry/:id" } }
+      ]
+    },
+    {
+      "name": "Feeding",
+      "item": [
+        { "name": "List Feedings", "request": { "method": "GET", "url": "{{base_url}}/company/feedings" } },
+        { "name": "Show Feeding", "request": { "method": "GET", "url": "{{base_url}}/company/feeding/:id" } },
+        {
+          "name": "Create Feeding",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/feeding",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"batch_id\": 1,\n  \"quantity_kg\": 15.5,\n  \"feed_type\": \"ração 28%\",\n  \"date\": \"2026-06-07\"\n}" }
+          }
+        },
+        {
+          "name": "Update Feeding",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/feeding/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity_kg\": 16.0\n}" }
+          }
+        },
+        { "name": "Delete Feeding", "request": { "method": "DELETE", "url": "{{base_url}}/company/feeding/:id" } }
+      ]
+    },
+    {
+      "name": "Feed Inventory",
+      "item": [
+        { "name": "List Feed Inventories", "request": { "method": "GET", "url": "{{base_url}}/company/feed-inventories" } },
+        { "name": "Show Feed Inventory", "request": { "method": "GET", "url": "{{base_url}}/company/feed-inventory/:id" } },
+        {
+          "name": "Create Feed Inventory",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/feed-inventory",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"feed_type\": \"ração 32%\",\n  \"quantity_kg\": 500,\n  \"cost_per_kg\": 3.5\n}" }
+          }
+        },
+        {
+          "name": "Update Feed Inventory",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/feed-inventory/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity_kg\": 480\n}" }
+          }
+        },
+        { "name": "Delete Feed Inventory", "request": { "method": "DELETE", "url": "{{base_url}}/company/feed-inventory/:id" } }
+      ]
+    },
+    {
+      "name": "Mortality",
+      "item": [
+        { "name": "List Mortalities", "request": { "method": "GET", "url": "{{base_url}}/company/mortalities" } },
+        { "name": "Show Mortality", "request": { "method": "GET", "url": "{{base_url}}/company/mortality/:id" } },
+        { "name": "Survival Rate by Batch", "request": { "method": "GET", "url": "{{base_url}}/company/batch/:batchId/survival-rate" } },
+        {
+          "name": "Create Mortality",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/mortality",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"batch_id\": 1,\n  \"quantity\": 5,\n  \"cause\": \"doença\",\n  \"date\": \"2026-06-07\"\n}" }
+          }
+        },
+        {
+          "name": "Update Mortality",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/mortality/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 6\n}" }
+          }
+        },
+        { "name": "Delete Mortality", "request": { "method": "DELETE", "url": "{{base_url}}/company/mortality/:id" } }
+      ]
+    },
+    {
+      "name": "Water Quality",
+      "item": [
+        { "name": "List Water Qualities", "request": { "method": "GET", "url": "{{base_url}}/company/water-qualities" } },
+        { "name": "Show Water Quality", "request": { "method": "GET", "url": "{{base_url}}/company/water-quality/:id" } },
+        {
+          "name": "Create Water Quality",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/water-quality",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"tank_id\": 1,\n  \"ph\": 7.2,\n  \"temperature\": 28.5,\n  \"oxygen\": 6.5,\n  \"date\": \"2026-06-07\"\n}" }
+          }
+        },
+        {
+          "name": "Update Water Quality",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/water-quality/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"ph\": 7.4\n}" }
+          }
+        },
+        { "name": "Delete Water Quality", "request": { "method": "DELETE", "url": "{{base_url}}/company/water-quality/:id" } }
+      ]
+    },
+    {
+      "name": "Sensors",
+      "item": [
+        { "name": "List Sensors", "request": { "method": "GET", "url": "{{base_url}}/company/sensors" } },
+        { "name": "Show Sensor", "request": { "method": "GET", "url": "{{base_url}}/company/sensor/:id" } },
+        {
+          "name": "Create Sensor",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/sensor",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"tank_id\": 1,\n  \"type\": \"pH\",\n  \"name\": \"Sensor pH T01\"\n}" }
+          }
+        },
+        {
+          "name": "Update Sensor",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/sensor/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Sensor pH T01 v2\"\n}" }
+          }
+        },
+        { "name": "Delete Sensor", "request": { "method": "DELETE", "url": "{{base_url}}/company/sensor/:id" } }
+      ]
+    },
+    {
+      "name": "Sensor Readings",
+      "item": [
+        { "name": "List Sensor Readings", "request": { "method": "GET", "url": "{{base_url}}/company/sensor-readings" } },
+        { "name": "Show Sensor Reading", "request": { "method": "GET", "url": "{{base_url}}/company/sensor-reading/:id" } },
+        {
+          "name": "Create Sensor Reading",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/sensor-reading",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"sensor_id\": 1,\n  \"value\": 7.1,\n  \"read_at\": \"2026-06-07T10:00:00\"\n}" }
+          }
+        },
+        {
+          "name": "Update Sensor Reading",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/sensor-reading/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"value\": 7.2\n}" }
+          }
+        },
+        { "name": "Delete Sensor Reading", "request": { "method": "DELETE", "url": "{{base_url}}/company/sensor-reading/:id" } }
+      ]
+    },
+    {
+      "name": "Alerts",
+      "item": [
+        { "name": "List Alerts", "request": { "method": "GET", "url": "{{base_url}}/company/alerts" } },
+        { "name": "Show Alert", "request": { "method": "GET", "url": "{{base_url}}/company/alert/:id" } },
+        {
+          "name": "Create Alert",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/alert",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"tank_id\": 1,\n  \"type\": \"pH_high\",\n  \"threshold\": 8.5,\n  \"active\": true\n}" }
+          }
+        },
+        {
+          "name": "Update Alert",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/alert/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"threshold\": 8.0\n}" }
+          }
+        },
+        { "name": "Delete Alert", "request": { "method": "DELETE", "url": "{{base_url}}/company/alert/:id" } }
+      ]
+    },
+    {
+      "name": "Growth Curves",
+      "item": [
+        { "name": "List Growth Curves", "request": { "method": "GET", "url": "{{base_url}}/company/growth-curves" } },
+        { "name": "Show Growth Curve", "request": { "method": "GET", "url": "{{base_url}}/company/growth-curve/:id" } },
+        {
+          "name": "Create Growth Curve",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/growth-curve",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"species\": \"Tilápia\",\n  \"expected_weight_g\": 500,\n  \"days\": 120\n}" }
+          }
+        },
+        {
+          "name": "Update Growth Curve",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/growth-curve/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"expected_weight_g\": 520\n}" }
+          }
+        },
+        { "name": "Delete Growth Curve", "request": { "method": "DELETE", "url": "{{base_url}}/company/growth-curve/:id" } }
+      ]
+    },
+    {
+      "name": "Transfers",
+      "item": [
+        { "name": "List Transfers", "request": { "method": "GET", "url": "{{base_url}}/company/transfers" } },
+        { "name": "Show Transfer", "request": { "method": "GET", "url": "{{base_url}}/company/transfer/:id" } },
+        {
+          "name": "Create Transfer",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/transfer",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"batch_id\": 1,\n  \"from_tank_id\": 1,\n  \"to_tank_id\": 2,\n  \"quantity\": 200,\n  \"date\": \"2026-06-07\"\n}" }
+          }
+        },
+        {
+          "name": "Update Transfer",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/transfer/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 210\n}" }
+          }
+        },
+        { "name": "Delete Transfer", "request": { "method": "DELETE", "url": "{{base_url}}/company/transfer/:id" } }
+      ]
+    },
+    {
+      "name": "Harvest",
+      "item": [
+        { "name": "List Harvests", "request": { "method": "GET", "url": "{{base_url}}/company/harvests" } },
+        { "name": "Show Harvest", "request": { "method": "GET", "url": "{{base_url}}/company/harvest/:id" } },
+        {
+          "name": "Create Harvest",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/harvest",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"batch_id\": 1,\n  \"quantity_kg\": 800,\n  \"date\": \"2026-06-07\"\n}" }
+          }
+        },
+        {
+          "name": "Update Harvest",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/harvest/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity_kg\": 820\n}" }
+          }
+        },
+        { "name": "Delete Harvest", "request": { "method": "DELETE", "url": "{{base_url}}/company/harvest/:id" } }
+      ]
+    },
+    {
+      "name": "Clients",
+      "item": [
+        { "name": "List Clients", "request": { "method": "GET", "url": "{{base_url}}/company/clients" } },
+        { "name": "Show Client", "request": { "method": "GET", "url": "{{base_url}}/company/client/:id" } },
+        {
+          "name": "Create Client",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/client",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"João Silva\",\n  \"document\": \"123.456.789-00\",\n  \"email\": \"joao@exemplo.com\",\n  \"phone\": \"(11) 99999-0000\"\n}" }
+          }
+        },
+        {
+          "name": "Update Client",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/client/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"(11) 88888-0000\"\n}" }
+          }
+        },
+        { "name": "Delete Client", "request": { "method": "DELETE", "url": "{{base_url}}/company/client/:id" } },
+        { "name": "Anonymize Client", "request": { "method": "DELETE", "url": "{{base_url}}/company/client/:id/anonymize" } }
+      ]
+    },
+    {
+      "name": "Suppliers",
+      "item": [
+        { "name": "List Suppliers", "request": { "method": "GET", "url": "{{base_url}}/company/suppliers" } },
+        { "name": "Show Supplier", "request": { "method": "GET", "url": "{{base_url}}/company/supplier/:id" } },
+        {
+          "name": "Create Supplier",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/supplier",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Fornecedor Ração LTDA\",\n  \"document\": \"00.000.000/0001-00\",\n  \"contact\": \"contato@fornecedor.com\"\n}" }
+          }
+        },
+        {
+          "name": "Update Supplier",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/supplier/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"contact\": \"novo@fornecedor.com\"\n}" }
+          }
+        },
+        { "name": "Delete Supplier", "request": { "method": "DELETE", "url": "{{base_url}}/company/supplier/:id" } }
+      ]
+    },
+    {
+      "name": "Supplies",
+      "item": [
+        { "name": "List Supplies", "request": { "method": "GET", "url": "{{base_url}}/company/supplies" } },
+        { "name": "Show Supply", "request": { "method": "GET", "url": "{{base_url}}/company/supply/:id" } },
+        {
+          "name": "Create Supply",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/supply",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Ração 32%\",\n  \"unit\": \"kg\",\n  \"supplier_id\": 1\n}" }
+          }
+        },
+        {
+          "name": "Update Supply",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/supply/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Ração 36%\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stock",
+      "item": [
+        { "name": "List Stocks", "request": { "method": "GET", "url": "{{base_url}}/company/stocks" } },
+        { "name": "Show Stock", "request": { "method": "GET", "url": "{{base_url}}/company/stock/:id" } },
+        {
+          "name": "Create Stock",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/stock",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"supply_id\": 1,\n  \"quantity\": 200,\n  \"unit_cost\": 3.5\n}" }
+          }
+        },
+        {
+          "name": "Update Stock",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/stock/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 180\n}" }
+          }
+        },
+        { "name": "Delete Stock", "request": { "method": "DELETE", "url": "{{base_url}}/company/stock/:id" } },
+        {
+          "name": "Adjust Stock",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/company/stock/:id/adjust",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 10,\n  \"reason\": \"Inventário\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stock Transactions",
+      "item": [
+        { "name": "List Stock Transactions", "request": { "method": "GET", "url": "{{base_url}}/company/stock-transactions" } },
+        { "name": "Transactions by Stock", "request": { "method": "GET", "url": "{{base_url}}/company/stock/:id/transactions" } }
+      ]
+    },
+    {
+      "name": "Purchases",
+      "item": [
+        { "name": "List Purchases", "request": { "method": "GET", "url": "{{base_url}}/company/purchases" } },
+        { "name": "Show Purchase", "request": { "method": "GET", "url": "{{base_url}}/company/purchase/:id" } },
+        {
+          "name": "Create Purchase",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/purchase",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"supplier_id\": 1,\n  \"items\": [\n    { \"supply_id\": 1, \"quantity\": 100, \"unit_cost\": 3.5 }\n  ],\n  \"expected_date\": \"2026-06-15\"\n}" }
+          }
+        },
+        {
+          "name": "Update Purchase",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/purchase/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"expected_date\": \"2026-06-20\"\n}" }
+          }
+        },
+        { "name": "Delete Purchase", "request": { "method": "DELETE", "url": "{{base_url}}/company/purchase/:id" } },
+        { "name": "Receive Purchase", "request": { "method": "PATCH", "url": "{{base_url}}/company/purchase/:id/receive" } },
+        { "name": "Cancel Purchase", "request": { "method": "PATCH", "url": "{{base_url}}/company/purchase/:id/cancel" } }
+      ]
+    },
+    {
+      "name": "Sales",
+      "item": [
+        { "name": "List Sales", "request": { "method": "GET", "url": "{{base_url}}/company/sales" } },
+        { "name": "Show Sale", "request": { "method": "GET", "url": "{{base_url}}/company/sale/:id" } },
+        {
+          "name": "Create Sale",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/sale",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"client_id\": 1,\n  \"batch_id\": 1,\n  \"quantity_kg\": 100,\n  \"price_per_kg\": 12.5,\n  \"date\": \"2026-06-07\"\n}" }
+          }
+        },
+        {
+          "name": "Update Sale",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/sale/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"price_per_kg\": 13.0\n}" }
+          }
+        },
+        { "name": "Delete Sale", "request": { "method": "DELETE", "url": "{{base_url}}/company/sale/:id" } },
+        { "name": "Cancel Sale", "request": { "method": "DELETE", "url": "{{base_url}}/company/sale/:id/cancel" } }
+      ]
+    },
+    {
+      "name": "Sales Orders",
+      "item": [
+        { "name": "List Sale Orders", "request": { "method": "GET", "url": "{{base_url}}/company/sale-orders" } },
+        { "name": "Show Sale Order", "request": { "method": "GET", "url": "{{base_url}}/company/sale-order/:id" } },
+        {
+          "name": "Create Sale Order",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/sale-order",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"client_id\": 1,\n  \"items\": [\n    { \"batch_id\": 1, \"quantity_kg\": 50, \"price_per_kg\": 12.0 }\n  ],\n  \"delivery_date\": \"2026-06-20\"\n}" }
+          }
+        },
+        {
+          "name": "Update Sale Order",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/sale-order/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"delivery_date\": \"2026-06-25\"\n}" }
+          }
+        },
+        { "name": "Delete Sale Order", "request": { "method": "DELETE", "url": "{{base_url}}/company/sale-order/:id" } },
+        { "name": "Cancel Sale Order", "request": { "method": "DELETE", "url": "{{base_url}}/company/sale-order/:id/cancel" } }
+      ]
+    },
+    {
+      "name": "Sales Quotations",
+      "item": [
+        { "name": "List Quotations", "request": { "method": "GET", "url": "{{base_url}}/company/sale-orders/quotations" } },
+        { "name": "Show Quotation", "request": { "method": "GET", "url": "{{base_url}}/company/sale-order/quotation/:id" } },
+        {
+          "name": "Create Quotation",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/sale-order/quotation",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"client_id\": 1,\n  \"items\": [\n    { \"batch_id\": 1, \"quantity_kg\": 50, \"price_per_kg\": 12.0 }\n  ],\n  \"valid_until\": \"2026-06-30\"\n}" }
+          }
+        },
+        {
+          "name": "Update Quotation",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/sale-order/quotation/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"valid_until\": \"2026-07-15\"\n}" }
+          }
+        },
+        { "name": "Convert Quotation to Order", "request": { "method": "POST", "url": "{{base_url}}/company/sale-order/quotation/:id/convert" } }
+      ]
+    },
+    {
+      "name": "Financial Categories",
+      "item": [
+        { "name": "List Financial Categories", "request": { "method": "GET", "url": "{{base_url}}/company/financial-categories" } },
+        { "name": "Show Financial Category", "request": { "method": "GET", "url": "{{base_url}}/company/financial-category/:id" } },
+        {
+          "name": "Create Financial Category",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/financial-category",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Custo de Ração\",\n  \"type\": \"expense\"\n}" }
+          }
+        },
+        {
+          "name": "Update Financial Category",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/financial-category/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Alimentação\"\n}" }
+          }
+        },
+        { "name": "Delete Financial Category", "request": { "method": "DELETE", "url": "{{base_url}}/company/financial-category/:id" } },
+        { "name": "Inactivate Category", "request": { "method": "PATCH", "url": "{{base_url}}/company/financial-category/:id/inactive" } },
+        { "name": "Activate Category", "request": { "method": "PATCH", "url": "{{base_url}}/company/financial-category/:id/active" } }
+      ]
+    },
+    {
+      "name": "Financial Transactions",
+      "item": [
+        { "name": "List Financial Transactions", "request": { "method": "GET", "url": "{{base_url}}/company/financial-transactions" } },
+        { "name": "Show Financial Transaction", "request": { "method": "GET", "url": "{{base_url}}/company/financial-transaction/:id" } },
+        {
+          "name": "Create Financial Transaction",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/financial-transaction",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"category_id\": 1,\n  \"type\": \"expense\",\n  \"amount\": 500.00,\n  \"description\": \"Compra de ração\",\n  \"date\": \"2026-06-07\"\n}" }
+          }
+        },
+        {
+          "name": "Update Financial Transaction",
+          "request": {
+            "method": "PUT",
+            "url": "{{base_url}}/company/financial-transaction/:id",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"amount\": 520.00\n}" }
+          }
+        },
+        { "name": "Delete Financial Transaction", "request": { "method": "DELETE", "url": "{{base_url}}/company/financial-transaction/:id" } }
+      ]
+    },
+    {
+      "name": "Cost Allocations",
+      "item": [
+        { "name": "List Cost Allocations", "request": { "method": "GET", "url": "{{base_url}}/company/cost-allocations" } },
+        { "name": "Show Cost Allocation", "request": { "method": "GET", "url": "{{base_url}}/company/cost-allocation/:id" } },
+        {
+          "name": "Create Cost Allocation",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/company/cost-allocation",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"batch_id\": 1,\n  \"financial_transaction_id\": 1,\n  \"amount\": 250.00\n}" }
+          }
+        },
+        { "name": "Delete Cost Allocation", "request": { "method": "DELETE", "url": "{{base_url}}/company/cost-allocation/:id" } }
+      ]
+    }
+  ]
+}

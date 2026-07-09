@@ -32,7 +32,7 @@ final readonly class CreateBatchUseCase
 
         $companyId = $tank->company_id ?? null;
 
-        if ($dto->status === BatchStatus::ACTIVE->value) {
+        if (($dto->status ?? BatchStatus::ACTIVE->value) === BatchStatus::ACTIVE->value) {
             $this->validateTank->execute($dto->tankId, $companyId);
         }
 

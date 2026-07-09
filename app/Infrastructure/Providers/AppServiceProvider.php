@@ -31,12 +31,16 @@ use App\Domain\Repositories\HarvestRepositoryInterface;
 use App\Domain\Repositories\InventoryAdjustmentRepositoryInterface;
 use App\Domain\Repositories\MortalityRepositoryInterface;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
+use App\Domain\Repositories\SaleItemRepositoryInterface;
+use App\Domain\Repositories\SalePaymentRepositoryInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use App\Domain\Repositories\SalesOrderRepositoryInterface;
 use App\Domain\Repositories\SensorReadingRepositoryInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
+use App\Domain\Repositories\StockBalanceRepositoryInterface;
 use App\Domain\Repositories\StockingHistoryRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
+use App\Domain\Repositories\StockMovementRepositoryInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
 use App\Domain\Repositories\StockTransactionRepositoryInterface;
 use App\Domain\Repositories\SubscriptionRepositoryInterface;
@@ -46,6 +50,7 @@ use App\Domain\Repositories\TankHistoryRepositoryInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
 use App\Domain\Repositories\TankTypeRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
+use App\Domain\Repositories\UserRepositoryInterface;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
 use App\Infrastructure\Persistence\AlertRepository;
 use App\Infrastructure\Persistence\AuthRepository;
@@ -63,12 +68,16 @@ use App\Infrastructure\Persistence\HarvestRepository;
 use App\Infrastructure\Persistence\InventoryAdjustmentRepository;
 use App\Infrastructure\Persistence\MortalityRepository;
 use App\Infrastructure\Persistence\PurchaseRepository;
+use App\Infrastructure\Persistence\SaleItemRepository;
+use App\Infrastructure\Persistence\SalePaymentRepository;
 use App\Infrastructure\Persistence\SaleRepository;
 use App\Infrastructure\Persistence\SalesOrderRepository;
 use App\Infrastructure\Persistence\SensorReadingRepository;
 use App\Infrastructure\Persistence\SensorRepository;
+use App\Infrastructure\Persistence\StockBalanceRepository;
 use App\Infrastructure\Persistence\StockingHistoryRepository;
 use App\Infrastructure\Persistence\StockingRepository;
+use App\Infrastructure\Persistence\StockMovementRepository;
 use App\Infrastructure\Persistence\StockRepository;
 use App\Infrastructure\Persistence\StockTransactionRepository;
 use App\Infrastructure\Persistence\SubscriptionRepository;
@@ -78,6 +87,7 @@ use App\Infrastructure\Persistence\TankHistoryRepository;
 use App\Infrastructure\Persistence\TankRepository;
 use App\Infrastructure\Persistence\TankTypeRepository;
 use App\Infrastructure\Persistence\TransferRepository;
+use App\Infrastructure\Persistence\UserRepository;
 use App\Infrastructure\Persistence\WaterQualityRepository;
 use App\Infrastructure\Security\BcryptPasswordHasher;
 use App\Infrastructure\Security\CompanyJwtService;
@@ -139,6 +149,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(MortalityRepositoryInterface::class, MortalityRepository::class);
         $this->app->bind(PurchaseRepositoryInterface::class, PurchaseRepository::class);
         $this->app->bind(SaleRepositoryInterface::class, SaleRepository::class);
+        $this->app->bind(SalePaymentRepositoryInterface::class, SalePaymentRepository::class);
+        $this->app->bind(SaleItemRepositoryInterface::class, SaleItemRepository::class);
         $this->app->bind(SalesOrderRepositoryInterface::class, SalesOrderRepository::class);
         $this->app->bind(SensorRepositoryInterface::class, SensorRepository::class);
         $this->app->bind(
@@ -151,12 +163,15 @@ class AppServiceProvider extends ServiceProvider
             InventoryAdjustmentRepository::class,
         );
         $this->app->bind(StockRepositoryInterface::class, StockRepository::class);
+        $this->app->bind(StockBalanceRepositoryInterface::class, StockBalanceRepository::class);
+        $this->app->bind(StockMovementRepositoryInterface::class, StockMovementRepository::class);
         $this->app->bind(StockTransactionRepositoryInterface::class, StockTransactionRepository::class);
         $this->app->bind(SubscriptionRepositoryInterface::class, SubscriptionRepository::class);
         $this->app->bind(SupplyRepositoryInterface::class, SupplyRepository::class);
         $this->app->bind(SupplierRepositoryInterface::class, SupplierRepository::class);
         $this->app->bind(WaterQualityRepositoryInterface::class, WaterQualityRepository::class);
         $this->app->bind(TransferRepositoryInterface::class, TransferRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(
             UserResolverInterface::class,
             static fn ($app): UserResolver => new UserResolver(

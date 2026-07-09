@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\HarvestDTO;
 use App\Application\UseCases\Harvest\CreateHarvestUseCase;
 use App\Application\UseCases\Harvest\DeleteHarvestUseCase;
 use App\Application\UseCases\Harvest\ListHarvestsUseCase;
@@ -18,16 +17,61 @@ use Illuminate\Http\Response;
 use Throwable;
 
 /**
- * @OA\Tag(name="Harvests", description="Colheitas")
+ * @OA\Tag(name="Harvests", description="Colheitas / Despesca")
+ *
+ * @OA\Schema(
+ *     schema="HarvestSizeClassification",
+ *     type="object",
+ *     @OA\Property(property="id", type="string", format="uuid"),
+ *     @OA\Property(property="class", type="string", example="G"),
+ *     @OA\Property(property="quantity", type="integer", example=100),
+ *     @OA\Property(property="averageWeight", type="number", format="float",
+ *         example=1200, description="Peso médio em gramas"),
+ *     @OA\Property(property="pricePerKg", type="number", format="float", example=12.00),
+ *     @OA\Property(property="totalWeight", type="number", format="float",
+ *         example=120.0, description="Biomassa em kg (calculado)"),
+ *     @OA\Property(property="revenue", type="number", format="float",
+ *         example=1440.00, description="Receita da classe (calculado)")
+ * )
+ *
  * @OA\Schema(
  *     schema="Harvest",
  *     type="object",
  *     @OA\Property(property="id", type="string", format="uuid"),
- *     @OA\Property(property="batchId", type="string", format="uuid"),
- *     @OA\Property(property="harvestDate", type="string", format="date", example="2026-03-25"),
- *     @OA\Property(property="totalWeight", type="number", format="float", example=850.5),
- *     @OA\Property(property="pricePerKg", type="number", format="float", example=12.3),
- *     @OA\Property(property="totalRevenue", type="number", format="float", example=10461.15),
+ *     @OA\Property(property="batch", type="object", nullable=true,
+ *         @OA\Property(property="id", type="string", format="uuid"),
+ *         @OA\Property(property="name", type="string", example="Lote Tilápia 001")
+ *     ),
+ *     @OA\Property(property="tank", type="object", nullable=true,
+ *         @OA\Property(property="id", type="string", format="uuid"),
+ *         @OA\Property(property="name", type="string", example="Tanque Camarão Tigre")
+ *     ),
+ *     @OA\Property(property="harvestDate", type="string", format="date", example="2026-06-09"),
+ *     @OA\Property(property="type", type="string",
+ *         enum={"total","partial","selective","emergency"}, example="partial"),
+ *     @OA\Property(property="status", type="string",
+ *         enum={"completed","scheduled","in_progress","cancelled"}, example="completed"),
+ *     @OA\Property(property="destination", type="string", nullable=true,
+ *         enum={"wholesale","retail","processing","restaurant","live_market","internal"},
+ *         example="wholesale"),
+ *     @OA\Property(property="initialPopulation", type="integer", example=14),
+ *     @OA\Property(property="harvestedQuantity", type="integer", example=12),
+ *     @OA\Property(property="averageWeight", type="number", format="float",
+ *         example=1200, description="Peso médio em gramas"),
+ *     @OA\Property(property="totalWeight", type="number", format="float",
+ *         example=120.0, description="Biomassa total em kg"),
+ *     @OA\Property(property="pricePerKg", type="number", format="float", example=12.00),
+ *     @OA\Property(property="totalRevenue", type="number", format="float", example=1440.00),
+ *     @OA\Property(property="operationalCost", type="number", format="float", example=598.00),
+ *     @OA\Property(property="netProfit", type="number", format="float",
+ *         example=842.00, description="Lucro líquido (calculado)"),
+ *     @OA\Property(property="survivalRate", type="number", format="float",
+ *         example=85.7, description="Taxa de sobrevivência % (calculado)"),
+ *     @OA\Property(property="clientDestination", type="string", nullable=true, example="teste"),
+ *     @OA\Property(property="responsible", type="string", nullable=true, example="teste"),
+ *     @OA\Property(property="notes", type="string", nullable=true, example="teste"),
+ *     @OA\Property(property="sizeClassifications", type="array",
+ *         @OA\Items(ref="#/components/schemas/HarvestSizeClassification")),
  *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=true),
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true)
  * )
@@ -109,7 +153,7 @@ class HarvestController
         try {
             $harvest = $useCase->execute($id);
 
-            if (! $harvest instanceof HarvestDTO || $harvest->isEmpty()) {
+            if ($harvest->isEmpty()) {
                 return ApiResponse::error(null, 'Harvest not found', Response::HTTP_NOT_FOUND);
             }
 
@@ -128,11 +172,37 @@ class HarvestController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"batch_id","harvest_date","total_weight","price_per_kg"},
-     *             @OA\Property(property="batch_id", type="string", format="uuid"),
-     *             @OA\Property(property="harvest_date", type="string", format="date"),
-     *             @OA\Property(property="total_weight", type="number", format="float"),
-     *             @OA\Property(property="price_per_kg", type="number", format="float")
+     *             required={"batchId","tankId","harvestDate","type","status","destination","initialPopulation","harvestedQuantity","averageWeight","sizeClassifications"},
+     *             @OA\Property(property="batchId", type="string", format="uuid"),
+     *             @OA\Property(property="tankId", type="string", format="uuid"),
+     *             @OA\Property(property="harvestDate", type="string", format="date", example="2026-06-09"),
+     *             @OA\Property(property="type", type="string",
+     *                 enum={"total","partial","selective","emergency"}, example="partial"),
+     *             @OA\Property(property="status", type="string",
+     *                 enum={"completed","scheduled","in_progress","cancelled"}, example="completed"),
+     *             @OA\Property(property="destination", type="string",
+     *                 enum={"wholesale","retail","processing","restaurant","live_market","internal"},
+     *                 example="wholesale"),
+     *             @OA\Property(property="initialPopulation", type="integer", example=14),
+     *             @OA\Property(property="harvestedQuantity", type="integer", example=12),
+     *             @OA\Property(property="averageWeight", type="number", format="float", example=1200),
+     *             @OA\Property(
+     *                 property="sizeClassifications",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     required={"class","quantity","averageWeight","pricePerKg"},
+     *                     @OA\Property(property="class", type="string", example="G"),
+     *                     @OA\Property(property="quantity", type="integer", example=100),
+     *                     @OA\Property(property="averageWeight", type="number", format="float", example=1200),
+     *                     @OA\Property(property="pricePerKg", type="number", format="float", example=12.00)
+     *                 )
+     *             ),
+     *             @OA\Property(property="clientDestination", type="string", nullable=true, example="teste"),
+     *             @OA\Property(property="responsible", type="string", nullable=true, example="teste"),
+     *             @OA\Property(property="operationalCost", type="number",
+     *                 format="float", nullable=true, example=598.00),
+     *             @OA\Property(property="notes", type="string", nullable=true, example="teste")
      *         )
      *     ),
      *     @OA\Response(
@@ -169,9 +239,32 @@ class HarvestController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             @OA\Property(property="harvest_date", type="string", format="date"),
-     *             @OA\Property(property="total_weight", type="number", format="float"),
-     *             @OA\Property(property="price_per_kg", type="number", format="float")
+     *             @OA\Property(property="batchId", type="string", format="uuid"),
+     *             @OA\Property(property="tankId", type="string", format="uuid"),
+     *             @OA\Property(property="harvestDate", type="string", format="date", example="2026-06-09"),
+     *             @OA\Property(property="type", type="string", enum={"total","partial","selective","emergency"}),
+     *             @OA\Property(property="status", type="string",
+     *                 enum={"completed","scheduled","in_progress","cancelled"}),
+     *             @OA\Property(property="destination", type="string",
+     *                 enum={"wholesale","retail","processing","restaurant","live_market","internal"}),
+     *             @OA\Property(property="initialPopulation", type="integer", example=14),
+     *             @OA\Property(property="harvestedQuantity", type="integer", example=12),
+     *             @OA\Property(property="averageWeight", type="number", format="float", example=1200),
+     *             @OA\Property(
+     *                 property="sizeClassifications",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="class", type="string", example="G"),
+     *                     @OA\Property(property="quantity", type="integer", example=100),
+     *                     @OA\Property(property="averageWeight", type="number", format="float", example=1200),
+     *                     @OA\Property(property="pricePerKg", type="number", format="float", example=12.00)
+     *                 )
+     *             ),
+     *             @OA\Property(property="clientDestination", type="string", nullable=true),
+     *             @OA\Property(property="responsible", type="string", nullable=true),
+     *             @OA\Property(property="operationalCost", type="number", format="float", nullable=true),
+     *             @OA\Property(property="notes", type="string", nullable=true)
      *         )
      *     ),
      *     @OA\Response(

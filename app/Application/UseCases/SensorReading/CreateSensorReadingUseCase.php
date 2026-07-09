@@ -11,14 +11,17 @@ use App\Domain\Repositories\SensorReadingRepositoryInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class CreateSensorReadingUseCase
+final readonly class CreateSensorReadingUseCase
 {
     public function __construct(
-        private readonly SensorReadingRepositoryInterface $repository,
-        private readonly SensorRepositoryInterface        $sensorRepository,
-    ) {}
+        private SensorReadingRepositoryInterface $repository,
+        private SensorRepositoryInterface $sensorRepository,
+    ) {
+    }
 
-    /** @param array<string, mixed> $data */
+    /**
+     * @param array<string, mixed> $data
+     */
     public function execute(array $data): SensorReading
     {
         $sensor = $this->sensorRepository->findOrFail($data['sensor_id']);
@@ -28,7 +31,7 @@ final class CreateSensorReadingUseCase
         }
 
         $data['company_id'] = (string) $sensor->company_id;
-        $data['type'] = (string) 'manual';
+        $data['type']       = 'manual';
 
         $dto = SensorReadingDTO::fromArray($data);
 

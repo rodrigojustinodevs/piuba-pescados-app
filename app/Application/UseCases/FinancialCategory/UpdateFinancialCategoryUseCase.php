@@ -27,6 +27,10 @@ final readonly class UpdateFinancialCategoryUseCase
                 : null,
         ], static fn (?string $v): bool => $v !== null);
 
+        if (array_key_exists('notes', $data)) {
+            $attributes['notes'] = $data['notes'] !== null ? (string) $data['notes'] : null;
+        }
+
         return $this->repository->update($id, $attributes);
     }
 }

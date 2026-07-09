@@ -58,6 +58,17 @@ final class StockTransactionController
      *                         @OA\Property(property="totalCost", type="number", format="float", example=57.75),
      *                         @OA\Property(property="referenceType", type="string", example="adjustment"),
      *                         @OA\Property(property="referenceId", type="string", format="uuid"),
+     *                         @OA\Property(
+     *                             property="supply",
+     *                             type="object",
+     *                             nullable=true,
+     *                             @OA\Property(property="id", type="string", format="uuid"),
+     *                             @OA\Property(property="name", type="string", example="Ração Tilápia")
+     *                         ),
+     *                         @OA\Property(property="location", type="string", nullable=true, example="Galpão A"),
+     *                         @OA\Property(property="responsible", type="string", nullable=true, example="João Silva"),
+     *                         @OA\Property(property="notes", type="string",
+     *                             nullable=true, example="Entrada referente à compra #123"),
      *                         @OA\Property(property="createdAt", type="string", format="date-time", nullable=true)
      *                     )
      *                 )
@@ -148,7 +159,29 @@ final class StockTransactionController
      *                 @OA\Property(
      *                     property="data",
      *                     type="array",
-     *                     @OA\Items(type="object")
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="id", type="string", format="uuid"),
+     *                         @OA\Property(property="direction", type="string", enum={"in","out"}, example="in"),
+     *                         @OA\Property(property="quantity", type="number", format="float", example=10.5),
+     *                         @OA\Property(property="unit", type="string", example="kg"),
+     *                         @OA\Property(property="unitPrice", type="number", format="float", example=5.50),
+     *                         @OA\Property(property="totalCost", type="number", format="float", example=57.75),
+     *                         @OA\Property(property="referenceType", type="string", example="purchase_item"),
+     *                         @OA\Property(property="referenceId", type="string", format="uuid"),
+     *                         @OA\Property(
+     *                             property="supply",
+     *                             type="object",
+     *                             nullable=true,
+     *                             @OA\Property(property="id", type="string", format="uuid"),
+     *                             @OA\Property(property="name", type="string", example="Ração Tilápia")
+     *                         ),
+     *                         @OA\Property(property="location", type="string", nullable=true, example="Galpão A"),
+     *                         @OA\Property(property="responsible", type="string", nullable=true, example="João Silva"),
+     *                         @OA\Property(property="notes", type="string",
+     *                             nullable=true, example="Entrada referente à compra #123"),
+     *                         @OA\Property(property="createdAt", type="string", format="date-time", nullable=true)
+     *                     )
      *                 )
      *             ),
      *             @OA\Property(property="pagination", type="object")

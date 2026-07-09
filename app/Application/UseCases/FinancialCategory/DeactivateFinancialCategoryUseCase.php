@@ -23,6 +23,6 @@ final readonly class DeactivateFinancialCategoryUseCase
 
         $category->deactivate();
 
-        return $category->refresh()->load('company:id,name');
+        return $category->refresh()->load(['company' => fn ($q) => $q->withTrashed()->select(['id', 'name'])]);
     }
 }

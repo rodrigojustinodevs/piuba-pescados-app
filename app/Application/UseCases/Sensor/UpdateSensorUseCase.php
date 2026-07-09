@@ -25,9 +25,9 @@ final readonly class UpdateSensorUseCase
     {
         $sensor = $this->sensorRepository->findOrFail($id);
 
-        $data['tank_id'] = $data['tank_id'] ?? $data['tankId'] ?? (string) $sensor->tank_id;
-        $data['sensor_type'] = $data['sensor_type'] ?? $data['sensorType'] ?? (string) $sensor->sensor_type;
-        $data['status'] = $data['status'] ?? (string) $sensor->status;
+        $data['tank_id'] ??= $data['tankId'] ?? (string) $sensor->tank_id;
+        $data['sensor_type'] ??= $data['sensorType'] ?? (string) $sensor->sensor_type;
+        $data['status'] ??= (string) $sensor->status;
         $data['company_id'] = $this->companyResolver->resolve(
             $data['company_id'] ?? $data['companyId'] ?? (string) $sensor->company_id,
         );

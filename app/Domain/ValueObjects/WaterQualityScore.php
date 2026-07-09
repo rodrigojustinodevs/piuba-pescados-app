@@ -9,9 +9,12 @@ use App\Domain\Models\WaterQuality;
 final class WaterQualityScore
 {
     private int $excellent = 0;
-    private int $good      = 0;
-    private int $warning   = 0;
-    private int $critical  = 0;
+
+    private int $good = 0;
+
+    private int $warning = 0;
+
+    private int $critical = 0;
 
     /**
      * @param array<string, int> $counts resultado de countByQuality() do repositório
@@ -89,10 +92,10 @@ final class WaterQualityScore
     private function bucketFor(WaterQuality $record): string
     {
         $alerts = WaterQualityThresholds::evaluate(
-            ph:              $record->ph               !== null ? (float) $record->ph               : null,
+            ph:              $record->ph !== null ? (float) $record->ph : null,
             dissolvedOxygen: $record->dissolved_oxygen !== null ? (float) $record->dissolved_oxygen : null,
-            ammonia:         $record->ammonia          !== null ? (float) $record->ammonia          : null,
-            temperature:     $record->temperature      !== null ? (float) $record->temperature      : null,
+            ammonia:         $record->ammonia !== null ? (float) $record->ammonia : null,
+            temperature:     $record->temperature !== null ? (float) $record->temperature : null,
         );
 
         if ($alerts === []) {

@@ -23,19 +23,23 @@ class ClientStoreRequest extends FormRequest
         return [
             'company_id'      => ['sometimes', 'uuid', 'exists:companies,id'],
             'name'            => ['required', 'string', 'max:255'],
+            'trade_name'      => ['nullable', 'string', 'max:255'],
             'contact'         => ['nullable', 'string', 'max:255'],
             'phone'           => ['nullable', 'string', 'max:20'],
             'email'           => ['nullable', 'email', 'max:255'],
             'person_type'     => ['required', 'string', 'in:individual,company'],
             'document_number' => [
-                'nullable',
+                'required',
                 'string',
                 new DocumentNumberRule($this->input('person_type')),
                 Rule::unique('clients')->where('company_id', $this->input('company_id')),
             ],
-            'address'      => ['nullable', 'string', 'max:255'],
+            'city'         => ['nullable', 'string', 'max:255'],
+            'state'        => ['nullable', 'string', 'max:2'],
+            'status'       => ['nullable', 'string', 'in:active,inactive,prospect'],
             'credit_limit' => ['nullable', 'numeric', 'min:0'],
-            'price_group'  => ['nullable', 'string', 'in:wholesale,retail,consumer'],
+            'price_group'  => ['required', 'string', 'in:wholesale,retail,consumer'],
+            'notes'        => ['nullable', 'string'],
         ];
     }
 
@@ -45,6 +49,7 @@ class ClientStoreRequest extends FormRequest
         $this->merge([
             'company_id'      => $this->input('company_id', $this->input('companyId')),
             'person_type'     => $this->input('person_type', $this->input('personType')),
+            'trade_name'      => $this->input('trade_name', $this->input('tradeName')),
             'document_number' => $this->input('document_number', $this->input('documentNumber')),
             'credit_limit'    => $this->input('credit_limit', $this->input('creditLimit')),
             'price_group'     => $this->input('price_group', $this->input('priceGroup')),
@@ -78,16 +83,29 @@ class ClientStoreRequest extends FormRequest
             'person_type.string'   => 'The person type must be a string.',
             'person_type.in'       => 'The person type must be either "individual" or "company".',
 
-            'document_number.unique' => 'This CPF/CNPJ is already registered for this company.',
+            'document_number.required' => 'The document number is required.',
+            'document_number.unique'   => 'This CPF/CNPJ is already registered for this company.',
 
-            'address.string' => 'The address must be a string.',
-            'address.max'    => 'The address may not be greater than 255 characters.',
+            'trade_name.string' => 'The trade name must be a string.',
+            'trade_name.max'    => 'The trade name may not be greater than 255 characters.',
+
+            'city.string' => 'The city must be a string.',
+            'city.max'    => 'The city may not be greater than 255 characters.',
+
+            'state.string' => 'The state must be a string.',
+            'state.max'    => 'The state must be a 2-character code.',
+
+            'status.required' => 'The status is required.',
+            'status.in'       => 'The status must be either "active", "inactive" or "prospect".',
 
             'credit_limit.numeric' => 'The credit limit must be a numeric value.',
             'credit_limit.min'     => 'The credit limit cannot be negative.',
 
-            'price_group.string' => 'The price group must be a string.',
-            'price_group.in'     => 'The price group must be: wholesale, retail or consumer.',
+            'price_group.required' => 'The price group is required.',
+            'price_group.string'   => 'The price group must be a string.',
+            'price_group.in'       => 'The price group must be: wholesale, retail or consumer.',
+
+            'notes.string' => 'The notes must be a string.',
         ];
     }
 }

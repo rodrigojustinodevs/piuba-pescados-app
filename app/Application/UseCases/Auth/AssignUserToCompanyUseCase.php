@@ -8,6 +8,7 @@ use App\Domain\Enums\RolesEnum;
 use App\Domain\Models\User;
 use App\Infrastructure\Security\PermissionResolver;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 final readonly class AssignUserToCompanyUseCase
 {
@@ -39,6 +40,7 @@ final readonly class AssignUserToCompanyUseCase
         // 3. Upsert no pivot (idempotente)
         DB::table('company_user')->upsert(
             [
+                'id'         => (string) Str::uuid(),
                 'user_id'    => $targetUser->id,
                 'company_id' => $companyId,
                 'role'       => $role->value,

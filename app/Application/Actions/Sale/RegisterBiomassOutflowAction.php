@@ -10,8 +10,10 @@ use App\Domain\Enums\StockTransactionDirection;
 use App\Domain\Enums\StockTransactionReferenceType;
 use App\Domain\Enums\Unit;
 use App\Domain\Models\Sale;
+use App\Domain\Models\SaleItem;
 use App\Domain\Models\Stocking;
 use App\Domain\Models\StockTransaction;
+use App\Domain\Repositories\SaleItemRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 
 final readonly class RegisterBiomassOutflowAction
@@ -19,42 +21,48 @@ final readonly class RegisterBiomassOutflowAction
     public function __construct(
         private RegisterStockTransactionAction $registerStockTransaction,
         private StockingRepositoryInterface $stockingRepository,
+        private SaleItemRepositoryInterface $saleItemRepository,
     ) {
     }
 
     /**
-     * Regra 3 - CMV exato por stocking_id.
-     * O unit_price e calculado pelo custo financeiro acumulado do POVOAMENTO.
+     * Regra 3 — CMV exato por stocking_id, calculado por item.
      *
      * Formula: custo_total_acumulado_do_stocking / biomassa_restante
      *
-     * @param float $alreadySoldWeight Peso ja vendido ANTES desta venda
+     * Atualiza o sale_item com os custos calculados (snapshot imutável).
+     * Gera um StockTransaction referenciando o sale_item.
+     *
+     * @param float $alreadySoldWeight Peso já vendido ANTES deste item (deste stocking)
      */
     public function execute(
         Stocking $stocking,
         Sale $sale,
+        SaleItem $saleItem,
         float $alreadySoldWeight,
     ): StockTransaction {
         $unitCost  = $this->calculateUnitCost($stocking, $alreadySoldWeight);
-        $totalCost = round((float) $sale->total_weight * $unitCost, 4);
+        $totalCost = round((float) $saleItem->total_weight * $unitCost, 4);
+
+        $this->saleItemRepository->updateCosts((string) $saleItem->id, $unitCost, $totalCost);
 
         return $this->registerStockTransaction->execute(new StockTransactionDTO(
             companyId:     (string) $sale->company_id,
-            quantity:      (float)  $sale->total_weight,
+            quantity:      (float)  $saleItem->total_weight,
             unitPrice:     $unitCost,
             totalCost:     $totalCost,
             unit:          Unit::KG,
             direction:     StockTransactionDirection::OUT,
-            referenceId:   (string) $sale->id,
-            referenceType: StockTransactionReferenceType::SALE,
+            referenceId:   (string) $saleItem->id,
+            referenceType: StockTransactionReferenceType::SALE_ITEM,
         ));
     }
 
     /**
-     * Custo unitario exato (R$/kg) - Regra 3.
+     * Custo unitário exato (R$/kg) — Regra 3.
      *
-     * Custo total acumulado = soma de todas as entradas financeiras do stocking_id
-     * Biomassa restante = (current_quantity * average_weight) - peso_ja_vendido
+     * custo total acumulado = soma de todas as entradas financeiras do stocking_id
+     * biomassa restante = (current_quantity × average_weight) − peso_já_vendido
      */
     private function calculateUnitCost(Stocking $stocking, float $alreadySoldWeight): float
     {

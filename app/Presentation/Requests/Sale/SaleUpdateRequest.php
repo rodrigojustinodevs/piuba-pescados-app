@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\Sale;
 
+use App\Domain\Enums\PaymentMethod;
 use App\Domain\Enums\SaleStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -29,10 +30,14 @@ final class SaleUpdateRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $map = [
-            'totalWeight'    => 'total_weight',
-            'pricePerKg'     => 'price_per_kg',
-            'saleDate'       => 'sale_date',
-            'isTotalHarvest' => 'is_total_harvest',
+            'totalWeight'       => 'total_weight',
+            'pricePerKg'        => 'price_per_kg',
+            'saleDate'          => 'sale_date',
+            'dueDate'           => 'due_date',
+            'isTotalHarvest'    => 'is_total_harvest',
+            'paymentMethod'     => 'payment_method',
+            'invoiceNumber'     => 'invoice_number',
+            'responsibleUserId' => 'responsible_user_id',
         ];
 
         $normalized = [];
@@ -52,12 +57,19 @@ final class SaleUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'total_weight'     => ['sometimes', 'numeric', 'min:0.001'],
-            'price_per_kg'     => ['sometimes', 'numeric', 'min:0'],
-            'sale_date'        => ['sometimes', 'date'],
-            'status'           => ['sometimes', Rule::enum(SaleStatus::class)],
-            'notes'            => ['sometimes', 'nullable', 'string', 'max:1000'],
-            'is_total_harvest' => ['sometimes', 'boolean'],
+            'total_weight'        => ['sometimes', 'numeric', 'min:0.001'],
+            'price_per_kg'        => ['sometimes', 'numeric', 'min:0'],
+            'sale_date'           => ['sometimes', 'date'],
+            'due_date'            => ['sometimes', 'nullable', 'date'],
+            'status'              => ['sometimes', Rule::enum(SaleStatus::class)],
+            'notes'               => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'is_total_harvest'    => ['sometimes', 'boolean'],
+            'discount'            => ['sometimes', 'numeric', 'min:0'],
+            'shipping'            => ['sometimes', 'numeric', 'min:0'],
+            'taxes'               => ['sometimes', 'numeric', 'min:0'],
+            'payment_method'      => ['sometimes', 'nullable', Rule::enum(PaymentMethod::class)],
+            'invoice_number'      => ['sometimes', 'nullable', 'string', 'max:50'],
+            'responsible_user_id' => ['sometimes', 'nullable', 'uuid', 'exists:users,id'],
         ];
     }
 

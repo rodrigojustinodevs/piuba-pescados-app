@@ -40,7 +40,22 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
     public function paginate(array $filters): PaginationInterface
     {
         $paginator = StockTransaction::query()
-            ->where('company_id', $filters['company_id'])
+            ->with('supply')
+            ->leftJoin('stocks', static function ($join): void {
+                $join->on('stocks.supply_id', '=', 'stock_transactions.supply_id')
+                    ->on('stocks.company_id', '=', 'stock_transactions.company_id')
+                    ->whereNull('stocks.deleted_at');
+            })
+            ->select([
+                'stock_transactions.*',
+                'stocks.location',
+                'stocks.responsible',
+                'stocks.notes',
+            ])
+            ->when(
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('stock_transactions.company_id', $filters['companyId']),
+            )
             ->when(
                 ! empty($filters['direction']),
                 static fn ($q) => $q->where(
@@ -49,15 +64,15 @@ final class StockTransactionRepository implements StockTransactionRepositoryInte
                 ),
             )
             ->when(
-                ! empty($filters['reference_type']),
-                static fn ($q) => $q->where('reference_type', $filters['reference_type']),
+                ! empty($filters['referenceType']),
+                static fn ($q) => $q->where('reference_type', $filters['referenceType']),
             )
             ->when(
-                ! empty($filters['reference_id']),
-                static fn ($q) => $q->where('reference_id', $filters['reference_id']),
+                ! empty($filters['referenceId']),
+                static fn ($q) => $q->where('reference_id', $filters['referenceId']),
             )
             ->latest()
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

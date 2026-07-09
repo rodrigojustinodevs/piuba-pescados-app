@@ -11,12 +11,13 @@ use App\Domain\Repositories\SensorReadingRepositoryInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
-final class UpdateSensorReadingUseCase
+final readonly class UpdateSensorReadingUseCase
 {
     public function __construct(
-        private readonly SensorReadingRepositoryInterface $repository,
-        private readonly SensorRepositoryInterface        $sensorRepository,
-    ) {}
+        private SensorReadingRepositoryInterface $repository,
+        private SensorRepositoryInterface $sensorRepository,
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data Dados validados pelo FormRequest (snake_case)
@@ -27,19 +28,22 @@ final class UpdateSensorReadingUseCase
 
         [$resolvedSensorId, $resolvedCompanyId] = $this->resolveSensorAndCompany($current, $data);
 
-        $merged = array_merge([
-            'sensor_id'   => $resolvedSensorId,
-            'company_id'  => $resolvedCompanyId,
-            'value'       => (float)  $current->value,
-            'unit'        => (string) $current->unit,
-            'measured_at' => $current->measured_at?->toDateTimeString(),
-            'type'        => (string) $current->type,
-            'notes'       => $current->notes,
-        ], $data, [
-            // Garante que sensor_id e company_id resolvidos não são sobrescritos pelo patch
-            'sensor_id'  => $resolvedSensorId,
-            'company_id' => $resolvedCompanyId,
-        ]);
+        $merged = array_merge(
+            [
+                'sensor_id'   => $resolvedSensorId,
+                'company_id'  => $resolvedCompanyId,
+                'value'       => (float) $current->value,
+                'unit'        => (string) $current->unit,
+                'measured_at' => $current->measured_at?->toDateTimeString(),
+                'type'        => (string) $current->type,
+                'notes'       => $current->notes,
+            ],
+            $data,
+            [
+                'sensor_id'  => $resolvedSensorId,
+                'company_id' => $resolvedCompanyId,
+            ]
+        );
 
         $dto = SensorReadingDTO::fromArray($merged);
 
@@ -51,6 +55,7 @@ final class UpdateSensorReadingUseCase
     }
 
     /**
+     * @param  array<string, mixed> $data
      * @return array{string, string} [sensor_id, company_id]
      * @throws SensorNotAssignedToCompanyException
      */

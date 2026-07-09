@@ -62,8 +62,9 @@ class MortalityUpdateRequest extends FormRequest
             'mortalityDate.date_format' => 'The mortality date must be in Y-m-d format.',
             'quantity.integer'          => 'The quantity must be an integer.',
             'quantity.min'              => 'The quantity must be at least 1.',
-            'cause.enum'                => 'The cause must be one of: disease, water_quality, predation, handling, climate, unknown, other.',
-            'severity.enum'             => 'The severity must be one of: low, medium, high, critical.',
+            'cause.enum'                => 'The cause must be one of: disease, water_quality,'
+                . ' predation, handling, climate, unknown, other.',
+            'severity.enum' => 'The severity must be one of: low, medium, high, critical.',
         ];
     }
 }

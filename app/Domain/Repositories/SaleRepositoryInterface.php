@@ -36,13 +36,13 @@ interface SaleRepositoryInterface
      * Paginate sales filtered by company.
      *
      * @param array{
-     *     company_id: string,
-     *     client_id?: string|null,
-     *     batch_id?: string|null,
+     *     companyId: string,
+     *     clientId?: string|null,
+     *     batchId?: string|null,
      *     status?: string|null,
-     *     date_from?: string|null,
-     *     date_to?: string|null,
-     *     per_page?: int,
+     *     dateFrom?: string|null,
+     *     dateTo?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface;

@@ -7,17 +7,24 @@ namespace App\Presentation\Controllers;
 use App\Application\UseCases\Stock\AdjustStockUseCase;
 use App\Application\UseCases\Stock\CreateStockUseCase;
 use App\Application\UseCases\Stock\DeleteStockUseCase;
+use App\Application\UseCases\Stock\GetStockBalancesUseCase;
+use App\Application\UseCases\Stock\GetStockMovementsUseCase;
 use App\Application\UseCases\Stock\ListStocksUseCase;
+use App\Application\UseCases\Stock\RegisterStockMovementUseCase;
 use App\Application\UseCases\Stock\ShowStockUseCase;
+use App\Application\UseCases\Stock\TransferStockUseCase;
 use App\Application\UseCases\Stock\UpdateStockSettingsUseCase;
 use App\Presentation\Requests\Stock\StockAdjustRequest;
+use App\Presentation\Requests\Stock\StockMovementRequest;
 use App\Presentation\Requests\Stock\StockStoreRequest;
+use App\Presentation\Requests\Stock\StockTransferRequest;
 use App\Presentation\Requests\Stock\StockUpdateRequest;
+use App\Presentation\Resources\Stock\StockBalanceResource;
+use App\Presentation\Resources\Stock\StockMovementResource;
 use App\Presentation\Resources\Stock\StockResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 /**
  * @OA\Tag(name="Stocks", description="Estoques")
@@ -107,7 +114,9 @@ final class StockController
         ListStocksUseCase $useCase,
     ): JsonResponse {
         $pagination = $useCase->execute(
-            filters: $request->only(['supply_id', 'supplier_id', 'per_page']),
+            filters: $request->only([
+                'supply_id', 'supplier_id', 'per_page', 'name', 'code', 'type', 'status', 'location', 'responsible',
+            ]),
         );
 
         return ApiResponse::success(
@@ -555,5 +564,157 @@ final class StockController
         $result = $useCase->execute($id, $request->validated());
 
         return ApiResponse::success(data: new StockResource($result->stock));
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/company/stocks/{id}/balances",
+     *     summary="Listar saldos de insumos no estoque",
+     *     tags={"Stocks"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de saldos por insumo",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Success"),
+     *             @OA\Property(property="response", type="array", @OA\Items(type="object"))
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Estoque não encontrado"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function balances(
+        string $id,
+        GetStockBalancesUseCase $useCase,
+    ): JsonResponse {
+        $balances = $useCase->execute($id);
+
+        return ApiResponse::success(data: StockBalanceResource::collection($balances));
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/company/stocks/{id}/movements",
+     *     summary="Listar movimentações do estoque",
+     *     tags={"Stocks"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="type", in="query",
+     *         @OA\Schema(type="string", enum={"entry","exit","adjustment","transfer"})),
+     *     @OA\Parameter(name="supply_id", in="query", @OA\Schema(type="string", format="uuid")),
+     *     @OA\Parameter(name="per_page", in="query", @OA\Schema(type="integer", example=25)),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista paginada de movimentações",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="response", type="array", @OA\Items(type="object")),
+     *             @OA\Property(property="pagination", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Estoque não encontrado"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function movements(
+        string $id,
+        Request $request,
+        GetStockMovementsUseCase $useCase,
+    ): JsonResponse {
+        $filters    = $request->only(['type', 'supply_id', 'per_page']);
+        $pagination = $useCase->execute($id, $filters);
+
+        return ApiResponse::success(
+            data:       StockMovementResource::collection($pagination->items()),
+            pagination: [
+                'total'        => $pagination->total(),
+                'current_page' => $pagination->currentPage(),
+                'last_page'    => $pagination->lastPage(),
+                'first_page'   => $pagination->firstPage(),
+                'per_page'     => $pagination->perPage(),
+            ],
+        );
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/company/stocks/movements",
+     *     summary="Registrar movimentação de estoque (entrada, saída ou ajuste)",
+     *     tags={"Stocks"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"stock_id","supply_id","type","quantity"},
+     *             @OA\Property(property="stock_id", type="string", format="uuid"),
+     *             @OA\Property(property="supply_id", type="string", format="uuid"),
+     *             @OA\Property(property="type", type="string", enum={"entry","exit","adjustment","transfer"}),
+     *             @OA\Property(property="quantity", type="number", format="float", minimum=0.001),
+     *             @OA\Property(property="reason", type="string", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Movimentação registrada"),
+     *     @OA\Response(response=422, description="Saldo insuficiente ou dados inválidos"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function registerMovement(
+        StockMovementRequest $request,
+        RegisterStockMovementUseCase $useCase,
+    ): JsonResponse {
+        $movement = $useCase->execute($request->validated());
+
+        return ApiResponse::created(data: new StockMovementResource($movement));
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/company/stocks/transfers",
+     *     summary="Transferir insumo entre estoques",
+     *     description="Debita do estoque origem e credita no estoque destino
+     *         em uma única transação. Registra duas movimentações.",
+     *     tags={"Stocks"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"source_stock_id","destination_stock_id","supply_id","quantity"},
+     *             @OA\Property(property="source_stock_id", type="string",
+     *                 format="uuid", description="Estoque de origem"),
+     *             @OA\Property(property="destination_stock_id", type="string",
+     *                 format="uuid", description="Estoque de destino"),
+     *             @OA\Property(property="supply_id", type="string", format="uuid"),
+     *             @OA\Property(property="quantity", type="number", format="float", minimum=0.001),
+     *             @OA\Property(property="reason", type="string", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Transferência realizada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="response", type="object",
+     *                 @OA\Property(property="origin", type="object"),
+     *                 @OA\Property(property="destination", type="object")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=422, description="Saldo insuficiente ou estoques iguais"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function transfer(
+        StockTransferRequest $request,
+        TransferStockUseCase $useCase,
+    ): JsonResponse {
+        $result = $useCase->execute($request->validated());
+
+        return ApiResponse::created(data: [
+            'origin'      => new StockMovementResource($result['origin']),
+            'destination' => new StockMovementResource($result['destination']),
+        ]);
     }
 }

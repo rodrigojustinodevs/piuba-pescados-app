@@ -160,8 +160,8 @@ final class SalesQuotationUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'id.required'                    => 'The quotation id is required.',
-            'id.exists'                      => 'The quotation does not exist, is not active for this company, '
+            'id.required' => 'The quotation id is required.',
+            'id.exists'   => 'The quotation does not exist, is not active for this company, '
                 . 'or was removed.',
             'client_id.required'             => 'The client is required.',
             'client_id.exists'               => 'The client does not exist or does not belong to the company.',

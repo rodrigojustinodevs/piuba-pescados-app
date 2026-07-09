@@ -165,6 +165,7 @@ final readonly class TenantContext implements \Stringable
         if ($this->isGlobal()) {
             return true;
         }
+
         return $this->companyId === $companyId;
     }
 

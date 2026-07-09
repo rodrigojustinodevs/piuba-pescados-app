@@ -47,6 +47,8 @@ class HarvestRepository implements HarvestRepositoryInterface
         /** @var LengthAwarePaginator<int, Harvest> $paginator */
         $paginator = Harvest::with([
             'batch:id,name',
+            'tank:id,name',
+            'sizeClassifications',
         ])->paginate($page);
 
         return new PaginationPresentr($paginator);
@@ -57,7 +59,11 @@ class HarvestRepository implements HarvestRepositoryInterface
      */
     public function showHarvest(string $field, string | int $value): ?Harvest
     {
-        return Harvest::where($field, $value)->first();
+        return Harvest::with([
+            'batch:id,name',
+            'tank:id,name',
+            'sizeClassifications',
+        ])->where($field, $value)->first();
     }
 
     public function delete(string $id): bool

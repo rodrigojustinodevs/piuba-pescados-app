@@ -6,9 +6,7 @@ namespace App\Application\UseCases\Batch;
 
 use App\Application\Actions\Batch\CreateDistributedBatchesAction;
 use App\Application\Actions\Batch\ValidateTanksForDistributionAction;
-use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\BatchDistributionInputDTO;
-use App\Domain\Repositories\TankRepositoryInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -17,8 +15,6 @@ final readonly class DistributeBatchUseCase
     public function __construct(
         private ValidateTanksForDistributionAction $validateTanks,
         private CreateDistributedBatchesAction $createBatches,
-        private CompanyResolverInterface $companyResolver,
-        private TankRepositoryInterface $tankRepository,
     ) {
     }
 
@@ -32,9 +28,8 @@ final readonly class DistributeBatchUseCase
      */
     public function execute(array $data): Collection
     {
-        
         $input = BatchDistributionInputDTO::fromArray($data);
-        
+
         $this->validateTanks->execute($input);
 
         return DB::transaction(fn (): Collection => $this->createBatches->execute($input));

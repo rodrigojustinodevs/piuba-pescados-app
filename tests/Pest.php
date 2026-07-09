@@ -45,3 +45,58 @@ function something(): void
 {
     // ..
 }
+
+/**
+ * Creates a minimal Company fixture. `Company::factory()` doesn't exist in this
+ * codebase (no HasFactory/CompanyFactory), so tests build companies directly.
+ */
+function makeCompany(string $name = 'Empresa Teste'): App\Domain\Models\Company
+{
+    /** @var App\Domain\Models\Company $company */
+    $company = App\Domain\Models\Company::create([
+        'name'  => $name,
+        'cnpj'  => (string) random_int(10_000_000_000_000, 99_999_999_999_999),
+        'phone' => '11999999999',
+    ]);
+
+    return $company;
+}
+
+/**
+ * Attaches a user to a company via the company_user pivot, bypassing
+ * AssignUserToCompanyUseCase's business rules — for fixture setup only.
+ */
+function attachUserToCompany(
+    App\Domain\Models\User $user,
+    App\Domain\Models\Company $company,
+    App\Domain\Enums\RolesEnum $role,
+    bool $isActive = true,
+): void {
+    Illuminate\Support\Facades\DB::table('company_user')->insert([
+        'id'         => (string) Illuminate\Support\Str::uuid(),
+        'user_id'    => $user->id,
+        'company_id' => $company->id,
+        'role'       => $role->value,
+        'is_active'  => $isActive,
+        'joined_at'  => now(),
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+}
+
+/**
+ * Builds a real JWT bearer header for a company-scoped user (via CompanyJwtService),
+ * matching the claims CheckCompanyContext expects (`cid`/`role`). Master admin
+ * scenarios can't be generated this way today — see the note in UserAuthorizationTest.
+ *
+ * @return array<string, string>
+ */
+function bearerHeaderFor(App\Domain\Models\User $user, App\Domain\Models\Company $company): array
+{
+    $companyWithPivot = $user->companies()->where('companies.id', $company->id)->first();
+
+    $token = app(App\Infrastructure\Security\CompanyJwtService::class)
+        ->generateForCompanyUser($user, $companyWithPivot);
+
+    return ['Authorization' => 'Bearer ' . $token];
+}

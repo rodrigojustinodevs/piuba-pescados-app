@@ -10,6 +10,7 @@ use App\Application\Actions\Sale\SyncReceivableAmountAction;
 use App\Application\Services\Sale\SaleRevenueCalculator;
 use App\Domain\Models\Sale;
 use App\Domain\Models\Stocking;
+use App\Domain\Repositories\SaleItemRepositoryInterface;
 use App\Domain\Repositories\SaleRepositoryInterface;
 use App\Domain\Repositories\StockingRepositoryInterface;
 use App\Domain\ValueObjects\SaleAttributes;
@@ -36,6 +37,7 @@ final readonly class UpdateSaleUseCase
     public function __construct(
         private SaleRepositoryInterface $saleRepository,
         private StockingRepositoryInterface $stockingRepository,
+        private SaleItemRepositoryInterface $saleItemRepository,
         private GuardBiomassAction $guardBiomass,
         private HarvestLifecycleAction $harvestLifecycle,
         private SyncReceivableAmountAction $syncReceivable,
@@ -86,7 +88,18 @@ final readonly class UpdateSaleUseCase
                 return $this->saleRepository->findOrFail($id);
             }
 
-            return $this->saleRepository->update($id, $attributes->toArray());
+            $updated = $this->saleRepository->update($id, $attributes->toArray());
+
+            // Sincroniza sale_items[0] quando peso ou preço mudam
+            if ($attributes->has('total_weight') || $attributes->has('price_per_kg')) {
+                $this->saleItemRepository->syncFirstItemWeightAndPrice(
+                    saleId:      $id,
+                    totalWeight: $attributes->resolveWeight($updated),
+                    pricePerKg:  $attributes->resolvePrice($updated),
+                );
+            }
+
+            return $updated;
         });
     }
 

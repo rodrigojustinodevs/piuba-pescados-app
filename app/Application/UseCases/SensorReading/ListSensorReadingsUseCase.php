@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\SensorReading;
 
-use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SensorReadingRepositoryInterface;
 use App\Infrastructure\Security\CompanyContext;
@@ -13,7 +12,6 @@ final readonly class ListSensorReadingsUseCase
 {
     public function __construct(
         private SensorReadingRepositoryInterface $sensorReadingRepository,
-        private CompanyResolverInterface $companyResolver,
     ) {
     }
 
@@ -30,9 +28,10 @@ final readonly class ListSensorReadingsUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (!CompanyContext::isMasterAdmin()) {
+        if (! CompanyContext::isMasterAdmin()) {
             $filters['companyId'] = CompanyContext::requireCompanyId();
         }
+
         return $this->sensorReadingRepository->paginate($filters);
     }
 }

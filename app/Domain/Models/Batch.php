@@ -50,6 +50,7 @@ class Batch extends BaseModel
         'species',
         'status',
         'cultivation',
+        'company_id',
     ];
 
     protected $casts = [

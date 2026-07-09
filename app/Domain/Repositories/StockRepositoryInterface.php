@@ -97,4 +97,9 @@ interface StockRepositoryInterface
      * Count stocks below minimum.
      */
     public function countStocksBelowMinimum(string $companyId): int;
+
+    /**
+     * Find a stock by company and code.
+     */
+    public function findByCode(string $companyId, string $code): ?Stock;
 }

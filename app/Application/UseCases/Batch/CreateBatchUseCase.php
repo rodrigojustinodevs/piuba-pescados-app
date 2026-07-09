@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\UseCases\Batch;
 
 use App\Application\Actions\Batch\ValidateActiveBatchInTankAction;
-use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\BatchInputDTO;
 use App\Domain\Enums\BatchStatus;
 use App\Domain\Models\Batch;
@@ -18,7 +17,6 @@ final readonly class CreateBatchUseCase
     public function __construct(
         private BatchRepositoryInterface $repository,
         private ValidateActiveBatchInTankAction $validateTank,
-        private CompanyResolverInterface $companyResolver,
         private TankRepositoryInterface $tankRepository,
     ) {
     }
@@ -28,13 +26,13 @@ final readonly class CreateBatchUseCase
      */
     public function execute(array $data): Batch
     {
-        $dto       = BatchInputDTO::fromArray($data);
-        
+        $dto = BatchInputDTO::fromArray($data);
+
         $tank = $this->tankRepository->findOrFail($dto->tankId);
-        
+
         $companyId = $tank->company_id ?? null;
 
-        if ($dto->status === BatchStatus::ACTIVE->value) {
+        if (($dto->status ?? BatchStatus::ACTIVE->value) === BatchStatus::ACTIVE->value) {
             $this->validateTank->execute($dto->tankId, $companyId);
         }
 

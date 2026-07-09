@@ -7,13 +7,13 @@ namespace App\Application\UseCases\Supply;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\SupplyInputDTO;
 use App\Domain\Models\Supply;
-use App\Infrastructure\Persistence\SupplyRepository;
+use App\Domain\Repositories\SupplyRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 
 final readonly class UpdateSupplyUseCase
 {
     public function __construct(
-        private SupplyRepository $supplyRepository,
+        private SupplyRepositoryInterface $supplyRepository,
         private CompanyResolverInterface $companyResolver,
     ) {
     }
@@ -30,12 +30,7 @@ final readonly class UpdateSupplyUseCase
         return DB::transaction(function () use ($id, $data): Supply {
             $dto = SupplyInputDTO::fromArray($data);
 
-            return $this->supplyRepository->update($id, [
-                'company_id'   => $dto->companyId,
-                'name'         => $dto->name,
-                'category'     => $dto->category,
-                'default_unit' => $dto->defaultUnit,
-            ]);
+            return $this->supplyRepository->update($id, $dto);
         });
     }
 }

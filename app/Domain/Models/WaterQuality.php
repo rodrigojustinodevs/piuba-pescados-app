@@ -14,12 +14,12 @@ use Illuminate\Support\Str;
  * @property string $tank_id
  * @property string $company_id
  * @property Carbon|null $measured_at
- * @property float $ph
- * @property float $dissolved_oxygen
- * @property float $temperature
- * @property float $ammonia
- * @property float $salinity
- * @property float $turbidity
+ * @property float|null $ph
+ * @property float|null $dissolved_oxygen
+ * @property float|null $temperature
+ * @property float|null $ammonia
+ * @property float|null $salinity
+ * @property float|null $turbidity
  * @property string $notes
  * @property string $quality
  * @property Carbon|null $created_at
@@ -64,10 +64,10 @@ class WaterQuality extends BaseModel
 
         static::saving(function (WaterQuality $record): void {
             $record->quality = WaterQualityThresholds::quality(
-                ph:              $record->ph               !== null ? (float) $record->ph               : null,
+                ph:              $record->ph !== null ? (float) $record->ph : null,
                 dissolvedOxygen: $record->dissolved_oxygen !== null ? (float) $record->dissolved_oxygen : null,
-                ammonia:         $record->ammonia          !== null ? (float) $record->ammonia          : null,
-                temperature:     $record->temperature      !== null ? (float) $record->temperature      : null,
+                ammonia:         $record->ammonia !== null ? (float) $record->ammonia : null,
+                temperature:     $record->temperature !== null ? (float) $record->temperature : null,
             )->value;
         });
     }

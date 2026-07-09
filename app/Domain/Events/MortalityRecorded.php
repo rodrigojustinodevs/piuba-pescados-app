@@ -20,6 +20,7 @@ final readonly class MortalityRecorded implements ShouldDispatchAfterCommit
 
     public function __construct(
         public Mortality $mortality,
+        public string $companyId = '',
     ) {
     }
 }

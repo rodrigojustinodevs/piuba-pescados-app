@@ -29,21 +29,21 @@ final class MortalityResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'            => $this->id,
-            'mortalityDate' => $this->mortality_date?->toDateString(),
-            'quantity'      => $this->quantity,
-            'cause'         => $this->cause->value,
-            'description'   => $this->description,
-            'severity'      => $this->severity,
+            'id'              => $this->id,
+            'mortalityDate'   => $this->mortality_date?->toDateString(),
+            'quantity'        => $this->quantity,
+            'cause'           => $this->cause->value,
+            'description'     => $this->description,
+            'severity'        => $this->severity,
             'batchPercentage' => $this->whenLoaded('batch', function (): float {
                 $initial = (int) ($this->batch->initial_quantity ?? 0);
 
                 return $initial > 0 ? round(($this->quantity / $initial) * 100, 2) : 0.0;
             }),
-            'createdAt'     => $this->created_at?->toDateTimeString(),
-            'updatedAt'     => $this->updated_at?->toDateTimeString(),
-            'batchId' => $this->batch_id,
-            'batch' => $this->whenLoaded('batch', fn (): array => [
+            'createdAt' => $this->created_at?->toDateTimeString(),
+            'updatedAt' => $this->updated_at?->toDateTimeString(),
+            'batchId'   => $this->batch_id,
+            'batch'     => $this->whenLoaded('batch', fn (): array => [
                 'id'              => $this->batch->id,
                 'name'            => $this->batch->name,
                 'initialQuantity' => $this->batch->initial_quantity,

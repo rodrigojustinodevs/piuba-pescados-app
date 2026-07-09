@@ -22,10 +22,10 @@ use PHPOpenSourceSaver\JWTAuth\JWTAuth;
  *   - role     → role in the active company
  *   - perms    → list of permissions (optional, increases the token size)
  */
-final class CompanyJwtService implements TokenServiceInterface
+final readonly class CompanyJwtService implements TokenServiceInterface
 {
     public function __construct(
-        private readonly JWTAuth $jwt,
+        private JWTAuth $jwt,
     ) {
     }
 
@@ -41,7 +41,6 @@ final class CompanyJwtService implements TokenServiceInterface
 
     public function generateForMasterAdmin(User $user): string
     {
- 
         return $this->generateToken($user, new TenantContext(
             userId:      (string) $user->id,
             companyId:   '',
@@ -49,20 +48,20 @@ final class CompanyJwtService implements TokenServiceInterface
             permissions: $user->permissions->toArray(),
         ));
     }
- 
+
     public function generateForCompanyUser(User $user, Company $company): string
     {
         // Leitura do pivot e do role encapsulada aqui — não no UseCase
         $pivotValue = $company->getRelationValue('pivot');
         $pivot      = $pivotValue instanceof CompanyUserPivot ? $pivotValue : null;
- 
+
         // Se o pivot estiver ausente, o JWT não pode ser gerado com role correto
-        if ($pivot === null) {
+        if (! $pivot instanceof CompanyUserPivot) {
             throw new \RuntimeException(
                 "CompanyUserPivot not loaded for user [{$user->id}] and company [{$company->id}]."
             );
         }
- 
+
         return $this->generateToken($user, new TenantContext(
             userId:      (string) $user->id,
             companyId:   (string) $company->id,
@@ -80,7 +79,7 @@ final class CompanyJwtService implements TokenServiceInterface
         bool $includePermissions = false,
     ): string {
         $customClaims = [
-            'unm' => $user->name,
+            'unm'  => $user->name,
             'cid'  => $context->companyId,
             'role' => $context->role->value(),
         ];

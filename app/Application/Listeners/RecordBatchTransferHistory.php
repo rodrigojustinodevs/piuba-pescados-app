@@ -28,7 +28,7 @@ final readonly class RecordBatchTransferHistory
 
         $stocking = $this->stockingRepository->findActiveByBatch((string) $transfer->batch_id);
 
-        if ($stocking === null) {
+        if (! $stocking instanceof \App\Domain\Models\Stocking) {
             return;
         }
 
@@ -42,8 +42,8 @@ final readonly class RecordBatchTransferHistory
             'notes'       => sprintf(
                 'Transferência de %d unidades do tanque "%s" para "%s". Motivo: %s.',
                 $transfer->quantity,
-                $transfer->originTank?->name ?? (string) $transfer->origin_tank_id,
-                $transfer->destinationTank?->name ?? (string) $transfer->destination_tank_id,
+                $transfer->originTank->name ?? (string) $transfer->origin_tank_id,
+                $transfer->destinationTank->name ?? (string) $transfer->destination_tank_id,
                 $transfer->reason ?? 'other',
             ),
         ]);

@@ -70,22 +70,22 @@ final class ClientController
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"companyId", "name", "personType"},
+     *             required={"companyId", "name", "personType", "documentNumber", "status", "priceGroup"},
      *             @OA\Property(property="companyId", type="string", format="uuid"),
-     *             @OA\Property(property="name", type="string", maxLength=255, example="João Silva"),
      *             @OA\Property(property="personType", type="string", enum={"individual", "company"}),
-     *             @OA\Property(property="documentNumber", type="string", nullable=true, example="12345678901"),
+     *             @OA\Property(property="name", type="string", maxLength=255, example="TESTE 02"),
+     *             @OA\Property(property="tradeName", type="string", nullable=true, maxLength=255),
+     *             @OA\Property(property="documentNumber", type="string", example="21.213.132/1313-11"),
+     *             @OA\Property(property="contact", type="string", nullable=true, maxLength=255),
      *             @OA\Property(property="email", type="string", format="email", nullable=true),
      *             @OA\Property(property="phone", type="string", nullable=true, maxLength=20),
-     *             @OA\Property(property="contact", type="string", nullable=true, maxLength=255),
+     *             @OA\Property(property="priceGroup", type="string", enum={"wholesale","retail","consumer"}),
+     *             @OA\Property(property="city", type="string", nullable=true, maxLength=255),
+     *             @OA\Property(property="state", type="string", nullable=true, maxLength=2),
      *             @OA\Property(property="address", type="string", nullable=true, maxLength=255),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive","prospect"}),
      *             @OA\Property(property="creditLimit", type="number", format="float", nullable=true),
-     *             @OA\Property(
-     *                 property="priceGroup",
-     *                 type="string",
-     *                 enum={"wholesale","retail","consumer"},
-     *                 nullable=true
-     *             )
+     *             @OA\Property(property="notes", type="string", nullable=true)
      *         )
      *     ),
      *     @OA\Response(response=201, description="Client created successfully"),
@@ -112,18 +112,19 @@ final class ClientController
      *         @OA\JsonContent(
      *             @OA\Property(property="name", type="string", maxLength=255),
      *             @OA\Property(property="personType", type="string", enum={"individual", "company"}),
+     *             @OA\Property(property="tradeName", type="string", nullable=true, maxLength=255),
      *             @OA\Property(property="documentNumber", type="string", nullable=true),
+     *             @OA\Property(property="contact", type="string", nullable=true),
      *             @OA\Property(property="email", type="string", format="email", nullable=true),
      *             @OA\Property(property="phone", type="string", nullable=true),
-     *             @OA\Property(property="contact", type="string", nullable=true),
+     *             @OA\Property(property="priceGroup", type="string",
+     *                 enum={"wholesale","retail","consumer"}, nullable=true),
+     *             @OA\Property(property="city", type="string", nullable=true, maxLength=255),
+     *             @OA\Property(property="state", type="string", nullable=true, maxLength=2),
      *             @OA\Property(property="address", type="string", nullable=true),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive","prospect"}, nullable=true),
      *             @OA\Property(property="creditLimit", type="number", format="float", nullable=true),
-     *             @OA\Property(
-     *                 property="priceGroup",
-     *                 type="string",
-     *                 enum={"wholesale","retail","consumer"},
-     *                 nullable=true
-     *             )
+     *             @OA\Property(property="notes", type="string", nullable=true)
      *         )
      *     ),
      *     @OA\Response(response=200, description="Client updated successfully"),

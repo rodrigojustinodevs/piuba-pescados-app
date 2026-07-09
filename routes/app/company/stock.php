@@ -13,4 +13,10 @@ Route::middleware(['permission:create-stock|view-stock|update-stock|delete-stock
         Route::put('stock/{id}', [StockController::class, 'update']);
         Route::delete('stock/{id}', [StockController::class, 'destroy']);
         Route::patch('stock/{id}/adjust', [StockController::class, 'adjust']);
+
+        // Balances & Movements
+        Route::get('stocks/{id}/balances', [StockController::class, 'balances']);
+        Route::get('stocks/{id}/movements', [StockController::class, 'movements']);
+        Route::post('stocks/movements', [StockController::class, 'registerMovement']);
+        Route::post('stocks/transfers', [StockController::class, 'transfer']);
     });

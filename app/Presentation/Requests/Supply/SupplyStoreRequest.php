@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\Supply;
 
+use App\Domain\Enums\SupplyCategoryEnum;
+use App\Domain\Enums\SupplyStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +20,11 @@ final class SupplyStoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $map = [
-            'defaultUnit' => 'default_unit',
+            'unitCost'     => 'unit_cost',
+            'salePrice'    => 'sale_price',
+            'currentStock' => 'current_stock',
+            'minStock'     => 'min_stock',
+            'isProduct'    => 'is_product',
         ];
 
         $normalized = [];
@@ -35,15 +41,25 @@ final class SupplyStoreRequest extends FormRequest
     }
 
     /**
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Contracts\Validation\Rule|\Illuminate\Validation\Rules\In|string>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'name'         => ['required', 'string', 'max:255'],
-            'companyId'    => ['required', 'uuid', 'exists:companies,id'],
-            'category'     => ['nullable', 'string', 'max:255'],
-            'default_unit' => ['required', 'string', Rule::in(['kg', 'g', 'liter', 'ml', 'unit', 'box', 'piece'])],
+            'companyId' => ['sometimes', 'uuid', 'exists:companies,id'],
+            'name'      => ['required', 'string', 'max:255'],
+            'sku'       => ['nullable', 'string', 'max:100',
+                Rule::unique('supplies', 'sku')->whereNull('deleted_at')],
+            'category'      => ['required', Rule::enum(SupplyCategoryEnum::class)],
+            'unit'          => ['required', 'string', 'max:50'],
+            'unit_cost'     => ['required', 'numeric', 'min:0'],
+            'sale_price'    => ['required', 'numeric', 'min:0'],
+            'current_stock' => ['required', 'numeric', 'min:0'],
+            'min_stock'     => ['required', 'numeric', 'min:0'],
+            'supplier_id'   => ['nullable', 'uuid', 'exists:suppliers,id'],
+            'is_product'    => ['required', 'boolean'],
+            'status'        => ['sometimes', Rule::enum(SupplyStatusEnum::class)],
+            'description'   => ['nullable', 'string'],
         ];
     }
 
@@ -54,20 +70,26 @@ final class SupplyStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'The supply name is required.',
-            'name.string'   => 'The supply name must be a string.',
-            'name.max'      => 'The supply name may not be greater than 255 characters.',
-
-            'companyId.required' => 'The company ID is required.',
-            'companyId.uuid'     => 'The company ID must be a valid UUID.',
-            'companyId.exists'   => 'The selected company does not exist.',
-
-            'category.string' => 'The category must be a string.',
-            'category.max'    => 'The category may not be greater than 255 characters.',
-
-            'default_unit.required' => 'The default unit is required.',
-            'default_unit.string'   => 'The default unit must be a string.',
-            'default_unit.in'       => 'The default unit must be: kg, g, liter, ml, unit, box, piece.',
+            'name.required'          => 'O nome do insumo é obrigatório.',
+            'name.max'               => 'O nome não pode ter mais de 255 caracteres.',
+            'sku.unique'             => 'Este SKU já está em uso.',
+            'category.required'      => 'A categoria é obrigatória.',
+            'category.enum'          => 'Categoria inválida.',
+            'unit.required'          => 'A unidade de medida é obrigatória.',
+            'unit_cost.required'     => 'O custo unitário é obrigatório.',
+            'unit_cost.numeric'      => 'O custo unitário deve ser numérico.',
+            'unit_cost.min'          => 'O custo unitário não pode ser negativo.',
+            'sale_price.required'    => 'O preço de venda é obrigatório.',
+            'sale_price.numeric'     => 'O preço de venda deve ser numérico.',
+            'current_stock.required' => 'O estoque atual é obrigatório.',
+            'current_stock.numeric'  => 'O estoque atual deve ser numérico.',
+            'min_stock.required'     => 'O estoque mínimo é obrigatório.',
+            'min_stock.numeric'      => 'O estoque mínimo deve ser numérico.',
+            'supplier_id.uuid'       => 'O fornecedor deve ser um UUID válido.',
+            'supplier_id.exists'     => 'O fornecedor selecionado não existe.',
+            'is_product.required'    => 'O campo produto vendável é obrigatório.',
+            'is_product.boolean'     => 'O campo produto vendável deve ser verdadeiro ou falso.',
+            'status.enum'            => 'Status inválido.',
         ];
     }
 }

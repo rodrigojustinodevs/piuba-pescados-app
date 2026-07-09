@@ -16,21 +16,45 @@ class FinancialTransactionStoreRequest extends FormRequest
         return true;
     }
 
+    #[\Override]
+    protected function prepareForValidation(): void
+    {
+        $map = [
+            'companyId'   => 'company_id',
+            'categoryId'  => 'financial_category_id',
+            'paymentDate' => 'payment_date',
+            'dueDate'     => 'due_date',
+        ];
+
+        $merge = [];
+
+        foreach ($map as $camel => $snake) {
+            if ($this->has($camel) && ! $this->has($snake)) {
+                $merge[$snake] = $this->input($camel);
+            }
+        }
+
+        if ($merge !== []) {
+            $this->merge($merge);
+        }
+    }
+
     /**
      * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            'company_id'            => ['nullable', 'uuid', 'exists:companies,id'],
-            'financial_category_id' => ['required', 'uuid', 'exists:financial_categories,id'],
-            'type'                  => ['required', 'string', new Enum(FinancialType::class)],
-            'status'                => ['nullable', 'string', new Enum(FinancialTransactionStatus::class)],
-            'amount'                => ['required', 'numeric', 'min:0.01'],
-            'due_date'              => ['required', 'date'],
-            'payment_date'          => ['nullable', 'date', 'before_or_equal:today'],
-            'description'           => ['nullable', 'string', 'max:500'],
-            'notes'                 => ['nullable', 'string'],
+            'company_id'            => ['sometimes', 'uuid', 'exists:companies,id'],
+            'financial_category_id' => ['nullable', 'required_unless:type,transfer',
+                'uuid', 'exists:financial_categories,id'],
+            'type'         => ['required', 'string', new Enum(FinancialType::class)],
+            'status'       => ['nullable', 'string', new Enum(FinancialTransactionStatus::class)],
+            'amount'       => ['required', 'numeric', 'min:0.01'],
+            'due_date'     => ['required', 'date'],
+            'payment_date' => ['nullable', 'date', 'before_or_equal:today'],
+            'description'  => ['nullable', 'string', 'max:500'],
+            'notes'        => ['nullable', 'string'],
         ];
     }
 
@@ -44,13 +68,14 @@ class FinancialTransactionStoreRequest extends FormRequest
             'company_id.uuid'   => 'The company ID must be a valid UUID.',
             'company_id.exists' => 'The selected company does not exist.',
 
-            'financial_category_id.required' => 'The financial category is required.',
-            'financial_category_id.uuid'     => 'The financial category ID must be a valid UUID.',
-            'financial_category_id.exists'   => 'The selected financial category does not exist.',
+            'financial_category_id.required_unless' => 'The financial category is required '
+                . 'for non-transfer transactions.',
+            'financial_category_id.uuid'            => 'The financial category ID must be a valid UUID.',
+            'financial_category_id.exists'          => 'The selected financial category does not exist.',
 
             'type.required'                         => 'The transaction type is required.',
             'type.Illuminate\Validation\Rules\Enum' => 'The transaction type must be:'
-                . 'revenue (Revenue), expense (Expense) or investment (Investment).',
+                . 'revenue (Revenue), expense (Expense), investment (Investment) or transfer (Transfer).',
 
             'status.Illuminate\Validation\Rules\Enum' => 'The status must be:'
                 . 'pending, paid, overdue or cancelled.',

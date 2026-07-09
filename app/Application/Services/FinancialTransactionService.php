@@ -25,9 +25,13 @@ final readonly class FinancialTransactionService
      * @throws CategoryTypeMismatchException
      */
     public function validateCategoryType(
-        string $categoryId,
+        ?string $categoryId,
         FinancialType $transactionType,
     ): void {
+        if ($categoryId === null || $categoryId === '') {
+            return;
+        }
+
         $category = $this->categoryRepository->findOrFail($categoryId);
 
         if ($category->type !== $transactionType) {

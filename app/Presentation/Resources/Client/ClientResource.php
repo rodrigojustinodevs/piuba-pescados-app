@@ -11,15 +11,20 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property-read string $id
  * @property-read string $company_id
  * @property-read string $name
+ * @property-read string|null $trade_name
  * @property-read string $document_number
  * @property-read string $person_type
- * @property-read string $address
+ * @property-read string|null $address
+ * @property-read string|null $city
+ * @property-read string|null $state
+ * @property-read \App\Domain\Enums\ClientStatusEnum $status
  * @property-read string|null $email
  * @property-read string|null $phone
  * @property-read string|null $contact
  * @property-read float|null $credit_limit
  * @property-read bool $is_defaulter
  * @property-read \App\Domain\Enums\PriceGroup|null $price_group
+ * @property-read string|null $notes
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Company|null $company
@@ -37,21 +42,27 @@ class ClientResource extends JsonResource
     {
         return [
             'id'             => $this->id,
-            'name'           => $this->name,
+            'companyId'      => $this->company_id,
             'personType'     => $this->person_type,
+            'name'           => $this->name,
+            'tradeName'      => $this->trade_name,
             'documentNumber' => $this->document_number,
+            'contact'        => $this->contact,
             'email'          => $this->email,
             'phone'          => $this->phone,
-            'contact'        => $this->contact,
+            'priceGroup'     => $this->price_group?->value,
+            'city'           => $this->city,
+            'state'          => $this->state,
             'address'        => $this->address,
+            'status'         => $this->status->value,
             'creditLimit'    => $this->credit_limit,
             'isDefaulter'    => (bool) $this->is_defaulter,
-            'priceGroup'     => $this->price_group?->value,
+            'notes'          => $this->notes,
             'company'        => $this->whenLoaded('company', fn (): array => [
                 'name' => $this->company->name,
             ]),
-            'createdAt' => $this->created_at?->toDateTimeString(),
-            'updatedAt' => $this->updated_at?->toDateTimeString(),
+            'createdAt' => $this->created_at?->toIso8601String(),
+            'updatedAt' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

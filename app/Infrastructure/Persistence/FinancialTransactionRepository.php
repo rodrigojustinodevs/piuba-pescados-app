@@ -62,13 +62,13 @@ final class FinancialTransactionRepository implements FinancialTransactionReposi
 
     /**
      * @param array{
-     *     company_id: string,
+     *     companyId: string,
      *     status?: string|null,
      *     type?: string|null,
-     *     financial_category_id?: string|null,
-     *     due_date_from?: string|null,
-     *     due_date_to?: string|null,
-     *     per_page?: int,
+     *     financialCategoryId?: string|null,
+     *     dueDateFrom?: string|null,
+     *     dueDateTo?: string|null,
+     *     perPage?: int,
      * } $filters
      */
     public function paginate(array $filters): PaginationInterface
@@ -77,7 +77,10 @@ final class FinancialTransactionRepository implements FinancialTransactionReposi
             'company:id,name',
             'category:id,name,type',
         ])
-            ->where('company_id', $filters['company_id'])
+            ->when(
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
+            )
             ->when(
                 ! empty($filters['status']),
                 static fn ($q) => $q->where(
@@ -93,19 +96,19 @@ final class FinancialTransactionRepository implements FinancialTransactionReposi
                 ),
             )
             ->when(
-                ! empty($filters['financial_category_id']),
-                static fn ($q) => $q->where('financial_category_id', $filters['financial_category_id']),
+                ! empty($filters['financialCategoryId']),
+                static fn ($q) => $q->where('financial_category_id', $filters['financialCategoryId']),
             )
             ->when(
-                ! empty($filters['due_date_from']),
-                static fn ($q) => $q->whereDate('due_date', '>=', $filters['due_date_from']),
+                ! empty($filters['dueDateFrom']),
+                static fn ($q) => $q->whereDate('due_date', '>=', $filters['dueDateFrom']),
             )
             ->when(
-                ! empty($filters['due_date_to']),
-                static fn ($q) => $q->whereDate('due_date', '<=', $filters['due_date_to']),
+                ! empty($filters['dueDateTo']),
+                static fn ($q) => $q->whereDate('due_date', '<=', $filters['dueDateTo']),
             )
             ->latest('due_date')
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

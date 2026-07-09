@@ -19,7 +19,8 @@ final readonly class CheckPermission
 
     public function handle(Request $request, Closure $next, string ...$permissions): Response
     {
-        $user      = $request->user();
+        $user = $request->user();
+
         if ($user->isMasterAdmin()) {
             return $next($request);
         }

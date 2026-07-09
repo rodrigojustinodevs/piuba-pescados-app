@@ -6,6 +6,7 @@ namespace App\Infrastructure\Persistence;
 
 use App\Application\DTOs\FinancialCategoryInputDTO;
 use App\Domain\Enums\FinancialCategoryStatus;
+use App\Domain\Enums\FinancialTransactionStatus;
 use App\Domain\Enums\FinancialType;
 use App\Domain\Exceptions\FinancialCategoryHasTransactionsException;
 use App\Domain\Models\FinancialCategory;
@@ -14,6 +15,26 @@ use App\Domain\Repositories\PaginationInterface;
 
 final class FinancialCategoryRepository implements FinancialCategoryRepositoryInterface
 {
+    /** @return array<string, callable> */
+    private function totalAmountSum(): array
+    {
+        return [
+            'financialTransactions as total_amount' => static function ($q): void {
+                $q->where('status', '!=', FinancialTransactionStatus::CANCELLED->value);
+            },
+        ];
+    }
+
+    /** @return array<string, callable> */
+    private function withCompany(): array
+    {
+        return [
+            'company' => static function ($q): void {
+                $q->withTrashed()->select(['id', 'name']);
+            },
+        ];
+    }
+
     public function create(FinancialCategoryInputDTO $dto): FinancialCategory
     {
         /** @var FinancialCategory $category */
@@ -22,9 +43,10 @@ final class FinancialCategoryRepository implements FinancialCategoryRepositoryIn
             'name'       => $dto->name,
             'type'       => $dto->type->value,
             'status'     => $dto->status->value,
+            'notes'      => $dto->notes,
         ]);
 
-        return $category->load('company:id,name');
+        return $category->loadSum($this->totalAmountSum(), 'amount')->load($this->withCompany());
     }
 
     /**
@@ -36,7 +58,7 @@ final class FinancialCategoryRepository implements FinancialCategoryRepositoryIn
 
         $category->update($attributes);
 
-        return $category->refresh()->load('company:id,name');
+        return $category->refresh()->loadSum($this->totalAmountSum(), 'amount')->load($this->withCompany());
     }
 
     /**
@@ -56,7 +78,9 @@ final class FinancialCategoryRepository implements FinancialCategoryRepositoryIn
 
     public function findOrFail(string $id): FinancialCategory
     {
-        return FinancialCategory::with('company:id,name')->findOrFail($id);
+        return FinancialCategory::with($this->withCompany())
+            ->withSum($this->totalAmountSum(), 'amount')
+            ->findOrFail($id);
     }
 
     /**
@@ -69,8 +93,12 @@ final class FinancialCategoryRepository implements FinancialCategoryRepositoryIn
      */
     public function paginate(array $filters): PaginationInterface
     {
-        $paginator = FinancialCategory::with('company:id,name')
-            ->where('company_id', $filters['companyId'])
+        $paginator = FinancialCategory::with($this->withCompany())
+            ->withSum($this->totalAmountSum(), 'amount')
+            ->when(
+                ! empty($filters['companyId']),
+                static fn ($q) => $q->where('company_id', $filters['companyId']),
+            )
             ->when(
                 ! empty($filters['type']),
                 static fn ($q) => $q->where(
@@ -93,7 +121,8 @@ final class FinancialCategoryRepository implements FinancialCategoryRepositoryIn
 
     public function showFinancialCategory(string $field, string | int $value): ?FinancialCategory
     {
-        return FinancialCategory::with('company:id,name')
+        return FinancialCategory::with($this->withCompany())
+            ->withSum($this->totalAmountSum(), 'amount')
             ->where($field, $value)
             ->first();
     }

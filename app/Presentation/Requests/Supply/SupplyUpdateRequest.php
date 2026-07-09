@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presentation\Requests\Supply;
 
+use App\Domain\Enums\SupplyCategoryEnum;
+use App\Domain\Enums\SupplyStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +20,11 @@ final class SupplyUpdateRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $map = [
-            'defaultUnit' => 'default_unit',
+            'unitCost'     => 'unit_cost',
+            'salePrice'    => 'sale_price',
+            'currentStock' => 'current_stock',
+            'minStock'     => 'min_stock',
+            'isProduct'    => 'is_product',
         ];
 
         $normalized = [];
@@ -35,15 +41,28 @@ final class SupplyUpdateRequest extends FormRequest
     }
 
     /**
-     * @return array<string, array<int, \Illuminate\Contracts\Validation\ValidationRule|\Illuminate\Contracts\Validation\Rule|\Illuminate\Validation\Rules\In|string>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
+        $supplyId = $this->route('id');
+
         return [
-            'name'         => ['sometimes', 'string', 'max:255'],
-            'companyId'    => ['sometimes', 'uuid', 'exists:companies,id'],
-            'category'     => ['sometimes', 'nullable', 'string', 'max:255'],
-            'default_unit' => ['sometimes', 'string', Rule::in(['kg', 'g', 'liter', 'ml', 'unit', 'box', 'piece'])],
+            'name' => ['sometimes', 'string', 'max:255'],
+            'sku'  => [
+                'sometimes', 'nullable', 'string', 'max:100',
+                Rule::unique('supplies', 'sku')->ignore($supplyId)->whereNull('deleted_at'),
+            ],
+            'category'      => ['sometimes', Rule::enum(SupplyCategoryEnum::class)],
+            'unit'          => ['sometimes', 'string', 'max:50'],
+            'unit_cost'     => ['sometimes', 'numeric', 'min:0'],
+            'sale_price'    => ['sometimes', 'numeric', 'min:0'],
+            'current_stock' => ['sometimes', 'numeric', 'min:0'],
+            'min_stock'     => ['sometimes', 'numeric', 'min:0'],
+            'supplier_id'   => ['sometimes', 'nullable', 'uuid', 'exists:suppliers,id'],
+            'is_product'    => ['sometimes', 'boolean'],
+            'status'        => ['sometimes', Rule::enum(SupplyStatusEnum::class)],
+            'description'   => ['sometimes', 'nullable', 'string'],
         ];
     }
 
@@ -54,17 +73,16 @@ final class SupplyUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.string' => 'The supply name must be a string.',
-            'name.max'    => 'The supply name may not be greater than 255 characters.',
-
-            'companyId.uuid'   => 'The company ID must be a valid UUID.',
-            'companyId.exists' => 'The selected company does not exist.',
-
-            'category.string' => 'The category must be a string.',
-            'category.max'    => 'The category may not be greater than 255 characters.',
-
-            'default_unit.string' => 'The default unit must be a string.',
-            'default_unit.in'     => 'The default unit must be: kg, g, liter, ml, unit, box, piece.',
+            'name.max'              => 'O nome não pode ter mais de 255 caracteres.',
+            'sku.unique'            => 'Este SKU já está em uso.',
+            'category.enum'         => 'Categoria inválida.',
+            'unit_cost.numeric'     => 'O custo unitário deve ser numérico.',
+            'unit_cost.min'         => 'O custo unitário não pode ser negativo.',
+            'sale_price.numeric'    => 'O preço de venda deve ser numérico.',
+            'current_stock.numeric' => 'O estoque atual deve ser numérico.',
+            'min_stock.numeric'     => 'O estoque mínimo deve ser numérico.',
+            'is_product.boolean'    => 'O campo produto vendável deve ser verdadeiro ou falso.',
+            'status.enum'           => 'Status inválido.',
         ];
     }
 }

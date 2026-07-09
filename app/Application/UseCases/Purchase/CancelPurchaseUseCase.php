@@ -19,7 +19,7 @@ final readonly class CancelPurchaseUseCase
     public function execute(string $id): Purchase
     {
         $purchase      = $this->repository->findOrFail($id);
-        $currentStatus = PurchaseStatus::from($purchase->status);
+        $currentStatus = $purchase->status;
 
         if (! $currentStatus->canTransitionTo(PurchaseStatus::CANCELLED)) {
             throw new InvalidPurchaseStatusTransitionException(

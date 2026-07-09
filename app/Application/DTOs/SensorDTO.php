@@ -43,12 +43,12 @@ final readonly class SensorDTO
             tankId:             $sensor->tank_id,
             companyId:          $sensor->company_id,
             sensorType:         $sensor->sensor_type,
+            status:             self::toOutputStatus((string) $sensor->status),
             name:               $sensor->name,
             serialNumber:       $sensor->serial_number,
             battery:            $sensor->battery,
             unit:               $sensor->unit,
             lastReading:        $sensor->last_reading,
-            status:             self::toOutputStatus((string) $sensor->status),
             installationDate:   $installationStr,
             notes:              $sensor->notes,
             tank:               $tank,
@@ -65,6 +65,7 @@ final readonly class SensorDTO
             tankId:             (string) ($data['tank_id'] ?? $data['tankId'] ?? ''),
             companyId:          (string) ($data['company_id'] ?? $data['companyId'] ?? ''),
             sensorType:         (string) ($data['sensor_type'] ?? $data['sensorType'] ?? ''),
+            status:             self::toPersistenceStatus((string) ($data['status'] ?? 'active')),
             name: isset($data['name']) ? (string) $data['name'] : null,
             serialNumber: isset($data['serial_number'])
                 ? (string) $data['serial_number']
@@ -74,7 +75,6 @@ final readonly class SensorDTO
             lastReading: isset($data['last_reading'])
                 ? (float) $data['last_reading']
                 : (isset($data['lastReading']) ? (float) $data['lastReading'] : null),
-            status:             self::toPersistenceStatus((string) ($data['status'] ?? 'active')),
             installationDate: isset($data['installation_date'])
                 ? (string) $data['installation_date']
                 : (isset($data['installationDate']) ? (string) $data['installationDate'] : null),

@@ -21,10 +21,7 @@ final class SensorPolicy
     public function view(User $user, Sensor $sensor): bool
     {
         if (! $this->context()->hasPermission(PermissionsEnum::VIEW_SENSOR)) {
-            if (!CompanyContext::isMasterAdmin()) {
-                return false;
-            }
-            return true;
+            return CompanyContext::isMasterAdmin();
         }
 
         $this->context()->assertOwns($sensor->company_id);

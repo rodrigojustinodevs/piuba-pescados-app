@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 it('retorna 401 no CheckRole quando request nao tem usuario autenticado', function (): void {
-    $resolver = app(PermissionResolver::class);
+    $resolver   = app(PermissionResolver::class);
     $middleware = new CheckRole($resolver);
     $request    = Request::create('/api/admin/companies', 'GET');
 
@@ -31,19 +31,19 @@ it('retorna 401 no CheckRole quando request nao tem usuario autenticado', functi
 it('permite acessar admin companies para master_admin sem exigir company context', function (): void {
     $this->app->bind(CompanyRepositoryInterface::class, fn (): CompanyRepositoryInterface => new class () implements CompanyRepositoryInterface
     {
-        public function create(\App\Application\DTOs\CompanyInputDTO $dto): Company
+        public function create(App\Application\DTOs\CompanyInputDTO $dto): Company
         {
-            throw new \RuntimeException('Not implemented for this test.');
+            throw new RuntimeException('Not implemented for this test.');
         }
 
         public function update(string $id, array $attributes): Company
         {
-            throw new \RuntimeException('Not implemented for this test.');
+            throw new RuntimeException('Not implemented for this test.');
         }
 
         public function delete(string $id): void
         {
-            throw new \RuntimeException('Not implemented for this test.');
+            throw new RuntimeException('Not implemented for this test.');
         }
 
         public function paginate(array $filters = []): PaginationInterface
@@ -84,12 +84,12 @@ it('permite acessar admin companies para master_admin sem exigir company context
 
         public function findOrFail(string $id): Company
         {
-            throw new \RuntimeException('Not implemented for this test.');
+            throw new RuntimeException('Not implemented for this test.');
         }
 
-        public function showCompany(string $field, string|int $value): ?Company
+        public function showCompany(string $field, string | int $value): ?Company
         {
-            throw new \RuntimeException('Not implemented for this test.');
+            throw new RuntimeException('Not implemented for this test.');
         }
     });
 
@@ -97,7 +97,7 @@ it('permite acessar admin companies para master_admin sem exigir company context
         'id' => (string) Str::uuid(),
     ]);
 
-    $user = \Mockery::mock($baseUser)->makePartial();
+    $user = Mockery::mock($baseUser)->makePartial();
     $user->shouldReceive('isMasterAdmin')->andReturnTrue();
 
     $response = $this

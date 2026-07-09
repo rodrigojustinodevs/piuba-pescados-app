@@ -8,11 +8,17 @@ use App\Application\DTOs\SensorDTO;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @property-read string $id
- * @property-read string $sensor_type
- * @property-read string $tank_id
- * @property-read string $installation_date
- * @property-read string $status
+ * @property-read string      $id
+ * @property-read string      $sensor_type
+ * @property-read string      $tank_id
+ * @property-read string|null $name
+ * @property-read string|null $serial_number
+ * @property-read int|null    $battery
+ * @property-read string|null $unit
+ * @property-read float|null  $last_reading
+ * @property-read string      $installation_date
+ * @property-read string|null $notes
+ * @property-read string      $status
  * @property-read \Illuminate\Support\Carbon|null $created_at
  * @property-read \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Domain\Models\Tank|null $tank

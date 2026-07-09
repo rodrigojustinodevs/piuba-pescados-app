@@ -47,7 +47,7 @@ final class TransferRepository implements TransferRepositoryInterface
                 static fn ($q) => $q->where('destination_tank_id', $filters['destinationTankId']),
             )
             ->latest()
-            ->paginate((int) ($filters['per_page'] ?? 25));
+            ->paginate((int) ($filters['perPage'] ?? 25));
 
         return new PaginationPresentr($paginator);
     }

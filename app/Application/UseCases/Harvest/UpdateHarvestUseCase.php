@@ -7,14 +7,13 @@ namespace App\Application\UseCases\Harvest;
 use App\Application\DTOs\HarvestDTO;
 use App\Domain\Models\Harvest;
 use App\Domain\Repositories\HarvestRepositoryInterface;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class UpdateHarvestUseCase
 {
     public function __construct(
-        protected HarvestRepositoryInterface $harvestRepository
+        protected HarvestRepositoryInterface $harvestRepository,
     ) {
     }
 
@@ -24,26 +23,31 @@ class UpdateHarvestUseCase
     public function execute(string $id, array $data): HarvestDTO
     {
         return DB::transaction(function () use ($id, $data): HarvestDTO {
+            $classifications = $data['size_classifications'] ?? null;
+            unset($data['size_classifications']);
+
             $harvest = $this->harvestRepository->update($id, $data);
 
             if (! $harvest instanceof Harvest) {
                 throw new RuntimeException('Harvest not found');
             }
 
-            $harvestDate = $harvest->harvest_date instanceof Carbon
-                ? $harvest->harvest_date
-                : Carbon::parse($harvest->harvest_date);
+            if ($classifications !== null) {
+                $harvest->sizeClassifications()->delete();
 
-            return new HarvestDTO(
-                id: $harvest->id,
-                batchId: $harvest->batch_id,
-                harvestDate: $harvestDate->toDateString(),
-                totalWeight: $harvest->total_weight,
-                pricePerKg: $harvest->price_per_kg,
-                totalRevenue: $harvest->total_revenue,
-                createdAt: $harvest->created_at?->toDateTimeString(),
-                updatedAt: $harvest->updated_at?->toDateTimeString()
-            );
+                $harvest->sizeClassifications()->createMany(
+                    array_map(fn (array $item): array => [
+                        'class'          => $item['class'],
+                        'quantity'       => $item['quantity'],
+                        'average_weight' => $item['average_weight'],
+                        'price_per_kg'   => $item['price_per_kg'],
+                    ], $classifications)
+                );
+            }
+
+            $harvest->load('sizeClassifications');
+
+            return HarvestDTOAssembler::fromModel($harvest);
         });
     }
 }

@@ -34,7 +34,8 @@ final readonly class GenerateStockingHistory
     public function handleFeedingCreated(FeedingCreated $event): void
     {
         $stocking = $this->stockingRepository->findActiveByBatch($event->feeding->batch_id);
-        if ($stocking === null) {
+
+        if (! $stocking instanceof Stocking) {
             return;
         }
 
@@ -55,7 +56,8 @@ final readonly class GenerateStockingHistory
     public function handleMortalityRecorded(MortalityRecorded $event): void
     {
         $stocking = $this->stockingRepository->findActiveByBatch($event->mortality->batch_id);
-        if ($stocking === null) {
+
+        if (! $stocking instanceof Stocking) {
             return;
         }
 

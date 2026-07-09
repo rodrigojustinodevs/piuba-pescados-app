@@ -50,7 +50,10 @@ final class FeedingRepository implements FeedingRepositoryInterface
             )
             ->when(
                 ! empty($filters['companyId']),
-                static fn ($q) => $q->whereHas('batch.tank', static fn ($tq) => $tq->where('company_id', $filters['companyId'])),
+                static fn ($q) => $q->whereHas(
+                    'batch.tank',
+                    static fn ($tq) => $tq->where('company_id', $filters['companyId'])
+                ),
             )
             ->when(
                 ! empty($filters['batchId']),

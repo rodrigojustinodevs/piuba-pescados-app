@@ -13,6 +13,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class WaterQualityResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function toArray(Request $request): array
     {
@@ -35,7 +38,7 @@ final class WaterQualityResource extends JsonResource
                 'tankType' => $this->tank->relationLoaded('tankType') && $this->tank->tankType !== null
                     ? $this->tank->tankType->name
                     : null,
-                'sensor'   => $this->tank->relationLoaded('sensor') && $this->tank->sensor !== null
+                'sensor' => $this->tank->relationLoaded('sensor') && $this->tank->sensor !== null
                     ? [
                         'id'          => $this->tank->sensor->id,
                         'sensorType'  => $this->tank->sensor->sensor_type,

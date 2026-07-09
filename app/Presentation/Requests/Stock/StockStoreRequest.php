@@ -45,15 +45,24 @@ final class StockStoreRequest extends FormRequest
     {
         return [
             'company_id'          => ['sometimes', 'nullable', 'uuid', 'exists:companies,id'],
-            'supply_id'           => ['required', 'uuid', 'exists:supplies,id'],
+            'supply_id'           => ['nullable', 'uuid', 'exists:supplies,id'],
             'supplier_id'         => ['nullable', 'uuid', 'exists:suppliers,id'],
-            'quantity'            => ['required', 'numeric', 'gt:0'],
-            'unit'                => ['required', 'string', 'max:20'],
-            'unit_price'          => ['required', 'numeric', 'min:0'],
+            'quantity'            => ['sometimes', 'numeric', 'min:0'],
+            'unit'                => ['sometimes', 'string', 'max:20'],
+            'unit_price'          => ['sometimes', 'numeric', 'min:0'],
             'total_cost'          => ['nullable', 'numeric', 'min:0'],
             'minimum_stock'       => ['nullable', 'numeric', 'min:0'],
             'withdrawal_quantity' => ['nullable', 'numeric', 'min:0'],
             'reference_id'        => ['nullable', 'uuid'],
+            // Location fields
+            'code'        => ['required', 'string', 'max:100'],
+            'name'        => ['required', 'string', 'max:255'],
+            'type'        => ['required', 'string', 'in:warehouse,cold_room,silo,storage,field'],
+            'location'    => ['required', 'string', 'max:255'],
+            'responsible' => ['required', 'string', 'max:255'],
+            'capacity'    => ['required', 'numeric', 'min:0'],
+            'status'      => ['nullable', 'string', 'in:active,inactive'],
+            'notes'       => ['nullable', 'string'],
         ];
     }
 
@@ -61,13 +70,14 @@ final class StockStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'supply_id.required'  => 'The supply is required.',
-            'supply_id.exists'    => 'Supply not found.',
-            'quantity.required'   => 'The quantity is required.',
-            'quantity.gt'         => 'The quantity must be greater than zero.',
-            'unit.required'       => 'The unit is required.',
-            'unit_price.required' => 'The unit price is required.',
-            'unit_price.min'      => 'The unit price cannot be negative.',
+            'code.required'        => 'O código do local é obrigatório.',
+            'name.required'        => 'O nome do local é obrigatório.',
+            'type.required'        => 'O tipo do local é obrigatório.',
+            'type.in'              => 'Tipo inválido. Use: warehouse, cold_room, silo, storage, field.',
+            'location.required'    => 'A localização é obrigatória.',
+            'responsible.required' => 'O responsável é obrigatório.',
+            'capacity.required'    => 'A capacidade é obrigatória.',
+            'unit_price.min'       => 'O preço unitário não pode ser negativo.',
         ];
     }
 }

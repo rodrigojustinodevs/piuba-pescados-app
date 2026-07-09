@@ -9,7 +9,7 @@ use Illuminate\Cache\Repository as CacheRepository;
 final readonly class PermissionCache
 {
     private const int TTL_SECONDS = 3600; // 1 hora
-    private const string PREFIX      = 'permissions';
+    private const string PREFIX   = 'permissions';
 
     public function __construct(
         private CacheRepository $cache,

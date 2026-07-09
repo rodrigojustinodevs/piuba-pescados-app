@@ -6,7 +6,6 @@ namespace App\Application\UseCases\Transfer;
 
 use App\Application\Actions\Transfer\ApplyBatchTransferAction;
 use App\Application\Actions\Transfer\GuardTransferRulesAction;
-use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\TransferInputDTO;
 use App\Domain\Events\BatchTransferred;
 use App\Domain\Models\Transfer;
@@ -20,7 +19,6 @@ final readonly class CreateTransferUseCase
     public function __construct(
         private TransferRepositoryInterface $transferRepository,
         private BatchRepositoryInterface $batchRepository,
-        private CompanyResolverInterface $companyResolver,
         private GuardTransferRulesAction $guardRules,
         private ApplyBatchTransferAction $applyBatchTransfer,
     ) {
@@ -29,7 +27,7 @@ final readonly class CreateTransferUseCase
     /** @param array<string, mixed> $data */
     public function execute(array $data): Transfer
     {
-        if (!CompanyContext::isMasterAdmin()) {
+        if (! CompanyContext::isMasterAdmin()) {
             $data['companyId'] = CompanyContext::requireCompanyId();
         }
         $dto   = TransferInputDTO::fromArray($data);

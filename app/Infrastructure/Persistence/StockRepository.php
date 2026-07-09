@@ -16,7 +16,7 @@ class StockRepository implements StockRepositoryInterface
 {
     private const array DEFAULT_RELATIONS = [
         'company:id,name',
-        'supply:id,name,default_unit',
+        'supply:id,name,unit',
         'supplier:id,name',
     ];
 
@@ -29,9 +29,9 @@ class StockRepository implements StockRepositoryInterface
 
         if ($supplyId === null || $supplyId === '') {
             $supply = Supply::create([
-                'company_id'   => $dto->companyId,
-                'name'         => 'Estoque legado ' . substr((string) \Illuminate\Support\Str::uuid(), 0, 8),
-                'default_unit' => $dto->unit,
+                'company_id' => $dto->companyId,
+                'name'       => 'Estoque legado ' . substr((string) \Illuminate\Support\Str::uuid(), 0, 8),
+                'unit'       => $dto->unit,
             ]);
             $supplyId = $supply->id;
         }
@@ -46,6 +46,14 @@ class StockRepository implements StockRepositoryInterface
             'unit_price'          => $dto->unitPrice,
             'minimum_stock'       => $dto->minimumStock,
             'withdrawal_quantity' => $dto->withdrawalQuantity,
+            'code'                => $dto->code,
+            'name'                => $dto->name,
+            'type'                => $dto->type,
+            'location'            => $dto->location,
+            'responsible'         => $dto->responsible,
+            'capacity'            => $dto->capacity,
+            'status'              => $dto->status,
+            'notes'               => $dto->notes,
         ]);
     }
 
@@ -64,6 +72,20 @@ class StockRepository implements StockRepositoryInterface
 
     /**
      * Get paginated stocks.
+     *
+     * @param array{
+     *     search?: string|null,
+     *     companyId?: string|null,
+     *     supplyId?: string|null,
+     *     supplierId?: string|null,
+     *     name?: string|null,
+     *     code?: string|null,
+     *     type?: string|null,
+     *     status?: string|null,
+     *     location?: string|null,
+     *     responsible?: string|null,
+     *     perPage?: int,
+     * } $filters
      */
     public function paginate(array $filters): PaginationInterface
     {
@@ -79,6 +101,30 @@ class StockRepository implements StockRepositoryInterface
             ->when(
                 ! empty($filters['supplierId']),
                 static fn ($q) => $q->where('supplier_id', $filters['supplierId']),
+            )
+            ->when(
+                ! empty($filters['name']),
+                static fn ($q) => $q->where('name', 'like', '%' . $filters['name'] . '%'),
+            )
+            ->when(
+                ! empty($filters['code']),
+                static fn ($q) => $q->where('code', 'like', '%' . $filters['code'] . '%'),
+            )
+            ->when(
+                ! empty($filters['type']),
+                static fn ($q) => $q->where('type', $filters['type']),
+            )
+            ->when(
+                ! empty($filters['status']),
+                static fn ($q) => $q->where('status', $filters['status']),
+            )
+            ->when(
+                ! empty($filters['location']),
+                static fn ($q) => $q->where('location', 'like', '%' . $filters['location'] . '%'),
+            )
+            ->when(
+                ! empty($filters['responsible']),
+                static fn ($q) => $q->where('responsible', 'like', '%' . $filters['responsible'] . '%'),
             )
             ->latest()
             ->paginate((int) ($filters['perPage'] ?? 25));
@@ -188,5 +234,13 @@ class StockRepository implements StockRepositoryInterface
             ->whereColumn('current_quantity', '<', 'minimum_stock')
             ->whereNull('deleted_at')
             ->count();
+    }
+
+    public function findByCode(string $companyId, string $code): ?Stock
+    {
+        return Stock::with(self::DEFAULT_RELATIONS)
+            ->where('company_id', $companyId)
+            ->where('code', $code)
+            ->first();
     }
 }

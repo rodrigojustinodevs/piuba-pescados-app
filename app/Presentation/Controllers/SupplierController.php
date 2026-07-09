@@ -101,9 +101,28 @@ final class SupplierController
      *             required={"companyId","name","contact","phone","email"},
      *             @OA\Property(property="companyId", type="string", format="uuid"),
      *             @OA\Property(property="name", type="string", maxLength=255),
+     *             @OA\Property(property="tradeName", type="string", maxLength=255, nullable=true),
+     *             @OA\Property(property="document", type="string", nullable=true, example="12345678000199"),
+     *             @OA\Property(property="stateRegistration", type="string", maxLength=30, nullable=true),
      *             @OA\Property(property="contact", type="string", maxLength=255),
      *             @OA\Property(property="phone", type="string", maxLength=20),
-     *             @OA\Property(property="email", type="string", format="email", maxLength=255)
+     *             @OA\Property(property="email", type="string", format="email", maxLength=255),
+     *             @OA\Property(property="category", type="string", enum={"feed","medication","equipment","supply","service","logistics","other"}),
+     *             @OA\Property(property="paymentTerms", type="string", nullable=true),
+     *             @OA\Property(property="rating", type="number", format="float", minimum=0, maximum=5),
+     *             @OA\Property(
+     *                 property="address",
+     *                 type="object",
+     *                 nullable=true,
+     *                 @OA\Property(property="street", type="string"),
+     *                 @OA\Property(property="number", type="string"),
+     *                 @OA\Property(property="complement", type="string"),
+     *                 @OA\Property(property="neighborhood", type="string"),
+     *                 @OA\Property(property="city", type="string"),
+     *                 @OA\Property(property="state", type="string"),
+     *                 @OA\Property(property="zipCode", type="string")
+     *             ),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive","suspended"})
      *         )
      *     ),
      *     @OA\Response(response=201, description="Criado"),
@@ -129,9 +148,28 @@ final class SupplierController
      *         @OA\JsonContent(
      *             @OA\Property(property="companyId", type="string", format="uuid"),
      *             @OA\Property(property="name", type="string", maxLength=255),
+     *             @OA\Property(property="tradeName", type="string", maxLength=255, nullable=true),
+     *             @OA\Property(property="document", type="string", nullable=true),
+     *             @OA\Property(property="stateRegistration", type="string", maxLength=30, nullable=true),
      *             @OA\Property(property="contact", type="string", maxLength=255),
      *             @OA\Property(property="phone", type="string", maxLength=20),
-     *             @OA\Property(property="email", type="string", format="email", maxLength=255)
+     *             @OA\Property(property="email", type="string", format="email", maxLength=255),
+     *             @OA\Property(property="category", type="string", enum={"feed","medication","equipment","supply","service","logistics","other"}),
+     *             @OA\Property(property="paymentTerms", type="string", nullable=true),
+     *             @OA\Property(property="rating", type="number", format="float", minimum=0, maximum=5),
+     *             @OA\Property(
+     *                 property="address",
+     *                 type="object",
+     *                 nullable=true,
+     *                 @OA\Property(property="street", type="string"),
+     *                 @OA\Property(property="number", type="string"),
+     *                 @OA\Property(property="complement", type="string"),
+     *                 @OA\Property(property="neighborhood", type="string"),
+     *                 @OA\Property(property="city", type="string"),
+     *                 @OA\Property(property="state", type="string"),
+     *                 @OA\Property(property="zipCode", type="string")
+     *             ),
+     *             @OA\Property(property="status", type="string", enum={"active","inactive","suspended"})
      *         )
      *     ),
      *     @OA\Response(response=200, description="Atualizado"),

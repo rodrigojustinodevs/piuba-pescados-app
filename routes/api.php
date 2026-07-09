@@ -26,7 +26,7 @@ Route::prefix('auth')->name('auth.')->middleware('auth:api')->group(function ():
 // auth:api → company.context → (permission ou role por rota)
 Route::middleware(['auth:api', 'company.context'])->group(function (): void {
     // ── Debug (remover em produção) ───────────────────────────────────────────
-    Route::get('/debug-context', fn() => response()->json([
+    Route::get('/debug-context', fn () => response()->json([
         'company_id' => App\Infrastructure\Security\CompanyContext::getCompanyId(),
         'role'       => App\Infrastructure\Security\CompanyContext::getRole(),
         'is_master'  => App\Infrastructure\Security\CompanyContext::isMasterAdmin(),
@@ -51,7 +51,6 @@ Route::middleware(['auth:api', 'company.context'])->group(function (): void {
             require base_path('routes/app/company/batch.php');
 
             require base_path('routes/app/company/biometry.php');
-
 
             require base_path('routes/app/company/client.php');
 
@@ -97,13 +96,14 @@ Route::middleware(['auth:api', 'company.context'])->group(function (): void {
 
             require base_path('routes/app/company/tank.php');
 
+            require base_path('routes/app/company/user.php');
+
             require base_path('routes/app/company/tankHistory.php');
 
             require base_path('routes/app/company/stockingHistory.php');
 
             require base_path('routes/app/company/waterQuality.php');
         });
-
 });
 
 // ── Master Admin (bypass total de company context) ────────────────────────────
@@ -114,4 +114,3 @@ Route::prefix('admin')
 
         require base_path('routes/app/admin/subscription.php');
     });
-});

@@ -18,6 +18,7 @@ final readonly class FinancialCategoryDTO
         public FinancialType $type,
         public FinancialCategoryStatus $status = FinancialCategoryStatus::ACTIVE,
         public ?array $company = null,
+        public ?string $notes = null,
         public ?string $createdAt = null,
         public ?string $updatedAt = null,
     ) {
@@ -42,6 +43,7 @@ final readonly class FinancialCategoryDTO
             type:      FinancialType::from((string) ($data['type'] ?? '')),
             status:    $status,
             company:   isset($data['company']) ? ['name' => $data['company']['name'] ?? null] : null,
+            notes:     isset($data['notes']) ? (string) $data['notes'] : null,
             createdAt: isset($data['created_at']) ? (string) $data['created_at'] : null,
             updatedAt: isset($data['updated_at']) ? (string) $data['updated_at'] : null,
         );

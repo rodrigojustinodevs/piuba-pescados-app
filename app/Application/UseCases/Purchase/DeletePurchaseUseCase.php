@@ -19,7 +19,7 @@ final readonly class DeletePurchaseUseCase
     public function execute(string $id): void
     {
         $purchase = $this->repository->findOrFail($id);
-        $status   = PurchaseStatus::from($purchase->status);
+        $status   = $purchase->status;
 
         if ($status->isReceived()) {
             throw new InvalidPurchaseStatusTransitionException(

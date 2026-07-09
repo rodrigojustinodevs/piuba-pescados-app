@@ -9,3 +9,4 @@ Route::post('/supply', [SupplyController::class, 'store']);
 Route::get('/supplies', [SupplyController::class, 'index']);
 Route::get('/supply/{id}', [SupplyController::class, 'show']);
 Route::put('/supply/{id}', [SupplyController::class, 'update']);
+Route::delete('/supply/{id}', [SupplyController::class, 'destroy']);

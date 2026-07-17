@@ -31,7 +31,7 @@ final readonly class AssignUserToCompanyUseCase
     ): User {
 
         $targetUser = $this->userRepository->findOrFail($targetUserId);
-        
+
         $companyId  = CompanyContext::resolveTargetCompanyId($requestedCompanyId);
 
         // 1. Valida contexto do usuário executor

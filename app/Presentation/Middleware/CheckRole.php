@@ -42,6 +42,7 @@ final readonly class CheckRole
             if ($context->role->isAtLeast(RolesEnum::from($required))) {
                 return $next($request);
             }
+            
         }
 
         return response()->json([

@@ -292,25 +292,17 @@ final class UserController
         UserAssignRoleRequest $request,
         string $id,
         AssignUserToCompanyUseCase $useCase,
-        UserRepositoryInterface $userRepository,
     ): JsonResponse {
         Gate::authorize('assignRole', User::class);
 
-        $target    = $userRepository->findOrFail($id);
-        $companyId = CompanyContext::resolveTargetCompanyId($request->validated('companyId'));
-
-        $useCase->execute(
-            $target,
-            $companyId,
+        $user = $useCase->execute(
+            $id,
+            $request->validated('companyId'),
             RolesEnum::from((string) $request->validated('role')),
             $request->user(),
         );
 
-        $target->refresh()->load([
-            'companyMemberships' => fn ($q) => $q->where('company_id', $companyId)->with('company'),
-        ]);
-
-        return ApiResponse::success(new UserResource($target), Response::HTTP_OK, 'Success');
+        return ApiResponse::success(new UserResource($user), Response::HTTP_OK, 'Success');
     }
 
     /**

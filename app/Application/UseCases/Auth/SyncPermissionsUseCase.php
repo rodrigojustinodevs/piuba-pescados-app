@@ -22,12 +22,15 @@ final readonly class SyncPermissionsUseCase
         $synced = [];
 
         foreach (PermissionsEnum::cases() as $permission) {
+            $existingId = DB::table('permissions')->where('name', $permission->value)->value('id');
+
             DB::table('permissions')->upsert(
                 [
+                    'id'          => $existingId ?? (string) Str::uuid(),
                     'name'        => $permission->value,
                     'label'       => $permission->label(),
                     'category'    => $permission->category(),
-                    'description' => null,
+                    'description' => '',
                     'created_at'  => now(),
                     'updated_at'  => now(),
                 ],

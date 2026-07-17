@@ -44,7 +44,7 @@ Route::middleware(['auth:api', 'company.context'])->group(function (): void {
 
     // ── Company (rotas de negócio — role mínima: operator) ────────────────────
     Route::prefix('company')
-        ->middleware('role:operator,admin,company_admin,master_admin')
+        ->middleware('role:operator,manager,admin,company_admin,master_admin')
         ->group(function (): void {
             require base_path('routes/app/company/alert.php');
 

@@ -82,6 +82,18 @@ enum PermissionsEnum: string
     case UPDATE_SENSOR = 'update-sensor';
     case DELETE_SENSOR = 'delete-sensor';
 
+    // ─── Sensor Readings (aquicultura) ─────────────────────────────────────────
+    case VIEW_SENSOR_READING   = 'view-sensor-reading';
+    case CREATE_SENSOR_READING = 'create-sensor-reading';
+    case UPDATE_SENSOR_READING = 'update-sensor-reading';
+    case DELETE_SENSOR_READING = 'delete-sensor-reading';
+
+    // ─── Tanks (aquicultura) ─────────────────────────────────────────────────
+    case VIEW_TANK   = 'view-tank';
+    case CREATE_TANK = 'create-tank';
+    case UPDATE_TANK = 'update-tank';
+    case DELETE_TANK = 'delete-tank';
+
     /**
      * Retorna todas as permissions que um determinado role possui por padrão.
      *
@@ -104,6 +116,9 @@ enum PermissionsEnum: string
                 self::CREATE_CUSTOMER,
                 self::EDIT_CUSTOMER,
                 self::VIEW_INVENTORY,
+                self::VIEW_TANK,
+                self::VIEW_SENSOR,
+                self::VIEW_SENSOR_READING,
             ],
 
             RolesEnum::MANAGER => [
@@ -128,6 +143,15 @@ enum PermissionsEnum: string
                 self::VIEW_REPORT,
                 self::EXPORT_REPORT,
                 self::VIEW_USER,
+                self::VIEW_TANK,
+                self::CREATE_TANK,
+                self::UPDATE_TANK,
+                self::VIEW_SENSOR,
+                self::CREATE_SENSOR,
+                self::UPDATE_SENSOR,
+                self::VIEW_SENSOR_READING,
+                self::CREATE_SENSOR_READING,
+                self::UPDATE_SENSOR_READING,
             ],
 
             RolesEnum::ADMIN => [
@@ -166,6 +190,16 @@ enum PermissionsEnum: string
                 self::CREATE_SENSOR,
                 self::UPDATE_SENSOR,
                 self::DELETE_SENSOR,
+
+                self::VIEW_SENSOR_READING,
+                self::CREATE_SENSOR_READING,
+                self::UPDATE_SENSOR_READING,
+                self::DELETE_SENSOR_READING,
+
+                self::VIEW_TANK,
+                self::CREATE_TANK,
+                self::UPDATE_TANK,
+                self::DELETE_TANK,
             ],
 
             RolesEnum::COMPANY_ADMIN => [
@@ -207,6 +241,7 @@ enum PermissionsEnum: string
                 || str_contains($this->value, 'payment') => 'Finance',
             str_contains($this->value, 'audit')          => 'Audit',
             str_contains($this->value, 'sensor')         => 'Sensors',
+            str_contains($this->value, 'tank')           => 'Tanks',
             str_contains($this->value, 'role')
                 || str_contains($this->value, 'permission') => 'Access Control',
             default                                         => 'General',

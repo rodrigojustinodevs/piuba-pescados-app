@@ -22,7 +22,14 @@ final readonly class UpdateUserUseCase
     public function execute(string $id, array $data): User
     {
         $user = $this->userRepository->findOrFail($id);
-        $dto  = UserInputDTO::fromArray($data);
+
+        // Company e role nunca são alteráveis por aqui — vínculo/role só mudam via
+        // AssignUserToCompanyUseCase (PATCH /company/user/{id}/role). Removido
+        // explicitamente mesmo que o FormRequest já não valide esses campos, para
+        // não depender só da omissão silenciosa das rules.
+        unset($data['company_id'], $data['companyId'], $data['role'], $data['role_id'], $data['roleId']);
+
+        $dto = UserInputDTO::fromArray($data);
 
         return DB::transaction(fn (): User => $this->userRepository->update($user->id, $dto->toPersistence()));
     }

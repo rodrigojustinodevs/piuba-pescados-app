@@ -39,7 +39,7 @@ final readonly class CreateUserUseCase
         return DB::transaction(function () use ($dto, $companyId, $role, $actingUser): User {
             $user = $this->userRepository->create($dto);
 
-            $this->assignUserToCompanyUseCase->execute($user, $companyId, $role, $actingUser);
+            $this->assignUserToCompanyUseCase->execute($user->id, $companyId, $role, $actingUser);
 
             // Eager-load the just-created pivot so UserResource can read role/status
             // without querying the database itself.

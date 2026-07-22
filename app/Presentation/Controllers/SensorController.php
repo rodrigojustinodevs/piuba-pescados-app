@@ -9,12 +9,14 @@ use App\Application\UseCases\Sensor\DeleteSensorUseCase;
 use App\Application\UseCases\Sensor\ListSensorsUseCase;
 use App\Application\UseCases\Sensor\ShowSensorUseCase;
 use App\Application\UseCases\Sensor\UpdateSensorUseCase;
+use App\Domain\Repositories\SensorRepositoryInterface;
 use App\Presentation\Requests\Sensor\SensorStoreRequest;
 use App\Presentation\Requests\Sensor\SensorUpdateRequest;
 use App\Presentation\Resources\Sensor\SensorResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @OA\Tag(name="Sensors", description="Sensores")
@@ -241,8 +243,13 @@ class SensorController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function destroy(string $id, DeleteSensorUseCase $useCase): JsonResponse
-    {
+    public function destroy(
+        string $id,
+        DeleteSensorUseCase $useCase,
+        SensorRepositoryInterface $sensorRepository,
+    ): JsonResponse {
+        Gate::authorize('delete', $sensorRepository->findOrFail($id));
+
         $useCase->execute($id);
 
         return ApiResponse::success(message: 'Sensor deleted successfully.');

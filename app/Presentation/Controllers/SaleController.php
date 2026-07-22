@@ -15,6 +15,7 @@ use App\Application\UseCases\Sale\PaySaleUseCase;
 use App\Application\UseCases\Sale\ProcessHarvestSaleUseCase;
 use App\Application\UseCases\Sale\ShowSaleUseCase;
 use App\Application\UseCases\Sale\UpdateSaleUseCase;
+use App\Domain\Repositories\SaleRepositoryInterface;
 use App\Presentation\Requests\Sale\SalePaymentStoreRequest;
 use App\Presentation\Requests\Sale\SaleStoreRequest;
 use App\Presentation\Requests\Sale\SaleUpdateRequest;
@@ -23,6 +24,7 @@ use App\Presentation\Resources\Sale\SaleResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @OA\Tag(name="Sales", description="Vendas e despescas")
@@ -442,7 +444,10 @@ class SaleController
     public function destroy(
         string $id,
         DeleteSaleUseCase $useCase,
+        SaleRepositoryInterface $saleRepository,
     ): JsonResponse {
+        Gate::authorize('delete', $saleRepository->findOrFail($id));
+
         $useCase->execute($id);
 
         return ApiResponse::success(message: 'Sale deleted successfully.');
@@ -470,7 +475,10 @@ class SaleController
     public function cancel(
         string $id,
         CancelSaleUseCase $useCase,
+        SaleRepositoryInterface $saleRepository,
     ): JsonResponse {
+        Gate::authorize('cancel', $saleRepository->findOrFail($id));
+
         $useCase->execute($id);
 
         return ApiResponse::success(message: 'Sale cancelled successfully.');

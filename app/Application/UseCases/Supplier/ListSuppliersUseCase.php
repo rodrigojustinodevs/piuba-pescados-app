@@ -6,7 +6,6 @@ namespace App\Application\UseCases\Supplier;
 
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SupplierRepositoryInterface;
-use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ListSuppliersUseCase
 {
@@ -20,10 +19,6 @@ final readonly class ListSuppliersUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $filters['companyId'] = CompanyContext::requireCompanyId();
-        }
-
         return $this->supplierRepository->paginate($filters);
     }
 }

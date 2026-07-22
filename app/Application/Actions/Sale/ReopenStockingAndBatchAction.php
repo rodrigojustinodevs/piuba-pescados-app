@@ -37,7 +37,6 @@ final readonly class ReopenStockingAndBatchAction
         ]);
 
         // Passo 2: Reabre o batch se estava encerrado
-        /** @var Batch $batch */
         $batch = $this->batchRepository->findOrFail($batchId);
 
         if ($batch->isFinished()) {

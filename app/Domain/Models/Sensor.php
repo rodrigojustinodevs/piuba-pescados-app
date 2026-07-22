@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -28,6 +29,7 @@ use Illuminate\Support\Str;
  */
 class Sensor extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

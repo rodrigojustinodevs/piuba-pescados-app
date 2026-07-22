@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -11,6 +12,7 @@ use Illuminate\Support\Str;
 /**
  * @property string              $id
  * @property string              $batch_id
+ * @property string              $company_id
  * @property \Carbon\Carbon|null $feeding_date
  * @property float               $quantity_provided
  * @property string              $feed_type
@@ -25,6 +27,7 @@ use Illuminate\Support\Str;
  */
 class Feeding extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';
@@ -34,6 +37,7 @@ class Feeding extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'feeding_date',
         'quantity_provided',
         'feed_type',

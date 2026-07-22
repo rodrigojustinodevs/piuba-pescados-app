@@ -11,7 +11,6 @@ use App\Domain\Events\BatchTransferred;
 use App\Domain\Models\Transfer;
 use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Domain\Repositories\TransferRepositoryInterface;
-use App\Infrastructure\Security\CompanyContext;
 use Illuminate\Support\Facades\DB;
 
 final readonly class CreateTransferUseCase
@@ -27,9 +26,6 @@ final readonly class CreateTransferUseCase
     /** @param array<string, mixed> $data */
     public function execute(array $data): Transfer
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $data['companyId'] = CompanyContext::requireCompanyId();
-        }
         $dto   = TransferInputDTO::fromArray($data);
         $batch = $this->batchRepository->findOrFail($dto->batchId);
 

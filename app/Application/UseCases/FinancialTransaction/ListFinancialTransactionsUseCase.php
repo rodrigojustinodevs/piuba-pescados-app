@@ -6,7 +6,6 @@ namespace App\Application\UseCases\FinancialTransaction;
 
 use App\Domain\Repositories\FinancialTransactionRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
-use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ListFinancialTransactionsUseCase
 {
@@ -20,10 +19,6 @@ final readonly class ListFinancialTransactionsUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $filters['companyId'] = CompanyContext::requireCompanyId();
-        }
-
         return $this->repository->paginate($filters);
     }
 }

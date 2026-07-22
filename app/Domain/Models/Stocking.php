@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use App\Domain\Enums\StockingStatus;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,6 +16,7 @@ use Illuminate\Support\Str;
  *
  * @property string              $id
  * @property string              $batch_id
+ * @property string              $company_id
  * @property \Carbon\Carbon|null $stocking_date
  * @property int                 $quantity
  * @property int|null            $current_quantity
@@ -32,6 +34,7 @@ use Illuminate\Support\Str;
  */
 class Stocking extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';
@@ -43,6 +46,7 @@ class Stocking extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'stocking_date',
         'quantity',
         'current_quantity',

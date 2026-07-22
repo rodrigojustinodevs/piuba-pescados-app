@@ -46,8 +46,6 @@ final readonly class CreateDistributedBatchesAction
             expenseDate:         $input->entryDate,
             financialCategoryId: $financialCategoryId,
             supplierId:          $input->supplierId,
-            costCenterId:        null,
-            description:         null,
             notes:               $input->notes,
             status:              FinancialTransactionStatus::PENDING,
         );

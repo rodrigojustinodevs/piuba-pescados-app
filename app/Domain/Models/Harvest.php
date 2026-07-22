@@ -7,6 +7,7 @@ namespace App\Domain\Models;
 use App\Domain\Enums\HarvestDestination;
 use App\Domain\Enums\HarvestStatus;
 use App\Domain\Enums\HarvestType;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,6 +17,7 @@ use Illuminate\Support\Str;
 /**
  * @property string                  $id
  * @property string                  $batch_id
+ * @property string                  $company_id
  * @property string|null             $tank_id
  * @property Carbon|null             $harvest_date
  * @property HarvestType             $type
@@ -41,6 +43,7 @@ use Illuminate\Support\Str;
  */
 class Harvest extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';
@@ -50,6 +53,7 @@ class Harvest extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'tank_id',
         'harvest_date',
         'type',

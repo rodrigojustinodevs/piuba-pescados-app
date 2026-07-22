@@ -48,27 +48,14 @@ class MasterAdminUserSeeder extends Seeder
         }
 
         // Vincular usuário à company na tabela company_user
+        // (não é necessário para o bypass de master_admin, que independe de company_user,
+        // mas mantém consistência para telas que listam a company do usuário)
         if (! $company->users()->where('users.id', $masterAdminUser->id)->exists()) {
             DB::table('company_user')->insert([
                 'id'         => (string) \Illuminate\Support\Str::uuid(),
                 'company_id' => $company->id,
                 'user_id'    => $masterAdminUser->id,
-            ]);
-        }
-
-        // Vincular role master_admin ao usuário na company (tabela company_user_role)
-        $companyUserRoleExists = DB::table('company_user_role')
-            ->where('company_id', $company->id)
-            ->where('user_id', $masterAdminUser->id)
-            ->where('role_id', $masterAdminRole->id)
-            ->exists();
-
-        if (! $companyUserRoleExists) {
-            DB::table('company_user_role')->insert([
-                'id'         => (string) \Illuminate\Support\Str::uuid(),
-                'company_id' => $company->id,
-                'user_id'    => $masterAdminUser->id,
-                'role_id'    => $masterAdminRole->id,
+                'role'       => $masterAdminRole->name,
             ]);
         }
 

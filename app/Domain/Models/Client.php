@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\ClientStatusEnum;
 use App\Domain\Enums\PriceGroup;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -37,6 +38,7 @@ use Illuminate\Support\Str;
  */
 class Client extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -11,6 +12,7 @@ use Illuminate\Support\Str;
 /**
  * @property string              $id
  * @property string              $batch_id
+ * @property string              $company_id
  * @property \Carbon\Carbon|null $biometry_date
  * @property float               $average_weight
  * @property float               $sample_weight
@@ -27,6 +29,7 @@ use Illuminate\Support\Str;
  */
 class Biometry extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';
@@ -36,6 +39,7 @@ class Biometry extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'biometry_date',
         'average_weight',
         'sample_weight',

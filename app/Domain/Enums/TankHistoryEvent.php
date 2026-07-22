@@ -27,7 +27,7 @@ enum TankHistoryEvent: string
     {
         return match ($this) {
             self::CLEANING, self::MAINTENANCE, self::FALLOWING => true,
-            self::STATUS_CHANGE => false,
+            self::STATUS_CHANGE                                => false,
         };
     }
 }

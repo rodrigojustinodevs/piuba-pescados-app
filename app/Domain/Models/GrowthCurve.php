@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Models;
 
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -13,6 +14,7 @@ use Illuminate\Support\Str;
  *
  * @property string              $id
  * @property string              $batch_id
+ * @property string              $company_id
  * @property float               $average_weight
  * @property \Carbon\Carbon      $created_at
  * @property \Carbon\Carbon      $updated_at
@@ -22,6 +24,7 @@ use Illuminate\Support\Str;
  */
 class GrowthCurve extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';
@@ -31,6 +34,7 @@ class GrowthCurve extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'average_weight',
     ];
 

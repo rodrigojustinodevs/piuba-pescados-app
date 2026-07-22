@@ -70,8 +70,8 @@ class FinancialTransactionStoreRequest extends FormRequest
 
             'financial_category_id.required_unless' => 'The financial category is required '
                 . 'for non-transfer transactions.',
-            'financial_category_id.uuid'            => 'The financial category ID must be a valid UUID.',
-            'financial_category_id.exists'          => 'The selected financial category does not exist.',
+            'financial_category_id.uuid'   => 'The financial category ID must be a valid UUID.',
+            'financial_category_id.exists' => 'The selected financial category does not exist.',
 
             'type.required'                         => 'The transaction type is required.',
             'type.Illuminate\Validation\Rules\Enum' => 'The transaction type must be:'

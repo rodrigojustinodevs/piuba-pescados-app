@@ -38,7 +38,7 @@ enum SalesOrderStatus: string
     {
         return match ($this) {
             self::DRAFT, self::OPEN => true,
-            default => false,
+            default                 => false,
         };
     }
 }

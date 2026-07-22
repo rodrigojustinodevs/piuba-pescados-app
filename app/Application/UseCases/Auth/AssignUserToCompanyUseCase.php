@@ -29,10 +29,9 @@ final readonly class AssignUserToCompanyUseCase
         RolesEnum $role,
         User $actingUser, // who is executing the action
     ): User {
-
         $targetUser = $this->userRepository->findOrFail($targetUserId);
 
-        $companyId  = CompanyContext::resolveTargetCompanyId($requestedCompanyId);
+        $companyId = CompanyContext::resolveTargetCompanyId($requestedCompanyId);
 
         // 1. Valida contexto do usuário executor
         $actorContext = $this->permissionResolver->resolve($actingUser, $companyId);

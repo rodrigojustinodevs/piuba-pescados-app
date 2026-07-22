@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\MortalityCause;
 use App\Domain\Enums\MortalitySeverity;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -13,6 +14,7 @@ use Illuminate\Support\Str;
 /**
  * @property string              $id
  * @property string              $batch_id
+ * @property string              $company_id
  * @property \Carbon\Carbon|null $mortality_date
  * @property int                 $quantity
  * @property MortalityCause      $cause
@@ -25,6 +27,7 @@ use Illuminate\Support\Str;
  */
 class Mortality extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';
@@ -34,6 +37,7 @@ class Mortality extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'mortality_date',
         'quantity',
         'cause',

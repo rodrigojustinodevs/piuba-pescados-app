@@ -95,7 +95,6 @@ final readonly class HarvestLifecycleAction
             'closed_at' => null,
         ]);
 
-        /** @var Batch $batch */
         $batch = $this->batchRepository->findOrFail($batchId);
 
         if (! $batch->isFinished()) {

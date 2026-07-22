@@ -7,6 +7,7 @@ namespace App\Domain\Models;
 use App\Domain\Enums\FinancialTransactionReferenceType;
 use App\Domain\Enums\FinancialTransactionStatus;
 use App\Domain\Enums\FinancialType;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -34,6 +35,7 @@ use Illuminate\Support\Str;
  */
 class FinancialTransaction extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

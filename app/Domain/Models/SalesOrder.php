@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\SalesOrderStatus;
 use App\Domain\Enums\SalesOrderType;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -34,6 +35,7 @@ use Illuminate\Support\Str;
  */
 class SalesOrder extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

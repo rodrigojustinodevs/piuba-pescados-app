@@ -32,7 +32,6 @@ final readonly class GeneratePayableAction
             amount:              $dto->totalExpense(),
             dueDate:             $dto->expenseDate,
             status:              FinancialTransactionStatus::PENDING,
-            paymentDate:         null,
             description:         "Contas a Pagar — Item de Compra #{$referenceId}",
             notes:               $dto->notes,
             referenceType:       FinancialTransactionReferenceType::PURCHASE_ITEM,

@@ -7,6 +7,7 @@ namespace App\Domain\Models;
 use App\Domain\Enums\PurchasePaymentMethod;
 use App\Domain\Enums\PurchasePaymentStatus;
 use App\Domain\Enums\PurchaseStatus;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -41,6 +42,7 @@ use Illuminate\Support\Str;
  */
 class Purchase extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

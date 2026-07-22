@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Domain\Enums\RolesEnum;
 use App\Domain\Models\Company;
 use App\Domain\Models\Role;
 use App\Domain\Models\User;
@@ -88,7 +89,10 @@ class UsersByRoleSeeder extends Seeder
                 $user->roles()->attach($role->id);
             }
 
-            // Associar usuário à company (tabela company_user)
+            // Associar usuário à company (tabela company_user), já com o role correto.
+            // `company_user.role` é validado via RolesEnum::from() pelo PermissionResolver;
+            // variantes fora do enum (ex.: 'company-admin' com hífen, legado) ficam no
+            // default 'operator' da coluna para não quebrar a resolução de permissões.
             $companyUserExists = DB::table('company_user')
                 ->where('company_id', $company->id)
                 ->where('user_id', $user->id)
@@ -99,22 +103,7 @@ class UsersByRoleSeeder extends Seeder
                     'id'         => (string) Str::uuid(),
                     'company_id' => $company->id,
                     'user_id'    => $user->id,
-                ]);
-            }
-
-            // Associar role do usuário na company (tabela company_user_role)
-            $companyUserRoleExists = DB::table('company_user_role')
-                ->where('company_id', $company->id)
-                ->where('user_id', $user->id)
-                ->where('role_id', $role->id)
-                ->exists();
-
-            if (! $companyUserRoleExists) {
-                DB::table('company_user_role')->insert([
-                    'id'         => (string) Str::uuid(),
-                    'company_id' => $company->id,
-                    'user_id'    => $user->id,
-                    'role_id'    => $role->id,
+                    'role'       => RolesEnum::tryFrom($roleName)?->value ?? 'operator',
                 ]);
             }
 

@@ -11,7 +11,6 @@ use App\Application\Contracts\UserResolverInterface;
 use App\Application\Services\CompanyResolver;
 use App\Application\Services\LoginAttemptLimiter;
 use App\Application\Services\UserResolver;
-use App\Domain\Enums\Can;
 use App\Domain\Models\Tank;
 use App\Domain\Models\User;
 use App\Domain\Observers\TankObserver;
@@ -98,7 +97,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
@@ -199,7 +197,6 @@ class AppServiceProvider extends ServiceProvider
         $this->configCommands();
         $this->configUrls();
         $this->configDate();
-        $this->configGates();
     }
 
     /**
@@ -259,22 +256,4 @@ class AppServiceProvider extends ServiceProvider
         Date::use(CarbonImmutable::class);
     }
 
-    /**
-     * Configure Gates based on Can enum permissions.
-     */
-    private function configGates(): void
-    {
-        foreach (Can::cases() as $permission) {
-            Gate::define(
-                $permission->value,
-                function (User $user) use ($permission) {
-                    /** @var User $user */
-                    return $user
-                        ->permissions()
-                        ->whereName($permission->value)
-                        ->exists();
-                }
-            );
-        }
-    }
 }

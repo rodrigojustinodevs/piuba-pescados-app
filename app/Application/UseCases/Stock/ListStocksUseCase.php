@@ -6,7 +6,6 @@ namespace App\Application\UseCases\Stock;
 
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\StockRepositoryInterface;
-use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ListStocksUseCase
 {
@@ -24,10 +23,6 @@ final readonly class ListStocksUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $filters['companyId'] = CompanyContext::requireCompanyId();
-        }
-
         return $this->repository->paginate($filters);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Models;
 
 use App\Domain\Enums\StockingHistoryEvent;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -25,6 +26,8 @@ use Illuminate\Support\Str;
  */
 class StockingHistory extends BaseModel
 {
+    use HasCompanyScope;
+
     protected $keyType = 'string';
 
     public $incrementing = false;

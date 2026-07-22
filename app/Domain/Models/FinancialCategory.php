@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\FinancialCategoryStatus;
 use App\Domain\Enums\FinancialType;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,6 +27,7 @@ use Illuminate\Support\Str;
  */
 class FinancialCategory extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

@@ -6,7 +6,6 @@ namespace App\Application\UseCases\Purchase;
 
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\PurchaseRepositoryInterface;
-use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ListPurchasesUseCase
 {
@@ -29,10 +28,6 @@ final readonly class ListPurchasesUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $filters['companyId'] = CompanyContext::requireCompanyId();
-        }
-
         return $this->purchaseRepository->paginate($filters);
     }
 }

@@ -6,7 +6,6 @@ namespace App\Application\UseCases\Tank;
 
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\TankRepositoryInterface;
-use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ShowAllTanksUseCase
 {
@@ -20,10 +19,6 @@ final readonly class ShowAllTanksUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $filters['companyId'] = CompanyContext::requireCompanyId();
-        }
-
         $normalized = [
             'companyId'  => isset($filters['companyId']) ? (string) $filters['companyId'] : null,
             'status'     => isset($filters['status']) ? (string) $filters['status'] : null,

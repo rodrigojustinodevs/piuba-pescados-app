@@ -6,7 +6,6 @@ namespace App\Application\UseCases\Feeding;
 
 use App\Domain\Repositories\FeedingRepositoryInterface;
 use App\Domain\Repositories\PaginationInterface;
-use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ListFeedingsUseCase
 {
@@ -26,10 +25,6 @@ final readonly class ListFeedingsUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $filters['companyId'] = CompanyContext::requireCompanyId();
-        }
-
         return $this->repository->paginate($filters);
     }
 }

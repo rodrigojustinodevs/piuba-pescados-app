@@ -29,10 +29,6 @@ final readonly class CreateMortalityUseCase
      */
     public function execute(array $data): Mortality
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $data['companyId'] = CompanyContext::requireCompanyId();
-        }
-
         $dto   = MortalityInputDTO::fromArray($data);
         $batch = $this->batchRepository->findOrFail($dto->batchId);
 

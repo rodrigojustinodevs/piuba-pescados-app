@@ -7,7 +7,6 @@ namespace App\Application\UseCases\Sensor;
 use App\Application\Contracts\CompanyResolverInterface;
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SensorRepositoryInterface;
-use App\Infrastructure\Security\CompanyContext;
 
 class ListSensorsUseCase
 {
@@ -29,10 +28,6 @@ class ListSensorsUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $filters['companyId'] = CompanyContext::requireCompanyId();
-        }
-
         return $this->sensorRepository->paginate($filters);
     }
 }

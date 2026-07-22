@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\SupplyCategoryEnum;
 use App\Domain\Enums\SupplyStatusEnum;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -38,6 +39,7 @@ use Illuminate\Support\Str;
  */
 class Supply extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

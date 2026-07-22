@@ -6,7 +6,6 @@ namespace App\Application\UseCases\SensorReading;
 
 use App\Domain\Repositories\PaginationInterface;
 use App\Domain\Repositories\SensorReadingRepositoryInterface;
-use App\Infrastructure\Security\CompanyContext;
 
 final readonly class ListSensorReadingsUseCase
 {
@@ -28,10 +27,6 @@ final readonly class ListSensorReadingsUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $filters['companyId'] = CompanyContext::requireCompanyId();
-        }
-
         return $this->sensorReadingRepository->paginate($filters);
     }
 }

@@ -38,7 +38,7 @@ final class SalePolicy
 
     public function update(User $user, Sale $sale): bool
     {
-        if (! $this->context()->hasPermission(PermissionsEnum::EDIT_SALE)) {
+        if (! $this->context()->hasPermission(PermissionsEnum::UPDATE_SALE)) {
             return false;
         }
 

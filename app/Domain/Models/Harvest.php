@@ -7,6 +7,7 @@ namespace App\Domain\Models;
 use App\Domain\Enums\HarvestDestination;
 use App\Domain\Enums\HarvestStatus;
 use App\Domain\Enums\HarvestType;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -41,6 +42,7 @@ use Illuminate\Support\Str;
  */
 class Harvest extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

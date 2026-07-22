@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\StockStatusEnum;
 use App\Domain\Enums\StockTypeEnum;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -38,6 +39,7 @@ use Illuminate\Support\Str;
  */
 class Stock extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

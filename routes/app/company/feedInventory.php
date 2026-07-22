@@ -5,11 +5,17 @@ declare(strict_types=1);
 use App\Presentation\Controllers\FeedInventoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['permission:create-feed-inventory|view-feed-inventory|update-feed-inventory|delete-feed-inventory'])
-    ->group(function (): void {
-        Route::post('feed-inventory', [FeedInventoryController::class, 'store']);
-        Route::get('feed-inventories', [FeedInventoryController::class, 'index']);
-        Route::get('feed-inventory/{id}', [FeedInventoryController::class, 'show']);
-        Route::put('feed-inventory/{id}', [FeedInventoryController::class, 'update']);
-        Route::delete('feed-inventory/{id}', [FeedInventoryController::class, 'destroy']);
-    });
+Route::post('feed-inventory', [FeedInventoryController::class, 'store'])
+    ->middleware('permission:create-feed-inventory');
+
+Route::get('feed-inventories', [FeedInventoryController::class, 'index'])
+    ->middleware('permission:view-feed-inventory');
+
+Route::get('feed-inventory/{id}', [FeedInventoryController::class, 'show'])
+    ->middleware('permission:view-feed-inventory');
+
+Route::put('feed-inventory/{id}', [FeedInventoryController::class, 'update'])
+    ->middleware('permission:update-feed-inventory');
+
+Route::delete('feed-inventory/{id}', [FeedInventoryController::class, 'destroy'])
+    ->middleware('permission:delete-feed-inventory');

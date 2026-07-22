@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\MortalityCause;
 use App\Domain\Enums\MortalitySeverity;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -25,6 +26,7 @@ use Illuminate\Support\Str;
  */
 class Mortality extends BaseModel
 {
+    use HasCompanyScope;
     use SoftDeletes;
 
     protected $keyType = 'string';

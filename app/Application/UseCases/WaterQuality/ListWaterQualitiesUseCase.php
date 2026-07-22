@@ -8,7 +8,6 @@ use App\Application\Contracts\CompanyResolverInterface;
 use App\Application\DTOs\WaterQualityListResult;
 use App\Domain\Repositories\WaterQualityRepositoryInterface;
 use App\Domain\ValueObjects\WaterQualityScore;
-use App\Infrastructure\Security\CompanyContext;
 
 class ListWaterQualitiesUseCase
 {
@@ -31,10 +30,6 @@ class ListWaterQualitiesUseCase
      */
     public function execute(array $filters = []): WaterQualityListResult
     {
-        if (! CompanyContext::isMasterAdmin()) {
-            $filters['company_id'] = CompanyContext::requireCompanyId();
-        }
-
         $paginator = $this->waterQualityRepository->paginate($filters);
         $score     = WaterQualityScore::fromCounts(
             $this->waterQualityRepository->countByQuality($filters),

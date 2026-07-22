@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 use App\Domain\Enums\StockTransactionDirection;
 use App\Domain\Enums\StockTransactionReferenceType;
+use App\Infrastructure\Persistence\Traits\HasCompanyScope;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
@@ -30,6 +31,8 @@ use Illuminate\Support\Str;
  */
 class StockTransaction extends BaseModel
 {
+    use HasCompanyScope;
+
     protected $keyType = 'string';
 
     public $incrementing = false;

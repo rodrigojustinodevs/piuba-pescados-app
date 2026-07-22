@@ -8,8 +8,6 @@ use App\Domain\Models\Company;
 use App\Domain\Models\Permission;
 use App\Domain\Models\Role;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class CompanyRolesPermissionsSeeder extends Seeder
 {
@@ -167,42 +165,10 @@ class CompanyRolesPermissionsSeeder extends Seeder
         ];
 
         foreach ($companies as $companyData) {
-            $company = Company::firstOrCreate(
+            Company::firstOrCreate(
                 ['cnpj' => $companyData['cnpj']],
                 $companyData
             );
-
-            // Associar roles padrões à company (se ainda não estiverem associados)
-            $rolesToAttach = [];
-
-            if (! $company->roles()->where('roles.id', $adminRole->id)->exists()) {
-                $rolesToAttach[] = [
-                    'id'      => (string) Str::uuid(),
-                    'role_id' => $adminRole->id,
-                ];
-            }
-
-            if (! $company->roles()->where('roles.id', $companyAdminRole->id)->exists()) {
-                $rolesToAttach[] = [
-                    'id'      => (string) Str::uuid(),
-                    'role_id' => $companyAdminRole->id,
-                ];
-            }
-
-            if (! $company->roles()->where('roles.id', $guestRole->id)->exists()) {
-                $rolesToAttach[] = [
-                    'id'      => (string) Str::uuid(),
-                    'role_id' => $guestRole->id,
-                ];
-            }
-
-            foreach ($rolesToAttach as $roleData) {
-                DB::table('company_role')->insert([
-                    'id'         => $roleData['id'],
-                    'company_id' => $company->id,
-                    'role_id'    => $roleData['role_id'],
-                ]);
-            }
         }
 
         $this->command->info('Roles e permissões de company configuradas com sucesso!');

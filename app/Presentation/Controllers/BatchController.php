@@ -11,6 +11,7 @@ use App\Application\UseCases\Batch\FinishBatchUseCase;
 use App\Application\UseCases\Batch\ListBatchesUseCase;
 use App\Application\UseCases\Batch\ShowBatchUseCase;
 use App\Application\UseCases\Batch\UpdateBatchUseCase;
+use App\Domain\Repositories\BatchRepositoryInterface;
 use App\Presentation\Requests\Batch\BatchDistributionStoreRequest;
 use App\Presentation\Requests\Batch\BatchFinishRequest;
 use App\Presentation\Requests\Batch\BatchStoreRequest;
@@ -19,6 +20,7 @@ use App\Presentation\Resources\Batch\BatchResource;
 use App\Presentation\Response\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * @OA\Tag(name="Batches", description="Lotes")
@@ -305,7 +307,10 @@ final class BatchController
     public function destroy(
         string $id,
         DeleteBatchUseCase $useCase,
+        BatchRepositoryInterface $batchRepository,
     ): JsonResponse {
+        Gate::authorize('delete', $batchRepository->findOrFail($id));
+
         $useCase->execute($id);
 
         return ApiResponse::success(message: 'Batch deleted successfully.');

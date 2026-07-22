@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * Derivação 100% coberta (todo registro possui batch_id não-nulo).
  */
-return new class extends Migration
+return new class () extends Migration
 {
     /** @var list<string> */
     private array $tables = [

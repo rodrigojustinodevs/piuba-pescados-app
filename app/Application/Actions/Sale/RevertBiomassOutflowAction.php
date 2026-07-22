@@ -52,7 +52,6 @@ final readonly class RevertBiomassOutflowAction
             totalCost:     (float)  $original->total_cost,
             unit:          Unit::from($original->unit),
             direction:     StockTransactionDirection::IN,
-            supplyId:      null,
             referenceId:   (string) $sale->id,
             referenceType: StockTransactionReferenceType::SALE,
         ));

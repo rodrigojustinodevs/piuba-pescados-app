@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 /**
  * @property string              $id
  * @property string              $batch_id
+ * @property string              $company_id
  * @property \Carbon\Carbon|null $biometry_date
  * @property float               $average_weight
  * @property float               $sample_weight
@@ -38,6 +39,7 @@ class Biometry extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'biometry_date',
         'average_weight',
         'sample_weight',

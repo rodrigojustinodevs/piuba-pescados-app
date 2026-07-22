@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
  * Idempotente: só toca linhas com company_id NULL. Subquery correlacionada
  * portável (MySQL + SQLite).
  */
-return new class extends Migration
+return new class () extends Migration
 {
     public function up(): void
     {

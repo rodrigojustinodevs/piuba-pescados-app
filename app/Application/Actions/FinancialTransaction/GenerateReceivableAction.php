@@ -32,7 +32,6 @@ final readonly class GenerateReceivableAction
             amount:              $dto->totalRevenue(),
             dueDate:             $dto->saleDate,
             status:              FinancialTransactionStatus::PENDING,
-            paymentDate:         null,
             description:         "Contas a Receber — Venda #{$referenceId}",
             notes:               $dto->notes,
             referenceType:       FinancialTransactionReferenceType::SALE,

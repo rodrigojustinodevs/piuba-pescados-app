@@ -130,18 +130,18 @@ final readonly class SensorDTO
     public static function toPersistenceStatus(string $status): string
     {
         return match (mb_strtolower(trim($status))) {
-            'online', 'ativo' => 'active',
+            'online', 'ativo'    => 'active',
             'offline', 'inativo' => 'inactive',
-            default => $status,
+            default              => $status,
         };
     }
 
     public static function toOutputStatus(string $status): string
     {
         return match (mb_strtolower(trim($status))) {
-            'active', 'ativo' => 'Online',
+            'active', 'ativo'     => 'Online',
             'inactive', 'inativo' => 'Offline',
-            default => $status,
+            default               => $status,
         };
     }
 }

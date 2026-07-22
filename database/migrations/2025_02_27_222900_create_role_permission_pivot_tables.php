@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Schema;
  * qualquer ambiente novo (CI, clone, staging). Guardado com `hasTable` para
  * ser idempotente em bases onde as tabelas já existem via drift.
  */
-return new class extends Migration
+return new class () extends Migration
 {
     public function up(): void
     {

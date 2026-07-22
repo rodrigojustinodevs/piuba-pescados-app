@@ -28,6 +28,8 @@ class ListSensorsUseCase
      */
     public function execute(array $filters = []): PaginationInterface
     {
+        $filters['companyId'] = $this->companyResolver->resolve();
+
         return $this->sensorRepository->paginate($filters);
     }
 }

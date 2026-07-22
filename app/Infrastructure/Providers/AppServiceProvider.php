@@ -255,5 +255,4 @@ class AppServiceProvider extends ServiceProvider
     {
         Date::use(CarbonImmutable::class);
     }
-
 }

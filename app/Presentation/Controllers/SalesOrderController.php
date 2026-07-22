@@ -101,7 +101,6 @@ final class SalesOrderController
         $useCase->execute($id);
 
         return ApiResponse::success(
-            data:    null,
             status:  JsonResponse::HTTP_OK,
             message: 'Sales order deleted successfully.',
         );

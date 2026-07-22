@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
  *
  * @property string              $id
  * @property string              $batch_id
+ * @property string              $company_id
  * @property \Carbon\Carbon|null $stocking_date
  * @property int                 $quantity
  * @property int|null            $current_quantity
@@ -45,6 +46,7 @@ class Stocking extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'stocking_date',
         'quantity',
         'current_quantity',

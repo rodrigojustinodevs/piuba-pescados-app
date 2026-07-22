@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
  *
  * @property string              $id
  * @property string              $batch_id
+ * @property string              $company_id
  * @property float               $average_weight
  * @property \Carbon\Carbon      $created_at
  * @property \Carbon\Carbon      $updated_at
@@ -33,6 +34,7 @@ class GrowthCurve extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'average_weight',
     ];
 

@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 /**
  * @property string              $id
  * @property string              $batch_id
+ * @property string              $company_id
  * @property \Carbon\Carbon|null $feeding_date
  * @property float               $quantity_provided
  * @property string              $feed_type
@@ -36,6 +37,7 @@ class Feeding extends BaseModel
     protected $fillable = [
         'id',
         'batch_id',
+        'company_id',
         'feeding_date',
         'quantity_provided',
         'feed_type',

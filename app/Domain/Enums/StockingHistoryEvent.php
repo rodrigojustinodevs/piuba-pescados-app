@@ -32,7 +32,7 @@ enum StockingHistoryEvent: string
     {
         return match ($this) {
             self::MORTALITY, self::TRANSFER => true,
-            default => false,
+            default                         => false,
         };
     }
 
@@ -47,7 +47,7 @@ enum StockingHistoryEvent: string
     {
         return match ($this) {
             self::FEEDING, self::HARVEST => true,
-            default => false,
+            default                      => false,
         };
     }
 }

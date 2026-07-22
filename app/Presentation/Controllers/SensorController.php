@@ -243,8 +243,11 @@ class SensorController
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function destroy(string $id, DeleteSensorUseCase $useCase, SensorRepositoryInterface $sensorRepository): JsonResponse
-    {
+    public function destroy(
+        string $id,
+        DeleteSensorUseCase $useCase,
+        SensorRepositoryInterface $sensorRepository,
+    ): JsonResponse {
         Gate::authorize('delete', $sensorRepository->findOrFail($id));
 
         $useCase->execute($id);

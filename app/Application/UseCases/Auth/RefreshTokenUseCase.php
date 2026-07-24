@@ -31,7 +31,11 @@ final readonly class RefreshTokenUseCase
             throw UnauthorizedException::tokenExpired();
         }
 
-        ['user' => $user, 'companyId' => $companyId, 'role' => $role] = $this->tokenService->resolveFromToken($newToken);
+        [
+            'user'      => $user,
+            'companyId' => $companyId,
+            'role'      => $role
+        ] = $this->tokenService->resolveFromToken($newToken);
 
         if (! $user instanceof User) {
             throw UnauthorizedException::tokenInvalid();

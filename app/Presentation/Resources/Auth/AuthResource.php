@@ -24,6 +24,7 @@ final readonly class AuthResource
             'token'     => $this->dto->token,
             'tokenType' => $this->dto->tokenType,
             'expiresIn' => $this->dto->expiresIn,
+            'user'      => $this->dto->user->toArray(),
         ];
     }
 }

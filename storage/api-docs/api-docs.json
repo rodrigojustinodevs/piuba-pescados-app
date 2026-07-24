@@ -11,6 +11,100 @@
         }
     ],
     "paths": {
+        "/auth/refresh": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refresh the access token",
+                "description": "POST /auth/refresh\nSem middleware de rota — o token (mesmo expirado, dentro da janela de\nrefresh_ttl) é validado inteiramente pelo RefreshTokenUseCase.\n\nExceções tratadas pelo Handler:\n - UnauthorizedException → 401 (token expirado/inválido, usuário ou company inativos)",
+                "operationId": "0537709afe911eaf6a916860a88ad7b4",
+                "responses": {
+                    "200": {
+                        "description": "Token refreshed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Token refreshed successfully."
+                                        },
+                                        "response": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "tokenType": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                },
+                                                "expiresIn": {
+                                                    "type": "integer",
+                                                    "example": 3600
+                                                },
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "format": "uuid"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "format": "email"
+                                                        },
+                                                        "companyId": {
+                                                            "type": "string",
+                                                            "format": "uuid",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token expired, invalid, or user/company inactive",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Token expired."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/company/batches": {
             "get": {
                 "tags": [
@@ -16601,6 +16695,10 @@
         }
     },
     "tags": [
+        {
+            "name": "Auth",
+            "description": "Autenticação"
+        },
         {
             "name": "Batches",
             "description": "Lotes"

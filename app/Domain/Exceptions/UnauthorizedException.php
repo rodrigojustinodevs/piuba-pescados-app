@@ -27,4 +27,14 @@ final class UnauthorizedException extends RuntimeException
     {
         return new self('Token not provided.');
     }
+
+    public static function userInactive(): self
+    {
+        return new self('User is inactive.');
+    }
+
+    public static function companyInactive(): self
+    {
+        return new self('Company is inactive.');
+    }
 }

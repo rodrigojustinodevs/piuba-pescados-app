@@ -140,6 +140,30 @@ final readonly class CompanyJwtService implements TokenServiceInterface
         return $this->jwt->parseToken()->refresh();
     }
 
+    /**
+     * Resolves the user and tenant claims from a specific token string
+     * (e.g. a token just produced by refresh()), without re-reading the request.
+     *
+     * @return array{user: ?User, companyId: ?string, role: ?string}
+     */
+    public function resolveFromToken(string $token): array
+    {
+        $this->jwt->setToken($token);
+
+        try {
+            $payload = $this->jwt->getPayload();
+            $user    = $this->jwt->toUser();
+        } catch (\Throwable) {
+            return ['user' => null, 'companyId' => null, 'role' => null];
+        }
+
+        return [
+            'user'      => $user instanceof User ? $user : null,
+            'companyId' => $payload->get('cid') ?: null,
+            'role'      => $payload->get('role'),
+        ];
+    }
+
     public function authenticateFromToken(): ?User
     {
         try {

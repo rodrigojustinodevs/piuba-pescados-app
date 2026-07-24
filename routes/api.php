@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->name('auth.')->group(function (): void {
     Route::get('/ping', fn (): string => 'pong');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
+    // Sem auth:api: o token pode estar expirado (dentro da janela de refresh_ttl).
+    // Assinatura/expiração/revogação são validadas pelo próprio RefreshTokenUseCase.
+    Route::post('/refresh', [AuthController::class, 'refresh'])->name('refresh');
 });
 
 // ── Autenticado (sem company context) ────────────────────────────────────────
@@ -17,7 +20,6 @@ Route::prefix('auth')->name('auth.')->middleware('auth:api')->group(function ():
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/me', [AuthController::class, 'me'])->name('me');
     Route::post('/switch-company', [AuthController::class, 'switchCompany'])->name('switch-company');
-    Route::post('/refresh', [AuthController::class, 'refresh'])->name('refresh');
 });
 
 // ── Admin global (sem company context — master_admin only) ───────────────────

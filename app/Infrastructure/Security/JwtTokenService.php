@@ -44,6 +44,26 @@ final readonly class JwtTokenService implements TokenServiceInterface
         return $token;
     }
 
+    /**
+     * @return array{user: ?User, companyId: ?string, role: ?string}
+     */
+    public function resolveFromToken(string $token): array
+    {
+        $this->jwt->setToken($token);
+
+        try {
+            $user = $this->jwt->toUser();
+        } catch (\Throwable) {
+            return ['user' => null, 'companyId' => null, 'role' => null];
+        }
+
+        return [
+            'user'      => $user instanceof User ? $user : null,
+            'companyId' => null,
+            'role'      => null,
+        ];
+    }
+
     public function ttlInSeconds(): int
     {
         return (int) config('jwt.ttl', 60) * 60;

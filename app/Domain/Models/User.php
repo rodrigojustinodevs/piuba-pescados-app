@@ -19,6 +19,9 @@ use Illuminate\Support\Str;
 use OwenIt\Auditing\Contracts\Auditable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * @property UserStatusEnum $status
+ */
 class User extends Authenticatable implements Auditable, JWTSubject
 {
     use \OwenIt\Auditing\Auditable;

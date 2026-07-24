@@ -15,6 +15,14 @@ interface TokenServiceInterface
 
     public function refresh(): string;
 
+    /**
+     * Resolves the user and tenant claims from a specific token string,
+     * without touching the token currently attached to the request.
+     *
+     * @return array{user: ?User, companyId: ?string, role: ?string}
+     */
+    public function resolveFromToken(string $token): array;
+
     public function ttlInSeconds(): int;
 
     public function generateForMasterAdmin(User $user): string;

@@ -167,7 +167,9 @@ return [
     */
 
     'persistent_claims' => [
-        'company_id',
+        'cid',
+        'role',
+        'unm',
     ],
 
     /*
